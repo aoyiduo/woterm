@@ -21,3 +21,11 @@ binary program download on [http://www.wovnc.com](http://www.wovnc.com)
 
 ## Binary Program:
 <a href="http://woterm.com">http://woterm.com</a>
+
+## UI Preview
+<img src="doc/main.png"/>
+<img src="doc/floattab.gif"/>
+<img src="doc/split.gif"/>
+<img src="doc/vnc.png"/>
+<img src="doc/color.gif"/>
+<img src="doc/vnc.png"/>
