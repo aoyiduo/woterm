@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QWoSessionManage</class>
+ <widget class="QDialog" name="QWoSessionManage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>839</width>
+    <height>536</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="qwoterm.qrc">
+    <normaloff>:/woterm/resource/skin/nodes.png</normaloff>:/woterm/resource/skin/nodes.png</iconset>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="btnOpen">
+       <property name="text">
+        <string>Open</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qwoterm.qrc">
+         <normaloff>:/woterm/resource/skin/select.png</normaloff>:/woterm/resource/skin/select.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnNew">
+       <property name="text">
+        <string>New</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qwoterm.qrc">
+         <normaloff>:/woterm/resource/skin/add.png</normaloff>:/woterm/resource/skin/add.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnModify">
+       <property name="text">
+        <string>Modify</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qwoterm.qrc">
+         <normaloff>:/woterm/resource/skin/linkcfg.png</normaloff>:/woterm/resource/skin/linkcfg.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnDelete">
+       <property name="text">
+        <string>Delete</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qwoterm.qrc">
+         <normaloff>:/woterm/resource/skin/delete.png</normaloff>:/woterm/resource/skin/delete.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnImport">
+       <property name="text">
+        <string>Import</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qwoterm.qrc">
+         <normaloff>:/woterm/resource/skin/import.png</normaloff>:/woterm/resource/skin/import.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnClose">
+       <property name="text">
+        <string>Close</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qwoterm.qrc">
+         <normaloff>:/woterm/resource/skin/tabclose.png</normaloff>:/woterm/resource/skin/tabclose.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="lineEdit"/>
+   </item>
+   <item>
+    <widget class="QFrame" name="frame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="qwoterm.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>btnClose</sender>
+   <signal>clicked()</signal>
+   <receiver>QWoSessionManage</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>21</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>324</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

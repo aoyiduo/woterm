@@ -1,0 +1,81 @@
+/**
+ * ------- base ansii table -------
+ * [0,0x20) : invisible char.
+ * [0x20, 0x7f) : visible char.
+ * [0x7F,0x80) : invisble char.
+ * ---------- extended ansii table -----
+ * [0x80, 0xFF] : extended ansii table.
+ *
+ * author : wingo.he@qq.com
+ *
+***/
+
+#define VNC_KEY_Null                    (0x0)
+#define VNC_KEY_Space                   (0x20)
+#define VNC_KEY_Exclam                  (0x021)
+#define VNC_KEY_Quotedbl                (0x022)
+#define VNC_KEY_Numbersign              (0x023)
+#define VNC_KEY_Dollar                  (0x024)
+#define VNC_KEY_Percent                 (0x025)
+#define VNC_KEY_Ampersand               (0x026)
+#define VNC_KEY_Apostrophe              (0x027)
+#define VNC_KEY_Quoteright              (0x027)	/* deprecated */
+#define VNC_KEY_Parenleft               (0x028)
+#define VNC_KEY_Parenright              (0x029)
+#define VNC_KEY_Asterisk                (0x02a)
+#define VNC_KEY_Plus                    (0x02b)
+#define VNC_KEY_Comma                   (0x02c)
+#define VNC_KEY_Minus                   (0x02d)
+#define VNC_KEY_Period                  (0x02e)
+#define VNC_KEY_Slash                   (0x02f)
+#define VNC_KEY_0                       (0x030)
+#define VNC_KEY_9                       (0x039)
+#define VNC_KEY_Colon                   (0x03a)
+#define VNC_KEY_Semicolon               (0x03b)
+#define VNC_KEY_Less                    (0x03c)
+#define VNC_KEY_Equal                   (0x03d)
+#define VNC_KEY_Greater                 (0x03e)
+#define VNC_KEY_Question                (0x03f)
+#define VNC_KEY_At                      (0x040)
+#define VNC_KEY_A                       (0x041)
+#define VNC_KEY_Z                       (0x05a)
+#define VNC_KEY_Bracketleft             (0x05b)
+#define VNC_KEY_Backslash               (0x05c)
+#define VNC_KEY_Bracketright            (0x05d)
+#define VNC_KEY_Asciicircum             (0x05e)
+#define VNC_KEY_Underscore              (0x05f)
+#define VNC_KEY_Grave                   (0x060)
+#define VNC_KEY_Quoteleft               (0x060)
+#define VNC_KEY_a                       (0x061)
+#define VNC_KEY_z                       (0x07a)
+#define VNC_KEY_Braceleft               (0x07b)
+#define VNC_KEY_Bar                     (0x07c)
+#define VNC_KEY_Braceright              (0x07d)
+#define VNC_KEY_Asciitilde              (0x07e)
+#define VNC_KEY_Del                     (0x07F)
+
+/* sepecial char must be meet by rbf protocol. */
+#define VNC_KEY_BackSpace               (0xff08)
+#define VNC_KEY_Tab                     (0xff09)
+#define VNC_KEY_ReturnOrEnter           (0xff0d)
+#define VNC_KEY_Escape                  (0xff1b)
+#define VNC_KEY_Insert                  (0xff63)
+#define VNC_KEY_Delete                  (0xffff)
+#define VNC_KEY_Home                    (0xff50)
+#define VNC_KEY_End                     (0xff57)
+#define VNC_KEY_Page_Up                 (0xff55)
+#define VNC_KEY_Page_Down               (0xff56)
+#define VNC_KEY_Left                    (0xff51)
+#define VNC_KEY_Up                      (0xff52)
+#define VNC_KEY_Right                   (0xff53)
+#define VNC_KEY_Down                    (0xff54)
+#define VNC_KEY_F1                      (0xffbe)
+#define VNC_KEY_F12                     (0xffc9)
+#define VNC_KEY_Shift_Left              (0xffe1)
+#define VNC_KEY_Shift_Right             (0xffe2)
+#define VNC_KEY_Control_Left            (0xffe3)
+#define VNC_KEY_Control_Right           (0xffe4)
+#define VNC_KEY_Meta_Left               (0xffe7)
+#define VNC_KEY_Meta_Right              (0xffe8)
+#define VNC_KEY_Alt_Left                (0xffe9)
+#define VNC_KEY_Alt_Right               (0xffea)

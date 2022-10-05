@@ -1,0 +1,234 @@
+<RCC>
+    <qresource prefix="/kxterm">
+        <file>kblayout/default.keytab</file>
+        <file>kblayout/linux.keytab</file>
+        <file>kblayout/solaris.keytab</file>
+        <file>theme/3024 Day.theme</file>
+        <file>theme/3024 Night.theme</file>
+        <file>theme/AdventureTime.theme</file>
+        <file>theme/Afterglow.theme</file>
+        <file>theme/AlienBlood.theme</file>
+        <file>theme/Andromeda.theme</file>
+        <file>theme/Argonaut.theme</file>
+        <file>theme/Arthur.theme</file>
+        <file>theme/AtelierSulphurpool.theme</file>
+        <file>theme/Atom.theme</file>
+        <file>theme/AtomOneLight.theme</file>
+        <file>theme/ayu.theme</file>
+        <file>theme/ayu_light.theme</file>
+        <file>theme/Banana Blueberry.theme</file>
+        <file>theme/Batman.theme</file>
+        <file>theme/Belafonte Day.theme</file>
+        <file>theme/Belafonte Night.theme</file>
+        <file>theme/BirdsOfParadise.theme</file>
+        <file>theme/Blazer.theme</file>
+        <file>theme/Blue Matrix.theme</file>
+        <file>theme/BlueBerryPie.theme</file>
+        <file>theme/BlulocoDark.theme</file>
+        <file>theme/BlulocoLight.theme</file>
+        <file>theme/Borland.theme</file>
+        <file>theme/Breeze.theme</file>
+        <file>theme/Bright Lights.theme</file>
+        <file>theme/Broadcast.theme</file>
+        <file>theme/Brogrammer.theme</file>
+        <file>theme/Builtin Dark.theme</file>
+        <file>theme/Builtin Light.theme</file>
+        <file>theme/Builtin Pastel Dark.theme</file>
+        <file>theme/Builtin Solarized Dark.theme</file>
+        <file>theme/Builtin Solarized Light.theme</file>
+        <file>theme/Builtin Tango Dark.theme</file>
+        <file>theme/Builtin Tango Light.theme</file>
+        <file>theme/C64.theme</file>
+        <file>theme/Calamity.theme</file>
+        <file>theme/Chalk.theme</file>
+        <file>theme/Chalkboard.theme</file>
+        <file>theme/ChallengerDeep.theme</file>
+        <file>theme/Chester.theme</file>
+        <file>theme/Ciapre.theme</file>
+        <file>theme/CLRS.theme</file>
+        <file>theme/Cobalt Neon.theme</file>
+        <file>theme/Cobalt2.theme</file>
+        <file>theme/coffee_theme.theme</file>
+        <file>theme/CrayonPonyFish.theme</file>
+        <file>theme/Cyberdyne.theme</file>
+        <file>theme/cyberpunk.theme</file>
+        <file>theme/Dark Pastel.theme</file>
+        <file>theme/Dark+.theme</file>
+        <file>theme/Darkside.theme</file>
+        <file>theme/deep.theme</file>
+        <file>theme/Desert.theme</file>
+        <file>theme/DimmedMonokai.theme</file>
+        <file>theme/DoomOne.theme</file>
+        <file>theme/DotGov.theme</file>
+        <file>theme/Dracula.theme</file>
+        <file>theme/Duotone Dark.theme</file>
+        <file>theme/Earthsong.theme</file>
+        <file>theme/Elemental.theme</file>
+        <file>theme/Elementary.theme</file>
+        <file>theme/ENCOM.theme</file>
+        <file>theme/Espresso Libre.theme</file>
+        <file>theme/Espresso.theme</file>
+        <file>theme/Fahrenheit.theme</file>
+        <file>theme/Fideloper.theme</file>
+        <file>theme/FirefoxDev.theme</file>
+        <file>theme/Firewatch.theme</file>
+        <file>theme/FishTank.theme</file>
+        <file>theme/Flat.theme</file>
+        <file>theme/Flatland.theme</file>
+        <file>theme/Floraverse.theme</file>
+        <file>theme/ForestBlue.theme</file>
+        <file>theme/Framer.theme</file>
+        <file>theme/FrontEndDelight.theme</file>
+        <file>theme/FunForrest.theme</file>
+        <file>theme/Galaxy.theme</file>
+        <file>theme/Github.theme</file>
+        <file>theme/Glacier.theme</file>
+        <file>theme/Grape.theme</file>
+        <file>theme/Grass.theme</file>
+        <file>theme/Gruvbox Dark.theme</file>
+        <file>theme/Hacktober.theme</file>
+        <file>theme/Hardcore.theme</file>
+        <file>theme/Harper.theme</file>
+        <file>theme/Highway.theme</file>
+        <file>theme/Hipster Green.theme</file>
+        <file>theme/Hivacruz.theme</file>
+        <file>theme/Homebrew.theme</file>
+        <file>theme/Hopscotch.256.theme</file>
+        <file>theme/Hopscotch.theme</file>
+        <file>theme/Hurtado.theme</file>
+        <file>theme/Hybrid.theme</file>
+        <file>theme/IC_Green_PPL.theme</file>
+        <file>theme/IC_Orange_PPL.theme</file>
+        <file>theme/idea.theme</file>
+        <file>theme/idleToes.theme</file>
+        <file>theme/IR_Black.theme</file>
+        <file>theme/Jackie Brown.theme</file>
+        <file>theme/Japanesque.theme</file>
+        <file>theme/Jellybeans.theme</file>
+        <file>theme/JetBrains Darcula.theme</file>
+        <file>theme/Kibble.theme</file>
+        <file>theme/Kolorit.theme</file>
+        <file>theme/Lab Fox.theme</file>
+        <file>theme/Laser.theme</file>
+        <file>theme/Later This Evening.theme</file>
+        <file>theme/Lavandula.theme</file>
+        <file>theme/LiquidCarbon.theme</file>
+        <file>theme/LiquidCarbonTransparent.theme</file>
+        <file>theme/LiquidCarbonTransparentInverse.theme</file>
+        <file>theme/lovelace.theme</file>
+        <file>theme/Man Page.theme</file>
+        <file>theme/Material.theme</file>
+        <file>theme/MaterialDark.theme</file>
+        <file>theme/MaterialOcean.theme</file>
+        <file>theme/Mathias.theme</file>
+        <file>theme/Medallion.theme</file>
+        <file>theme/midnight-in-mojave.theme</file>
+        <file>theme/Misterioso.theme</file>
+        <file>theme/Molokai.theme</file>
+        <file>theme/MonaLisa.theme</file>
+        <file>theme/Monokai Remastered.theme</file>
+        <file>theme/Monokai Soda.theme</file>
+        <file>theme/Monokai Vivid.theme</file>
+        <file>theme/N0tch2k.theme</file>
+        <file>theme/Neopolitan.theme</file>
+        <file>theme/Neutron.theme</file>
+        <file>theme/Night Owlish Light.theme</file>
+        <file>theme/NightLion v1.theme</file>
+        <file>theme/NightLion v2.theme</file>
+        <file>theme/Nocturnal Winter.theme</file>
+        <file>theme/Novel.theme</file>
+        <file>theme/Obsidian.theme</file>
+        <file>theme/Ocean.theme</file>
+        <file>theme/OceanicMaterial.theme</file>
+        <file>theme/Ollie.theme</file>
+        <file>theme/OneHalfDark.theme</file>
+        <file>theme/OneHalfLight.theme</file>
+        <file>theme/Operator Mono Dark.theme</file>
+        <file>theme/Pandora.theme</file>
+        <file>theme/Paraiso Dark.theme</file>
+        <file>theme/Parasio Dark.theme</file>
+        <file>theme/PaulMillr.theme</file>
+        <file>theme/PencilDark.theme</file>
+        <file>theme/PencilLight.theme</file>
+        <file>theme/Piatto Light.theme</file>
+        <file>theme/Pnevma.theme</file>
+        <file>theme/primary.theme</file>
+        <file>theme/Pro Light.theme</file>
+        <file>theme/Pro.theme</file>
+        <file>theme/Purple Rain.theme</file>
+        <file>theme/purplepeter.theme</file>
+        <file>theme/rebecca.theme</file>
+        <file>theme/Red Alert.theme</file>
+        <file>theme/Red Planet.theme</file>
+        <file>theme/Red Sands.theme</file>
+        <file>theme/Relaxed.theme</file>
+        <file>theme/Rippedcasts.theme</file>
+        <file>theme/Royal.theme</file>
+        <file>theme/Ryuuko.theme</file>
+        <file>theme/Scarlet Protocol.theme</file>
+        <file>theme/Seafoam Pastel.theme</file>
+        <file>theme/SeaShells.theme</file>
+        <file>theme/Seti.theme</file>
+        <file>theme/shades-of-purple.theme</file>
+        <file>theme/Shaman.theme</file>
+        <file>theme/Slate.theme</file>
+        <file>theme/SleepyHollow.theme</file>
+        <file>theme/Smyck.theme</file>
+        <file>theme/Snazzy.theme</file>
+        <file>theme/SoftServer.theme</file>
+        <file>theme/Solarized Darcula.theme</file>
+        <file>theme/Solarized Dark - Patched.theme</file>
+        <file>theme/Solarized Dark Higher Contrast.theme</file>
+        <file>theme/Spacedust.theme</file>
+        <file>theme/SpaceGray Eighties Dull.theme</file>
+        <file>theme/SpaceGray Eighties.theme</file>
+        <file>theme/SpaceGray.theme</file>
+        <file>theme/Spiderman.theme</file>
+        <file>theme/Spring.theme</file>
+        <file>theme/Square.theme</file>
+        <file>theme/Subliminal.theme</file>
+        <file>theme/Sundried.theme</file>
+        <file>theme/Symfonic.theme</file>
+        <file>theme/synthwave.theme</file>
+        <file>theme/synthwave-everything.theme</file>
+        <file>theme/Tango Adapted.theme</file>
+        <file>theme/Tango Half Adapted.theme</file>
+        <file>theme/Teerb.theme</file>
+        <file>theme/Terminal Basic.theme</file>
+        <file>theme/Thayer Bright.theme</file>
+        <file>theme/The Hulk.theme</file>
+        <file>theme/Tomorrow Night Blue.theme</file>
+        <file>theme/Tomorrow Night Bright.theme</file>
+        <file>theme/Tomorrow Night Burns.theme</file>
+        <file>theme/Tomorrow Night Eighties.theme</file>
+        <file>theme/Tomorrow Night.theme</file>
+        <file>theme/Tomorrow.theme</file>
+        <file>theme/ToyChest.theme</file>
+        <file>theme/Treehouse.theme</file>
+        <file>theme/Twilight.theme</file>
+        <file>theme/Ubuntu.theme</file>
+        <file>theme/UltraViolent.theme</file>
+        <file>theme/UnderTheSea.theme</file>
+        <file>theme/Unikitty.theme</file>
+        <file>theme/Urple.theme</file>
+        <file>theme/Vaughn.theme</file>
+        <file>theme/VibrantInk.theme</file>
+        <file>theme/Violet Dark.theme</file>
+        <file>theme/Violet Light.theme</file>
+        <file>theme/WarmNeon.theme</file>
+        <file>theme/Wez.theme</file>
+        <file>theme/Whimsy.theme</file>
+        <file>theme/WildCherry.theme</file>
+        <file>theme/Wombat.theme</file>
+        <file>theme/Wryan.theme</file>
+        <file>theme/Zenburn.theme</file>
+        <file>image/triangle.png</file>
+        <file>image/close.png</file>
+        <file>font/CourierNew.ttf</file>
+        <file>font/CourierNewBold.ttf</file>
+        <file>image/search.png</file>
+        <file>image/next.png</file>
+        <file>image/prev.png</file>
+        <file>image/find.png</file>
+    </qresource>
+</RCC>

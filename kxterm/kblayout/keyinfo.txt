@@ -1,0 +1,75 @@
+<varlistentry>
+<term>Alt, Ctrl, Shift</term>
+<listitem>
+<para>One or more of these Modes can be used in a key combination, if any of them is set, the key combination uses that modifier key, respectively; and vice versa if it's reset</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>AnyModifier</term>
+<listitem>
+<para>If this mode is set, the key combination uses any modifier key (any of the previous three modifier keys); and vice versa if it's reset</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ansi</term>
+<listitem>
+<para>If this mode is set, &konsole; will send ANSI escape and control sequences</para>
+<para>If this mode is reset &konsole; will send VT52 escape and control sequences</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>AppScreen</term>
+<listitem>
+<para>If this mode is set, the key combination will only affect interactive programs that use the Alternate Screen buffer</para>
+<para>If this mode is reset the key combination will only affect the terminal when it's using the Normal Screen buffer</para>
+
+<note>
+<para>&konsole; makes use of two screen buffers:</para>
+<itemizedlist>
+<listitem>
+<para>The Normal Screen buffer (default): allows you to scroll back to view previous lines of output, this is the default buffer you usually use to execute commands... &etc;</para>
+</listitem>
+<listitem>
+<para>The Alternate Screen buffer: the terminal switches to this buffer when you run an interactive program (&eg; <application>less</application>, <application>vim</application>, <application>screen</application>, <application>tmux</application>... &etc;)</para>
+</listitem>
+</itemizedlist>
+</note>
+
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>KeyPad</term>
+<listitem>
+<para>If this mode is set, the key combination uses a key on the Keypad (Number Pad). This mode is useful to distinguish between keys on the keyboard and keys on the Keypad. For example when Num Lock is <emphasis>on</emphasis> you can configure two separate key combinations, one using the key labelled <quote>1</quote> on the keyboard (usually under the <keycap>F1</keycap> key) and the other using the key labelled <quote>1</quote> on the Keypad. The same concept applies when Num Lock is <emphasis>off</emphasis> for the End, Home, Cursor Keys ...etc on the Keypad</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>AppCursorKeys</term>
+<listitem>
+<para>This mode implements the VT100 <ulink url="https://www.vt100.net/docs/vt100-ug/chapter3.html#DECCKM">Cursor Keys Mode (DECCKM)</ulink>. It controls the escape sequences each Cursor Key (<keycap>Up</keycap>, <keycap>Down</keycap>, <keycap>Right</keycap>, <keycap>Left</keycap>) sends, depending on whether this mode is set or reset</para>
+<para>By default &konsole; follows the XTerm behavior of treating the <keycap>Home</keycap> and <keycap>End</keycap> keys as cursor keys with respect to DECCKM</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>AppKeyPad</term>
+<listitem>
+<para>If this mode is set, the key combination will only work when the Keypad is in Application Mode (DECKPAM)</para>
+<para>If this mode is reset, the key combination will only work when the Keypad is in Numeric Mode (DECKPNM)</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>NewLine</term>	
+<listitem>
+<para>If this mode is set, the <keycap>Return</keycap> (Enter) key on the keyboard will send both Carriage Return "\r" and New Line "\n" control characters</para>
+<para>If this mode is reset, the <keycap>Return</keycap> key will send only a Carriage Return "\r"</para>
+<para>The same applies to the <keycap>Enter</keycap> key on the Keypad</para>
+<para>This mode emulates the <ulink url="https://www.vt100.net/docs/vt100-ug/chapter3.html#LNM">LNM - Line Feed/New Line Mode</ulink></para>
+</listitem>
+</varlistentry>

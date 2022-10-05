@@ -1,0 +1,10 @@
+v3.4
+Feather:
+#1.add feedback channel for improvement.
+#2.turn qml-termwidget into qwidget-termwidget.
+#3.turn qml-sftp into qwidget-sftp.
+#4.add Android platform.
+#5.add Loading sprite.
+BugFix:
+#1.fix clear bug of identify when add or modify session parameters.
+#2.fix fix-width font bug when enum all fonts in system.

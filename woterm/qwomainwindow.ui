@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QWoMainWindow</class>
+ <widget class="QMainWindow" name="QWoMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QWoMainWindow</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="qwoterm.qrc">
+    <normaloff>:/woterm/resource/skin/woterm4.png</normaloff>:/woterm/resource/skin/woterm4.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>400</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="nativeMenuBar">
+    <bool>true</bool>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="separator"/>
+    <addaction name="actionDisconect"/>
+    <addaction name="actionReconnect"/>
+    <addaction name="actionReconnectAll"/>
+    <addaction name="separator"/>
+    <addaction name="actionImport"/>
+    <addaction name="actionExport"/>
+    <addaction name="separator"/>
+    <addaction name="actionDefault"/>
+    <addaction name="actionTransfer"/>
+    <addaction name="actionLog"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit_E">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionFind"/>
+   </widget>
+   <widget class="QMenu" name="menuView_V">
+    <property name="title">
+     <string>View</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuTool">
+    <property name="title">
+     <string>Tool</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuTab">
+    <property name="title">
+     <string>Tab</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menuEdit_E"/>
+   <addaction name="menuView_V"/>
+   <addaction name="menuTool"/>
+   <addaction name="menuTab"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextBesideIcon</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionNew">
+   <property name="text">
+    <string>New...</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+N</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+O</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="text">
+    <string>Import</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>Export</string>
+   </property>
+  </action>
+  <action name="actionLog">
+   <property name="text">
+    <string>Log</string>
+   </property>
+  </action>
+  <action name="actionTransfer">
+   <property name="text">
+    <string>Transfer</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionDisconect">
+   <property name="text">
+    <string>Disconnect</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+C</string>
+   </property>
+  </action>
+  <action name="actionReconnect">
+   <property name="text">
+    <string>Reconnect</string>
+   </property>
+  </action>
+  <action name="actionReconnectAll">
+   <property name="text">
+    <string>Reconnect All</string>
+   </property>
+  </action>
+  <action name="actionDefault">
+   <property name="text">
+    <string>Default Property</string>
+   </property>
+  </action>
+  <action name="actionFind">
+   <property name="text">
+    <string>Find..</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="qwoterm.qrc"/>
+ </resources>
+ <connections/>
+</ui>

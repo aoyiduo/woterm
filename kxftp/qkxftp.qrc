@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/kxftp">
+        <file>resource/skin/back.png</file>
+        <file>resource/skin/folder.png</file>
+        <file>resource/skin/forward.png</file>
+        <file>resource/skin/home.png</file>
+        <file>resource/skin/reload.png</file>
+        <file>resource/skin/copy.png</file>
+        <file>resource/skin/download.png</file>
+        <file>resource/skin/login.png</file>
+        <file>resource/skin/pause.png</file>
+        <file>resource/skin/remove.png</file>
+        <file>resource/skin/removeall.png</file>
+        <file>resource/skin/start.png</file>
+        <file>resource/skin/startall.png</file>
+        <file>resource/skin/stopall.png</file>
+        <file>resource/skin/upload.png</file>
+        <file>resource/skin/right.png</file>
+        <file>resource/skin/time.png</file>
+        <file>resource/skin/transfer.png</file>
+    </qresource>
+</RCC>
