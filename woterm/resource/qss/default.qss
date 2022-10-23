@@ -39,8 +39,36 @@ QToolBar {
     background: transparent;
 }
 
+QTabBar::tab {
+    min-width:8px;
+    max-height: 30px;
+    padding-left: 6px;
+    padding-right: 0px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border:1px solid #C4C4C3;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
 QTabBar::tab:selected {
     background: rgba(100,190,233, 200);
+}
+
+QTabBar::tab:!selected {
+     margin-top:2px;
+}
+
+QTabBar::close-button {
+    image: url(:/woterm/resource/skin/tabclose.png);
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+QTabBar::close-button:hover {
+    image: url(:/woterm/resource/skin/tabclose.png);
+    padding-top: 1px;
+    padding-bottom: 1px;
 }
 
 QStatusBar#statusBar {
@@ -50,12 +78,12 @@ QStatusBar#statusBar {
 
 QMenuBar{
     background-color: rgb(85, 204, 255);
-    min-height:25px
+    min-height:18px;
 }
 
 QMenu {
     background-color: rgb(223, 242, 255);
-    margin: 2px; /* some spacing around the menu */
+    margin: 0px;
 }
 
 QMenu::item {
@@ -99,11 +127,11 @@ QMenu::separator {
 }
 
 QPushButton{
-  border-radius: 5px;
+  border-radius: 3px;
   border: 1px solid darkgray;
-  padding: 8px;
+  padding: 5px;
   color: black;
-  min-width: 30px;
+  min-width: 50px;
 }
 
 QPushButton:hover{
@@ -128,7 +156,7 @@ QPushButton:hover#ftp{
 QToolButton{
   border-radius: 3px;
   border: 1px solid darkgray;
-  padding: 3px;
+  padding: 1px;
   color: black;
 }
 
@@ -257,5 +285,5 @@ QScrollArea{
     border: 0px;
     border-style: solid;
     border-color: white;
-    border-radius: 5px;
+    border-radius: 0px;
 }

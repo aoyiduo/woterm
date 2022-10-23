@@ -12,6 +12,8 @@
 #include "qworenamedialog.h"
 #include "ui_qworenamedialog.h"
 
+#include <QTimer>
+
 QString QWoRenameDialog::open(const QString &name, QWidget *parent)
 {
     QWoRenameDialog dlg(name, parent);
@@ -19,10 +21,19 @@ QString QWoRenameDialog::open(const QString &name, QWidget *parent)
     return dlg.result();
 }
 
-QString QWoRenameDialog::open(const QString &name, const QString &title, QWidget *parent)
+QString QWoRenameDialog::open(const QString &name, const QString &errMsg, QWidget *parent)
+{
+    QWoRenameDialog dlg(name, parent);
+    dlg.setErrorMessage(errMsg);
+    dlg.exec();
+    return dlg.result();
+}
+
+QString QWoRenameDialog::open(const QString &name, const QString &title, const QString &errMsg, QWidget *parent)
 {
     QWoRenameDialog dlg(name, parent);
     dlg.setWindowTitle(title);
+    dlg.setErrorMessage(errMsg);
     dlg.exec();
     return dlg.result();
 }
@@ -37,15 +48,25 @@ QWoRenameDialog::QWoRenameDialog(const QString &name, QWidget *parent) :
     ui->setupUi(this);
 
     setWindowTitle(tr("Rename"));
-
+    ui->msgErr->setVisible(false);
+    ui->msgErr->setText("");
     ui->name->setText(name);
     QObject::connect(ui->btnSave, SIGNAL(clicked()), this, SLOT(onButtonSaveClicked()));
     QObject::connect(ui->btnCancel, SIGNAL(clicked()), this, SLOT(close()));
+
+    setErrorMessage("");
 }
 
 QWoRenameDialog::~QWoRenameDialog()
 {
     delete ui;
+}
+
+void QWoRenameDialog::setErrorMessage(const QString &msg)
+{
+    ui->msgErr->setText(msg);
+    ui->msgErr->setVisible(!msg.isEmpty());
+    QTimer::singleShot(0, this, SLOT(onAdjustSize()));
 }
 
 QString QWoRenameDialog::result() const
@@ -57,4 +78,9 @@ void QWoRenameDialog::onButtonSaveClicked()
 {
     m_result = ui->name->text();
     close();
+}
+
+void QWoRenameDialog::onAdjustSize()
+{
+    adjustSize();
 }

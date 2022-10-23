@@ -112,13 +112,7 @@ void QWoSessionProperty::setSession(const QString &name)
     ui->port->setText(QString("%1").arg(hi.port));
     ui->loginName->setText(hi.user);
     ui->password->setText(hi.password);
-    if(!hi.identityFile.isEmpty()){
-        QString identify = hi.identityFile;
-        if(identify.startsWith("woterm:")) {
-            identify = identify.remove(0, 7);
-        }
-        ui->identify->setText(QWoUtils::pathToName(identify));
-    }
+    ui->identify->setText(hi.identityFile);
     if(!hi.password.isEmpty()) {
         ui->loginType->setCurrentText(tr("Password"));
     }else{
@@ -129,7 +123,7 @@ void QWoSessionProperty::setSession(const QString &name)
     ui->proxyJump->setText(hi.proxyJump);
     ui->baudRate->setCurrentText(hi.baudRate);
     ui->dataBits->setCurrentText(hi.dataBits);
-    ui->flowControl->setCurrentText(hi.flowContrl);
+    ui->flowControl->setCurrentText(hi.flowControl);
     ui->stopBits->setCurrentText(hi.stopBits);
     ui->parity->setCurrentText(hi.parity);
 
@@ -481,17 +475,11 @@ bool QWoSessionProperty::saveConfig()
         if(ui->loginType->currentText() == tr("Password")) {
             hi.password = ui->password->text();
         }else{
-            hi.identityFile = QWoUtils::nameToPath(ui->identify->text());
+            hi.identityFile = ui->identify->text();
             if(hi.identityFile.isEmpty()) {
-                QMessageBox::warning(this, tr("Info"), tr("The identify file can't be empty"));
+                QMessageBox::warning(this, tr("Info"), tr("The identity file can't be empty"));
                 return false;
             }
-            QString identify = QWoSetting::identifyFilePath() + "/" + hi.identityFile;
-            if(!QFileInfo::exists(identify)) {
-                QMessageBox::warning(this, tr("Info"), tr("failed to find the identify file"));
-                return false;
-            }
-            hi.identityFile.insert(0, "woterm:");
         }
         hi.proxyJump = ui->proxyJump->text();
         hi.memo = ui->memo->toPlainText();
@@ -518,7 +506,7 @@ bool QWoSessionProperty::saveConfig()
                 QMessageBox::warning(this, tr("Info"), tr("The identify file can't be empty"));
                 return false;
             }
-            QString identify = QWoSetting::identifyFilePath() + "/" + hi.identityFile;
+            QString identify = QWoSetting::identityFilePath() + "/" + hi.identityFile;
             if(!QFileInfo::exists(identify)) {
                 QMessageBox::warning(this, tr("Info"), tr("failed to find the identify file"));
                 return false;
@@ -565,7 +553,7 @@ bool QWoSessionProperty::saveConfig()
         hi.baudRate = ui->baudRate->currentText();
         hi.dataBits = ui->dataBits->currentText();
         hi.stopBits = ui->stopBits->currentText();
-        hi.flowContrl = ui->flowControl->currentText();
+        hi.flowControl = ui->flowControl->currentText();
         hi.parity = ui->parity->currentText();
         hi.memo = ui->memo->toPlainText();
     }else if(type == "Vnc") {

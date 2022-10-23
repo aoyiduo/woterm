@@ -29,6 +29,7 @@ set(SOURCE_FILES
     qkxmacaddress.cpp
     qkxlengthbodypacket.cpp
     qkxkeepwakeup.cpp
+    qkxprocesslaunch.cpp
 )
 
 set(HEADER_FILES
@@ -45,6 +46,7 @@ set(HEADER_FILES
     qkxwallpaper.h
     qkxlengthbodypacket.h
     qkxkeepwakeup.h
+    qkxprocesslaunch.h
 )
 
 if(WIN32)

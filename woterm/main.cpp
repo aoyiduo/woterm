@@ -23,6 +23,7 @@
 #include <QWeakPointer>
 
 #include "qwoglobal.h"
+#include "qwoapplication.h"
 #include "qwomainwindow.h"
 #include "qwotermwidget.h"
 #include "qwosetting.h"
@@ -63,30 +64,22 @@ int main(int argc, char *argv[])
 {
     //qInstallMessageHandler(myMessageOutput);
 #ifdef Q_OS_WIN
-    static QApplication app(argc, argv);
+    static QWoApplication app(argc, argv);
 #else
-    QApplication app(argc, argv);
+    QWoApplication app(argc, argv);
 #endif
     test();
     QStringList styles = QStyleFactory::keys();
     qDebug() << "embeded style list: " << styles;
-    QApplication::setStyle(new QWoTermStyle("fusion"));
-    //QApplication::setStyle("fusion");
+    QApplication::setStyle("fusion");
     QFile f(":/woterm/resource/qss/default.qss");
     f.open(QFile::ReadOnly);
     QByteArray qss = f.readAll();
     f.close();
     app.setStyleSheet(qss);
-
+    app.setAttribute(Qt::AA_DontUseNativeMenuBar);
 
     QApplication::setWindowIcon(QIcon(":/woterm/resource/skin/woterm4.png"));
-
-    QString path = QApplication::applicationDirPath();
-    QApplication::addLibraryPath(path);
-    QString libPath = QDir::cleanPath(path + "/../lib");
-    if(QFile::exists(libPath)) {
-        QApplication::addLibraryPath(libPath);
-    }
 
     QTranslator translator;
     QString lang = QWoSetting::languageFile();

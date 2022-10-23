@@ -18,6 +18,15 @@ namespace Ui {
 class QWoIdentifyCreateDialog;
 }
 
+/***
+ * Only 4 type
+ * ssh-keygen -t dsa | ecdsa | ed25519 | rsa
+ * dsa: Because of low security, it is basically no longer used.
+ * ecdsa: Because of low security, it is basically no longer used
+ * ed25519: Fast encryption and decryption, fast generation time, and higher security.
+ * rsa: The encryption and decryption speed is slow, the generation time is slow, and the security is not as high as ed25519. (Many users have good compatibility)
+ **/
+
 class QWoIdentifyCreateDialog : public QDialog
 {
     Q_OBJECT
@@ -26,8 +35,10 @@ public:
     explicit QWoIdentifyCreateDialog(QWidget *parent = 0);
     ~QWoIdentifyCreateDialog();
 private slots:
-    void onTypeCurrentIndexChanged(const QString &txt);
     void onButtonCreateClicked();
+    void onButtonTypeRsaClicked();
+    void onButtonTypeED25519Clicked();
+    void onAdjustSize();
 private:
     Ui::QWoIdentifyCreateDialog *ui;
 };

@@ -34,7 +34,7 @@ public:
     void setMaxColumnCount(int cnt);
     int widthColumn(const QFont& ft, int i);
 
-    void refreshList();
+    Q_INVOKABLE void refreshList();
     bool exists(const QString &name);
     void resetAllProperty(QString v);
     void modifyOrAppend(const HostInfo& hi);

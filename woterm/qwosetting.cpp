@@ -33,7 +33,7 @@ QString QWoSetting::ftpTaskPath()
     return specialFilePath("ftp");
 }
 
-QString QWoSetting::identifyFilePath()
+QString QWoSetting::identityFilePath()
 {
     return specialFilePath("identify");
 }
@@ -79,63 +79,24 @@ QString QWoSetting::privateTranslationPath()
     return path;
 }
 
-QString QWoSetting::zmodemSZPath()
-{
-    QString path;
-    path = QWoSetting::value("zmodem/sz", "").toString();
-    if(!QFile::exists(path)) {
-        path = QDir::cleanPath(QApplication::applicationDirPath() + "/sz");
-#ifdef Q_OS_WIN
-        path.append(".exe");
-#endif
-        path = QDir::toNativeSeparators(path);
-        if(!QFile::exists(path)){
-            return "";
-        }
-    }
-    return path;
-}
-
-QString QWoSetting::zmodemRZPath()
-{
-    QString path;
-    path = QWoSetting::value("zmodem/rz", "").toString();
-    if(!QFile::exists(path)) {
-        path = QDir::cleanPath(QApplication::applicationDirPath() + "/rz");
-#ifdef Q_OS_WIN
-        path.append(".exe");
-#endif
-        path = QDir::toNativeSeparators(path);
-        if(!QFile::exists(path)){
-            return "";
-        }
-    }
-    return path;
-}
-
-QString QWoSetting::sshProgramPath()
-{
-    QString path;
-    path = QWoSetting::value("ssh/program", "").toString();
-    if(!QFile::exists(path)) {
-        path = QDir::cleanPath(QApplication::applicationDirPath() + "/ssh");
-#ifdef Q_OS_WIN
-        path.append(".exe");
-#endif
-        path = QDir::toNativeSeparators(path);
-        if(!QFile::exists(path)){
-            return "";
-        }
-    }
-    return path;
-}
-
-QString QWoSetting::sshServerListPath()
+QString QWoSetting::sshServerFilePath()
 {
     QString path;
     path = QWoSetting::value("ssh/serverList", "").toString();
     if(!QFile::exists(path)) {
         path = QDir::cleanPath(QWoSetting::applicationDataPath() + "/servers.conf");
+        path = QDir::toNativeSeparators(path);
+        return path;
+    }
+    return path;
+}
+
+QString QWoSetting::sshServerDbPath()
+{
+    QString path;
+    path = QWoSetting::value("ssh/serverDb", "").toString();
+    if(!QFile::exists(path)) {
+        path = QDir::cleanPath(QWoSetting::applicationDataPath() + "/server.db");
         path = QDir::toNativeSeparators(path);
         return path;
     }
@@ -204,4 +165,14 @@ QString QWoSetting::languageName(const QString &path)
 void QWoSetting::setLanguageFile(const QString &lang)
 {
     QWoSetting::setValue("language/path", lang);
+}
+
+QString QWoSetting::lastBackupPath()
+{
+    return value("backup/path", "").toString();
+}
+
+void QWoSetting::setLastBackupPath(const QString &path)
+{
+    setValue("backup/path", path);
 }

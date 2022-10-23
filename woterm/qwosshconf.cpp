@@ -12,11 +12,18 @@
 #include "qwosshconf.h"
 #include "qwosetting.h"
 #include "qwoutils.h"
+#include "qwoidentify.h"
 
+#include <SQLiteCpp/SQLiteCpp.h>
+
+#include <QCoreApplication>
 #include <QFile>
 #include <QDebug>
 #include <QMessageBox>
 #include <QBuffer>
+#include <QDir>
+#include <QDateTime>
+#include <QDebug>
 
 /*
  *  #
@@ -64,16 +71,144 @@ void copyHostInfo(HostInfo &dst, const HostInfo &src)
     }
 }
 
-QWoSshConf::QWoSshConf(const QString& conf, QObject *parent)
-    :QObject (parent)
-    ,m_conf(conf)
+static bool createServersTable(SQLite::Database& db) {
+    QString sql="CREATE TABLE IF NOT EXISTS servers(";
+    sql += "id INTEGER PRIMARY KEY AUTOINCREMENT,";
+    sql += "type INT,";
+    sql += "name VARCHAR(100) NOT NULL,";
+    sql += "host VARCHAR(100) NOT NULL,";
+    sql += "port INT,";
+    sql += "loginName VARCHAR(100),";
+    sql += "loginPassword VARCHAR(100),";
+    sql += "identityFile VARCHAR(100),";
+    sql += "scriptFile VARCHAR(100),";
+    sql += "script TEXT,";
+    sql += "proxyJump VARCHAR(100),";
+    sql += "memo TEXT,";
+    sql += "property TEXT,";
+    sql += "groupName VARCHAR(100),";
+    sql += "baudRate VARCHAR(100),";
+    sql += "dataBits VARCHAR(100),";
+    sql += "parity VARCHAR(100),";
+    sql += "stopBits VARCHAR(100),";
+    sql += "flowControl VARCHAR(100),";
+    sql += "version INT DEFAULT (0),";
+    sql += "delFlag INT DEFAULT (0),";
+    sql += "syncFlag INT DEFAULT (0),";
+    sql += "ct DATETIME NOT NULL,";
+    sql += "dt INT DEFAULT (0)";
+    sql +=")";
+    db.exec(sql.toUtf8());
+    if(db.tableExists("servers")) {
+        SQLite::Statement query(db, "PRAGMA INDEX_INFO('servers_idx')");
+        if(!query.executeStep()) {
+            db.exec("CREATE UNIQUE INDEX servers_idx ON servers (name,delFlag)");
+        }else{
+            QString v = QString::fromStdString(query.getColumn("name").getString());
+            qDebug() << v << query.getColumnCount();
+        }
+        return true;
+    }
+    return false;
+}
+
+static bool createIdentitiesTable(SQLite::Database& db) {
+    QString sql="CREATE TABLE IF NOT EXISTS identities(";
+    sql += "id INTEGER PRIMARY KEY AUTOINCREMENT,";
+    sql += "name VARCHAR(100) NOT NULL,";
+    sql += "prvKey TEXT NOT NULL,";
+    sql += "delFlag INT DEFAULT (0),";
+    sql += "syncFlag INT DEFAULT (0),";
+    sql += "ct DATETIME NOT NULL,";
+    sql += "dt INT DEFAULT (0)";
+    sql +=")";
+    db.exec(sql.toUtf8());
+    if(db.tableExists("identities")) {
+        SQLite::Statement query(db, "PRAGMA INDEX_INFO('identities_idx')");
+        if(!query.executeStep()) {
+            db.exec("CREATE UNIQUE INDEX identities_idx ON identities (name,delFlag)");
+        }else{
+            QString v = QString::fromStdString(query.getColumn("name").getString());
+            qDebug() << v << query.getColumnCount();
+        }
+        return true;
+    }
+    return false;
+}
+
+QWoSshConf::QWoSshConf(const QString& dbFile, QObject *parent)
+    : QObject (parent)
+    , m_dbFile(dbFile)
+    , m_bInit(false)
 {
+    QObject::connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(onAboutToQuit()));
+}
+
+void QWoSshConf::init()
+{
+    if(m_bInit) {
+        return;
+    }
+    QString bakFile = m_dbFile + ".bak";
+    if(QFile::exists(m_dbFile)) {
+        if(!databaseValid(m_dbFile)) {
+            // bad db file.
+            QFile::remove(m_dbFile);
+            if(databaseValid(bakFile)) {
+                restore(bakFile);
+            }else{
+                QFile::remove(bakFile);
+                init();
+            }
+        }
+    }else if(QFile::exists(bakFile)){
+        if(databaseValid(bakFile)) {
+            restore(bakFile);
+        }else{
+            QFile::remove(bakFile);
+            init();
+        }
+    }else{
+        QString filePath = QWoSetting::sshServerFilePath();
+        if(QFile::exists(filePath)) {
+            QWoSshConf::importIdentityToSqlite(QWoSetting::identityFilePath(), m_dbFile);
+            QWoSshConf::importConfToSqlite(filePath, m_dbFile);
+        }else{
+            try{
+                SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+                createIdentitiesTable(db);
+                createServersTable(db);
+            }catch(...) {
+                qWarning() << "failed to create database" << m_dbFile;
+            }
+        }
+    }
+    m_bInit = databaseValid(m_dbFile);
 }
 
 QWoSshConf *QWoSshConf::instance()
 {
-    static QWoSshConf sc(QWoSetting::sshServerListPath());
+    static QWoSshConf sc(QWoSetting::sshServerDbPath());
     return &sc;
+}
+
+bool QWoSshConf::restore(const QString &dbBackup)
+{
+    if(dbBackup.isEmpty()) {
+        return false;
+    }
+    if(!databaseValid(dbBackup)) {
+        return false;
+    }
+    try {
+        QFile::remove(m_dbFile);
+        SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        int err = db.backup(dbBackup.toUtf8(), db.Load);
+        return err == SQLite::OK;
+    } catch (...) {
+        qDebug() << "SQLite initialize failed";
+    }
+    return false;
 }
 
 QHash<QString, HostInfo> QWoSshConf::parse(const QByteArray& buf)
@@ -173,7 +308,7 @@ QHash<QString, HostInfo> QWoSshConf::parse(const QByteArray& buf)
             }else if(item.startsWith("StopBits")) {
                 hi.stopBits = item.mid(8).trimmed();
             }else if(item.startsWith("FlowControl")) {
-                hi.flowContrl = item.mid(11).trimmed();
+                hi.flowControl = item.mid(11).trimmed();
             }
         }
         hi.memo = memos.join("\n");
@@ -314,43 +449,271 @@ QByteArray QWoSshConf::toStream()
             QString line(QString("  StopBits %1\n").arg(hi.stopBits));
             file.write(line.toUtf8());
         }
-        if(!hi.flowContrl.isEmpty()) {
-            QString line(QString("  FlowControl %1\n").arg(hi.flowContrl));
+        if(!hi.flowControl.isEmpty()) {
+            QString line(QString("  FlowControl %1\n").arg(hi.flowControl));
             file.write(line.toUtf8());
         }
     }
     return buf;
 }
 
-bool QWoSshConf::save()
+void QWoSshConf::importIdentityToSqlite(const QString &path, const QString &dbFile)
 {
-    return exportToFile(m_conf);
+    QMap<QString, IdentifyInfo> all = QWoIdentify::loadFromFile();
+    try{
+        SQLite::Database db(dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        if(createIdentitiesTable(db)) {
+            QString now = QDateTime::currentDateTime().toString("yyyy/dd/MM hh:mm:ss");
+            SQLite::Statement insert(db, "INSERT INTO identities (name,prvKey,ct) VALUES (@name,@prvKey,@ct)");
+            for(auto it = all.begin(); it != all.end(); it++) {
+                IdentifyInfo info = it.value();
+                insert.reset();
+                insert.bind("@name", info.name.toStdString());
+                insert.bind("@prvKey", info.prvKey.toStdString());
+                insert.bind("@ct", now.toStdString());
+                int cnt = insert.exec();
+                qDebug() << "insert identities" << info.name << cnt;
+            }
+        }
+    }catch(std::exception& e) {
+        QByteArray err = e.what();
+        qDebug() << "convertConfToSqlite" << err;
+    }
+
+}
+
+void QWoSshConf::importConfToSqlite(const QString &conf, const QString &dbFile)
+{
+    QFile file(conf);
+    if(!file.exists()) {
+        return;
+    }
+    if(!file.open(QFile::ReadOnly)) {
+        return;
+    }
+    QByteArray buf = file.readAll();
+    buf = QWoUtils::fromWotermStream(buf);
+    QHash<QString, HostInfo> hosts = parse(buf);
+    try{
+        SQLite::Database db(dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        if(createServersTable(db)) {
+            QString now = QDateTime::currentDateTime().toString("yyyy/dd/MM hh:mm:ss");
+            std::string sql = "INSERT INTO servers ";
+            sql += "(type,name,host,port,loginName,loginPassword,identityFile,scriptFile,script,proxyJump,memo,property,groupName,baudRate,dataBits,parity,stopBits,flowControl,ct)";
+            sql += " VALUES ";
+            sql += "(@type,@name,@host,@port,@loginName,@loginPassword,@identityFile,@scriptFile,@script,@proxyJump,@memo,@property,@groupName,@baudRate,@dataBits,@parity,@stopBits,@flowControl,@ct)";
+            SQLite::Statement insert(db, sql);
+            for(auto it = hosts.begin(); it != hosts.end(); it++) {
+                QString name = it.key();
+                const HostInfo& hi = it.value();
+                insert.reset();
+                insert.bind("@type", (int)hi.type);
+                insert.bind("@name", hi.name.toStdString());
+                insert.bind("@host", hi.host.toStdString());
+                insert.bind("@port", hi.port);
+                insert.bind("@loginName", hi.user.toStdString());
+                insert.bind("@loginPassword", hi.password.toStdString());
+                QString identityFile = hi.identityFile;
+                if(hi.identityFile.startsWith("woterm:")) {
+                    identityFile = identityFile.mid(7);
+                    identityFile = QWoUtils::pathToName(identityFile);
+                }
+                insert.bind("@identityFile", identityFile.toStdString());
+                insert.bind("@scriptFile", hi.scriptFile.toStdString());
+                insert.bind("@script", hi.script.toStdString());
+                insert.bind("@proxyJump", hi.proxyJump.toStdString());
+                insert.bind("@memo", hi.memo.toStdString());
+                insert.bind("@property", hi.property.toStdString());
+                insert.bind("@groupName", hi.group.toStdString());
+                insert.bind("@baudRate", hi.baudRate.toStdString());
+                insert.bind("@dataBits", hi.dataBits.toStdString());
+                insert.bind("@parity", hi.parity.toStdString());
+                insert.bind("@stopBits", hi.stopBits.toStdString());
+                insert.bind("@flowControl", hi.flowControl.toStdString());
+                insert.bind("@ct", now.toStdString());
+                int cnt = insert.exec();
+                qDebug() << "insert server" << cnt << hi.name;
+            }
+        }
+    }catch(std::exception& e) {
+        QByteArray err = e.what();
+        qDebug() << "convertConfToSqlite" << err;
+    }
+}
+
+QHash<QString, HostInfo> QWoSshConf::loadFromSqlite(const QString &dbFile)
+{
+    QHash<QString, HostInfo> hosts;
+    try{
+        SQLite::Database db(dbFile.toUtf8(), SQLite::OPEN_READONLY);
+        SQLite::Statement query(db, "select svc.*,ids.prvKey from servers as svc left join identities as ids on svc.identityFile=ids.name and ids.delFlag=0 where svc.delFlag=0");
+        while(query.executeStep()) {
+            HostInfo hi;
+            hi.type = EHostType(query.getColumn("type").getInt());
+            hi.name = QString::fromStdString(query.getColumn("name").getString());
+            hi.host = QString::fromStdString(query.getColumn("host").getString());
+            hi.port = query.getColumn("port").getInt();
+            hi.user = QString::fromStdString(query.getColumn("loginName").getString());
+            hi.password = QString::fromStdString(query.getColumn("loginPassword").getString());
+            hi.identityFile = QString::fromStdString(query.getColumn("identityFile").getString());
+            hi.identityContent = QString::fromStdString(query.getColumn("prvKey").getString());
+            hi.scriptFile = QString::fromStdString(query.getColumn("scriptFile").getString());
+            hi.script = QString::fromStdString(query.getColumn("script").getString());
+            hi.proxyJump = QString::fromStdString(query.getColumn("proxyJump").getString());
+            hi.memo = QString::fromStdString(query.getColumn("memo").getString());
+            hi.property = QString::fromStdString(query.getColumn("property").getString());
+            hi.group = QString::fromStdString(query.getColumn("groupName").getString());
+            hi.baudRate = QString::fromStdString(query.getColumn("baudRate").getString());
+            hi.dataBits = QString::fromStdString(query.getColumn("dataBits").getString());
+            hi.parity = QString::fromStdString(query.getColumn("parity").getString());
+            hi.stopBits = QString::fromStdString(query.getColumn("stopBits").getString());
+            hi.flowControl = QString::fromStdString(query.getColumn("flowControl").getString());
+            hosts.insert(hi.name, hi);
+        }
+    }catch(std::exception& e) {
+        QByteArray err = e.what();
+        qDebug() << "convertConfToSqlite" << err;
+    }
+    return hosts;
+}
+
+bool QWoSshConf::save(const HostInfo &hi)
+{
+    try{
+        SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        if(!db.tableExists("servers")) {
+            return false;
+        }
+        SQLite::Statement query(db, "select name from servers where name=@name and delFlag=0");
+        query.bind("@name", hi.name.toStdString());
+        if(query.executeStep()) {
+            std::string sql = "update servers set type=@type,host=@host,port=@port,loginName=@loginName,";
+            sql += "loginPassword=@loginPassword,identityFile=@identityFile,scriptFile=@scriptFile,script=@script,";
+            sql += "proxyJump=@proxyJump,memo=@memo,property=@property,groupName=@groupName,baudRate=@baudRate,";
+            sql += "dataBits=@dataBits,parity=@parity,stopBits=@stopBits,flowControl=@flowControl ";
+            sql += "where name=@name and delFlag=0";
+            SQLite::Statement update(db, sql);
+            update.bind("@type", (int)hi.type);
+            update.bind("@host", hi.host.toStdString());
+            update.bind("@port", hi.port);
+            update.bind("@loginName", hi.user.toStdString());
+            update.bind("@loginPassword", hi.password.toStdString());
+            update.bind("@identityFile", hi.identityFile.toStdString());
+            update.bind("@scriptFile", hi.scriptFile.toStdString());
+            update.bind("@script", hi.script.toStdString());
+            update.bind("@proxyJump", hi.proxyJump.toStdString());
+            update.bind("@memo", hi.memo.toStdString());
+            update.bind("@property", hi.property.toStdString());
+            update.bind("@groupName", hi.group.toStdString());
+            update.bind("@baudRate", hi.baudRate.toStdString());
+            update.bind("@dataBits", hi.dataBits.toStdString());
+            update.bind("@parity", hi.parity.toStdString());
+            update.bind("@stopBits", hi.stopBits.toStdString());
+            update.bind("@flowControl", hi.flowControl.toStdString());
+            update.bind("@name", hi.name.toStdString());
+            int cnt = update.exec();
+            qDebug() << "update server" << cnt << hi.name;
+        }else{
+            QString now = QDateTime::currentDateTime().toString("yyyy/dd/MM hh:mm:ss");
+            std::string sql = "INSERT INTO servers ";
+            sql += "(type,name,host,port,loginName,loginPassword,identityFile,scriptFile,script,proxyJump,memo,property,groupName,baudRate,dataBits,parity,stopBits,flowControl,ct)";
+            sql += " VALUES ";
+            sql += "(@type,@name,@host,@port,@loginName,@loginPassword,@identityFile,@scriptFile,@script,@proxyJump,@memo,@property,@groupName,@baudRate,@dataBits,@parity,@stopBits,@flowControl,@ct)";
+            SQLite::Statement insert(db, sql);
+            insert.reset();
+            insert.bind("@type", (int)hi.type);
+            insert.bind("@name", hi.name.toStdString());
+            insert.bind("@host", hi.host.toStdString());
+            insert.bind("@port", hi.port);
+            insert.bind("@loginName", hi.user.toStdString());
+            insert.bind("@loginPassword", hi.password.toStdString());
+            insert.bind("@identityFile", hi.identityFile.toStdString());
+            insert.bind("@scriptFile", hi.scriptFile.toStdString());
+            insert.bind("@script", hi.script.toStdString());
+            insert.bind("@proxyJump", hi.proxyJump.toStdString());
+            insert.bind("@memo", hi.memo.toStdString());
+            insert.bind("@property", hi.property.toStdString());
+            insert.bind("@groupName", hi.group.toStdString());
+            insert.bind("@baudRate", hi.baudRate.toStdString());
+            insert.bind("@dataBits", hi.dataBits.toStdString());
+            insert.bind("@parity", hi.parity.toStdString());
+            insert.bind("@stopBits", hi.stopBits.toStdString());
+            insert.bind("@flowControl", hi.flowControl.toStdString());
+            insert.bind("@ct", now.toStdString());
+            int cnt = insert.exec();
+            qDebug() << "insert server" << cnt << hi.name;
+        }
+    }catch(std::exception& e) {
+        QByteArray err = e.what();
+        qDebug() << "convertConfToSqlite" << err;
+    }
+    return true;
+}
+
+bool QWoSshConf::initialize(const QString& dbFile)
+{
+    try{
+        SQLite::Database db(dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        createIdentitiesTable(db);
+        createServersTable(db);
+        return true;
+    }catch(...) {
+        qWarning() << "failed to initialize sqlite:" << dbFile;
+    }
+    return false;
+}
+
+bool QWoSshConf::databaseValid(const QString &dbFile)
+{
+    try {
+        SQLite::Database db(dbFile.toUtf8(), SQLite::OPEN_READONLY);
+        SQLite::Statement health(db, "PRAGMA quick_check");
+        if(health.executeStep()) {
+            QByteArrayList dbset = {"identities", "servers"};
+            for(auto it = dbset.begin(); it != dbset.end(); it++) {
+                QByteArray name = *it;
+                if(!db.tableExists(name)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    } catch (...) {
+        qWarning() << "databaseValid" << dbFile;
+    }
+    return false;
+}
+
+bool QWoSshConf::backup(const QString &dbBackup)
+{
+    try {
+        if(!QFile::exists(m_dbFile)) {
+            return false;
+        }
+        SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READONLY);
+        SQLite::Statement health(db, "PRAGMA quick_check");
+        if(!health.executeStep()) {
+            return false;
+        }
+        QFile::remove(dbBackup);
+        int err = db.backup(dbBackup.toUtf8(), db.Save);
+        return err == SQLite::OK;
+    } catch (...) {
+        qWarning() << "QWoSshConf::backup" << m_dbFile;
+    }
+    return false;
 }
 
 bool QWoSshConf::refresh()
 {
-    QFile file(m_conf);
-    if(!file.exists()) {
-        return false;
-    }
-    if(!file.open(QFile::ReadOnly)) {
-      QMessageBox::warning(nullptr, tr("LoadSshConfig"), tr("Failed to open file:")+m_conf, QMessageBox::Ok);
-      return false;
-    }
-    QByteArray buf = file.readAll();
-    buf = QWoUtils::fromWotermStream(buf);
-    //qDebug() << buf;
-    m_hosts = parse(buf);
+    init();
+    m_hosts = loadFromSqlite(m_dbFile);
     return true;
 }
 
 bool QWoSshConf::exportToFile(const QString &path)
 {
     QByteArray buf = toStream();
-    //qDebug() << buf;
-
-    buf = QWoUtils::toWotermStream(buf);
-
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly)){
         return false;
@@ -359,19 +722,27 @@ bool QWoSshConf::exportToFile(const QString &path)
     return true;
 }
 
-void QWoSshConf::remove(const QString &name)
+bool QWoSshConf::remove(const QString &name)
 {
-    m_hosts.remove(name);
-    save();
+    try{
+        SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        if(!db.tableExists("identities")) {
+            return false;
+        }
+        SQLite::Statement insert(db, QString("DELETE FROM servers WHERE name='%1'").arg(name).toUtf8());
+        int cnt = insert.exec();
+        qDebug() << "remove server" << name << cnt;
+        return true;
+    }catch(std::exception& e) {
+        qDebug() << "QWoSshConf::remove" << e.what();
+    }
+    return false;
 }
 
 bool QWoSshConf::modify(const HostInfo &hi)
 {
-    if(!m_hosts.contains(hi.name)) {
-        return false;
-    }
     m_hosts.insert(hi.name, hi);
-    return save();
+    return save(hi);
 }
 
 bool QWoSshConf::append(const HostInfo &hi)
@@ -380,22 +751,37 @@ bool QWoSshConf::append(const HostInfo &hi)
         return false;
     }
     m_hosts.insert(hi.name, hi);
-    return save();
+    return save(hi);
 }
 
 bool QWoSshConf::modifyOrAppend(const HostInfo &hi)
 {
     m_hosts.insert(hi.name, hi);
-    return save();
+    return save(hi);
 }
 
 void QWoSshConf::resetAllProperty(const QString &v)
 {
-    for(QHash<QString, HostInfo>::iterator iter = m_hosts.begin(); iter != m_hosts.end(); iter++) {
-        HostInfo& hi = iter.value();
-        hi.property = v;
+    try{
+        SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        if(!db.tableExists("servers")) {
+            return;
+        }
+        SQLite::Statement update(db, "UPDATE servers SET property=@property");
+        for(QHash<QString, HostInfo>::iterator iter = m_hosts.begin(); iter != m_hosts.end(); iter++) {
+            HostInfo& hi = iter.value();
+            if(hi.property.isEmpty()) {
+                continue;
+            }
+            hi.property = v;
+            update.reset();
+            update.bind("@property", hi.property.toStdString());
+            update.exec();
+        }
+    }catch(std::exception& e) {
+        QByteArray err = e.what();
+        qDebug() << "convertConfToSqlite" << err;
     }
-    save();
 }
 
 bool QWoSshConf::exists(const QString &name) const
@@ -408,7 +794,7 @@ void QWoSshConf::updatePassword(const QString &name, const QString &password)
     if(m_hosts.contains(name)) {
         HostInfo &hi = m_hosts[name];
         hi.password = password;
-        save();
+        save(hi);
     }
 }
 
@@ -468,6 +854,11 @@ QList<HostInfo> QWoSshConf::proxyJumpers(const QString& name, int max) const
         his.append(proxyJumpers(hi.proxyJump, max-1));
     }
     return his;
+}
+
+void QWoSshConf::onAboutToQuit()
+{
+    backup(m_dbFile + ".bak");
 }
 
 HostInfo QWoSshConf::find(const QString &name) const {

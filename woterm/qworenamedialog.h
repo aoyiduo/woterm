@@ -24,12 +24,15 @@ class QWoRenameDialog : public QDialog
 
 public:
     static QString open(const QString& name, QWidget *parent= nullptr);
-    static QString open(const QString& name, const QString& title, QWidget *parent= nullptr);
+    static QString open(const QString& name, const QString& errMsg, QWidget *parent= nullptr);
+    static QString open(const QString& name, const QString& title, const QString& errMsg, QWidget *parent= nullptr);
 private slots:
     void onButtonSaveClicked();
+    void onAdjustSize();
 protected:
     explicit QWoRenameDialog(const QString& name, QWidget *parent = nullptr);
     ~QWoRenameDialog();
+    void setErrorMessage(const QString& msg);
     QString result() const;
 private:
     Ui::QWoRenameDialog *ui;

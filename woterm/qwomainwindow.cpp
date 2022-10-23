@@ -26,9 +26,13 @@
 #include "qwosshconf.h"
 #include "qwosessionproperty.h"
 #include "qwosessionmoreproperty.h"
+#include "qwosshconf.h"
+#include "qwodbrestoredialog.h"
+#include "qkxprocesslaunch.h"
 
 #include <QApplication>
 #include <QMessageBox>
+#include <QFileDialog>
 #include <QCloseEvent>
 #include <QMenuBar>
 #include <QVBoxLayout>
@@ -42,6 +46,7 @@
 #include <QJsonObject>
 #include <QTimer>
 #include <QDebug>
+#include <QProcess>
 
 QWoMainWindow::QWoMainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -49,21 +54,14 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setMinimumSize(QSize(1024, 700));
-
     setAttribute(Qt::WA_DeleteOnClose);
-
-    setContentsMargins(3,3,3,3);
-    setWindowTitle("WoTerm");
+    setWindowTitle(tr("WoTerm"));
 
     initMenuBar();
     initToolBar();
     initStatusBar();
-    //QMenu *actionsMenu = new QMenu("Actions", ui->menuBar);
-    //ui->menuBar->addMenu(actionsMenu);
-    //actionsMenu->addAction("Find...", this, SLOT(toggleShowSearchBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
-    //actionsMenu->addAction("About Qt", this, SLOT(aboutQt()));
 
-    m_sessionDock = new QDockWidget("Session Manager", this);
+    m_sessionDock = new QDockWidget(tr("Session Manager"), this);
     m_sessionDock->setObjectName("Session Manager");
     m_sessionDock->setFloating(false);
     m_sessionDock->setFeatures(QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetClosable);
@@ -120,7 +118,7 @@ void QWoMainWindow::closeEvent(QCloseEvent *event)
 {
     saveLastState();
 
-    QMessageBox::StandardButton btn = QMessageBox::warning(this, "exit", "Exit Or Not?", QMessageBox::Ok|QMessageBox::No);
+    QMessageBox::StandardButton btn = QMessageBox::warning(this, tr("Confirm"), tr("Exit Or Not?"), QMessageBox::Ok|QMessageBox::No);
     if(btn == QMessageBox::No) {
         event->setAccepted(false);
         return ;
@@ -196,7 +194,7 @@ void QWoMainWindow::onAppStart()
         QKxHttpClient *http = new QKxHttpClient(this);
         QObject::connect(http, SIGNAL(result(int,const QByteArray&)), this, SLOT(onVersionCheck(int,const QByteArray&)));
         QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
-        http->get("http://down.aoyiduo.com/woterm/.ver");
+        http->get("http://down.woterm.com/.ver");
 
         //QObject::connect(m_httpClient, SIGNAL(finished()), m_httpClient, SLOT(deleteLater()));
     }
@@ -275,54 +273,41 @@ void QWoMainWindow::onActionOpenTriggered()
     onOpenTerm();
 }
 
-void QWoMainWindow::onActionDisconnectTriggered()
+void QWoMainWindow::onActionBackupTriggered()
 {
-
+    QString path = QWoSetting::lastBackupPath();
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Backup Session Database"), path, "SQLite3 (*.db *.bak)");
+    qDebug() << "fileName" << fileName;
+    if(fileName.isEmpty()) {
+        return;
+    }
+    QFileInfo fi(fileName);
+    QString last = fi.absolutePath();
+    QWoSetting::setLastBackupPath(last);
+    if(!QWoSshConf::instance()->backup(fileName)) {
+        QMessageBox::warning(this, tr("Failure"), tr("failed to backup the session list."));
+    }
 }
 
-void QWoMainWindow::onActionReconnectTriggered()
+void QWoMainWindow::onActionRestoreTriggered()
 {
-
-}
-
-void QWoMainWindow::onActionReconnectAllTriggered()
-{
-
-}
-
-void QWoMainWindow::onActionImportTriggered()
-{
-
-}
-
-void QWoMainWindow::onActionExportTriggered()
-{
-
-}
-
-void QWoMainWindow::onActionSaveTriggered()
-{
-
-}
-
-void QWoMainWindow::onActionTransferTriggered()
-{
-
-}
-
-void QWoMainWindow::onActionLogTriggered()
-{
-
+    QWoDBRestoreDialog dlg(this);
+    dlg.exec();
 }
 
 void QWoMainWindow::onActionExitTriggered()
 {
-
+    close();
 }
 
-void QWoMainWindow::onActionProxyTriggered()
+void QWoMainWindow::onActionToolbarTriggered()
 {
+    ui->mainToolBar->setVisible(!ui->mainToolBar->isVisible());
+}
 
+void QWoMainWindow::onActionSessionListTriggered()
+{
+    onLayout();
 }
 
 void QWoMainWindow::onActionConfigDefaultTriggered()
@@ -334,7 +319,12 @@ void QWoMainWindow::onActionConfigDefaultTriggered()
         QString langNow = QWoSetting::languageFile();
         if(lang != langNow) {
             QWoSetting::setLanguageFile(lang);
-            QMessageBox::warning(this, tr("Language"), tr("The Language has been changed, Please restart application to take effect."), QMessageBox::Ok);
+            if(QMessageBox::warning(this, tr("Language"), tr("The language has been changed, restart application to take effect right now."), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
+                QString path = QCoreApplication::instance()->applicationFilePath();                
+                if(::QKxProcessLaunch::startDetached(path)) {
+                    QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+                }
+            }
         }
     }
 }
@@ -358,7 +348,12 @@ void QWoMainWindow::onActionAboutTriggered()
 
 void QWoMainWindow::onActionHelpTriggered()
 {
-    QDesktopServices::openUrl(QUrl("http://aoyiduo.com/woterm/doc/"));
+    QDesktopServices::openUrl(QUrl("http://woterm.com/doc/"));
+}
+
+void QWoMainWindow::onActionWebsiteTriggered()
+{
+    QDesktopServices::openUrl(QUrl("http://woterm.com/"));
 }
 
 void QWoMainWindow::onActionScriptRunTriggered()
@@ -373,20 +368,19 @@ void QWoMainWindow::onActionSshKeyManageTriggered()
 
 void QWoMainWindow::initMenuBar()
 {
-    QObject::connect(ui->actionDisconect, SIGNAL(triggered()), this, SLOT(onActionDisconnectTriggered()));
+    ui->menuBar->setNativeMenuBar(false);
+    QObject::connect(ui->actionSessionNew, SIGNAL(triggered()), this, SLOT(onActionNewTriggered()));
+    QObject::connect(ui->actionSessionManage, SIGNAL(triggered()), this, SLOT(onActionOpenTriggered()));
+    QObject::connect(ui->actionBackup, SIGNAL(triggered()), this, SLOT(onActionBackupTriggered()));
+    QObject::connect(ui->actionRestore, SIGNAL(triggered()), this, SLOT(onActionRestoreTriggered()));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(onActionExitTriggered()));
-    QObject::connect(ui->actionExport, SIGNAL(triggered()), this, SLOT(onActionExportTriggered()));
-    QObject::connect(ui->actionImport, SIGNAL(triggered()), this, SLOT(onActionImportTriggered()));
-    QObject::connect(ui->actionLog, SIGNAL(triggered()), this, SLOT(onActionLogTriggered()));
-    QObject::connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(onActionNewTriggered()));
-    QObject::connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpenTriggered()));
-    QObject::connect(ui->actionReconnect, SIGNAL(triggered()), this, SLOT(onActionReconnectTriggered()));
-    QObject::connect(ui->actionReconnectAll, SIGNAL(triggered()), this, SLOT(onActionReconnectAllTriggered()));
-    QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(onActionSaveTriggered()));
-    QObject::connect(ui->actionTransfer, SIGNAL(triggered()), this, SLOT(onActionTransferTriggered()));
-    QObject::connect(ui->actionDefault, SIGNAL(triggered()), this, SLOT(onActionConfigDefaultTriggered()));
-    QObject::connect(ui->actionFind, SIGNAL(triggered()), this, SLOT(onActionFindTriggered()));
-    setMenuBar(nullptr);
+    QObject::connect(ui->actionToolBar, SIGNAL(triggered()), this, SLOT(onActionToolbarTriggered()));
+    QObject::connect(ui->actionSessionList, SIGNAL(triggered()), this, SLOT(onActionSessionListTriggered()));
+    QObject::connect(ui->actionOption, SIGNAL(triggered()), this, SLOT(onActionConfigDefaultTriggered()));
+    QObject::connect(ui->actionIdentityManage, SIGNAL(triggered()), this, SLOT(onActionSshKeyManageTriggered()));
+    QObject::connect(ui->actionDocument, SIGNAL(triggered()), this, SLOT(onActionHelpTriggered()));
+    QObject::connect(ui->actionWetsite, SIGNAL(triggered()), this, SLOT(onActionWebsiteTriggered()));
+    QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onActionAboutTriggered()));
 }
 
 void QWoMainWindow::initToolBar()
@@ -399,7 +393,7 @@ void QWoMainWindow::initToolBar()
 //    QAction *import = tool->addAction(QIcon(":/woterm/resource/skin/import.png"), tr("Import"));
 //    QObject::connect(import, SIGNAL(triggered()), this, SLOT(onActionImportTriggered()));
 
-    tool->addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Style"), this, SLOT(onActionConfigDefaultTriggered()));
+    tool->addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Option"), this, SLOT(onActionConfigDefaultTriggered()));
     //tool->addAction(QIcon(":/woterm/resource/skin/js.png"), tr("Script"), this, SLOT(onActionScriptRunTriggered()));
     tool->addAction(QIcon(":/woterm/resource/skin/keyset.png"), tr("Keys"), this, SLOT(onActionSshKeyManageTriggered()));
     //tool->addAction(QIcon(":/woterm/resource/skin/setting.png"), tr("Setting"), this, SLOT(onActionSettingTriggered()));

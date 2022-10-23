@@ -152,9 +152,9 @@ void QWoSerialWidgetImpl::onConnectReady(const QString &target)
         m_serial->setDataBits(QSerialPort::Data8);
     }
 
-    if(hi.flowContrl == "RTS/CTS") {
+    if(hi.flowControl == "RTS/CTS") {
         m_serial->setFlowControl(QSerialPort::HardwareControl);
-    }else if(hi.flowContrl == "XON/XOFF") {
+    }else if(hi.flowControl == "XON/XOFF") {
         m_serial->setFlowControl(QSerialPort::SoftwareControl);
     }else {
         m_serial->setFlowControl(QSerialPort::NoFlowControl);
@@ -182,7 +182,7 @@ void QWoSerialWidgetImpl::onConnectReady(const QString &target)
     params.append(QString("BaudRate:%1\r\n").arg(hi.baudRate));
     params.append(QString("StopBits:%1\r\n").arg(hi.stopBits));
     params.append(QString("DataBits:%1\r\n").arg(hi.dataBits));
-    params.append(QString("FlowControl:%1\r\n").arg(hi.flowContrl));
+    params.append(QString("FlowControl:%1\r\n").arg(hi.flowControl));
     params.append(QString("Parity:%1").arg(hi.parity));
     params.append("\r\n");
     parseError(params.toUtf8());

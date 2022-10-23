@@ -37,6 +37,7 @@ if(WIN32)
     set(LIBYUV_ROOT_DIR ${PROJECT_SOURCE_DIR}/third/libyuv/winx)
     set(LIBTELNET_ROOT_DIR ${PROJECT_SOURCE_DIR}/third/libtelnet/winx)
     set(LIBMODEM_ROOT_DIR ${PROJECT_SOURCE_DIR}/third/modem/winx)
+    set(LIBSQLITE_ROOT_DIR ${PROJECT_SOURCE_DIR}/third/sqlite/winx)
 
     file(GLOB MY_COPY_FILES ${LIBSSH_ROOT_DIR}/bin/*.dll)
     file(GLOB MY_COPY_FILES ${MY_COPY_FILES} ${FREERDP_ROOT_DIR}/bin/*.dll)
@@ -54,6 +55,7 @@ else()
     set(LIBYUV_ROOT_DIR ${PROJECT_SOURCE_DIR}/third/libyuv/unix)
     set(LIBTELNET_ROOT_DIR ${PROJECT_SOURCE_DIR}/third/libtelnet/unix)
     set(LIBMODEM_ROOT_DIR ${PROJECT_SOURCE_DIR}/third/modem/unix)
+    set(LIBSQLITE_ROOT_DIR ${PROJECT_SOURCE_DIR}/third/sqlite/unix)
     file(GLOB MY_COPY_FILES ${LIBSSH_ROOT_DIR}/lib/libssh.*)
     file(GLOB MY_COPY_FILES ${MY_COPY_FILES} ${FREERDP_ROOT_DIR}/lib/librdp.*)
     file(GLOB MY_COPY_FILES ${MY_COPY_FILES} ${OPENSSL_ROOT_DIR}/lib/lib*.dylib)
@@ -70,4 +72,6 @@ add_subdirectory(kxvnc)
 add_subdirectory(kxutil)
 add_subdirectory(kxftp)
 add_subdirectory(woterm)
+
+
 

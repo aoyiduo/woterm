@@ -293,10 +293,12 @@ void QWoSessionManage::onNewReady()
 
 void QWoSessionManage::onImportReady()
 {
+#if 0
     QString fileName = QFileDialog::getOpenFileName(this, tr("Import File"));
     if(fileName.isEmpty()) {
         return;
     }
+
     QWoSshConf conf(fileName, this);
     conf.refresh();
     QList<HostInfo> hosts = conf.hostList();
@@ -360,6 +362,7 @@ void QWoSessionManage::onImportReady()
         }
     }
     refreshList();
+#endif
 }
 
 void QWoSessionManage::onTreeViewOpenInSamePage()
@@ -444,7 +447,6 @@ void QWoSessionManage::onTreeItemDoubleClicked(const QModelIndex &idx)
 
 void QWoSessionManage::refreshList()
 {
-    QWoSshConf::instance()->save();
     QWoSshConf::instance()->refresh();
     m_model->refreshList();
 }

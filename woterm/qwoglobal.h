@@ -44,6 +44,7 @@ struct HostInfo{
     QString user;
     QString password;
     QString identityFile;
+    QString identityContent;
     QString scriptFile;
     QString script;
     QString proxyJump;
@@ -54,7 +55,7 @@ struct HostInfo{
     QString dataBits;
     QString parity;
     QString stopBits;
-    QString flowContrl;
+    QString flowControl;
 
     inline bool isValid() {
         return !name.isEmpty();
@@ -79,11 +80,11 @@ struct HistoryCommand {
 };
 
 typedef struct{
-    QString path;
     QString name;
     QString fingureprint;
-    QString key;
     QString type;
+    QByteArray prvKey;
+    QByteArray pubKey;
 } IdentifyInfo;
 
 

@@ -65,7 +65,6 @@ QWoSessionList::QWoSessionList(QWidget *parent)
     m_proxyModel = new QSortFilterProxyModel(this);
     m_proxyModel->setSourceModel(m_model);
     m_list->setModel(m_proxyModel);
-    refreshList();
 
     QObject::connect(m_input, SIGNAL(returnPressed()), this, SLOT(onEditReturnPressed()));
     QObject::connect(m_input, SIGNAL(textChanged(const QString&)), this, SLOT(onEditTextChanged(const QString&)));
@@ -95,7 +94,6 @@ void QWoSessionList::init()
 
 void QWoSessionList::refreshList()
 {
-    QWoSshConf::instance()->save();
     QWoSshConf::instance()->refresh();
     m_model->refreshList();
 }

@@ -14,9 +14,11 @@
 
 #include "qwoutils.h"
 #include "qwosetting.h"
+#include "qwoidentify.h"
 
 #include <QStringListModel>
 #include <QMessageBox>
+#include <QTimer>
 
 #include <libssh/libssh.h>
 
@@ -29,52 +31,18 @@ QWoIdentifyCreateDialog::QWoIdentifyCreateDialog(QWidget *parent) :
     setWindowFlags(flags &~Qt::WindowContextHelpButtonHint);
     setWindowTitle(tr("IdentifyCreate"));
 
-    QStringList ways;
-    ways.append("RSA");
-    //ways.append("ECDSA");
-    //ways.append("ED25519");
-    ui->type->setModel(new QStringListModel(ways, this));
-    QObject::connect(ui->type, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onTypeCurrentIndexChanged(const QString&)));
-    ui->type->setCurrentIndex(0);
-    QStringList bits;
-    bits.append("1024");
-    bits.append("2048");
-    bits.append("4096");
-    ui->bits->setModel(new QStringListModel(bits, this));
-    onTypeCurrentIndexChanged(ui->type->currentText());
-
     QObject::connect(ui->btnCreate, SIGNAL(clicked()), this, SLOT(onButtonCreateClicked()));
+    QObject::connect(ui->typRsa, SIGNAL(clicked()), this, SLOT(onButtonTypeRsaClicked()));
+    QObject::connect(ui->typED25519, SIGNAL(clicked()), this, SLOT(onButtonTypeED25519Clicked()));
+    ui->typED25519->setChecked(true);
+    ui->boxBits->setVisible(false);
+    ui->bit2048->setChecked(true);
+    QTimer::singleShot(0, this, SLOT(onAdjustSize()));
 }
 
 QWoIdentifyCreateDialog::~QWoIdentifyCreateDialog()
 {
     delete ui;
-}
-
-void QWoIdentifyCreateDialog::onTypeCurrentIndexChanged(const QString &way)
-{
-    QAbstractItemModel *model = ui->bits->model();
-    if(way == "RSA") {
-        QStringList bits;
-        bits.append("1024");
-        bits.append("2048");
-        bits.append("4096");
-        ui->bits->setModel(new QStringListModel(bits, this));
-    }else if(way == "ECDSA") {
-        QStringList bits;
-        bits.append("256");
-        bits.append("384");
-        bits.append("521");
-        ui->bits->setModel(new QStringListModel(bits, this));
-    }else if(way == "ED25519") {
-        QStringList bits;
-        bits.append("256");
-        ui->bits->setModel(new QStringListModel(bits, this));
-    }
-    ui->bits->setCurrentIndex(0);
-    if(model) {
-        model->deleteLater();
-    }
 }
 
 void QWoIdentifyCreateDialog::onButtonCreateClicked()
@@ -84,25 +52,42 @@ void QWoIdentifyCreateDialog::onButtonCreateClicked()
         QMessageBox::warning(this, "Warning", "The name should not be empty", QMessageBox::Ok);
         return;
     }
-    ssh_keytypes_e way = SSH_KEYTYPE_RSA;
-    QString type = ui->type->currentText();
-    if(type == "RSA") {
-        way = SSH_KEYTYPE_RSA;
-    }else if(type =="ECDSA") {
-        way = SSH_KEYTYPE_ECDSA;
-    }else{
-        way = SSH_KEYTYPE_ED25519;
-    }
-    int bits = ui->bits->currentText().toInt();
+    ssh_keytypes_e type = ui->typED25519->isChecked() ? SSH_KEYTYPE_ED25519 : SSH_KEYTYPE_RSA;
+    int bits = ui->bit1024->isChecked() ? 1024 : 2048;
     ssh_key key = nullptr;
-    int err = ssh_pki_generate(way, bits, &key);
+    int err = ssh_pki_generate(type, bits, &key);
     if(err != SSH_OK) {
         QMessageBox::information(this, tr("info"), QString(tr("failed to create identify:[%1]")).arg(name));
         return ;
     }
-    QString file = QWoSetting::identifyFilePath() + "/" + QWoUtils::nameToPath(name);
-    QByteArray path = file.toLocal8Bit();
-    err = ssh_pki_export_privkey_file(key, nullptr, nullptr, nullptr, path);
+    char *b64 = nullptr;
+    err = ssh_pki_export_privkey_base64(key, nullptr, nullptr, nullptr, &b64);
+    QByteArray content(b64);
     ssh_key_free(key);
+    if(err == SSH_OK) {
+        ssh_string_free_char(b64);
+    }
+    if(!QWoIdentify::create(name, content)) {
+        QMessageBox::information(this, tr("info"), QString(tr("failed to save identity for name already exist:[%1]")).arg(name));
+        return ;
+    }
     done(QDialog::Accepted);
+}
+
+void QWoIdentifyCreateDialog::onButtonTypeRsaClicked()
+{
+    ui->boxBits->setVisible(true);
+    QTimer::singleShot(0, this, SLOT(onAdjustSize()));
+}
+
+void QWoIdentifyCreateDialog::onButtonTypeED25519Clicked()
+{
+    ui->boxBits->setVisible(false);
+    QTimer::singleShot(0, this, SLOT(onAdjustSize()));
+}
+
+void QWoIdentifyCreateDialog::onAdjustSize()
+{
+    QSize sz = minimumSize();
+    resize(sz);
 }

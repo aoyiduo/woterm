@@ -18,6 +18,8 @@ message(STATUS "root This is SOURCE dir " ${PROJECT_SOURCE_DIR})
 
 set(SOURCE_FILES
     main.cpp
+    qwoapplication.cpp
+    qkxbuttonassist.cpp
     qwoaboutdialog.cpp
     qwocommandlineinput.cpp
     qwoevent.cpp
@@ -77,6 +79,7 @@ set(SOURCE_FILES
     qwoloadingwidget.cpp
     qwoshortcutmodel.cpp
     qwoshortcutdelegate.cpp
+    qwodbrestoredialog.cpp
     qwotelnet.cpp
     qwoutils.cpp
     qwowidget.cpp
@@ -86,6 +89,8 @@ set(SOURCE_FILES
 )
 
 set(HEADER_FILES
+    qwoapplication.h
+    qkxbuttonassist.h
     qwoaboutdialog.h
     qwocommandlineinput.h
     qwoevent.h
@@ -146,6 +151,7 @@ set(HEADER_FILES
     qwoloadingwidget.h
     qwoshortcutmodel.h
     qwoshortcutdelegate.h
+    qwodbrestoredialog.h
     qwotelnet.h
     qwoutils.h
     qwowidget.h
@@ -180,6 +186,7 @@ set(OTHER_FILES
     qwosftptransferwidget.ui    
     qwovnctoolform.ui
     qwovncftpwidget.ui
+    qwodbrestoredialog.ui
 )
 
 include_directories(${KXTERM_ROOT_DIR}
@@ -195,6 +202,7 @@ include_directories(${KXTERM_ROOT_DIR}
     ${LIBSSH_ROOT_DIR}/include
     ${LIBYUV_ROOT_DIR}/include
     ${LIBMODEM_ROOT_DIR}/include
+    ${LIBSQLITE_ROOT_DIR}/include
 )
 
 
@@ -206,6 +214,7 @@ link_directories(${OPENSSL_ROOT_DIR}/lib
     ${LIBYUV_ROOT_DIR}/lib
     ${LIBTELNET_ROOT_DIR}/lib
     ${LIBMODEM_ROOT_DIR}/lib
+    ${LIBSQLITE_ROOT_DIR}/lib
 )
 
 link_libraries(kxterm kxutil kxftp kxvnc)
@@ -213,9 +222,9 @@ if(WIN32)
     message("window system.")
     link_libraries(ws2_32)
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
-        link_libraries(sshd qsshd rdpd zmodemd libtelnetd)
+        link_libraries(SQLiteCppd sqlite3d sshd qsshd rdpd zmodemd libtelnetd)
     else()
-        link_libraries(ssh qssh rdp zmodem libtelnet)
+        link_libraries(SQLiteCpp sqlite3 ssh qssh rdp zmodem libtelnet)
     endif()
     set(BUILD_VERSION_MAJOR 0)
     set(BUILD_VERSION_MINOR 0)
@@ -238,22 +247,30 @@ if(WIN32)
     target_sources(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc")
 elseif(APPLE)
     message("apple system.")
-    link_libraries(crypto ssh qssh rdp zmodem libtelnet)
+    link_libraries(SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet SQLiteCpp)
     # NOTE: Don't include the path in MACOSX_BUNDLE_ICON_FILE -- this is
-    # the property added to Info.plist
+    # the property added to Info.plist    
 
     # And this part tells CMake where to find and install the file itself
-    set(myApp_ICON ${CMAKE_CURRENT_SOURCE_DIR}/resource/woterm.icns)
+    set(PROGRAM_VERSION "1.0" CACHE STRINGS "you can modify this value by command : cmake -DPROGRAM_VERSION=\"xx\"")
+    set(ICNS_NAME  "woterm.icns")
+    set(myApp_ICON ${CMAKE_CURRENT_SOURCE_DIR}/resource/${ICNS_NAME})
     set_source_files_properties(${myApp_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-
-    set(MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
-    set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.aoyiduo.woterm")
-    set(MACOSX_BUNDLE_INFO_STRING "WoTerm Remote Assistant")
-    set(MACOSX_BUNDLE_ICON_FILE "woterm.icns")
-    add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${myApp_ICON} ${SOURCE_FILES} ${HEADER_FILES} ${OTHER_FILES} ${LangSrcs})    
+    add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${myApp_ICON} ${SOURCE_FILES} ${HEADER_FILES} ${OTHER_FILES})
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        BUNDLE True
+        MACOSX_BUNDLE_INFO_STRING "WoTerm Remote Assistant"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.aoyiduo.woterm"
+        MACOSX_BUNDLE_ICON_FILE "${ICNS_NAME}"
+        MACOSX_BUNDLE_BUNDLE_VERSION ${PROGRAM_VERSION}
+        MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROGRAM_VERSION}
+        MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resource/template.plist.in
+        LINK_FLAGS "-sectcreate __CGPreLoginApp __cgpreloginapp /dev/null"
+    )
 else()
     message("linux system.")
-    link_libraries(crypto ssh qssh rdp zmodem libtelnet)
+    link_libraries(dl SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet SQLiteCpp)
     add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${OTHER_FILES} ${LangSrcs})
 endif()
 

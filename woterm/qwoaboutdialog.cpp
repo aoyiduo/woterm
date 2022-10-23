@@ -33,8 +33,7 @@ QWoAboutDialog::QWoAboutDialog(QWidget *parent) :
 
     QString txt = QString("Current Version: %1").arg(WOTERM_VERSION);
     txt.append("<br>Check New Version:");
-    txt.append("<br>(CN): <a href=\"http://www.aoyiduo.cn/woterm\">http://www.aoyiduo.cn/woterm</a>");
-    txt.append("<br>(EN): <a href=\"http://www.aoyiduo.com/woterm\">http://www.aoyiduo.com/woterm</a>");
+    txt.append("<br><a href=\"http://www.woterm.com\">http://www.woterm.com</a>");
 
     ui->desc->setText(txt);
     ui->desc->setOpenExternalLinks(true);
@@ -56,7 +55,7 @@ void QWoAboutDialog::onVersionCheck()
 //    m_httpClient = new QHttpClient(this);
 //    QObject::connect(m_httpClient, SIGNAL(result(int,const QByteArray&)), this, SLOT(onResult(int,const QByteArray&)));
 //    m_httpClient->get("http://www.woterm.com/version/latest");
-    QDesktopServices::openUrl(QUrl("http://www.aoyiduo.com/woterm"));
+    QDesktopServices::openUrl(QUrl("http://www.woterm.com"));
 }
 
 void QWoAboutDialog::onResult(int code, const QByteArray &body)

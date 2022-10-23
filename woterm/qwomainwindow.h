@@ -54,21 +54,17 @@ private slots:
 private slots:
     void onActionNewTriggered();
     void onActionOpenTriggered();
-    void onActionDisconnectTriggered();
-    void onActionReconnectTriggered();
-    void onActionReconnectAllTriggered();
-    void onActionImportTriggered();
-    void onActionExportTriggered();
-    void onActionSaveTriggered();
-    void onActionTransferTriggered();
-    void onActionLogTriggered();
+    void onActionBackupTriggered();
+    void onActionRestoreTriggered();
     void onActionExitTriggered();
-    void onActionProxyTriggered();
+    void onActionToolbarTriggered();
+    void onActionSessionListTriggered();
     void onActionConfigDefaultTriggered();
     void onActionSettingTriggered();
     void onActionFindTriggered();
     void onActionAboutTriggered();
     void onActionHelpTriggered();
+    void onActionWebsiteTriggered();
     void onActionScriptRunTriggered();
     void onActionSshKeyManageTriggered();
 

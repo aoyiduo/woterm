@@ -1138,17 +1138,7 @@ static QSshClient::TargetInfo qsshToTarget(const HostInfo &hi, bool forw)
     ti.port = ushort(hi.port);
     ti.user = hi.user;
     ti.password = hi.password;
-    if(hi.identityFile.startsWith("woterm:")) {
-        QString path = QWoSetting::identifyFilePath() + "/" + hi.identityFile.mid(7);
-        QFile f(path);
-        if(f.open(QFile::ReadOnly)) {
-            QByteArray buf = f.readAll();
-            QByteArray rsa = QWoUtils::fromWotermStream(buf);
-            ti.identityFileContent = rsa;
-        }
-    }else{
-        ti.identityFileContent = "ddd";
-    }
+    ti.identityFileContent = hi.identityContent.toUtf8();
     return ti;
 }
 

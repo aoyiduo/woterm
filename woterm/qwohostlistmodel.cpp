@@ -29,7 +29,7 @@ QWoHostListModel::QWoHostListModel(QObject *parent)
     m_mstscIcon = QIcon(QPixmap(":/woterm/resource/skin/mstsc2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
     m_vncIcon = QIcon(QPixmap(":/woterm/resource/skin/vnc2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
     m_serialIcon = QIcon(QPixmap(":/woterm/resource/skin/serialport.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    refreshList();
+    QMetaObject::invokeMethod(this, "refreshList", Qt::QueuedConnection);
 }
 
 QWoHostListModel::~QWoHostListModel()
@@ -196,7 +196,7 @@ QVariant QWoHostListModel::data(const QModelIndex &index, int role) const
             return QVariant(hi.name);
         case 1:
             if(hi.type == SerialPort) {
-                return QVariant(QString("%1:%2:%3:%4:%5").arg(hi.baudRate).arg(hi.dataBits).arg(hi.parity).arg(hi.stopBits).arg(hi.flowContrl));
+                return QVariant(QString("%1:%2:%3:%4:%5").arg(hi.baudRate).arg(hi.dataBits).arg(hi.parity).arg(hi.stopBits).arg(hi.flowControl));
             }
             return QVariant(QString("%1:%2").arg(hi.host).arg(hi.port));
         case 2:

@@ -21,9 +21,17 @@
 class QWoIdentify : public QObject
 {
 public:
-    static bool infomation(const QString&file, IdentifyInfo *pinfo);
+    static bool infomationByPrivateKey(const QString&file, IdentifyInfo *pinfo);
+    static bool infomationByPrivateKey(const QByteArray& rsa, IdentifyInfo *pinfo);
+    static bool isPublicKey(const QString &fileName);
+    static bool isPrivateKey(const QString &fileName);
+    static bool import(const QString& file, IdentifyInfo *pinfo);
     static bool create(const QString& file);
-    static QMap<QString, IdentifyInfo> all();
+    static bool create(const QString& name, const QByteArray& prvKey);
+    static bool rename(const QString& nameOld, const QString& nameNew);
+    static bool remove(const QString& name);
+    static QMap<QString, IdentifyInfo> loadFromSqlite();
+    static QMap<QString, IdentifyInfo> loadFromFile();
 };
 
 #endif // QWOIDENTIFYINFOMATION_H

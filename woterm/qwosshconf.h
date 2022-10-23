@@ -20,20 +20,22 @@ class QBuffer;
 
 class QWoSshConf : public QObject
 {
+    Q_OBJECT
 public:
-    explicit QWoSshConf(const QString& conf, QObject *parent = nullptr);
-
     static QWoSshConf* instance();
+    static bool databaseValid(const QString& dbFile);
 
-    bool save();
+    bool restore(const QString& dbFile);
+    bool backup(const QString& dbFile);
     bool refresh();
     bool exportToFile(const QString& path);
-    void remove(const QString& name);
+    bool remove(const QString& name);
     bool modify(const HostInfo& hi);
     bool append(const HostInfo& hi);
     bool modifyOrAppend(const HostInfo& hi);
     HostInfo find(const QString&name) const;
     bool find(const QString &name, HostInfo* pinfo) const;
+
 
     void resetAllProperty(const QString& v);
     bool exists(const QString& name) const;
@@ -42,10 +44,25 @@ public:
     QList<HostInfo> hostList(EHostType type = All) const;
     QStringList hostNameList(EHostType type = All) const;
     QList<HostInfo> proxyJumpers(const QString& name, int max=2) const;
+
+private slots:
+    void onAboutToQuit();
+
+protected:
+    explicit QWoSshConf(const QString& dbFile, QObject *parent = nullptr);
 private:
-    QHash<QString, HostInfo> parse(const QByteArray& buf);
+    Q_INVOKABLE void init();
     QByteArray toStream();
+    bool save(const HostInfo& hi);
 private:
-    QString m_conf;
+    static bool initialize(const QString& dbFile);      
+    static QHash<QString, HostInfo> parse(const QByteArray& buf);
+    static void importIdentityToSqlite(const QString& path, const QString& dbFile);
+    static void importConfToSqlite(const QString& conf, const QString& dbFile);
+    static QHash<QString, HostInfo> loadFromSqlite(const QString& dbFile);
+
+private:
+    QString m_dbFile;
+    bool m_bInit;
     QHash<QString, HostInfo> m_hosts;
 };

@@ -1675,7 +1675,7 @@ private:
         switch(m_fmt){
         case JPEG_444:
         case RGB32_888:
-            return in.readRgb32();
+            return in.readRgb32() | 0xFF000000;
         case RGB16_565:
         case RGB15_555:
             return toRgbColor(in.readRgb16());
@@ -1689,7 +1689,7 @@ private:
 
     quint32 readCPixelColor(QKxReader &in) {
         if(m_fmt == RGB32_888 || m_fmt == JPEG_444) {
-            return in.readRgb24();
+            return in.readRgb24() | 0xFF000000;
         }
         return readPixelColor(in);
     }

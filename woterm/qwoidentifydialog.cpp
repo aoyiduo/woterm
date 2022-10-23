@@ -28,9 +28,10 @@
 #include <QCryptographicHash>
 #include <QTreeWidget>
 
-#define ROLE_IDENTIFYKEY (Qt::UserRole+2)
-#define ROLE_IDENTIFYTYPE (Qt::UserRole+3)
-#define ROLE_IDENTIFYFIGURE (Qt::UserRole+4)
+#define ROLE_IDENTIFY_PUBKEY (Qt::UserRole+1)
+#define ROLE_IDENTIFY_PRVKEY (Qt::UserRole+2)
+#define ROLE_IDENTIFY_TYPE (Qt::UserRole+3)
+#define ROLE_IDENTIFY_FIGURE (Qt::UserRole+4)
 
 QWoIdentifyDialog::QWoIdentifyDialog(bool noselect, QWidget *parent) :
     QDialog(parent),
@@ -94,8 +95,16 @@ void QWoIdentifyDialog::onButtonImportClicked()
         return;
     }
     fileName = QDir::toNativeSeparators(fileName);
+    if(QWoIdentify::isPublicKey(fileName)) {
+        QMessageBox::information(this, tr("info"), tr("Public key file import is not supported. Please select a valid private key file."));
+        return;
+    }
+    if(!QWoIdentify::isPrivateKey(fileName)) {
+        QMessageBox::information(this, tr("info"), tr("Invalid private key file. Please select a valid private key file."));
+        return;
+    }
     IdentifyInfo info;
-    if(!QWoIdentify::infomation(fileName, &info)) {
+    if(!QWoIdentify::import(fileName, &info)) {
         QMessageBox::information(this, tr("info"), tr("the identify's file is bad"));
         return;
     }
@@ -104,45 +113,33 @@ void QWoIdentifyDialog::onButtonImportClicked()
     for(int i = 0; i < model->rowCount(); i++) {
         QModelIndex idx = model->index(i, 0);
         QString name = idx.data().toString();
-        QString figure = idx.data(ROLE_IDENTIFYFIGURE).toString();
+        QString figure = idx.data(ROLE_IDENTIFY_FIGURE).toString();
         if(figure == info.fingureprint) {
+            ui->identify->setCurrentIndex(idx);
             QMessageBox::information(this, tr("info"), tr("the same identify had been exist by name: %1").arg(name));
             return;
         }
     }
-
+    QFileInfo fi(fileName);
+    info.name = fi.fileName();
     QFile f(fileName);
     f.open(QFile::ReadOnly);
     QByteArray buf = f.readAll();
     QByteArray data = QWoUtils::fromWotermStream(buf);
     f.close();
     QString name = info.name;
+    QString errMsg;
     for(int i = 0; i < 10; i++) {
-        QString b64Name = QWoUtils::nameToPath(name);
-        QString dstFile = QWoSetting::identifyFilePath() + "/" + b64Name;
-        if(!QFile::exists(dstFile)) {
-            info.name = name;
-            QFile dst(dstFile);
-            if(dst.open(QFile::WriteOnly)) {
-                dst.write(data);
-            }
-            dst.close();
-            QStringList cols;
-            cols.append(info.name);
-            cols.append(info.type);
-            cols.append(info.fingureprint);
-            QTreeWidgetItem *item = new QTreeWidgetItem(cols);
-            item->setData(0, ROLE_IDENTIFYKEY, info.key);
-            item->setData(0, ROLE_IDENTIFYTYPE, info.type);
-            item->setData(0, ROLE_IDENTIFYFIGURE, info.fingureprint);
-            ui->identify->addTopLevelItem(item);
-            break;
-        }
-        name = QWoRenameDialog::open(info.name, this);
+        name = QWoRenameDialog::open(name, errMsg, this);
         if(name.isEmpty()) {
             return;
         }
+        if(QWoIdentify::create(name, info.prvKey)) {
+            break;
+        }
+        errMsg = tr("The name already exists. Please enter a new name.");
     }
+    reload();
 }
 
 void QWoIdentifyDialog::onButtonExportClicked()
@@ -155,22 +152,18 @@ void QWoIdentifyDialog::onButtonExportClicked()
     QAbstractItemModel *model = ui->identify->model();
     QModelIndex idx2 = model->index(idx.row(), 0);
     QString name = idx2.data().toString();
-    QString dstFile = QWoSetting::identifyFilePath() + "/" + QWoUtils::nameToPath(name);
-    QFile file(dstFile);
-    if(!file.open(QFile::ReadOnly)) {
-        QMessageBox::information(this, tr("info"), tr("the identify's file is not exist"));
+    QByteArray prvKey = idx2.data(ROLE_IDENTIFY_PRVKEY).toByteArray();
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"));
+    if(fileName.isEmpty()) {
         return;
     }
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"));
-    QByteArray buf = QWoUtils::fromWotermStream(file.readAll());
-    file.close();
     QFile prv(fileName);
     if(prv.open(QFile::WriteOnly)) {
-        prv.write(buf);
+        prv.write(prvKey);
         prv.close();
 
-        QString type = idx2.data(ROLE_IDENTIFYTYPE).toString();
-        QString key = idx2.data(ROLE_IDENTIFYKEY).toString();        
+        QString type = idx2.data(ROLE_IDENTIFY_TYPE).toString();
+        QString key = idx2.data(ROLE_IDENTIFY_PUBKEY).toString();
         QString content = type + " " + key + " " + name;
         QFile pub(fileName + ".pub");
         if(pub.open(QFile::WriteOnly)){
@@ -190,9 +183,8 @@ void QWoIdentifyDialog::onButtonDeleteClicked()
     QAbstractItemModel *model = ui->identify->model();
     QModelIndex idx2 = model->index(idx.row(), 0);
     QString name = idx2.data().toString();
-    QDir dir(QWoSetting::identifyFilePath());
-    if(!dir.remove(QWoUtils::nameToPath(name))) {
-        QMessageBox::warning(this, tr("Warning"), tr("failed to delete file:%1").arg(name));
+    if(!QWoIdentify::remove(name)) {
+        QMessageBox::warning(this, tr("Warning"), tr("failed to delete %1").arg(name));
         return;
     }
     model->removeRow(idx.row());
@@ -225,10 +217,9 @@ void QWoIdentifyDialog::onButtonRenameClicked()
     if(nameNew.isEmpty() || name == nameNew) {
         return;
     }
-    QDir dir(QWoSetting::identifyFilePath());
-
-    if(!dir.rename(QWoUtils::nameToPath(name), QWoUtils::nameToPath(nameNew))) {
-        QMessageBox::warning(this, tr("Warning"), tr("failed to rename file:[%1]->[%2]").arg(name).arg(nameNew));
+    if(!QWoIdentify::rename(name, nameNew)) {
+        QMessageBox::warning(this, tr("Warning"), tr("failed to rename '%1' to '%2'").arg(name).arg(nameNew));
+        return;
     }
     reload();
 }
@@ -242,13 +233,13 @@ void QWoIdentifyDialog::onButtonViewClicked()
     }
     QAbstractItemModel *model = ui->identify->model();
     QModelIndex idx2 = model->index(idx.row(), 0);
-    QString key = idx2.data(ROLE_IDENTIFYKEY).toString();
+    QString key = idx2.data(ROLE_IDENTIFY_PUBKEY).toString();
     if(key.isEmpty()) {
         QMessageBox::information(this, tr("info"), tr("no selection"));
         return;
     }
     QString name = idx2.data().toString();
-    QString type = idx2.data(ROLE_IDENTIFYTYPE).toString();
+    QString type = idx2.data(ROLE_IDENTIFY_TYPE).toString();
     QString content = type + " " + key + " " + name;
     QWoIdentifyPublicKeyDialog dlg(content, this);
     dlg.exec();
@@ -261,12 +252,14 @@ void QWoIdentifyDialog::onItemDoubleClicked(QTreeWidgetItem *row, int col)
         return;
     }
     m_result = name;
-    close();
+    if(ui->btnSelect->isVisible()) {
+        close();
+    }
 }
 
 void QWoIdentifyDialog::reload()
 {
-    QMap<QString, IdentifyInfo> all = QWoIdentify::all();
+    QMap<QString, IdentifyInfo> all = QWoIdentify::loadFromSqlite();
     ui->identify->clear();
     for(QMap<QString, IdentifyInfo>::iterator iter = all.begin(); iter != all.end(); iter++) {
         IdentifyInfo info = iter.value();
@@ -275,9 +268,10 @@ void QWoIdentifyDialog::reload()
         cols.append(info.type);
         cols.append(info.fingureprint);
         QTreeWidgetItem *item = new QTreeWidgetItem(cols);
-        item->setData(0, ROLE_IDENTIFYKEY, info.key);
-        item->setData(0, ROLE_IDENTIFYTYPE, info.type);
-        item->setData(0, ROLE_IDENTIFYFIGURE, info.fingureprint);
+        item->setData(0, ROLE_IDENTIFY_PUBKEY, info.pubKey);
+        item->setData(0, ROLE_IDENTIFY_PRVKEY, info.prvKey);
+        item->setData(0, ROLE_IDENTIFY_TYPE, info.type);
+        item->setData(0, ROLE_IDENTIFY_FIGURE, info.fingureprint);
         QFontMetrics fm(ui->identify->font());
         QSize sz = fm.size(Qt::TextSingleLine, cols.at(0)) + QSize(50, 0);
         int csz = ui->identify->columnWidth(0);
