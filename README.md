@@ -7,7 +7,7 @@
 Cross platform remote access management tool, out of the box, no configuration, safe and stable.
 
 ## Functions description
-- Support Windows / Linux / MacOSX。
+- Support Windows / Linux / MacOSX.
 - Support mainstream communication protocols, including SSH1 / SSH2 / SFTP / RLOGIN / TELNET / SERIALlPORT / VNC / RDP etc.
 - SQLite is used to save server related data to avoid mutual overwriting due to server content changes in multiple processes.
 - Support database backup and recovery and multi terminal data synchronization to prevent accidental loss.
