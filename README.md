@@ -1,29 +1,57 @@
+<p align="center">
+  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant"><br>
+  [<a href="README.md">English</a>] | [<a href="README-zh.md">中文</a>]  
+</p>
+
 # Overview
-A remote shell manager base on Qt 5.
+Cross platform remote access management tool, out of the box, no configuration, safe and stable.
 
-This project is licensed under the terms of the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) or any later version. See the LICENSE file for the full text of the license.
+## Functions description
+- Support Windows / Linux / MacOSX。
+- Support mainstream communication protocols, including SSH1 / SSH2 / SFTP / RLOGIN / TELNET / SERIALlPORT / VNC / RDP etc.
+- SQLite is used to save server related data to avoid mutual overwriting due to server content changes in multiple processes.
+- Support database backup and recovery and multi terminal data synchronization to prevent accidental loss.
+- Support the tab floating function, which is convenient for multiple windows to work together.
+- Support keyword search and filtering to quickly locate target items.
+- Support Chinese and English language selection.
+  
+- Support VNC remote desktop access function, advanced functions need to be supported with [WoVNCServer](http://wovnc.com).
+  - Support the standard RFB 3.3/3.7/3.8 protocol.
+  - Support the standard encodings such as ZRLE / TRLE / Hextile / CopyRect / RRE / Raw.
+  - Support self extend encodings such as H264 / JPEG / ZRLE3 / TRLE3 / ZRLE2 / TRLE2.
+  - support automatic screen lock when the network is disconnected or remote operation is ended to prevent accidental loss caused by manipulation by others.
+  - Support remote black screen mode to prevent the work process from being watched.
+  - Support sound playback of remote desktop.
+  - Support the free switching of lossless image quality, high-definition image quality, ordinary image quality, classic 16 bit, 15 bit, 8-bit and other image formats.
+  - Support multi screen mode and switching modes such as stretching, shared screen and split screen.
+- Support remote terminal access function.
+  - Support remote Windows/Linux/MacOSX system terminal access.
+  - Support Proxy jump access.
+  - Support certificate management, including creation, import, export, deletion, etc.
+  - Shortcut key configuration is supported.
+  - Support ZModem file upload and download.
+  - Support embedded SFTP collaborative interaction.
+  - Support a variety of terminal color matching for your choice.
 
-The main goal of this project is to provide a easy mult-platform tool.
 
-## Feature
-- Support SSH1 / SSH2 / Telnet / Rlogin / serialPort / sftp / zmodem / vnc / rdp and more later.
-- Support floating tab which makes it more convenient for multiple windows to work together.
-- Infinite window segmentation, as long as the screen is large enough, it can be divided as it wants.
-- Key word search and filtering, no matter how many records, can also be located at a high speed.
-- There are dozens of terminal colors, and there is always a favorite one
+## Module description
+The client code has been completely open source, and the third-party code which comes from GitHub or CodeProject or other open communities. Some modules come from [WoVNC](http://wovnc.com).
 
 ## WoVNCServer
-It is recommended to use with WoVNCServer to enable more private features
+[WoVNCServer](http://www.wovnc.com) is recommended, The server enables more advanced features.
 
-binary program download on [http://www.wovnc.com](http://www.wovnc.com)
-## Details: 
+## More information:
 <a href="http://www.woterm.com">http://www.woterm.com</a>
 
-## Binary Program:
+## Binary download:
 <a href="http://woterm.com">http://woterm.com</a>
 
-## UI Preview
+## UI preview:
 <img src="doc/main.png"/>
+<img src="doc/main2.png"/>
+<img src="doc/main3.png"/>
+<img src="doc/option.png"/>
+<img src="doc/identity.png"/>
 <img src="doc/floattab.gif"/>
 <img src="doc/split.gif"/>
 <img src="doc/vnc.png"/>
