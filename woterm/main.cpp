@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
     QTranslator translator;
     QString lang = QWoSetting::languageFile();
-     if(!lang.isEmpty() && translator.load(lang)){
+    if(!lang.isEmpty() && translator.load(lang)){
         app.installTranslator(&translator);
     }
 

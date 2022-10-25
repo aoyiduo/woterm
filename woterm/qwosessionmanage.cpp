@@ -64,18 +64,16 @@ QWoSessionManage::QWoSessionManage(QWidget *parent)
     m_tree->setColumnWidth(1, 200);
     m_tree->setIconSize(QSize(24,24));
 
-    QObject::connect(ui->lineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onEditTextChanged(const QString&)));
+    QObject::connect(ui->filter, SIGNAL(textChanged(const QString&)), this, SLOT(onEditTextChanged(const QString&)));
     QObject::connect(ui->btnOpen, SIGNAL(clicked()), this, SLOT(onOpenReady()));
     QObject::connect(ui->btnDelete, SIGNAL(clicked()), this, SLOT(onDeleteReady()));
     QObject::connect(ui->btnModify, SIGNAL(clicked()), this, SLOT(onModifyReady()));
     QObject::connect(ui->btnNew, SIGNAL(clicked()), this, SLOT(onNewReady()));
-    QObject::connect(ui->btnImport, SIGNAL(clicked()), this, SLOT(onImportReady()));
     QObject::connect(m_tree, SIGNAL(itemChanged(const QModelIndex&)), this, SLOT(onTreeItemSelected(const QModelIndex&)));
     QObject::connect(m_tree, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onTreeItemDoubleClicked(const QModelIndex&)));
 
-    ui->lineEdit->setReadOnly(true);
-    ui->lineEdit->clear();
-    ui->lineEdit->hide();
+    ui->filter->clear();
+    ui->filter->setPlaceholderText(tr("Enter keyword to search target quickly"));
 }
 
 QWoSessionManage::~QWoSessionManage()

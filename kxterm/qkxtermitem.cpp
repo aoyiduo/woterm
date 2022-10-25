@@ -669,9 +669,7 @@ void QKxTermItem::parseError(const QByteArray &data)
     static const int offLength = sizeof(redPenOff);
     QByteArray buf;
     buf.append(redPenOn, onLength);
-    buf.append("\r\n");
     buf.append(data);
-    buf.append("\r\n");
     buf.append(redPenOff, offLength);
     m_vte->process(buf);
 }

@@ -164,6 +164,9 @@ public:
     }
 
     bool handleRequest(MsgRequest &msg) {
+        if(m_channel == nullptr) {
+            return false;
+        }
         if(msg.type == MT_PTYDATA) {
             if(m_cmd) {
                 int err = ssh_channel_request_exec(m_channel, msg.data);

@@ -592,3 +592,23 @@ bool QWoUtils::openself(const QString& type, const QString& target, bool pkexec)
     return QProcess::startDetached(program);
 }
 
+int QWoUtils::parseVersion(const QString &ver)
+{
+    int verInt = 0;
+    QStringList vers = ver.split('.');
+    if(vers.count() == 1) {
+        int major = vers.at(0).toInt() * 1000000;
+        verInt = major;
+    }else if(vers.count() == 2) {
+        int major = vers.at(0).toInt() * 1000000;
+        int minor = vers.at(1).toInt() * 1000;
+        verInt = major + minor;
+    }else if(vers.count() == 3) {
+        int major = vers.at(0).toInt() * 1000000;
+        int minor = vers.at(1).toInt() * 1000;
+        int patch = vers.at(2).toInt();
+        verInt = major + minor + patch;
+    }
+    return verInt;
+}
+

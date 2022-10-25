@@ -76,6 +76,7 @@ QWoSessionList::QWoSessionList(QWidget *parent)
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     timer->start(3000);
     m_countLeft = -1;
+    m_input->setPlaceholderText(tr("Enter keyword to search"));
     m_input->clear();
 }
 

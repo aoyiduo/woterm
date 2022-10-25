@@ -55,8 +55,6 @@ public:
 signals:
     void dataArrived(const QByteArray& buf);    
     void errorArrived(const QByteArray& buf);
-    void passwordArrived(const QString& host, const QByteArray& buf);
-    void inputArrived(const QString& host, const QString& prompt, bool visible);
 private:
     void emitDataArrived(const QByteArray& buf);
 signals:
@@ -67,8 +65,6 @@ private slots:
 public:
     virtual void handleRead(const QByteArray& buf);
     virtual void handleError(const QString& err);
-    virtual bool handleInput(const QString& prompt, QByteArray& result, bool visble);
-    virtual void setInputResult(const QString& pass);
 protected:
     virtual void run();
     virtual int running();
@@ -100,7 +96,6 @@ public:
     bool start(const QString& host);
     void stop();
     void killAll();
-    void setInputResult(const QString& pass);
     void write(const QByteArray& buf);
     void updateSize(int cols, int rows);
     void sendControl(char c);
@@ -108,10 +103,7 @@ signals:
     void dataArrived(const QByteArray& buf);
     void finishArrived(int);
     void errorArrived(const QByteArray& buf);
-    void passwordArrived(const QString& host, const QByteArray& buf);
-    void inputArrived(const QString& host, const QString& prompt, bool visble);
 private slots:
-    void onInputArrived(const QString& host, const QString& prompt, bool visble);
     void onFinished();
 private:
     bool init(const QString& host);

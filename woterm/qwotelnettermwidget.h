@@ -18,10 +18,17 @@
 class QWoTelnetTermWidgetImpl;
 class QWoTelnet;
 class QModem;
-
+class QMessageBox;
 class QWoTelnetTermWidget : public QWoTermWidget
 {
     Q_OBJECT
+    enum EStateConnect {
+        ESC_Ready = 0,
+        ESC_Connecting = 1,
+        ESC_Connected = 2,
+        ESC_Disconnected = 3
+    };
+
 public:
     explicit QWoTelnetTermWidget(const QString& target, int gid, QWidget *parent=nullptr);
     virtual ~QWoTelnetTermWidget();
@@ -29,14 +36,12 @@ private slots:
     void onFinishArrived(int code);
     void onDataArrived(const QByteArray& buf);
     void onErrorArrived(const QByteArray& buf);
-    void onInputArrived(const QString& title, const QString& prompt, bool visible);
     void onPasswordArrived(const QString& host, const QByteArray& pass);
     void onTermSizeChanged(int lines, int columns);
     void onSendData(const QByteArray& buf);
     void onCopyToClipboard();
     void onPasteFromClipboard();
     void onForceToReconnect();
-    void onPasswordInputResult(const QString& pass, bool isSave);
     void onSessionReconnect();
     void onVerticalSplitView();
     void onHorizontalSplitView();
@@ -56,7 +61,6 @@ private slots:
     void onSftpConnectReady();
     void onTitleChanged(const QString& title);
 protected:
-    void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     int isZmodemCommand(const QByteArray &data);
     bool checkProgram(const QByteArray &name);
 private:
@@ -67,8 +71,7 @@ private:
     virtual QList<QString> collectUnsafeCloseMessage();
 private:
     QPointer<QWoTelnet> m_telnet;
-    QPointer<QWoPasswordInput> m_passInput;
-    QPointer<QWoTermMask> m_mask;
+    QPointer<QMessageBox> m_dlgConfirm;
     QPointer<QMenu> m_menu;
     QPointer<QAction> m_copy;
     QPointer<QAction> m_paste;
@@ -77,4 +80,5 @@ private:
     QPointer<QModem> m_modem;
     bool m_savePassword;
     int m_loginCount;
+    EStateConnect m_stateConnected;
 };

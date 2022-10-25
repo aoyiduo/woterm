@@ -19,10 +19,17 @@ class QWoSshTermWidgetImpl;
 class QWoSshShell;
 class QModem;
 class QShortCut;
+class QMessageBox;
 
 class QWoSshTermWidget : public QWoTermWidget
 {
     Q_OBJECT
+    enum EStateConnect {
+        ESC_Ready = 0,
+        ESC_Connecting = 1,
+        ESC_Connected = 2,
+        ESC_Disconnected = 3
+    };
 public:
     explicit QWoSshTermWidget(const QString& target, int gid, QWidget *parent=nullptr);
     virtual ~QWoSshTermWidget();
@@ -61,6 +68,7 @@ private slots:
     void onZmodemFinished();
     void onSftpConnectReady();
     void onForceToReconnect();
+    void onAdjustPosition();
 protected:
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     int isZmodemCommand(const QByteArray &data);
@@ -76,7 +84,7 @@ private:
     QPointer<QWoSshShell> m_ssh;
     QPointer<QWoSshShell> m_cmd;
     QPointer<QWoPasswordInput> m_passInput;
-    QPointer<QWoTermMask> m_mask;
+    QPointer<QMessageBox> m_dlgConfirm;
     QPointer<QMenu> m_menu;   
     QPointer<QAction> m_copy;
     QPointer<QAction> m_paste;
@@ -85,5 +93,6 @@ private:
     QPointer<QModem> m_modem;
     bool m_savePassword;
     QPointer<QShortCut> m_shortCutCopy;
-    QPointer<QShortCut> m_shortCutPaste;    
+    QPointer<QShortCut> m_shortCutPaste;
+    EStateConnect m_stateConnected;
 };

@@ -48,6 +48,7 @@ private slots:
     void onErrorArrived(const QByteArray& buf);
     void onPasswordResult(const QByteArray& passwd, bool ok);
     void onPasswordInputResult(const QString& pass, bool isSave);
+    void onAdjustPosition();
 private:
     QVariantMap config(const QString& props);
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);

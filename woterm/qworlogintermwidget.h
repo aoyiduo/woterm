@@ -55,6 +55,7 @@ private slots:
     void onZmodemFinished();
     void onSftpConnectReady();
     void onTitleChanged(const QString& title);
+    void onAdjustPosition();
 protected:
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     int isZmodemCommand(const QByteArray &data);
@@ -68,7 +69,6 @@ private:
 private:
     QPointer<QWoRLogin> m_rlogin;
     QPointer<QWoPasswordInput> m_passInput;
-    QPointer<QWoTermMask> m_mask;
     QPointer<QMenu> m_menu;
     QPointer<QAction> m_copy;
     QPointer<QAction> m_paste;

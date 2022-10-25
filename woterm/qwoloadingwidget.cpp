@@ -12,6 +12,8 @@
 #include "qwoloadingwidget.h"
 
 #include <QPainter>
+#include <QApplication>
+#include <QMouseEvent>
 
 QWoLoadingWidget::QWoLoadingWidget(const QColor& clr, QWidget *parent)
     : QWidget(parent)
@@ -32,7 +34,10 @@ QWoLoadingWidget::QWoLoadingWidget(const QString &imagePath, QWidget *parent)
     m_radius = 20;
     m_pixmap = QPixmap(imagePath);
     setVisible(false);
+    setAttribute(Qt::WA_ShowWithoutActivating, true);
     QObject::connect(&m_timer, SIGNAL(timeout()), this, SLOT(onRotateRequest()));
+
+    setAttribute(Qt::WA_TransparentForMouseEvents, true);
 }
 
 QWoLoadingWidget::~QWoLoadingWidget()
@@ -111,6 +116,16 @@ void QWoLoadingWidget::showEvent(QShowEvent *ev)
 void QWoLoadingWidget::hideEvent(QHideEvent *ev)
 {
     m_timer.stop();
+}
+
+void QWoLoadingWidget::resizeEvent(QResizeEvent *ev)
+{
+    QRect rt = QRect(width() / 2 - m_radius,
+                         height() / 2 - m_radius,
+                         m_radius * 2,
+                         m_radius * 2);
+    QRegion rgn(rt.left(), rt.top(), rt.width(), rt.height());
+    setMask(rgn);
 }
 
 void QWoLoadingWidget::onRotateRequest()

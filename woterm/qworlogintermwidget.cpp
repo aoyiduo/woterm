@@ -65,17 +65,6 @@ void QWoRLoginTermWidget::onFinishArrived(int code)
 {
     //qDebug() << "exitcode" << code;
     showLoading(false);
-    if(m_mask && m_mask->isVisible()) {
-        return;
-    }
-
-    if(m_mask == nullptr) {
-        m_mask = new QWoTermMask(this);
-        QObject::connect(m_mask, SIGNAL(aboutToClose(QCloseEvent*)), this, SLOT(onForceToCloseThisSession()));
-        QObject::connect(m_mask, SIGNAL(reconnect()), this, SLOT(onSessionReconnect()));
-    }
-    m_mask->setGeometry(0, 0, width(), height());
-    m_mask->show();
 }
 
 void QWoRLoginTermWidget::onDataArrived(const QByteArray &buf)
@@ -130,6 +119,7 @@ void QWoRLoginTermWidget::onErrorArrived(const QByteArray &buf)
 
 void QWoRLoginTermWidget::onInputArrived(const QString &title, const QString &prompt, bool visble)
 {
+    showLoading(false);
     showPasswordInput(title, prompt, visble);
 }
 
@@ -180,6 +170,7 @@ void QWoRLoginTermWidget::onPasswordInputResult(const QString &pass, bool isSave
 {
     m_savePassword = isSave;
     if(m_rlogin){
+        showLoading(false);
         m_rlogin->setInputResult(pass);
     }
 }
@@ -330,6 +321,19 @@ void QWoRLoginTermWidget::onTitleChanged(const QString &title)
     m_loginCount = 100;
 }
 
+void QWoRLoginTermWidget::onAdjustPosition()
+{
+    if(m_passInput) {
+        QSize sz = m_passInput->minimumSize();
+        if(sz.width() == 0 || sz.height() == 0) {
+            sz = m_passInput->size();
+        }
+        QRect rt(0, 0, sz.width(), sz.height());
+        rt.moveCenter(QPoint(width() / 2, height() / 2));
+        m_passInput->setGeometry(rt);
+    }
+}
+
 void QWoRLoginTermWidget::showPasswordInput(const QString &title, const QString &prompt, bool echo)
 {
     if(m_passInput == nullptr) {
@@ -340,8 +344,9 @@ void QWoRLoginTermWidget::showPasswordInput(const QString &title, const QString 
         return;
     }
     m_passInput->reset(title, prompt, echo);
-    m_passInput->setGeometry(0, 0, width(), height());
-    m_passInput->show();
+    m_passInput->adjustSize();
+    m_passInput->showNormal();
+    QTimer::singleShot(0, this, SLOT(onAdjustPosition()));
 }
 
 int QWoRLoginTermWidget::isZmodemCommand(const QByteArray &data)
@@ -387,6 +392,9 @@ bool QWoRLoginTermWidget::checkProgram(const QByteArray &name)
 
 void QWoRLoginTermWidget::reconnect()
 {
+    if(m_passInput) {
+        m_passInput->deleteLater();
+    }
     showLoading(true);
     m_loginCount = 0;
     if(m_rlogin) {
@@ -408,11 +416,8 @@ void QWoRLoginTermWidget::resizeEvent(QResizeEvent *ev)
     QWoTermWidget::resizeEvent(ev);
     QSize sz = ev->size();
     //qDebug() << "resizeEvent" << objectName() << sz << ev->oldSize();
-    if(m_mask) {
-        m_mask->setGeometry(0, 0, sz.width(), sz.height());
-    }
     if(m_passInput) {
-        m_passInput->setGeometry(0, 0, sz.width(), sz.height());
+        QTimer::singleShot(0, this, SLOT(onAdjustPosition()));
     }
 }
 

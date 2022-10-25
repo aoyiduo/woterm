@@ -74,7 +74,6 @@ private:
     void initStatusBar();
     void restoreLastState();
     void saveLastState();
-
 private:
     Ui::QWoMainWindow *ui;
     QPointer<QTabBar> m_tab;

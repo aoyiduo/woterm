@@ -30,7 +30,8 @@ public:
     ~QWoAboutDialog();
 
 private slots:
-    void onVersionCheck();
+    void onVersionCheck(int code, const QByteArray& body);
+    void onVersionCheckButtonClicked();
     void onResult(int code, const QByteArray& body);
 private:
     Ui::QWoAboutDialog *ui;

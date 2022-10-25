@@ -10,6 +10,30 @@
     </message>
 </context>
 <context>
+    <name>QKxConfirmWidget</name>
+    <message>
+        <location filename="../qkxconfirmwidget.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../qkxconfirmwidget.ui" line="27"/>
+        <location filename="../qkxconfirmwidget.ui" line="50"/>
+        <source>TextLabel</source>
+        <translation>标签</translation>
+    </message>
+    <message>
+        <location filename="../qkxconfirmwidget.ui" line="79"/>
+        <source>Yes</source>
+        <translation>确认</translation>
+    </message>
+    <message>
+        <location filename="../qkxconfirmwidget.ui" line="86"/>
+        <source>No</source>
+        <translation>否</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <source>Please input password</source>
@@ -108,36 +132,50 @@
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.ui" line="64"/>
+        <location filename="../qwoaboutdialog.ui" line="28"/>
+        <source>Current version:</source>
+        <translation>当前版本：</translation>
+    </message>
+    <message>
+        <location filename="../qwoaboutdialog.ui" line="52"/>
+        <source>Latest version:</source>
+        <translation>最新版本：</translation>
+    </message>
+    <message>
+        <location filename="../qwoaboutdialog.ui" line="76"/>
+        <source>Offcie website:</source>
+        <translation>官网：</translation>
+    </message>
+    <message>
+        <location filename="../qwoaboutdialog.ui" line="119"/>
         <source>Check Version</source>
         <translation>检查版本</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.cpp" line="65"/>
-        <location filename="../qwoaboutdialog.cpp" line="77"/>
-        <location filename="../qwoaboutdialog.cpp" line="82"/>
+        <location filename="../qwoaboutdialog.cpp" line="69"/>
+        <location filename="../qwoaboutdialog.cpp" line="81"/>
+        <location filename="../qwoaboutdialog.cpp" line="86"/>
         <source>version check</source>
         <translation>版本检查</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.cpp" line="65"/>
+        <location filename="../qwoaboutdialog.cpp" line="69"/>
         <source>Failed For %1</source>
         <translation>失败原因</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.cpp" line="77"/>
+        <location filename="../qwoaboutdialog.cpp" line="81"/>
         <source>Found New Version: %1, Try To Download?</source>
         <translation>发现新版本：%1，现在去下载？</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.cpp" line="82"/>
+        <location filename="../qwoaboutdialog.cpp" line="86"/>
         <source>No New Version</source>
         <translation>已经是最新版本</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.ui" line="26"/>
         <source>TextLabel</source>
-        <translation>标签</translation>
+        <translation type="vanished">标签</translation>
     </message>
 </context>
 <context>
@@ -695,7 +733,7 @@
     </message>
     <message>
         <location filename="../qwomainwindow.ui" line="116"/>
-        <location filename="../qwomainwindow.cpp" line="392"/>
+        <location filename="../qwomainwindow.cpp" line="405"/>
         <source>Option</source>
         <translation>选项</translation>
     </message>
@@ -756,7 +794,7 @@
     </message>
     <message>
         <location filename="../qwomainwindow.ui" line="67"/>
-        <location filename="../qwomainwindow.cpp" line="396"/>
+        <location filename="../qwomainwindow.cpp" line="409"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
@@ -823,48 +861,57 @@
         <translation type="vanished">发现新版本：%1，现在去下载？</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="57"/>
+        <location filename="../qwomainwindow.cpp" line="59"/>
         <source>WoTerm</source>
         <translation>WoTerm</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="63"/>
-        <location filename="../qwomainwindow.cpp" line="64"/>
+        <location filename="../qwomainwindow.cpp" line="65"/>
         <source>Session Manager</source>
         <translation>会话管理</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="120"/>
+        <location filename="../qwomainwindow.cpp" line="121"/>
         <source>Confirm</source>
         <translation>确认</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="120"/>
+        <location filename="../qwomainwindow.cpp" line="121"/>
         <source>Exit Or Not?</source>
         <translation>退出或取消</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="278"/>
+        <location filename="../qwomainwindow.cpp" line="259"/>
+        <source>Version check</source>
+        <translation>版本检查</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.cpp" line="259"/>
+        <source>a new version of %1 is found, do you want to update it?</source>
+        <translation>发现新版本%1，是否需要更新？</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.cpp" line="288"/>
         <source>Backup Session Database</source>
         <translation>备份数据库</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="287"/>
+        <location filename="../qwomainwindow.cpp" line="297"/>
         <source>Failure</source>
         <translation>失败</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="287"/>
+        <location filename="../qwomainwindow.cpp" line="297"/>
         <source>failed to backup the session list.</source>
         <translation>备份数据库失败。</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="321"/>
+        <location filename="../qwomainwindow.cpp" line="331"/>
         <source>Language</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="321"/>
+        <location filename="../qwomainwindow.cpp" line="331"/>
         <source>The language has been changed, restart application to take effect right now.</source>
         <translation>语言已经被修改，需要重启才能生效，是否立即重启？</translation>
     </message>
@@ -874,17 +921,17 @@
     </message>
     <message>
         <location filename="../qwomainwindow.ui" line="121"/>
-        <location filename="../qwomainwindow.cpp" line="385"/>
+        <location filename="../qwomainwindow.cpp" line="398"/>
         <source>New</source>
         <translation>新建</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="386"/>
+        <location filename="../qwomainwindow.cpp" line="399"/>
         <source>Manage</source>
         <translation>管理</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="387"/>
+        <location filename="../qwomainwindow.cpp" line="400"/>
         <source>List</source>
         <translation>列表</translation>
     </message>
@@ -893,13 +940,13 @@
         <translation type="vanished">设置</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="394"/>
+        <location filename="../qwomainwindow.cpp" line="407"/>
         <source>Keys</source>
         <translation>证书管理</translation>
     </message>
     <message>
         <location filename="../qwomainwindow.ui" line="136"/>
-        <location filename="../qwomainwindow.cpp" line="397"/>
+        <location filename="../qwomainwindow.cpp" line="410"/>
         <source>About</source>
         <translation>关于...</translation>
     </message>
@@ -912,37 +959,37 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../qwopasswordinput.ui" line="71"/>
+        <location filename="../qwopasswordinput.ui" line="28"/>
         <source>TextLabel</source>
         <translation>标签</translation>
     </message>
     <message>
-        <location filename="../qwopasswordinput.ui" line="85"/>
+        <location filename="../qwopasswordinput.ui" line="48"/>
         <source>Password:</source>
         <translation>密码：</translation>
     </message>
     <message>
-        <location filename="../qwopasswordinput.ui" line="97"/>
+        <location filename="../qwopasswordinput.ui" line="73"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="../qwopasswordinput.ui" line="107"/>
+        <location filename="../qwopasswordinput.ui" line="83"/>
         <source>Visible</source>
         <translation>显示</translation>
     </message>
     <message>
-        <location filename="../qwopasswordinput.ui" line="144"/>
+        <location filename="../qwopasswordinput.ui" line="120"/>
         <source>Finish</source>
         <translation>完成</translation>
     </message>
     <message>
-        <location filename="../qwopasswordinput.cpp" line="68"/>
+        <location filename="../qwopasswordinput.cpp" line="65"/>
         <source>Tip</source>
         <translation>提示</translation>
     </message>
     <message>
-        <location filename="../qwopasswordinput.cpp" line="68"/>
+        <location filename="../qwopasswordinput.cpp" line="65"/>
         <source>The Password is Empty, continue to finish?</source>
         <translation>当前密码为空，是否继续执行？</translation>
     </message>
@@ -950,87 +997,87 @@
 <context>
     <name>QWoPowerSftp</name>
     <message>
-        <location filename="../qwossh.cpp" line="253"/>
+        <location filename="../qwossh.cpp" line="256"/>
         <source>An attempt to create an already existing file or directory has been made</source>
         <translation>已经存在同名的目标文件或目录</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="257"/>
+        <location filename="../qwossh.cpp" line="260"/>
         <source>No such file or directory path exists</source>
         <translation>目标文件或目录不存在</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="260"/>
+        <location filename="../qwossh.cpp" line="263"/>
         <source>Permission denied</source>
         <translation>没有权限</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="263"/>
+        <location filename="../qwossh.cpp" line="266"/>
         <source>Generic failure</source>
         <translation>常规性失败</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="266"/>
+        <location filename="../qwossh.cpp" line="269"/>
         <source>Garbage received from server</source>
         <translation>接收到与协议不符合的内容</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="269"/>
+        <location filename="../qwossh.cpp" line="272"/>
         <source>No connection has been set up</source>
         <translation>还没有建立连接</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="272"/>
+        <location filename="../qwossh.cpp" line="275"/>
         <source>There was a connection, but we lost it</source>
         <translation>连接已经断开</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="275"/>
+        <location filename="../qwossh.cpp" line="278"/>
         <source>Operation not supported by the server</source>
         <translation>服务端不支持该操作</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="278"/>
+        <location filename="../qwossh.cpp" line="281"/>
         <source>Invalid file handle</source>
         <translation>无效的文件句柄</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="281"/>
+        <location filename="../qwossh.cpp" line="284"/>
         <source>We are trying to write on a write-protected filesystem</source>
         <translation>文件已经被系统保护，无法写入任何内容</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="284"/>
+        <location filename="../qwossh.cpp" line="287"/>
         <source>No media in remote drive</source>
         <translation>远程服务器没有相关文件</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="453"/>
+        <location filename="../qwossh.cpp" line="456"/>
         <source>Skip it for the local file had exist.</source>
         <translation>本地文件已经存在，放弃该操作</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="458"/>
+        <location filename="../qwossh.cpp" line="461"/>
         <source>Failed to open the local file.</source>
         <translation>无法打开本地文件</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="512"/>
+        <location filename="../qwossh.cpp" line="515"/>
         <source>Failed to open local file.</source>
         <translation>无法打开本地文件</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="614"/>
+        <location filename="../qwossh.cpp" line="617"/>
         <source>Error allocating SFTP session: %1</source>
         <translation>会话不存在：%1</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="618"/>
+        <location filename="../qwossh.cpp" line="621"/>
         <source>Error initializing SFTP session: %1</source>
         <translation>会话初始化失败：%1</translation>
     </message>
     <message>
-        <location filename="../qwossh.cpp" line="677"/>
+        <location filename="../qwossh.cpp" line="680"/>
         <source>the last request is still running, wait for a while.</source>
         <translation>还没有完成上一次操作，请继续等待</translation>
     </message>
@@ -1038,113 +1085,113 @@
 <context>
     <name>QWoRLoginTermWidget</name>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="205"/>
-        <location filename="../qworlogintermwidget.cpp" line="216"/>
+        <location filename="../qworlogintermwidget.cpp" line="196"/>
+        <location filename="../qworlogintermwidget.cpp" line="207"/>
         <source>session list</source>
         <translation>会话列表</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="247"/>
+        <location filename="../qworlogintermwidget.cpp" line="238"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="247"/>
+        <location filename="../qworlogintermwidget.cpp" line="238"/>
         <source>can&apos;t find the session, maybe it had been delete ago</source>
         <translation>会话信息已经不存在</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="266"/>
+        <location filename="../qworlogintermwidget.cpp" line="257"/>
         <source>Select Files</source>
         <translation>选择文件</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="285"/>
+        <location filename="../qworlogintermwidget.cpp" line="276"/>
         <source>Open Directory</source>
         <translation>打开目录</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="431"/>
+        <location filename="../qworlogintermwidget.cpp" line="436"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="433"/>
+        <location filename="../qworlogintermwidget.cpp" line="438"/>
         <source>Paste</source>
         <translation>粘贴</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="435"/>
+        <location filename="../qworlogintermwidget.cpp" line="440"/>
         <source>Force Reconnect</source>
         <translation>强制重新联网</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="436"/>
+        <location filename="../qworlogintermwidget.cpp" line="441"/>
         <source>Split Vertical</source>
         <translation>垂直分割</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="438"/>
+        <location filename="../qworlogintermwidget.cpp" line="443"/>
         <source>Split Horizontal</source>
         <translation>水平分割</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="444"/>
+        <location filename="../qworlogintermwidget.cpp" line="449"/>
         <source>Close Session</source>
         <translation>关闭会话</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="449"/>
+        <location filename="../qworlogintermwidget.cpp" line="454"/>
         <source>Float This Tab</source>
         <translation>浮动此选项卡</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="452"/>
+        <location filename="../qworlogintermwidget.cpp" line="457"/>
         <source>Find...</source>
         <translation>查找...</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="453"/>
+        <location filename="../qworlogintermwidget.cpp" line="458"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="455"/>
+        <location filename="../qworlogintermwidget.cpp" line="460"/>
         <source>Duplicate In New Window</source>
         <translation>复制会话至新窗口</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="460"/>
+        <location filename="../qworlogintermwidget.cpp" line="465"/>
         <source>Zmodem Upload</source>
         <translation>ZModem上传</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="461"/>
+        <location filename="../qworlogintermwidget.cpp" line="466"/>
         <source>Zmodem Receive</source>
         <translation>ZModem下载</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="462"/>
+        <location filename="../qworlogintermwidget.cpp" line="467"/>
         <source>Zmoddem Abort</source>
         <translation>ZModem中止传输</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="483"/>
+        <location filename="../qworlogintermwidget.cpp" line="488"/>
         <source>Files are transfering...</source>
         <translation>文件正在传输中...</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="456"/>
+        <location filename="../qworlogintermwidget.cpp" line="461"/>
         <source>Clean history</source>
         <translation>清空历史</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="457"/>
+        <location filename="../qworlogintermwidget.cpp" line="462"/>
         <source>Output history to file</source>
         <translation>将历史输出至文件</translation>
     </message>
     <message>
-        <location filename="../qworlogintermwidget.cpp" line="458"/>
+        <location filename="../qworlogintermwidget.cpp" line="463"/>
         <source>Stop history to file</source>
         <translation>停止输出历史文件</translation>
     </message>
@@ -1295,75 +1342,80 @@
 <context>
     <name>QWoSessionList</name>
     <message>
-        <location filename="../qwosessionlist.cpp" line="167"/>
+        <location filename="../qwosessionlist.cpp" line="79"/>
+        <source>Enter keyword to search</source>
+        <translation>关键字搜索</translation>
+    </message>
+    <message>
+        <location filename="../qwosessionlist.cpp" line="168"/>
         <source>name</source>
         <translation>名字</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="168"/>
+        <location filename="../qwosessionlist.cpp" line="169"/>
         <source>host</source>
         <translation>主机名</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="169"/>
+        <location filename="../qwosessionlist.cpp" line="170"/>
         <source>memo</source>
         <translation>备忘</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="334"/>
-        <location filename="../qwosessionlist.cpp" line="339"/>
+        <location filename="../qwosessionlist.cpp" line="335"/>
+        <location filename="../qwosessionlist.cpp" line="340"/>
         <source>ReloadAll</source>
         <translation>重新加载</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="335"/>
-        <location filename="../qwosessionlist.cpp" line="340"/>
+        <location filename="../qwosessionlist.cpp" line="336"/>
+        <location filename="../qwosessionlist.cpp" line="341"/>
         <source>Add</source>
         <translation>增加</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="342"/>
+        <location filename="../qwosessionlist.cpp" line="343"/>
         <source>SshConnect</source>
         <translation>SSH连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="345"/>
+        <location filename="../qwosessionlist.cpp" line="346"/>
         <source>SftpConnect</source>
         <translation>SFTP连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="348"/>
+        <location filename="../qwosessionlist.cpp" line="349"/>
         <source>TelnetConnect</source>
         <translation>TELNET连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="351"/>
+        <location filename="../qwosessionlist.cpp" line="352"/>
         <source>RLoginConnect</source>
         <translation>RLOGIN连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="354"/>
+        <location filename="../qwosessionlist.cpp" line="355"/>
         <source>MstscConnect</source>
         <translation>MSTSC连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="357"/>
+        <location filename="../qwosessionlist.cpp" line="358"/>
         <source>VncConnect</source>
         <translation>VNC连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="360"/>
+        <location filename="../qwosessionlist.cpp" line="361"/>
         <source>SerialConnect</source>
         <translation>串口连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="362"/>
+        <location filename="../qwosessionlist.cpp" line="363"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="363"/>
-        <location filename="../qwosessionlist.cpp" line="365"/>
+        <location filename="../qwosessionlist.cpp" line="364"/>
+        <location filename="../qwosessionlist.cpp" line="366"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>
@@ -1387,26 +1439,24 @@
     </message>
     <message>
         <location filename="../qwosessionmanage.ui" line="60"/>
-        <location filename="../qwosessionmanage.cpp" line="273"/>
+        <location filename="../qwosessionmanage.cpp" line="271"/>
         <source>Modify</source>
         <translation>修改</translation>
     </message>
     <message>
         <location filename="../qwosessionmanage.ui" line="77"/>
+        <location filename="../qwosessionmanage.cpp" line="487"/>
         <location filename="../qwosessionmanage.cpp" line="489"/>
-        <location filename="../qwosessionmanage.cpp" line="491"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.ui" line="94"/>
         <source>Import</source>
-        <translation>导入</translation>
+        <translation type="vanished">导入</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.ui" line="111"/>
         <source>Close</source>
-        <translation>关闭</translation>
+        <translation type="vanished">关闭</translation>
     </message>
     <message>
         <location filename="../qwosessionmanage.cpp" line="40"/>
@@ -1414,120 +1464,125 @@
         <translation>会话列表</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="115"/>
-        <location filename="../qwosessionmanage.cpp" line="134"/>
-        <location filename="../qwosessionmanage.cpp" line="153"/>
-        <location filename="../qwosessionmanage.cpp" line="172"/>
-        <location filename="../qwosessionmanage.cpp" line="191"/>
-        <location filename="../qwosessionmanage.cpp" line="210"/>
-        <location filename="../qwosessionmanage.cpp" line="229"/>
-        <location filename="../qwosessionmanage.cpp" line="241"/>
-        <location filename="../qwosessionmanage.cpp" line="373"/>
-        <location filename="../qwosessionmanage.cpp" line="383"/>
-        <location filename="../qwosessionmanage.cpp" line="401"/>
+        <location filename="../qwosessionmanage.cpp" line="76"/>
+        <source>Enter keyword to search target quickly</source>
+        <translation>关键字搜索</translation>
+    </message>
+    <message>
+        <location filename="../qwosessionmanage.cpp" line="113"/>
+        <location filename="../qwosessionmanage.cpp" line="132"/>
+        <location filename="../qwosessionmanage.cpp" line="151"/>
+        <location filename="../qwosessionmanage.cpp" line="170"/>
+        <location filename="../qwosessionmanage.cpp" line="189"/>
+        <location filename="../qwosessionmanage.cpp" line="208"/>
+        <location filename="../qwosessionmanage.cpp" line="227"/>
+        <location filename="../qwosessionmanage.cpp" line="239"/>
+        <location filename="../qwosessionmanage.cpp" line="371"/>
+        <location filename="../qwosessionmanage.cpp" line="381"/>
+        <location filename="../qwosessionmanage.cpp" line="399"/>
         <source>Info</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="115"/>
-        <location filename="../qwosessionmanage.cpp" line="134"/>
-        <location filename="../qwosessionmanage.cpp" line="153"/>
-        <location filename="../qwosessionmanage.cpp" line="172"/>
-        <location filename="../qwosessionmanage.cpp" line="191"/>
-        <location filename="../qwosessionmanage.cpp" line="210"/>
-        <location filename="../qwosessionmanage.cpp" line="229"/>
-        <location filename="../qwosessionmanage.cpp" line="241"/>
-        <location filename="../qwosessionmanage.cpp" line="383"/>
-        <location filename="../qwosessionmanage.cpp" line="401"/>
+        <location filename="../qwosessionmanage.cpp" line="113"/>
+        <location filename="../qwosessionmanage.cpp" line="132"/>
+        <location filename="../qwosessionmanage.cpp" line="151"/>
+        <location filename="../qwosessionmanage.cpp" line="170"/>
+        <location filename="../qwosessionmanage.cpp" line="189"/>
+        <location filename="../qwosessionmanage.cpp" line="208"/>
+        <location filename="../qwosessionmanage.cpp" line="227"/>
+        <location filename="../qwosessionmanage.cpp" line="239"/>
+        <location filename="../qwosessionmanage.cpp" line="381"/>
+        <location filename="../qwosessionmanage.cpp" line="399"/>
         <source>no selection</source>
         <translation>没有选中项</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="273"/>
+        <location filename="../qwosessionmanage.cpp" line="271"/>
         <source>No Selection</source>
         <translation>没有选中项</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="297"/>
+        <location filename="../qwosessionmanage.cpp" line="295"/>
         <source>Import File</source>
         <translation>导入文件</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="306"/>
-        <location filename="../qwosessionmanage.cpp" line="322"/>
-        <location filename="../qwosessionmanage.cpp" line="327"/>
-        <location filename="../qwosessionmanage.cpp" line="338"/>
+        <location filename="../qwosessionmanage.cpp" line="304"/>
+        <location filename="../qwosessionmanage.cpp" line="320"/>
+        <location filename="../qwosessionmanage.cpp" line="325"/>
+        <location filename="../qwosessionmanage.cpp" line="336"/>
         <source>warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="306"/>
+        <location filename="../qwosessionmanage.cpp" line="304"/>
         <source>it&apos;s not a ssh config format: %1</source>
         <translation>文件格式错误：%1</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="322"/>
+        <location filename="../qwosessionmanage.cpp" line="320"/>
         <source>failed to find the identify file list in config file for bad path: %1</source>
         <translation>无法获取证书文件列表</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="327"/>
+        <location filename="../qwosessionmanage.cpp" line="325"/>
         <source>bad identify file: %1</source>
         <translation>错误的证书文件</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="338"/>
+        <location filename="../qwosessionmanage.cpp" line="336"/>
         <source>The config file contain the follow identify&apos;s files, Please export them before do this action.</source>
         <translation>配置文件中包括了相关证书文件，请先导出证书后，再导入该配置文件</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="373"/>
+        <location filename="../qwosessionmanage.cpp" line="371"/>
         <source>can&apos;t open over 6 session in same page.</source>
         <translation>同一个窗口内无法打开超过六个会话。</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="462"/>
-        <location filename="../qwosessionmanage.cpp" line="466"/>
+        <location filename="../qwosessionmanage.cpp" line="460"/>
+        <location filename="../qwosessionmanage.cpp" line="464"/>
         <source>Add</source>
         <translation>增加</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="468"/>
+        <location filename="../qwosessionmanage.cpp" line="466"/>
         <source>SshConnect</source>
         <translation>SSH连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="471"/>
+        <location filename="../qwosessionmanage.cpp" line="469"/>
         <source>SftpConnect</source>
         <translation>SFTP连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="474"/>
+        <location filename="../qwosessionmanage.cpp" line="472"/>
         <source>TelnetConnect</source>
         <translation>TELNET连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="477"/>
+        <location filename="../qwosessionmanage.cpp" line="475"/>
         <source>RLoginConnect</source>
         <translation>RLOGIN连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="480"/>
+        <location filename="../qwosessionmanage.cpp" line="478"/>
         <source>MstscConnect</source>
         <translation>MSTSC连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="483"/>
+        <location filename="../qwosessionmanage.cpp" line="481"/>
         <source>VncConnect</source>
         <translation>VNC连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="486"/>
+        <location filename="../qwosessionmanage.cpp" line="484"/>
         <source>SerialConnect</source>
         <translation>串口连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="488"/>
+        <location filename="../qwosessionmanage.cpp" line="486"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
@@ -2165,92 +2220,92 @@
         <translation>表单</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="242"/>
-        <location filename="../qwosftpwidget.cpp" line="250"/>
+        <location filename="../qwosftpwidget.cpp" line="247"/>
+        <location filename="../qwosftpwidget.cpp" line="255"/>
         <source>Back</source>
         <translation>返回</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="243"/>
-        <location filename="../qwosftpwidget.cpp" line="251"/>
+        <location filename="../qwosftpwidget.cpp" line="248"/>
+        <location filename="../qwosftpwidget.cpp" line="256"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="244"/>
-        <location filename="../qwosftpwidget.cpp" line="252"/>
+        <location filename="../qwosftpwidget.cpp" line="249"/>
+        <location filename="../qwosftpwidget.cpp" line="257"/>
         <source>Home Directory</source>
         <translation>返回主文件夹</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="245"/>
-        <location filename="../qwosftpwidget.cpp" line="253"/>
+        <location filename="../qwosftpwidget.cpp" line="250"/>
+        <location filename="../qwosftpwidget.cpp" line="258"/>
         <source>Create Directory</source>
         <translation>创建文件夹</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="246"/>
-        <location filename="../qwosftpwidget.cpp" line="263"/>
+        <location filename="../qwosftpwidget.cpp" line="251"/>
+        <location filename="../qwosftpwidget.cpp" line="268"/>
         <source>Upload</source>
         <translation>上传</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="255"/>
+        <location filename="../qwosftpwidget.cpp" line="260"/>
         <source>Remove Directory</source>
         <translation>删除文件夹</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="256"/>
+        <location filename="../qwosftpwidget.cpp" line="261"/>
         <source>Enter</source>
         <translation>进入</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="258"/>
+        <location filename="../qwosftpwidget.cpp" line="263"/>
         <source>Remove File</source>
         <translation>删除文件</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="259"/>
+        <location filename="../qwosftpwidget.cpp" line="264"/>
         <source>Download</source>
         <translation>下载</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="261"/>
+        <location filename="../qwosftpwidget.cpp" line="266"/>
         <source>Try Enter</source>
         <translation>尝度进入</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="265"/>
+        <location filename="../qwosftpwidget.cpp" line="270"/>
         <source>New Session Multiplex</source>
         <translation>新建连接复用</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="266"/>
+        <location filename="../qwosftpwidget.cpp" line="271"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="290"/>
+        <location filename="../qwosftpwidget.cpp" line="295"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="423"/>
+        <location filename="../qwosftpwidget.cpp" line="428"/>
         <source>SaveFile</source>
         <translation>保存文件</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="434"/>
+        <location filename="../qwosftpwidget.cpp" line="439"/>
         <source>FileExist</source>
         <translation>文件存在</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="435"/>
+        <location filename="../qwosftpwidget.cpp" line="440"/>
         <source>has the same name in the target path. override it?</source>
         <translation>已经存在同名文件，是否覆盖？</translation>
     </message>
     <message>
-        <location filename="../qwosftpwidget.cpp" line="448"/>
+        <location filename="../qwosftpwidget.cpp" line="453"/>
         <source>Select File</source>
         <translation>选择文件</translation>
     </message>
@@ -2344,123 +2399,133 @@ Continue To Close It?</source>
 <context>
     <name>QWoSshTermWidget</name>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="204"/>
-        <location filename="../qwosshtermwidget.cpp" line="215"/>
+        <location filename="../qwosshtermwidget.cpp" line="155"/>
+        <source>Reconnection confirmation</source>
+        <translation>重连确认</translation>
+    </message>
+    <message>
+        <location filename="../qwosshtermwidget.cpp" line="155"/>
+        <source>Continue to connect to the server?</source>
+        <translation>继续连接远程服务器？</translation>
+    </message>
+    <message>
+        <location filename="../qwosshtermwidget.cpp" line="210"/>
+        <location filename="../qwosshtermwidget.cpp" line="221"/>
         <source>session list</source>
         <translation>会话列表</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="252"/>
+        <location filename="../qwosshtermwidget.cpp" line="258"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="252"/>
+        <location filename="../qwosshtermwidget.cpp" line="258"/>
         <source>can&apos;t find the session, maybe it had been delete ago</source>
         <translation>无法找到相应会话信息</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="276"/>
+        <location filename="../qwosshtermwidget.cpp" line="282"/>
         <source>Select Files</source>
         <translation>选择文件</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="295"/>
+        <location filename="../qwosshtermwidget.cpp" line="301"/>
         <source>Open Directory</source>
         <translation>打开文件夹</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="458"/>
+        <location filename="../qwosshtermwidget.cpp" line="480"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="460"/>
+        <location filename="../qwosshtermwidget.cpp" line="482"/>
         <source>Paste</source>
         <translation>粘贴</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="462"/>
+        <location filename="../qwosshtermwidget.cpp" line="484"/>
         <source>Force Reconnect</source>
         <translation>强制重新联网</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="463"/>
+        <location filename="../qwosshtermwidget.cpp" line="485"/>
         <source>Split Vertical</source>
         <translation>垂直分割</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="465"/>
+        <location filename="../qwosshtermwidget.cpp" line="487"/>
         <source>Split Horizontal</source>
         <translation>水平分割</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="471"/>
+        <location filename="../qwosshtermwidget.cpp" line="493"/>
         <source>Sftp Assistant</source>
         <translation>SFTP助手</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="473"/>
+        <location filename="../qwosshtermwidget.cpp" line="495"/>
         <source>Find...</source>
         <translation>查找...</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="474"/>
+        <location filename="../qwosshtermwidget.cpp" line="496"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="476"/>
+        <location filename="../qwosshtermwidget.cpp" line="498"/>
         <source>Duplicate In New Window</source>
         <translation>在新窗口中打开</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="477"/>
+        <location filename="../qwosshtermwidget.cpp" line="499"/>
         <source>New Session Multiplex</source>
         <translation>新建连接复用</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="478"/>
+        <location filename="../qwosshtermwidget.cpp" line="500"/>
         <source>Clean history</source>
         <translation>清空历史</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="479"/>
+        <location filename="../qwosshtermwidget.cpp" line="501"/>
         <source>Output history to file</source>
         <translation>将历史输出至文件</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="480"/>
+        <location filename="../qwosshtermwidget.cpp" line="502"/>
         <source>Stop history to file</source>
         <translation>停止输出历史文件</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="481"/>
+        <location filename="../qwosshtermwidget.cpp" line="503"/>
         <source>Zmodem Upload</source>
         <translation>ZModem上传</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="482"/>
+        <location filename="../qwosshtermwidget.cpp" line="504"/>
         <source>Zmodem Receive</source>
         <translation>ZModem下载</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="483"/>
+        <location filename="../qwosshtermwidget.cpp" line="505"/>
         <source>Zmoddem Abort</source>
         <translation>ZModem中断传输</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="484"/>
+        <location filename="../qwosshtermwidget.cpp" line="506"/>
         <source>Close Session</source>
         <translation>关闭会话</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="487"/>
+        <location filename="../qwosshtermwidget.cpp" line="509"/>
         <source>Float This Tab</source>
         <translation>浮动此选项卡</translation>
     </message>
     <message>
-        <location filename="../qwosshtermwidget.cpp" line="507"/>
+        <location filename="../qwosshtermwidget.cpp" line="529"/>
         <source>Files are transfering...</source>
         <translation>文件正在传输中...</translation>
     </message>
@@ -2486,113 +2551,123 @@ Continue To Close It?</source>
 <context>
     <name>QWoTelnetTermWidget</name>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="203"/>
-        <location filename="../qwotelnettermwidget.cpp" line="214"/>
+        <location filename="../qwotelnettermwidget.cpp" line="138"/>
+        <source>Reconnection confirmation</source>
+        <translation>连接确认</translation>
+    </message>
+    <message>
+        <location filename="../qwotelnettermwidget.cpp" line="138"/>
+        <source>Continue to connect to the server?</source>
+        <translation>继续连接服务器？</translation>
+    </message>
+    <message>
+        <location filename="../qwotelnettermwidget.cpp" line="193"/>
+        <location filename="../qwotelnettermwidget.cpp" line="204"/>
         <source>session list</source>
         <translation>会话列表</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="245"/>
+        <location filename="../qwotelnettermwidget.cpp" line="235"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="245"/>
+        <location filename="../qwotelnettermwidget.cpp" line="235"/>
         <source>can&apos;t find the session, maybe it had been delete ago</source>
         <translation>无法查找相应会话</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="264"/>
+        <location filename="../qwotelnettermwidget.cpp" line="254"/>
         <source>Select Files</source>
         <translation>选择文件</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="283"/>
+        <location filename="../qwotelnettermwidget.cpp" line="273"/>
         <source>Open Directory</source>
         <translation>打开文件夹</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="430"/>
+        <location filename="../qwotelnettermwidget.cpp" line="399"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="432"/>
+        <location filename="../qwotelnettermwidget.cpp" line="401"/>
         <source>Paste</source>
         <translation>粘贴</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="433"/>
+        <location filename="../qwotelnettermwidget.cpp" line="402"/>
         <source>Force Reconnect</source>
         <translation>强制重新联网</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="435"/>
+        <location filename="../qwotelnettermwidget.cpp" line="404"/>
         <source>Split Vertical</source>
         <translation>垂直分割</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="437"/>
+        <location filename="../qwotelnettermwidget.cpp" line="406"/>
         <source>Split Horizontal</source>
         <translation>水平分割</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="444"/>
+        <location filename="../qwotelnettermwidget.cpp" line="413"/>
         <source>Close Session</source>
         <translation>关闭会话</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="448"/>
+        <location filename="../qwotelnettermwidget.cpp" line="417"/>
         <source>Float This Tab</source>
         <translation>浮动此选项卡</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="451"/>
+        <location filename="../qwotelnettermwidget.cpp" line="420"/>
         <source>Find...</source>
         <translation>查找...</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="452"/>
+        <location filename="../qwotelnettermwidget.cpp" line="421"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="454"/>
+        <location filename="../qwotelnettermwidget.cpp" line="423"/>
         <source>Duplicate In New Window</source>
         <translation>用新窗口中复制会话</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="455"/>
+        <location filename="../qwotelnettermwidget.cpp" line="424"/>
         <source>Clean history</source>
         <translation>清空历史</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="456"/>
+        <location filename="../qwotelnettermwidget.cpp" line="425"/>
         <source>Output history to file</source>
         <translation>将历史输出至文件</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="457"/>
+        <location filename="../qwotelnettermwidget.cpp" line="426"/>
         <source>Stop history to file</source>
         <translation>停止输出历史文件</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="459"/>
+        <location filename="../qwotelnettermwidget.cpp" line="428"/>
         <source>Zmodem Upload</source>
         <translation>ZModem上传</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="460"/>
+        <location filename="../qwotelnettermwidget.cpp" line="429"/>
         <source>Zmodem Receive</source>
         <translation>ZModem下载</translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="461"/>
+        <location filename="../qwotelnettermwidget.cpp" line="430"/>
         <source>Zmoddem Abort</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qwotelnettermwidget.cpp" line="482"/>
+        <location filename="../qwotelnettermwidget.cpp" line="451"/>
         <source>Files are transfering...</source>
         <translation>文件正在传输中...</translation>
     </message>
@@ -2700,12 +2775,12 @@ Continue To Close It?</source>
 <context>
     <name>QWoVncWidget</name>
     <message>
-        <location filename="../qwovncwidget.cpp" line="232"/>
+        <location filename="../qwovncwidget.cpp" line="235"/>
         <source>Password</source>
         <translation>密码</translation>
     </message>
     <message>
-        <location filename="../qwovncwidget.cpp" line="232"/>
+        <location filename="../qwovncwidget.cpp" line="235"/>
         <source>Please input the right password.</source>
         <translation>请输入正确的密码</translation>
     </message>

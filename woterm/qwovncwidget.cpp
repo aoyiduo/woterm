@@ -64,6 +64,9 @@ QWoVncWidget::~QWoVncWidget()
 
 void QWoVncWidget::reconnect()
 {
+    if(m_passInput) {
+        m_passInput->deleteLater();
+    }
     HostInfo hi = QWoSshConf::instance()->find(m_target);
     QVariantMap mdata = config(hi.property);
     QKxVNC::EPixelFormat fmt;
@@ -245,6 +248,19 @@ void QWoVncWidget::onPasswordInputResult(const QString &pass, bool isSave)
     reconnect();
 }
 
+void QWoVncWidget::onAdjustPosition()
+{
+    if(m_passInput) {
+        QSize sz = m_passInput->minimumSize();
+        if(sz.width() == 0 || sz.height() == 0) {
+            sz = m_passInput->size();
+        }
+        QRect rt(0, 0, sz.width(), sz.height());
+        rt.moveCenter(QPoint(width() / 2, height() / 2));
+        m_passInput->setGeometry(rt);
+    }
+}
+
 QVariantMap QWoVncWidget::config(const QString &prop)
 {
     QVariantMap result = QWoUtils::qBase64ToVariant(prop).toMap();
@@ -292,9 +308,10 @@ void QWoVncWidget::showPasswordInput(const QString &title, const QString &prompt
     QMetaObject::invokeMethod(m_loading, "hide", Qt::QueuedConnection);
 
     m_passInput->reset(title, prompt, echo);
-    m_passInput->setGeometry(0, 0, sz.width(), sz.height());
-    m_passInput->show();
+    m_passInput->adjustSize();
+    m_passInput->showNormal();
     m_passInput->raise();
+    QTimer::singleShot(0, this, SLOT(onAdjustPosition()));
 }
 
 bool QWoVncWidget::eventFilter(QObject *w, QEvent *e)
@@ -303,8 +320,8 @@ bool QWoVncWidget::eventFilter(QObject *w, QEvent *e)
     if(t == QEvent::Resize) {
         QResizeEvent *re = (QResizeEvent*)e;
         const QSize &sz = re->size();
-        if(m_passInput->isVisible()) {
-            m_passInput->setGeometry(0, 0, sz.width(), sz.height());
+        if(m_passInput) {
+            QTimer::singleShot(0, this, SLOT(onAdjustPosition()));
         }
         if(m_loading) {
             m_loading->setGeometry(0, 0, sz.width(), sz.height());

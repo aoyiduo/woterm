@@ -43,6 +43,7 @@
 QWoSshTermWidget::QWoSshTermWidget(const QString& target, int gid, QWidget *parent)
     : QWoTermWidget(target, gid, parent)
     , m_savePassword(false)
+    , m_stateConnected(ESC_Ready)
 {
     QObject::connect(m_term, SIGNAL(termSizeChanged(int,int)), this, SLOT(onTermSizeChanged(int,int)));
     QObject::connect(m_term, SIGNAL(sendData(const QByteArray&)), this, SLOT(onSendData(const QByteArray&)));
@@ -76,19 +77,13 @@ void QWoSshTermWidget::onConnectionFinished(bool ok)
 
 void QWoSshTermWidget::onFinishArrived(int code)
 {
-    //qDebug() << "exitcode" << code;
+    //qDebug() << "exitcode" << code;    
     showLoading(false);
-    if(m_mask && m_mask->isVisible()) {
-        return;
+    if(m_stateConnected != ESC_Disconnected) {
+        m_stateConnected = ESC_Disconnected;
+        m_term->parseError("\r\nthe session is closed");
+        m_term->parseError("\r\npress any key to popup selection dialog.");
     }
-
-    if(m_mask == nullptr) {
-        m_mask = new QWoTermMask(this);
-        QObject::connect(m_mask, SIGNAL(aboutToClose(QCloseEvent*)), this, SLOT(onForceToCloseThisSession()));
-        QObject::connect(m_mask, SIGNAL(reconnect()), this, SLOT(onSessionReconnect()));
-    }
-    m_mask->setGeometry(0, 0, width(), height());
-    m_mask->show();
 }
 
 void QWoSshTermWidget::onDataArrived(const QByteArray &buf)
@@ -98,6 +93,7 @@ void QWoSshTermWidget::onDataArrived(const QByteArray &buf)
     if(bOut) {
         qDebug() << "record:" << buf;
     }
+    m_stateConnected = ESC_Connected;
     if(m_modem->isRunning()) {
         if(!m_modem->onReceive(buf)) {
             //qDebug() << "onDataArrived" << buf;
@@ -127,6 +123,7 @@ void QWoSshTermWidget::onErrorArrived(const QByteArray &buf)
 
 void QWoSshTermWidget::onInputArrived(const QString &title, const QString &prompt, bool visble)
 {
+    showLoading(false);
     showPasswordInput(title, prompt, visble);
 }
 
@@ -153,7 +150,15 @@ void QWoSshTermWidget::onSendData(const QByteArray &buf)
         return;
     }
 #endif
-    if(m_ssh) {
+    if(m_stateConnected == ESC_Disconnected) {
+        if(m_dlgConfirm == nullptr) {
+            m_dlgConfirm = new QMessageBox(QMessageBox::Question, tr("Reconnection confirmation"), tr("Continue to connect to the server?"), QMessageBox::Yes|QMessageBox::No, this);
+            if(m_dlgConfirm->exec() == QMessageBox::Yes) {
+                QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);
+            }
+            m_dlgConfirm->deleteLater();
+        }
+    }else if(m_ssh) {
         m_term->scrollToEnd();
         if(!m_modem->isRunning()) {
             m_ssh->write(buf);
@@ -179,6 +184,7 @@ void QWoSshTermWidget::onPasswordInputResult(const QString &pass, bool isSave)
 {
     m_savePassword = isSave;
     if(m_ssh){
+        showLoading(true);
         m_ssh->setInputResult(pass);
     }
 }
@@ -341,6 +347,19 @@ void QWoSshTermWidget::onForceToReconnect()
     reconnect();
 }
 
+void QWoSshTermWidget::onAdjustPosition()
+{
+    if(m_passInput) {
+        QSize sz = m_passInput->minimumSize();
+        if(sz.width() == 0 || sz.height() == 0) {
+            sz = m_passInput->size();
+        }
+        QRect rt(0, 0, sz.width(), sz.height());
+        rt.moveCenter(QPoint(width() / 2, height() / 2));
+        m_passInput->setGeometry(rt);
+    }
+}
+
 void QWoSshTermWidget::showPasswordInput(const QString &title, const QString &prompt, bool echo)
 {
     if(m_passInput == nullptr) {
@@ -351,8 +370,9 @@ void QWoSshTermWidget::showPasswordInput(const QString &title, const QString &pr
         return;
     }
     m_passInput->reset(title, prompt, echo);
-    m_passInput->setGeometry(0, 0, width(), height());
-    m_passInput->show();
+    m_passInput->adjustSize();
+    m_passInput->showNormal();
+    QTimer::singleShot(0, this, SLOT(onAdjustPosition()));
 }
 
 int QWoSshTermWidget::isZmodemCommand(const QByteArray &data)
@@ -398,6 +418,9 @@ bool QWoSshTermWidget::checkProgram(const QByteArray &name)
 
 void QWoSshTermWidget::reconnect()
 {
+    if(m_passInput) {
+        m_passInput->deleteLater();
+    }
     if(m_ssh) {
         QWoSshFactory::instance()->release(m_ssh);
     }
@@ -420,6 +443,8 @@ void QWoSshTermWidget::reconnect()
     if(!hi.script.isEmpty()){
         executeCommand(hi.script.toUtf8());
     }
+
+    m_stateConnected = ESC_Connecting;
 }
 
 void QWoSshTermWidget::executeCommand(const QByteArray &cmd)
@@ -443,11 +468,8 @@ void QWoSshTermWidget::resizeEvent(QResizeEvent *ev)
     QWoTermWidget::resizeEvent(ev);
     QSize sz = ev->size();
     //qDebug() << "resizeEvent" << objectName() << sz << ev->oldSize();
-    if(m_mask) {
-        m_mask->setGeometry(0, 0, sz.width(), sz.height());
-    }
     if(m_passInput) {
-        m_passInput->setGeometry(0, 0, sz.width(), sz.height());
+        QTimer::singleShot(0, this, SLOT(onAdjustPosition()));
     }
 }
 

@@ -16,27 +16,24 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 
-QWoPasswordInput::QWoPasswordInput(QWidget *parent) :
-    QWoWidget(parent),
-    ui(new Ui::QWoPasswordInput)
+QWoPasswordInput::QWoPasswordInput(QWidget *parent)
+    : QWoWidget(parent)
+    , ui(new Ui::QWoPasswordInput)
+    , m_dragPosition(0, 0)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_TranslucentBackground, true);
     ui->setupUi(this);
 
     QObject::connect(ui->visible, SIGNAL(clicked(bool)), this, SLOT(onPasswordVisible(bool)));
     QObject::connect(ui->btnFinish, SIGNAL(clicked()), this, SLOT(onClose()));
     QObject::connect(ui->password, SIGNAL(returnPressed()), this, SLOT(onClose()));
 
-    setFocusPolicy(Qt::StrongFocus);
-    setFocus();
     ui->password->setFocusPolicy(Qt::StrongFocus);
     ui->password->setFocus();
     QFont ft = ui->title->font();
     ft.setBold(true);
     ui->title->setFont(ft);
     ui->title->setAlignment(Qt::AlignHCenter);
-    ui->inputArea->setContentsMargins(5, 5, 5, 5);
 }
 
 QWoPasswordInput::~QWoPasswordInput()
@@ -74,19 +71,18 @@ void QWoPasswordInput::onClose()
     emit result(pass, ui->save->isChecked());
 }
 
-void QWoPasswordInput::paintEvent(QPaintEvent *paint)
+void QWoPasswordInput::mouseMoveEvent(QMouseEvent *event)
 {
-    QPainter p(this);
-    p.setBrush(QColor(128,128,128,128));
-    p.drawRect(0,0, width(), height());
+    if (event->buttons() & Qt::LeftButton) {
+        move(event->globalPos() - m_dragPosition);
+        event->accept();
+    }
 }
 
-void QWoPasswordInput::mousePressEvent(QMouseEvent *ev)
+void QWoPasswordInput::mousePressEvent(QMouseEvent *event)
 {
-    ev->accept();
-}
-
-void QWoPasswordInput::contextMenuEvent(QContextMenuEvent *ev)
-{
-    ev->accept();
+    if (event->button() == Qt::LeftButton) {
+        m_dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
 }

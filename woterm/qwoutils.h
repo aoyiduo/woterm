@@ -59,4 +59,6 @@ public:
     static QString loginUser();
 
     static bool openself(const QString& type, const QString& target, bool pkexec=false);
+
+    static int parseVersion(const QString& ver);
 };

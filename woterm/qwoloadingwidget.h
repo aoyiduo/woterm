@@ -29,6 +29,7 @@ protected:
     void paintEvent(QPaintEvent *ev);
     void showEvent(QShowEvent *ev);
     void hideEvent(QHideEvent *ev);
+    void resizeEvent(QResizeEvent *ev);
 private slots:
     void onRotateRequest();
 private:

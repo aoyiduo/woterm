@@ -89,40 +89,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btnImport">
-       <property name="text">
-        <string>Import</string>
-       </property>
-       <property name="icon">
-        <iconset resource="qwoterm.qrc">
-         <normaloff>:/woterm/resource/skin/import.png</normaloff>:/woterm/resource/skin/import.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>16</width>
-         <height>16</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnClose">
-       <property name="text">
-        <string>Close</string>
-       </property>
-       <property name="icon">
-        <iconset resource="qwoterm.qrc">
-         <normaloff>:/woterm/resource/skin/tabclose.png</normaloff>:/woterm/resource/skin/tabclose.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>16</width>
-         <height>16</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -138,7 +104,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QLineEdit" name="lineEdit"/>
+    <widget class="QLineEdit" name="filter"/>
    </item>
    <item>
     <widget class="QFrame" name="frame">
@@ -161,22 +127,5 @@
  <resources>
   <include location="qwoterm.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>btnClose</sender>
-   <signal>clicked()</signal>
-   <receiver>QWoSessionManage</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>461</x>
-     <y>21</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>324</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

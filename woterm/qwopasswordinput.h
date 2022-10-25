@@ -34,11 +34,11 @@ private slots:
     void onPasswordVisible(bool checked);
     void onClose();
 private:
-    void paintEvent(QPaintEvent* paint);
-    void mousePressEvent(QMouseEvent *ev);
-    void contextMenuEvent(QContextMenuEvent *ev);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
 private:
     Ui::QWoPasswordInput *ui;
+    QPoint m_dragPosition;
 };
 
 #endif // QWOPASSWORDINPUT_H

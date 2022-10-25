@@ -42,6 +42,7 @@
 QWoTelnetTermWidget::QWoTelnetTermWidget(const QString& target, int gid, QWidget *parent)
     : QWoTermWidget(target, gid, parent)
     , m_savePassword(false)
+    , m_stateConnected(ESC_Ready)
 {
     QObject::connect(m_term, SIGNAL(termSizeChanged(int,int)), this, SLOT(onTermSizeChanged(int,int)));
     QObject::connect(m_term, SIGNAL(sendData(const QByteArray&)), this, SLOT(onSendData(const QByteArray&)));
@@ -63,24 +64,18 @@ QWoTelnetTermWidget::~QWoTelnetTermWidget()
 void QWoTelnetTermWidget::onFinishArrived(int code)
 {
     //qDebug() << "exitcode" << code;
+    m_stateConnected = ESC_Disconnected;
     showLoading(false);
-    if(m_mask && m_mask->isVisible()) {
-        return;
-    }
-
-    if(m_mask == nullptr) {
-        m_mask = new QWoTermMask(this);
-        QObject::connect(m_mask, SIGNAL(aboutToClose(QCloseEvent*)), this, SLOT(onForceToCloseThisSession()));
-        QObject::connect(m_mask, SIGNAL(reconnect()), this, SLOT(onSessionReconnect()));
-    }
-    m_mask->setGeometry(0, 0, width(), height());
-    m_mask->show();
+    m_term->parseError("\r\nthe session is closed");
+    m_term->parseError("\r\npress any key to popup selection dialog.");
 }
 
 void QWoTelnetTermWidget::onDataArrived(const QByteArray &buf)
 {
     static QRegExp rgxUser(".* login: $");
     static QRegExp rgxPwd(".*Password: $");
+
+    m_stateConnected = ESC_Connected;
 
     showLoading(false);
     if(m_modem->isRunning()) {
@@ -122,11 +117,6 @@ void QWoTelnetTermWidget::onErrorArrived(const QByteArray &buf)
     qterm->parseError(buf);
 }
 
-void QWoTelnetTermWidget::onInputArrived(const QString &title, const QString &prompt, bool visble)
-{
-    showPasswordInput(title, prompt, visble);
-}
-
 void QWoTelnetTermWidget::onPasswordArrived(const QString &host, const QByteArray &pass)
 {
     if(m_savePassword){
@@ -143,7 +133,15 @@ void QWoTelnetTermWidget::onTermSizeChanged(int lines, int columns)
 
 void QWoTelnetTermWidget::onSendData(const QByteArray &buf)
 {
-    if(m_telnet) {
+    if(m_stateConnected == ESC_Disconnected) {
+        if(m_dlgConfirm == nullptr) {
+            m_dlgConfirm = new QMessageBox(QMessageBox::Question, tr("Reconnection confirmation"), tr("Continue to connect to the server?"), QMessageBox::Yes|QMessageBox::No, this);
+            if(m_dlgConfirm->exec() == QMessageBox::Yes) {
+                QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);
+            }
+            m_dlgConfirm->deleteLater();
+        }
+    }else if(m_telnet) {
         m_term->scrollToEnd();
         if(!m_modem->isRunning()) {
             if(buf.length() == 1 && buf.at(0) < 0x1f) {
@@ -172,14 +170,6 @@ void QWoTelnetTermWidget::onPasteFromClipboard()
 void QWoTelnetTermWidget::onForceToReconnect()
 {
     reconnect();
-}
-
-void QWoTelnetTermWidget::onPasswordInputResult(const QString &pass, bool isSave)
-{
-    m_savePassword = isSave;
-    if(m_telnet){
-        m_telnet->setInputResult(pass);
-    }
 }
 
 void QWoTelnetTermWidget::onSessionReconnect()
@@ -328,20 +318,6 @@ void QWoTelnetTermWidget::onTitleChanged(const QString &title)
     m_loginCount = 100;
 }
 
-void QWoTelnetTermWidget::showPasswordInput(const QString &title, const QString &prompt, bool echo)
-{
-    if(m_passInput == nullptr) {
-        m_passInput = new QWoPasswordInput(this);
-        QObject::connect(m_passInput, SIGNAL(result(const QString&,bool)), this, SLOT(onPasswordInputResult(const QString&,bool)));
-    }
-    if(m_passInput->isVisible()) {
-        return;
-    }
-    m_passInput->reset(title, prompt, echo);
-    m_passInput->setGeometry(0, 0, width(), height());
-    m_passInput->show();
-}
-
 int QWoTelnetTermWidget::isZmodemCommand(const QByteArray &data)
 {
     bool isApp = m_term->appMode();
@@ -396,10 +372,9 @@ void QWoTelnetTermWidget::reconnect()
     QObject::connect(m_telnet, SIGNAL(finishArrived(int)), this, SLOT(onFinishArrived(int)));
     QObject::connect(m_telnet, SIGNAL(dataArrived(const QByteArray&)), this, SLOT(onDataArrived(const QByteArray&)));
     QObject::connect(m_telnet, SIGNAL(errorArrived(const QByteArray&)), this, SLOT(onErrorArrived(const QByteArray&)));
-    QObject::connect(m_telnet, SIGNAL(passwordArrived(const QString&,const QByteArray&)), this, SLOT(onPasswordArrived(const QString&,const QByteArray&)));
-    QObject::connect(m_telnet, SIGNAL(inputArrived(const QString&,const QString&,bool)), this, SLOT(onInputArrived(const QString&,const QString&,bool)));
     QSize sz = m_term->termSize();
     m_telnet->updateSize(sz.width(), sz.height());
+    m_stateConnected = ESC_Connecting;
 }
 
 void QWoTelnetTermWidget::resizeEvent(QResizeEvent *ev)
@@ -407,12 +382,6 @@ void QWoTelnetTermWidget::resizeEvent(QResizeEvent *ev)
     QWoTermWidget::resizeEvent(ev);
     QSize sz = ev->size();
     //qDebug() << "resizeEvent" << objectName() << sz << ev->oldSize();
-    if(m_mask) {
-        m_mask->setGeometry(0, 0, sz.width(), sz.height());
-    }
-    if(m_passInput) {
-        m_passInput->setGeometry(0, 0, sz.width(), sz.height());
-    }
 }
 
 void QWoTelnetTermWidget::contextMenuEvent(QContextMenuEvent *ev)

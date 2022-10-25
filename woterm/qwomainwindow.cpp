@@ -29,6 +29,7 @@
 #include "qwosshconf.h"
 #include "qwodbrestoredialog.h"
 #include "qkxprocesslaunch.h"
+#include "version.h"
 
 #include <QApplication>
 #include <QMessageBox>
@@ -70,7 +71,6 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     m_sessions = new QWoSessionList(m_sessionDock);
     m_sessionDock->setWidget(m_sessions);
     m_sessionDock->setVisible(false);
-    //m_sessionDock->setFixedWidth(150);
 
     QWoWidget *central = new QWoWidget(this);
     setCentralWidget(central);
@@ -195,8 +195,6 @@ void QWoMainWindow::onAppStart()
         QObject::connect(http, SIGNAL(result(int,const QByteArray&)), this, SLOT(onVersionCheck(int,const QByteArray&)));
         QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
         http->get("http://down.woterm.com/.ver");
-
-        //QObject::connect(m_httpClient, SIGNAL(finished()), m_httpClient, SLOT(deleteLater()));
     }
     {
         //check target
@@ -250,8 +248,19 @@ void QWoMainWindow::onAppStart()
 void QWoMainWindow::onVersionCheck(int code, const QByteArray &body)
 {
     qDebug() << code << body;
+    QString verBody = body.trimmed();
+    if(body[0] == 'v') {
+        verBody = verBody.mid(1);
+    }
+    int verLatest = QWoUtils::parseVersion(verBody);
+    int verCurrent = QWoUtils::parseVersion(WOTERM_VERSION);
     if(code == 200) {
-
+        if(verCurrent < verLatest) {
+            int ret = QMessageBox::question(this, tr("Version check"), tr("a new version of %1 is found, do you want to update it?").arg(verBody), QMessageBox::Yes|QMessageBox::No);
+            if(ret == QMessageBox::Yes) {
+                QDesktopServices::openUrl(QUrl("http://woterm.com"));
+            }
+        }
     }
 }
 

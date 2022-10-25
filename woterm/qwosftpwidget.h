@@ -80,7 +80,7 @@ protected slots:
     void onMenuUpload();
     void onNewSessionMultiplex();
     void onResetModel();
-
+    void onAdjustPosition();
 protected:
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     void resizeEvent(QResizeEvent *ev);

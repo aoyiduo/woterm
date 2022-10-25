@@ -175,8 +175,10 @@ void QWoSftpWidget::showPasswordInput(const QString &title, const QString &promp
         return;
     }
     m_passInput->reset(title, prompt, echo);
-    m_passInput->setGeometry(0, 0, width(), height());
-    m_passInput->show();
+    m_passInput->adjustSize();
+    m_passInput->showNormal();
+    m_passInput->raise();
+    QTimer::singleShot(0, this, SLOT(onAdjustPosition()));
 }
 
 void QWoSftpWidget::resizeEvent(QResizeEvent *ev)
@@ -187,14 +189,14 @@ void QWoSftpWidget::resizeEvent(QResizeEvent *ev)
     if(m_mask) {
         m_mask->setGeometry(0, 0, sz.width(), sz.height());
     }
-    if(m_passInput) {
-        m_passInput->setGeometry(0, 0, sz.width(), sz.height());
-    }
     if(m_transfer) {
         m_transfer->setGeometry(0, 0, sz.width(), sz.height());
     }
     if(m_loading) {
         m_loading->setGeometry(0, 0, sz.width(), sz.height());
+    }
+    if(m_passInput) {
+        QTimer::singleShot(0, this, SLOT(onAdjustPosition()));
     }
 }
 
@@ -211,6 +213,9 @@ bool QWoSftpWidget::eventFilter(QObject *obj, QEvent *ev)
 
 void QWoSftpWidget::reconnect()
 {
+    if(m_passInput) {
+        m_passInput->deleteLater();
+    }
     if(m_sftp) {
         QWoSshFactory::instance()->release(m_sftp);
     }
@@ -470,6 +475,19 @@ void QWoSftpWidget::onResetModel()
 {
     for(int i = 0; i < 5;i++) {
         m_list->resizeColumnToContents(i);
+    }
+}
+
+void QWoSftpWidget::onAdjustPosition()
+{
+    if(m_passInput) {
+        QSize sz = m_passInput->minimumSize();
+        if(sz.width() == 0 || sz.height() == 0) {
+            sz = m_passInput->size();
+        }
+        QRect rt(0, 0, sz.width(), sz.height());
+        rt.moveCenter(QPoint(width() / 2, height() / 2));
+        m_passInput->setGeometry(rt);
     }
 }
 

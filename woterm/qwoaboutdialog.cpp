@@ -31,18 +31,19 @@ QWoAboutDialog::QWoAboutDialog(QWidget *parent) :
     setWindowFlags(flags &~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
-    QString txt = QString("Current Version: %1").arg(WOTERM_VERSION);
-    txt.append("<br>Check New Version:");
-    txt.append("<br><a href=\"http://www.woterm.com\">http://www.woterm.com</a>");
+    ui->verNow->setText(WOTERM_VERSION);
 
-    ui->desc->setText(txt);
-    ui->desc->setOpenExternalLinks(true);
-    ui->desc->setWordWrap(true);
-    ui->desc->setTextFormat(Qt::RichText);
+    ui->website->setText("<a href=\"http://www.woterm.com\">http://www.woterm.com</a>");
+    ui->website->setOpenExternalLinks(true);
+    ui->website->setWordWrap(true);
+    ui->website->setTextFormat(Qt::RichText);
 
-    QObject::connect(ui->btnVersion, SIGNAL(clicked()), this, SLOT(onVersionCheck()));
+    QObject::connect(ui->btnVersion, SIGNAL(clicked()), this, SLOT(onVersionCheckButtonClicked()));
 
-
+    QKxHttpClient *http = new QKxHttpClient(this);
+    QObject::connect(http, SIGNAL(result(int,const QByteArray&)), this, SLOT(onVersionCheck(int,const QByteArray&)));
+    QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
+    http->get("http://down.woterm.com/.ver");
 }
 
 QWoAboutDialog::~QWoAboutDialog()
@@ -50,11 +51,14 @@ QWoAboutDialog::~QWoAboutDialog()
     delete ui;
 }
 
-void QWoAboutDialog::onVersionCheck()
+void QWoAboutDialog::onVersionCheck(int code, const QByteArray &body)
 {
-//    m_httpClient = new QHttpClient(this);
-//    QObject::connect(m_httpClient, SIGNAL(result(int,const QByteArray&)), this, SLOT(onResult(int,const QByteArray&)));
-//    m_httpClient->get("http://www.woterm.com/version/latest");
+    QString ver = body.trimmed();
+    ui->verLatest->setText(ver);
+}
+
+void QWoAboutDialog::onVersionCheckButtonClicked()
+{
     QDesktopServices::openUrl(QUrl("http://www.woterm.com"));
 }
 

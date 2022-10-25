@@ -163,32 +163,6 @@ void QTelnetClient::handleError(const QString &err)
     emit errorArrived(err.toUtf8());
 }
 
-bool QTelnetClient::handleInput(const QString &prompt, QByteArray &result, bool visble)
-{
-    emit inputArrived(m_ti.name, prompt, visble);
-    fd_set fds;
-    while(1) {
-        uchar t;
-        FD_ZERO(&fds);
-        FD_SET(m_msgRead, &fds);
-        int n = select(m_msgRead+1, &fds, nullptr, nullptr, nullptr);
-        if(QWoUtils::xRecv(m_msgRead, (char*)&t, 1) <= 0) {
-            return false;
-        }
-        if(takeOne(MT_EXIT, result)) {
-            return false;
-        }
-        if(takeOne(MT_INPUT, result)) {
-            return true;
-        }
-    }
-}
-
-void QTelnetClient::setInputResult(const QString &pass)
-{
-    push(MT_INPUT, pass.toUtf8());
-}
-
 void QTelnetClient::run()
 {
     m_codeExit = running();
@@ -536,11 +510,6 @@ void QWoTelnet::stop()
     }
 }
 
-void QWoTelnet::setInputResult(const QString &pass)
-{
-
-}
-
 void QWoTelnet::write(const QByteArray &buf)
 {
     if(m_pty) {
@@ -558,13 +527,6 @@ void QWoTelnet::updateSize(int cols, int rows)
 void QWoTelnet::sendControl(char c)
 {
     m_pty->sendControl(c);
-}
-
-void QWoTelnet::onInputArrived(const QString &host, const QString &prompt, bool show)
-{
-    QTelnetClient *cli = qobject_cast<QTelnetClient*>(sender());
-    m_input = cli;
-    emit inputArrived(host, prompt, show);
 }
 
 void QWoTelnet::onFinished()
@@ -603,8 +565,6 @@ bool QWoTelnet::init(const QString &host)
     QObject::connect(m_pty, SIGNAL(dataArrived(const QByteArray&)), this, SIGNAL(dataArrived(const QByteArray&)));
     QObject::connect(m_pty, SIGNAL(finished()), this, SLOT(onFinished()));
     QObject::connect(m_pty, SIGNAL(errorArrived(const QByteArray&)), this, SIGNAL(errorArrived(const QByteArray&)));
-    QObject::connect(m_pty, SIGNAL(passwordArrived(const QString&,const QByteArray&)), this, SIGNAL(passwordArrived(const QString&,const QByteArray&)));
-    QObject::connect(m_pty, SIGNAL(inputArrived(const QString&,const QString&,bool)), this, SLOT(onInputArrived(const QString&,const QString&,bool)));
     return true;
 }
 
