@@ -176,3 +176,42 @@ void QWoSetting::setLastBackupPath(const QString &path)
 {
     setValue("backup/path", path);
 }
+
+bool QWoSetting::shouldPopupUpgradeMessage(const QString &ver)
+{
+    QString verHit = value("upgrade/version").toString();
+    if(verHit != ver) {
+        return true;
+    }
+    bool skip = value("upgrade/skip", false).toBool();
+    if(skip) {
+        return false;
+    }
+    QDate dt = value("upgrade/date").toDate();
+    if(!dt.isValid()) {
+        return true;
+    }
+    QDate today = QDate::currentDate();
+    return today >= dt;
+}
+
+void QWoSetting::setNextUpgradeDate(const QString& ver, const QDate &dt)
+{
+    setValue("upgrade/version", ver);
+    setValue("upgrade/date", dt);
+    remove("upgrade/skip");
+}
+
+void QWoSetting::setIgnoreTodayUpgrade(const QString &ver)
+{
+    QDate dt = QDate::currentDate();
+    dt = dt.addDays(1);
+    setNextUpgradeDate(ver, dt);
+}
+
+void QWoSetting::setSkipThisVersion(const QString &ver)
+{
+    setValue("upgrade/version", ver);
+    setValue("upgrade/skip", true);
+    remove("upgrade/date");
+}

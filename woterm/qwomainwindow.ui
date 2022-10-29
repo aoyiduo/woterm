@@ -97,6 +97,10 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/stop2.png</normaloff>:/woterm/resource/skin/stop2.png</iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
    </property>
@@ -107,36 +111,64 @@
    </property>
   </action>
   <action name="actionSessionList">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/layout.png</normaloff>:/woterm/resource/skin/layout.png</iconset>
+   </property>
    <property name="text">
     <string>Session List</string>
    </property>
   </action>
   <action name="actionOption">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/palette.png</normaloff>:/woterm/resource/skin/palette.png</iconset>
+   </property>
    <property name="text">
     <string>Option</string>
    </property>
   </action>
   <action name="actionSessionNew">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/add2.png</normaloff>:/woterm/resource/skin/add2.png</iconset>
+   </property>
    <property name="text">
     <string>New</string>
    </property>
   </action>
   <action name="actionSessionManage">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/nodes.png</normaloff>:/woterm/resource/skin/nodes.png</iconset>
+   </property>
    <property name="text">
     <string>Open</string>
    </property>
   </action>
   <action name="actionIdentityManage">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/keyset.png</normaloff>:/woterm/resource/skin/keyset.png</iconset>
+   </property>
    <property name="text">
     <string>Identity Manage</string>
    </property>
   </action>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/about.png</normaloff>:/woterm/resource/skin/about.png</iconset>
+   </property>
    <property name="text">
     <string>About</string>
    </property>
   </action>
   <action name="actionDocument">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/help.png</normaloff>:/woterm/resource/skin/help.png</iconset>
+   </property>
    <property name="text">
     <string>Online Document</string>
    </property>
@@ -152,6 +184,10 @@
    </property>
   </action>
   <action name="actionRestore">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/import.png</normaloff>:/woterm/resource/skin/import.png</iconset>
+   </property>
    <property name="text">
     <string>Restore</string>
    </property>

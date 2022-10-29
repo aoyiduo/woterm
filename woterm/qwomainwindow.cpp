@@ -256,6 +256,11 @@ void QWoMainWindow::onVersionCheck(int code, const QByteArray &body)
     int verCurrent = QWoUtils::parseVersion(WOTERM_VERSION);
     if(code == 200) {
         if(verCurrent < verLatest) {
+            bool pop = QWoSetting::shouldPopupUpgradeMessage(verBody);
+            if(!pop) {
+                return;
+            }
+            QWoSetting::setIgnoreTodayUpgrade(verBody);
             int ret = QMessageBox::question(this, tr("Version check"), tr("a new version of %1 is found, do you want to update it?").arg(verBody), QMessageBox::Yes|QMessageBox::No);
             if(ret == QMessageBox::Yes) {
                 QDesktopServices::openUrl(QUrl("http://woterm.com"));

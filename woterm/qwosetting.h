@@ -15,6 +15,7 @@
 #include "qkxsetting.h"
 
 #include <QVariant>
+#include <QDate>
 
 class QWoSetting : public QKxSetting
 {
@@ -39,6 +40,12 @@ public:
 
     static QString lastBackupPath();
     static void setLastBackupPath(const QString& path);
+
+    /* upgrade */
+    static bool shouldPopupUpgradeMessage(const QString& ver);
+    static void setNextUpgradeDate(const QString& ver, const QDate &dt);
+    static void setIgnoreTodayUpgrade(const QString& ver);
+    static void setSkipThisVersion(const QString& ver);
 };
 
 #endif

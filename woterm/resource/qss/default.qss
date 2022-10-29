@@ -93,7 +93,7 @@ QMenuBar{
 
 QMenu {
     background-color: rgb(223, 242, 255);
-    margin: 0px;
+    margin: 5px; /* can not zero for easy trigger clicked action.*/
 }
 
 QMenu::item {
