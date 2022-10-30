@@ -50,6 +50,7 @@ The client code has been completely open source, and the third-party code which 
 <img src="doc/main.png"/>
 <img src="doc/main2.png"/>
 <img src="doc/main3.png"/>
+<img src="doc/sftp.png"/>
 <img src="doc/option.png"/>
 <img src="doc/identity.png"/>
 <img src="doc/floattab.gif"/>
