@@ -457,14 +457,14 @@ void QWoRLoginTermWidget::contextMenuEvent(QContextMenuEvent *ev)
         m_menu->addAction(QIcon(":/woterm/resource/skin/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
         m_menu->addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
         //m_menu->addAction(QIcon(":/woterm/resource/skin/history.png"), tr("History"), this, SLOT(onSessionCommandHistory()));
-        m_menu->addAction(tr("Duplicate In New Window"), this, SLOT(onDuplicateInNewWindow()));
+        m_menu->addAction(tr("Duplicate in new window"), this, SLOT(onDuplicateInNewWindow()));
         m_menu->addAction(tr("Clean history"), this, SLOT(onCleanHistory()));
         m_output = m_menu->addAction(tr("Output history to file"), this, SLOT(onOutputHistoryToFile()));
         m_stop = m_menu->addAction(tr("Stop history to file"), this, SLOT(onStopOutputHistoryFile()));
-
-        m_menu->addAction(QIcon(":/woterm/resource/skin/upload.png"), tr("Zmodem Upload"), this, SLOT(onZmodemSend()));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/download.png"), tr("Zmodem Receive"), this, SLOT(onZmodemRecv()));
-        m_menu->addAction(tr("Zmoddem Abort"), this, SLOT(onZmodemAbort()), QKeySequence(Qt::CTRL +  Qt::Key_C));
+        m_menu->addSeparator();
+        m_menu->addAction(QIcon(":/woterm/resource/skin/upload.png"), tr("Zmodem upload"), this, SLOT(onZmodemSend()));
+        m_menu->addAction(QIcon(":/woterm/resource/skin/download.png"), tr("Zmodem receive"), this, SLOT(onZmodemRecv()));
+        m_menu->addAction(tr("Zmodem abort"), this, SLOT(onZmodemAbort()), QKeySequence(Qt::CTRL +  Qt::Key_C));
 
     }
     QKxTermItem *term = termItem();

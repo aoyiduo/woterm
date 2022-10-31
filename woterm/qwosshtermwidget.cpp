@@ -486,28 +486,32 @@ void QWoSshTermWidget::contextMenuEvent(QContextMenuEvent *ev)
         QObject::connect(vsplit, SIGNAL(triggered()), this, SLOT(onVerticalSplitView()));
         QAction *hsplit = m_menu->addAction(QIcon(":/woterm/resource/skin/hsplit.png"), tr("Split Horizontal"));
         QObject::connect(hsplit, SIGNAL(triggered()), this, SLOT(onHorizontalSplitView()));
-       // QAction *vinvite = m_menu->addAction(QIcon(":/woterm/resource/skin/vaddsplit.png"), tr("Add To Vertical"));
-       // QObject::connect(vinvite, SIGNAL(triggered()), this, SLOT(onVerticalInviteView()));
-       // QAction *hinvite = m_menu->addAction(QIcon(":/woterm/resource/skin/haddsplit.png"), tr("Add To Horizontal"));
-       // QObject::connect(hinvite, SIGNAL(triggered()), this, SLOT(onHorizontalInviteView()));        
+#ifdef INVITE_SPLITE
+        QAction *vinvite = m_menu->addAction(QIcon(":/woterm/resource/skin/vaddsplit.png"), tr("Add To Vertical"));
+        QObject::connect(vinvite, SIGNAL(triggered()), this, SLOT(onVerticalInviteView()));
+        QAction *hinvite = m_menu->addAction(QIcon(":/woterm/resource/skin/haddsplit.png"), tr("Add To Horizontal"));
+        QObject::connect(hinvite, SIGNAL(triggered()), this, SLOT(onHorizontalInviteView()));
+#endif
         m_menu->addAction(QIcon(":/woterm/resource/skin/sftp.png"), tr("Sftp Assistant"), this, SLOT(onSftpConnectReady()));
-
         m_menu->addAction(QIcon(":/woterm/resource/skin/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
         m_menu->addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
-        //m_menu->addAction(QIcon(":/woterm/resource/skin/history.png"), tr("History"), this, SLOT(onSessionCommandHistory()));
-        m_menu->addAction(tr("Duplicate In New Window"), this, SLOT(onDuplicateInNewWindow()));
-        m_menu->addAction(tr("New Session Multiplex"), this, SLOT(onNewSessionMultiplex()));
+        m_menu->addAction(tr("Duplicate in new window"), this, SLOT(onDuplicateInNewWindow()));
+        m_menu->addAction(tr("New session multiplex"), this, SLOT(onNewSessionMultiplex()));
+        //m_menu->addAction(tr("Reset terminal size"), this, SLOT(onResetTermSize()));
+        m_menu->addSeparator();
         m_menu->addAction(tr("Clean history"), this, SLOT(onCleanHistory()));
         m_output = m_menu->addAction(tr("Output history to file"), this, SLOT(onOutputHistoryToFile()));
         m_stop = m_menu->addAction(tr("Stop history to file"), this, SLOT(onStopOutputHistoryFile()));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/upload.png"), tr("Zmodem Upload"), this, SLOT(onZmodemSend()));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/download.png"), tr("Zmodem Receive"), this, SLOT(onZmodemRecv()));
-        m_menu->addAction(tr("Zmoddem Abort"), this, SLOT(onZmodemAbort()), QKeySequence(Qt::CTRL +  Qt::Key_C));
-        m_menu->addAction(tr("Close Session"), this, SLOT(onCloseThisSession()));
+        m_menu->addSeparator();
+        m_menu->addAction(QIcon(":/woterm/resource/skin/upload.png"), tr("Zmodem upload"), this, SLOT(onZmodemSend()));
+        m_menu->addAction(QIcon(":/woterm/resource/skin/download.png"), tr("Zmodem receive"), this, SLOT(onZmodemRecv()));
+        m_menu->addAction(tr("Zmodem abort"), this, SLOT(onZmodemAbort()), QKeySequence(Qt::CTRL +  Qt::Key_C));
+        m_menu->addSeparator();
         QWoFloatWindow *wfloat = qobject_cast<QWoFloatWindow*>(topLevelWidget());
         if(wfloat == nullptr) {
             m_menu->addAction(tr("Float This Tab"), this, SLOT(onFloatThisTab()));
         }
+        m_menu->addAction(tr("Close Session"), this, SLOT(onCloseThisSession()));
     }
     QKxTermItem *term = termItem();
     QString selTxt = term->selectedText();

@@ -400,6 +400,7 @@ void QWoMainWindow::initMenuBar()
 void QWoMainWindow::initToolBar()
 {
     QToolBar *tool = ui->mainToolBar;
+    tool->setWindowTitle(tr("Toolbar"));
     tool->addAction(QIcon(":/woterm/resource/skin/add2.png"), tr("New"), this, SLOT(onNewTerm()));
     tool->addAction(QIcon(":/woterm/resource/skin/nodes.png"), tr("Manage"), this, SLOT(onOpenTerm()));
     tool->addAction(QIcon(":/woterm/resource/skin/layout.png"), tr("List"), this, SLOT(onLayout()));

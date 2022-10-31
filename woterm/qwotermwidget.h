@@ -71,6 +71,7 @@ protected:
     void initDefault();
     void initCustom();
 protected slots:
+    void onResetTermSize();
     void onCleanHistory();
     void onOutputHistoryToFile();
     void onStopOutputHistoryFile();

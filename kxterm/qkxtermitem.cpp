@@ -772,6 +772,11 @@ void QKxTermItem::onScreenChanged()
 {
     m_view->setScreen(m_vte->screen());
     updateScrollValue(m_view->historyLineCount());
+    /***
+     *  in some anssi mode. the remote pty size had been changed but client do not receive any notice at all.
+     *  so we should auto resync the pty size when screen changed.
+    */
+    updateTermSize();
 }
 
 void QKxTermItem::onBlinkTimeout()

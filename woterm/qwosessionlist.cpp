@@ -119,6 +119,7 @@ void QWoSessionList::onEditTextChanged(const QString &txt)
     QRegExp regex(sets.join(".*"), Qt::CaseInsensitive);
     regex.setPatternSyntax(QRegExp::RegExp2);
     m_proxyModel->setFilterRegExp(regex);
+    m_proxyModel->setFilterRole(ROLE_REFILTER);
     QModelIndex idx = m_proxyModel->index(0, 0);
     if(idx.isValid()) {
         m_list->clearSelection();

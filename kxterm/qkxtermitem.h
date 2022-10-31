@@ -189,6 +189,7 @@ public:
     Q_INVOKABLE void echoInput(const QByteArray& data);
     Q_INVOKABLE void parse(const QByteArray& data);
     Q_INVOKABLE void parseError(const QByteArray& data);
+    Q_INVOKABLE void updateTermSize();
     Q_INVOKABLE void updateTermSize(int rows, int cols);
     Q_INVOKABLE void updateScrollPosition(qreal position);
     Q_INVOKABLE bool loadKeyLayout(const QString &path);
@@ -222,8 +223,7 @@ private:
     QVariant inputMethodQuery(Qt::InputMethodQuery query, QVariant argument) const;
     void updateView(PaintFlag flag = PF_Normal);
     void updateScrollValue(int v);
-    void updateFontInfo();
-    void updateTermSize();
+    void updateFontInfo();    
     void updateImage();
     void drawLine(QPainter *p, int r, const TermLine& line);
     void drawCursor(QPainter *p, const QRect& rt, const QColor& bg, const QColor& fg,  bool &inverse);

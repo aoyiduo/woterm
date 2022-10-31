@@ -180,7 +180,9 @@ QVariant QWoHostListModel::data(const QModelIndex &index, int role) const
     }
     if(role == ROLE_REFILTER) {
         QVariant v;
-        v.setValue(QString("%1-%2:%3-%4").arg(hi.name).arg(hi.host).arg(hi.port).arg(hi.memo));
+        QString hp = QString("%1:%2").arg(hi.host).arg(hi.port);
+        QString filter=hi.name+hp+hi.memo+hi.name+hi.memo;
+        v.setValue(filter);
         return v;
     }
     if(role == ROLE_FRIENDLY_NAME) {
