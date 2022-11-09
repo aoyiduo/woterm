@@ -12,6 +12,8 @@
 #ifndef QWOTREEVIEW_H
 #define QWOTREEVIEW_H
 
+#include "qwoglobal.h"
+
 #include <QTreeView>
 
 class QWoTreeView : public QTreeView
@@ -22,6 +24,13 @@ public:
 signals:
     void itemChanged(const QModelIndex& idx);
     void returnKeyPressed();
+private:
+    virtual void drawRow(QPainter *painter,
+                         const QStyleOptionViewItem &options,
+                         const QModelIndex &index) const;
+    virtual void drawBranches(QPainter *painter,
+                              const QRect &rect,
+                              const QModelIndex &index) const;
 protected:
     virtual void keyPressEvent(QKeyEvent *e);
     virtual void mousePressEvent(QMouseEvent *e);

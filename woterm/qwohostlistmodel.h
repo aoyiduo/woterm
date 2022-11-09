@@ -17,10 +17,6 @@
 #include <QFont>
 #include <QIcon>
 
-#define ROLE_INDEX   (Qt::UserRole+1)
-#define ROLE_HOSTINFO (Qt::UserRole+2)
-#define ROLE_REFILTER (Qt::UserRole+3)
-#define ROLE_FRIENDLY_NAME (Qt::UserRole+4)
 
 class QWoHostListModel : public QAbstractListModel
 {
@@ -31,7 +27,6 @@ public:
 
     static QWoHostListModel *instance();
 
-    void setMaxColumnCount(int cnt);
     int widthColumn(const QFont& ft, int i);
 
     Q_INVOKABLE void refreshList();
@@ -61,7 +56,6 @@ private:
 private:
     Q_DISABLE_COPY(QWoHostListModel)
     QList<HostInfo> m_hosts;
-    int m_maxColumn;
     QIcon m_sshIcon;
     QIcon m_sftpIcon;
     QIcon m_telnetIcon;

@@ -18,11 +18,6 @@
 #include <QIcon>
 #include <QPointer>
 
-#define ROLE_INDEX   (Qt::UserRole+1)
-#define ROLE_FILEINFO (Qt::UserRole+2)
-#define ROLE_REFILTER (Qt::UserRole+3)
-#define ROLE_FRIENDLY_NAME (Qt::UserRole+4)
-
 class QWoSftpDownMgrModel : public QAbstractListModel
 {
     Q_OBJECT

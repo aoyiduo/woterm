@@ -25,6 +25,32 @@ QWidget#inputArea{
     border-radius: 5px;
 }
 
+QWoTreeView{
+    background-color: rgba(100,190,233,50);
+    border: 1px;
+    border-style: solid;
+    border-color: white;
+    border-radius: 5px;
+    padding:3px;
+    min-width: 150px;
+}
+
+QWoTreeView::item{
+    padding:3px;
+    margin:0px;
+}
+
+QWoTreeView::branch:!has-children{
+    image: url(:/woterm/resource/skin/dir_close22.png) 0;
+}
+
+QWoTreeView::branch:closed:has-children{
+    image: url(:/woterm/resource/skin/dir_close.png);
+}
+
+QWoTreeView::branch:open:has-children{
+    image: url(:/woterm/resource/skin/dirs.png);
+}
 
 QWoVncFtpWidget{
     border-radius: 3px;
@@ -162,6 +188,18 @@ QPushButton:hover#ftp{
     color: rgba(212,35,122,255);
 }
 
+QPushButton#modelLayout{
+    border-radius: 3px;
+    border: 1px solid darkgray;
+    padding: 2px;
+    color: black;
+    min-width: 0px;
+}
+
+QPushButton:hover#modelLayout{
+    border: 1px solid magenta;
+    color: rgba(212,35,122,255);
+}
 
 QToolButton{
   border-radius: 3px;

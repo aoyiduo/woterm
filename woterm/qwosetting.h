@@ -46,6 +46,18 @@ public:
     static void setNextUpgradeDate(const QString& ver, const QDate &dt);
     static void setIgnoreTodayUpgrade(const QString& ver);
     static void setSkipThisVersion(const QString& ver);
+
+    static bool isListModel(const QString& where);
+    static void setListModel(const QString& where, bool isList);
+
+    static QString adminPassword();
+    static void setAdminPassword(const QString& pass);
+
+    static bool startupByAdmin();
+    static void setStartupByAdmin(bool on);
+
+    static bool lookupPasswordByAdmin();
+    static void setLookupPasswordByAdmin(bool on);
 };
 
 #endif

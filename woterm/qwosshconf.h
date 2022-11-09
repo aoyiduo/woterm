@@ -25,11 +25,21 @@ public:
     static QWoSshConf* instance();
     static bool databaseValid(const QString& dbFile);
 
+    /* groud name */
+    QList<GroupInfo> groupList() const;
+    QStringList groupNameList() const;
+    bool renameGroup(const QString& nameNew, const QString& nameOld);
+    bool updateGroup(const QString& name, int order = 0);
+    bool removeGroup(const QString& name);
+
+
     bool restore(const QString& dbFile);
     bool backup(const QString& dbFile);
     bool refresh();
     bool exportToFile(const QString& path);
-    bool remove(const QString& name);
+    bool removeServer(const QString& name);
+    bool removeServerByGroup(const QString& name);
+    bool renameServerGroup(const QString& nameNew, const QString& nameOld);
     bool modify(const HostInfo& hi);
     bool append(const HostInfo& hi);
     bool modifyOrAppend(const HostInfo& hi);
@@ -54,15 +64,19 @@ private:
     Q_INVOKABLE void init();
     QByteArray toStream();
     bool save(const HostInfo& hi);
+    bool _renameGroup(const QString& nameNew, const QString& nameOld);
+    bool _updateGroup(const QString& name, int order = 0);
+    bool _removeGroup(const QString& name);
 private:
-    static bool initialize(const QString& dbFile);      
     static QHash<QString, HostInfo> parse(const QByteArray& buf);
     static void importIdentityToSqlite(const QString& path, const QString& dbFile);
     static void importConfToSqlite(const QString& conf, const QString& dbFile);
-    static QHash<QString, HostInfo> loadFromSqlite(const QString& dbFile);
+    static QHash<QString, HostInfo> loadServerFromSqlite(const QString& dbFile);
+    static QList<GroupInfo> loadGroupFromSqlite(const QString& dbFile);
 
 private:
     QString m_dbFile;
     bool m_bInit;
     QHash<QString, HostInfo> m_hosts;
+    QList<GroupInfo> m_groups;
 };

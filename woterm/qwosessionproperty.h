@@ -14,20 +14,21 @@
 
 #include <QDialog>
 #include <QMap>
+#include <QPointer>
 
 namespace Ui {
 class QWoSessionProperty;
 }
 
+class QStringListModel;
 class QWoSessionProperty : public QDialog
 {
     Q_OBJECT
 public:
     enum EResult {
-        Rejected = QDialog::Rejected,
-        Accepted = QDialog::Accepted,
+        Cancel = QDialog::Rejected,
         Save,
-        Cancel
+        Connect
     };
 public:
     explicit QWoSessionProperty(QWidget *parent = 0);
@@ -46,15 +47,19 @@ private slots:
     void onTypeSave();
     void onAuthCurrentIndexChanged(const QString& txt);
     void onPortTextChanged(const QString& txt);
+    void onAssistButtonClicked(int idx);
     void onProxyJumpeBrowser();
     void onIdentifyFileBrowser();
     void onMoreConfig();
+    void onGroupAddCliecked();
+    void onSetEditToPasswordMode();
 private:
     bool saveConfig();
 private:
     Ui::QWoSessionProperty *ui;
     QString m_name;
     QMap<QString, QString> m_props;
+    QPointer<QStringListModel> m_model;
 };
 
 #endif // QWOSESSIONPROPERTY_H

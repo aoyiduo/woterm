@@ -19,6 +19,9 @@
 #include "qwoidentifydialog.h"
 #include "qwohostsimplelist.h"
 #include "qwosessionmoreproperty.h"
+#include "qwogroupinputdialog.h"
+#include "qkxbuttonassist.h"
+#include "qkxver.h"
 
 #include <QFileInfo>
 #include <QStringListModel>
@@ -26,6 +29,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QDir>
+#include <QTimer>
 
 EHostType hostType(const QString& txt) {
     if(txt == "SshWithSftp") {
@@ -107,6 +111,7 @@ void QWoSessionProperty::setSession(const QString &name)
     HostInfo hi = QWoSshConf::instance()->find(name);
     setWindowTitle(tr("Session[%1]").arg(name));
 
+    ui->groupBox->setCurrentText(hi.group);
     ui->name->setText(hi.name);
     ui->host->setText(hi.host);
     ui->port->setText(QString("%1").arg(hi.port));
@@ -160,7 +165,7 @@ void QWoSessionProperty::init()
         ways.append("Vnc");
         ways.append("SerialPort");
         ui->type->setModel(new QStringListModel(ways, this));
-        QObject::connect(ui->type, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onTypeCurrentIndexChanged(const QString&)));
+        QObject::connect(ui->type, SIGNAL(currentIndexChanged(QString)), this, SLOT(onTypeCurrentIndexChanged(QString)));
         ui->type->setCurrentIndex(0);
         QWoUtils::setLayoutVisible(ui->localLayout, false);
         QWoUtils::setLayoutVisible(ui->remoteLayout, true);
@@ -171,16 +176,20 @@ void QWoSessionProperty::init()
         ways.append(tr("Password"));
         ways.append(tr("Identify"));
         ui->loginType->setModel(new QStringListModel(ways, this));
-        QObject::connect(ui->loginType, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onAuthCurrentIndexChanged(const QString&)));
+        QObject::connect(ui->loginType, SIGNAL(currentIndexChanged(QString)), this, SLOT(onAuthCurrentIndexChanged(QString)));
         ui->loginType->setCurrentIndex(0);
         onAuthCurrentIndexChanged(ui->loginType->currentText());
     }
-    ui->command->setPlaceholderText("ls && df");
-    ui->port->setText("22");
-    ui->port->setValidator(new QIntValidator(10, 65535));
-    ui->portTip->setVisible(false);
-    QObject::connect(ui->port, SIGNAL(textChanged(const QString&)), this, SLOT(onPortTextChanged(const QString&)));
-    ui->password->setEchoMode(QLineEdit::Password);
+    {
+        ui->command->setPlaceholderText("ls && df");
+        ui->port->setText("22");
+        ui->port->setValidator(new QIntValidator(10, 65535));
+        ui->portTip->setVisible(false);
+        QObject::connect(ui->port, SIGNAL(textChanged(QString)), this, SLOT(onPortTextChanged(QString)));
+        ui->password->setEchoMode(QLineEdit::Password);
+        QKxButtonAssist *assist = new QKxButtonAssist(":/woterm/resource/skin/eye.png", ui->password);
+        QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
+    }
 
     //---------------------Local-----------
     {
@@ -239,6 +248,12 @@ void QWoSessionProperty::init()
     QObject::connect(ui->proxyBrowser, SIGNAL(clicked()), this, SLOT(onProxyJumpeBrowser()));
     QObject::connect(ui->identifyBrowser, SIGNAL(clicked()), this, SLOT(onIdentifyFileBrowser()));
     QObject::connect(ui->btnMore, SIGNAL(clicked()), this, SLOT(onMoreConfig()));
+
+    QObject::connect(ui->btnGroupAdd, SIGNAL(clicked()), this, SLOT(onGroupAddCliecked()));
+
+    QStringList names = QWoSshConf::instance()->groupNameList();
+    QStringListModel *model = new QStringListModel(names, ui->groupBox);
+    ui->groupBox->setModel(model);
 }
 
 void QWoSessionProperty::updatePortTipState()
@@ -393,7 +408,7 @@ void QWoSessionProperty::onTypeConnect()
     }else if(type == "SerialPort") {
         readyToConnect(name, EOT_SERIALPORT);
     }
-    close();
+    done(Connect);
 }
 
 void QWoSessionProperty::onTypeSave()
@@ -414,6 +429,25 @@ void QWoSessionProperty::onAuthCurrentIndexChanged(const QString &type)
 void QWoSessionProperty::onPortTextChanged(const QString &txt)
 {
     updatePortTipState();
+}
+
+void QWoSessionProperty::onAssistButtonClicked(int idx)
+{
+    if(!QWoUtils::isUltimateVersion(this)) {
+        return;
+    }
+
+    QLineEdit::EchoMode mode = ui->password->echoMode();
+    if(mode == QLineEdit::Normal) {
+        ui->password->setEchoMode(QLineEdit::Password);
+    }else{
+        QString pass = QWoUtils::getPassword(this, tr("Please input the administrator password"));
+        if(pass.isEmpty()) {
+            return;
+        }
+        ui->password->setEchoMode(QLineEdit::Normal);
+        QTimer::singleShot(1000*5, this, SLOT(onSetEditToPasswordMode()));
+    }
 }
 
 void QWoSessionProperty::onProxyJumpeBrowser()
@@ -460,6 +494,31 @@ void QWoSessionProperty::onMoreConfig()
     if(!result.isEmpty()) {
         m_props.insert(shower, result);
     }
+}
+
+void QWoSessionProperty::onGroupAddCliecked()
+{
+    QWoGroupInputDialog dlg(tr(""), 0, this);
+    QStringList names = QWoSshConf::instance()->groupNameList();
+    QPointer<QWoGroupInputDialog> dlgPtr(&dlg);
+    QObject::connect(&dlg, &QWoGroupInputDialog::apply, this, [=](const QString& name, int order){
+        if(names.contains(name)) {
+            QMessageBox::information(dlgPtr, tr("Parameter error"), tr("The group name is already exist."));
+            return;
+        }
+        QStringList mynames = names;
+        mynames.append(name);
+        QStringListModel *model = new QStringListModel(mynames, ui->groupBox);
+        ui->groupBox->setModel(model);
+        QWoSshConf::instance()->updateGroup(name, order);
+        dlgPtr->close();
+    });
+    dlg.exec();
+}
+
+void QWoSessionProperty::onSetEditToPasswordMode()
+{
+    ui->password->setEchoMode(QLineEdit::Password);
 }
 
 bool QWoSessionProperty::saveConfig()
@@ -597,6 +656,7 @@ bool QWoSessionProperty::saveConfig()
     if(!prop.isEmpty()) {
         hi.property = prop;
     }
+    hi.group = ui->groupBox->currentText();
     QWoHostListModel::instance()->modifyOrAppend(hi);
     return true;
 }

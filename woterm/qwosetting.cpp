@@ -11,13 +11,15 @@
 
 #include "qwosetting.h"
 
-#include<QSettings>
-#include<QApplication>
-#include<QDir>
-#include<QMessageBox>
-#include<QStandardPaths>
-#include<QProcess>
+#include <QSettings>
+#include <QApplication>
+#include <QDir>
+#include <QMessageBox>
+#include <QStandardPaths>
+#include <QProcess>
 #include <QTranslator>
+
+#include "qwoutils.h"
 
 #define WOTERM_DATA_PATH ("WOTERM_DATA_PATH")
 
@@ -214,4 +216,53 @@ void QWoSetting::setSkipThisVersion(const QString &ver)
     setValue("upgrade/version", ver);
     setValue("upgrade/skip", true);
     remove("upgrade/date");
+}
+
+bool QWoSetting::isListModel(const QString &where)
+{
+    return value("sessionList/"+where, false).toBool();
+}
+
+void QWoSetting::setListModel(const QString &where, bool isList)
+{
+    setValue("sessionList/"+where, isList);
+}
+
+QString QWoSetting::adminPassword()
+{
+    QByteArray enkey = value("admin/password", QByteArray()).toByteArray();
+    if(enkey.isEmpty()) {
+        return QByteArray();
+    }
+    QByteArray pass = QWoUtils::aesDecrypt(enkey, "WoTerm@2022-11-6");
+    return QString::fromUtf8(pass);
+}
+
+void QWoSetting::setAdminPassword(const QString &pass)
+{
+    if(pass.isEmpty()) {
+        return;
+    }
+    QByteArray enkey = QWoUtils::aesEncrypt(pass.toUtf8(), "WoTerm@2022-11-6");
+    setValue("admin/password", enkey);
+}
+
+bool QWoSetting::startupByAdmin()
+{
+    return value("admin/startup", false).toBool();
+}
+
+void QWoSetting::setStartupByAdmin(bool on)
+{
+    setValue("admin/startup", on);
+}
+
+bool QWoSetting::lookupPasswordByAdmin()
+{
+    return value("admin/lookupPassword", false).toBool();
+}
+
+void QWoSetting::setLookupPasswordByAdmin(bool on)
+{
+    setValue("admin/lookupPassword", on);
 }

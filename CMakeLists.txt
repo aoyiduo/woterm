@@ -19,6 +19,7 @@ set(CMAKE_DEBUG_POSTFIX "d")
 
 # build qterm item to a static or shared libarary
 
+set(KXVER_ROOT_DIR ${PROJECT_SOURCE_DIR}/kxver)
 set(KXTERM_ROOT_DIR ${PROJECT_SOURCE_DIR}/kxterm)
 set(KXVNC_ROOT_DIR ${PROJECT_SOURCE_DIR}/kxvnc)
 set(KXFTP_ROOT_DIR ${PROJECT_SOURCE_DIR}/kxftp)
@@ -67,6 +68,7 @@ file(COPY ${MY_COPY_FILES} DESTINATION ${PROJECT_SOURCE_DIR}/bin)
 message("copy file list:${MY_COPY_FILES}")
 message("root path:${PROJECT_SOURCE_DIR}")
 
+add_subdirectory(kxver)
 add_subdirectory(kxterm)
 add_subdirectory(kxvnc)
 add_subdirectory(kxutil)

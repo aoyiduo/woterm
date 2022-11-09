@@ -19,10 +19,12 @@ class QLineEdit;
 class QListWidget;
 class QPushButton;
 class QWoHostListModel;
+class QWoHostTreeModel;
 class QSortFilterProxyModel;
-class QWoListView;
+class QWoTreeView;
 class QMenu;
 class QPlainTextEdit;
+class QAbstractItemModel;
 
 class QWoSessionList : public QWidget
 {
@@ -36,7 +38,6 @@ signals:
 private:
     void init();
     void refreshList();
-    void autoOpen();
 private slots:
     void onReloadSessionList();
     void onEditTextChanged(const QString& txt);
@@ -56,6 +57,7 @@ private slots:
     void onListViewItemModify();
     void onListViewItemAdd();
     void onListViewItemDelete();
+    void onListViewGroupLayout();
 private:
     bool handleListViewContextMenu(QContextMenuEvent *ev);
     bool handleListViewMouseButtonPress(QMouseEvent *ev);
@@ -63,10 +65,13 @@ private:
     void closeEvent(QCloseEvent *event);
     bool eventFilter(QObject *obj, QEvent *ev);
 private:
-    QPointer<QWoHostListModel> m_model;
+    QPointer<QWoHostListModel> m_listModel;
+    QPointer<QWoHostTreeModel> m_treeModel;
+    QPointer<QAbstractItemModel> m_model;
+    QPointer<QPushButton> m_btnModel;
     QPointer<QSortFilterProxyModel> m_proxyModel;
     QPointer<QLineEdit> m_input;
-    QPointer<QWoListView> m_list;
+    QPointer<QWoTreeView> m_tree;
     QPointer<QPlainTextEdit> m_info;
     int m_countLeft;
     QPointer<QMenu> m_menu;

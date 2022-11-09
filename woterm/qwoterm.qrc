@@ -119,6 +119,13 @@
         <file>resource/skin/close.png</file>
         <file>resource/skin/audio_off.png</file>
         <file>resource/skin/audio_on.png</file>
+        <file>resource/skin/dir_close.png</file>
+        <file>resource/skin/tree.png</file>
+        <file>resource/skin/tree2.png</file>
+        <file>resource/skin/admin.png</file>
+        <file>resource/skin/password .png</file>
+        <file>resource/skin/account.png</file>
+        <file>resource/skin/eye.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

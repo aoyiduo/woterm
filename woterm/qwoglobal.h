@@ -35,6 +35,22 @@ enum EHostType{
 #define EOT_MSTSC       (6)
 #define EOT_VNC         (7)
 
+#define ROLE_INDEX              (Qt::UserRole+1)
+#define ROLE_HOSTINFO           (Qt::UserRole+2)
+#define ROLE_REFILTER           (Qt::UserRole+3)
+#define ROLE_FRIENDLY_NAME      (Qt::UserRole+4)
+#define ROLE_FILEINFO           (Qt::UserRole+5)
+#define ROLE_GROUP              (Qt::UserRole+6)
+#define ROLE_GROUP_STATE        (Qt::UserRole+7)
+
+struct GroupInfo {
+    QString name;
+    int order;
+
+    bool operator < (const GroupInfo& b) const {
+        return order < b.order;
+    }
+};
 
 struct HostInfo{
     EHostType type;
@@ -56,6 +72,10 @@ struct HostInfo{
     QString parity;
     QString stopBits;
     QString flowControl;
+
+    bool operator < (const HostInfo& hi) const {
+        return name < hi.name;
+    }
 
     inline bool isValid() {
         return !name.isEmpty();
@@ -112,6 +132,7 @@ typedef struct {
 } FileInfo;
 
 
+Q_DECLARE_METATYPE(GroupInfo)
 Q_DECLARE_METATYPE(HostInfo)
 Q_DECLARE_METATYPE(HistoryCommand)
 Q_DECLARE_METATYPE(FileInfo)

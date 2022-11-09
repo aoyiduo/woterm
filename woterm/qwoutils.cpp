@@ -10,7 +10,7 @@
 *******************************************************************************************/
 
 #include "qwoutils.h"
-
+#include "qkxver.h"
 #include <QObject>
 #include<QLayout>
 #include<QWidget>
@@ -27,6 +27,9 @@
 #include <string.h>
 #include <QProcess>
 #include <QMessageBox>
+#include <QInputDialog>
+
+#include <openssl/aes.h>
 
 #ifdef Q_OS_WIN
 #include <winsock2.h>
@@ -610,5 +613,76 @@ int QWoUtils::parseVersion(const QString &ver)
         verInt = major + minor + patch;
     }
     return verInt;
+}
+
+QByteArray QWoUtils::aesOfb128Encrypt(const QByteArray &all, const QByteArray &pass)
+{
+    QByteArray key = pass.isEmpty() ? "AoYiDuo-20220505" : pass;
+    if(key.length() < 16) {
+        int cnt = key.length();
+        int left = 16 - cnt;
+        key.append(left, 0);
+    }else if(key.length() > 16) {
+        key.resize(16);
+    }
+    AES_KEY aes_key;
+    if (AES_set_encrypt_key((const unsigned char*)key.data(), key.size() * 8, &aes_key) != 0) {
+        return QByteArray();
+    }
+    int num = 0;
+    QByteArray ivecTemp = key;
+    QByteArray out;
+    out.resize(all.size());
+    AES_ofb128_encrypt((const unsigned char*)all.data(), (unsigned char*)out.data(),
+                       all.size(), &aes_key, (unsigned char*)ivecTemp.data(), &num);
+    return out;
+}
+
+QByteArray QWoUtils::aesOfb128Decrypt(const QByteArray &all, const QByteArray &pass)
+{
+    return aesOfb128Encrypt(all, pass);
+}
+
+QByteArray QWoUtils::aesEncrypt(const QByteArray &all, const QByteArray &pass)
+{
+    QByteArray result = aesOfb128Encrypt(all, pass);
+    QByteArray b64 = result.toBase64(QByteArray::Base64Encoding);
+    return "WoTerm:"+b64;
+}
+
+QByteArray QWoUtils::aesDecrypt(const QByteArray &all, const QByteArray &pass)
+{
+    if(!all.startsWith("WoTerm:")) {
+        return all;
+    }
+    QByteArray b64 = all.mid(7);
+    QByteArray aes = QByteArray::fromBase64(b64, QByteArray::Base64Encoding);
+    QByteArray result = aesOfb128Decrypt(aes, pass);
+    return result;
+}
+
+bool QWoUtils::isUltimateVersion(QWidget *parent)
+{
+    if(!QKxVer::isUltimate()) {
+        QMessageBox::information(parent, QObject::tr("Ultimate version"), QObject::tr("this is the feature of the ultimate version, please upgrade to latest version."));
+        return false;
+    }
+    return true;
+}
+
+QString QWoUtils::getPassword(QWidget *parent, const QString &label)
+{
+    QInputDialog input(parent);
+    input.setWindowFlags(input.windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    input.setMinimumWidth(350);
+    input.setWindowTitle(QObject::tr("Password input"));
+    input.setLabelText(label);
+    input.setTextEchoMode(QLineEdit::Password);
+    int err = input.exec();
+    if(err == 0) {
+        return QString();
+    }
+    QString hitTxt = input.textValue();
+    return hitTxt;
 }
 

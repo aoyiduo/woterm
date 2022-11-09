@@ -9,33 +9,25 @@
 *
 *******************************************************************************************/
 
-#ifndef QWOABOUTDIALOG_H
-#define QWOABOUTDIALOG_H
+#ifndef QWOSFTPEXTRANSFERWIDGET_H
+#define QWOSFTPEXTRANSFERWIDGET_H
 
-#include <QDialog>
-#include <QPointer>
+#include <QWidget>
 
 namespace Ui {
-class QWoAboutDialog;
+class QWoSftpExTransferWidget;
 }
 
-class QKxHttpClient;
-
-class QWoAboutDialog : public QDialog
+class QWoSftpExTransferWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit QWoAboutDialog(QWidget *parent = nullptr);
-    ~QWoAboutDialog();
+    explicit QWoSftpExTransferWidget(QWidget *parent = nullptr);
+    ~QWoSftpExTransferWidget();
 
-private slots:
-    void onVersionCheck(int code, const QByteArray& body);
-    void onVersionCheckButtonClicked();
 private:
-    Ui::QWoAboutDialog *ui;
-
-    QPointer<QKxHttpClient> m_httpClient;
+    Ui::QWoSftpExTransferWidget *ui;
 };
 
-#endif // QWOABOUTDIALOG_H
+#endif // QWOSFTPEXTRANSFERWIDGET_H

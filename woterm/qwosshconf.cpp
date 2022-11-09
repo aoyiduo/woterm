@@ -40,14 +40,9 @@
  *    GroupName xxxx
  */
 
-#define IGNORE_UNKNOW ("Group,Password")
+#define IGNORE_UNKNOW       ("Group,Password")
 
-bool lessThan(const HostInfo& a, const HostInfo& b) {
-    return a.name < b.name;
-}
-bool moreThan(const HostInfo& a, const HostInfo& b) {
-    return a.name > b.name;
-}
+#define PASSWORD_ENCRYPT    ("WoTerm@2022-11-6")
 
 void copyHostInfo(HostInfo &dst, const HostInfo &src)
 {
@@ -136,6 +131,21 @@ static bool createIdentitiesTable(SQLite::Database& db) {
     return false;
 }
 
+static bool createGroupsTable(SQLite::Database& db) {
+    QString sql="CREATE TABLE IF NOT EXISTS groups(";
+    sql += "id INTEGER PRIMARY KEY AUTOINCREMENT,";
+    sql += "name VARCHAR(100) UNIQUE NOT NULL,";
+    sql += "orderNum INT DEFAULT (0),";
+    sql += "syncFlag INT DEFAULT (0),";
+    sql += "ct DATETIME NOT NULL";
+    sql +=")";
+    db.exec(sql.toUtf8());
+    if(db.tableExists("groups")) {
+        return true;
+    }
+    return false;
+}
+
 QWoSshConf::QWoSshConf(const QString& dbFile, QObject *parent)
     : QObject (parent)
     , m_dbFile(dbFile)
@@ -178,6 +188,7 @@ void QWoSshConf::init()
                 SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
                 createIdentitiesTable(db);
                 createServersTable(db);
+                createGroupsTable(db);
             }catch(...) {
                 qWarning() << "failed to create database" << m_dbFile;
             }
@@ -512,7 +523,7 @@ void QWoSshConf::importConfToSqlite(const QString &conf, const QString &dbFile)
                 insert.bind("@host", hi.host.toStdString());
                 insert.bind("@port", hi.port);
                 insert.bind("@loginName", hi.user.toStdString());
-                insert.bind("@loginPassword", hi.password.toStdString());
+                insert.bind("@loginPassword", QWoUtils::aesEncrypt(hi.password.toUtf8(), PASSWORD_ENCRYPT).toStdString());
                 QString identityFile = hi.identityFile;
                 if(hi.identityFile.startsWith("woterm:")) {
                     identityFile = identityFile.mid(7);
@@ -541,11 +552,12 @@ void QWoSshConf::importConfToSqlite(const QString &conf, const QString &dbFile)
     }
 }
 
-QHash<QString, HostInfo> QWoSshConf::loadFromSqlite(const QString &dbFile)
+QHash<QString, HostInfo> QWoSshConf::loadServerFromSqlite(const QString &dbFile)
 {
     QHash<QString, HostInfo> hosts;
     try{
-        SQLite::Database db(dbFile.toUtf8(), SQLite::OPEN_READONLY);
+        bool hasDefault = false;
+        SQLite::Database db(dbFile.toUtf8(), SQLite::OPEN_READWRITE);
         SQLite::Statement query(db, "select svc.*,ids.prvKey from servers as svc left join identities as ids on svc.identityFile=ids.name and ids.delFlag=0 where svc.delFlag=0");
         while(query.executeStep()) {
             HostInfo hi;
@@ -554,7 +566,7 @@ QHash<QString, HostInfo> QWoSshConf::loadFromSqlite(const QString &dbFile)
             hi.host = QString::fromStdString(query.getColumn("host").getString());
             hi.port = query.getColumn("port").getInt();
             hi.user = QString::fromStdString(query.getColumn("loginName").getString());
-            hi.password = QString::fromStdString(query.getColumn("loginPassword").getString());
+            hi.password = QWoUtils::aesDecrypt(QByteArray::fromStdString(query.getColumn("loginPassword").getString()), PASSWORD_ENCRYPT);
             hi.identityFile = QString::fromStdString(query.getColumn("identityFile").getString());
             hi.identityContent = QString::fromStdString(query.getColumn("prvKey").getString());
             hi.scriptFile = QString::fromStdString(query.getColumn("scriptFile").getString());
@@ -563,6 +575,10 @@ QHash<QString, HostInfo> QWoSshConf::loadFromSqlite(const QString &dbFile)
             hi.memo = QString::fromStdString(query.getColumn("memo").getString());
             hi.property = QString::fromStdString(query.getColumn("property").getString());
             hi.group = QString::fromStdString(query.getColumn("groupName").getString());
+            if(hi.group.isEmpty()) {
+                hi.group = "Default"; // don't translate it.
+                hasDefault = true;
+            }
             hi.baudRate = QString::fromStdString(query.getColumn("baudRate").getString());
             hi.dataBits = QString::fromStdString(query.getColumn("dataBits").getString());
             hi.parity = QString::fromStdString(query.getColumn("parity").getString());
@@ -570,11 +586,35 @@ QHash<QString, HostInfo> QWoSshConf::loadFromSqlite(const QString &dbFile)
             hi.flowControl = QString::fromStdString(query.getColumn("flowControl").getString());
             hosts.insert(hi.name, hi);
         }
+        if(hasDefault) {
+            SQLite::Statement update(db, "UPDATE servers SET groupName=\"Default\" WHERE groupName=\"\"");
+            int cnt = update.exec();
+            qDebug() << "recorect group to Default" << cnt;
+        }
     }catch(std::exception& e) {
         QByteArray err = e.what();
         qDebug() << "convertConfToSqlite" << err;
     }
     return hosts;
+}
+
+QList<GroupInfo> QWoSshConf::loadGroupFromSqlite(const QString& dbFile)
+{
+    QList<GroupInfo> names;
+    try{
+        SQLite::Database db(dbFile.toUtf8(), SQLite::OPEN_READONLY);
+        SQLite::Statement query(db, "select name,orderNum from groups order by orderNum asc");
+        while(query.executeStep()) {
+            GroupInfo gi;
+            gi.name = QString::fromStdString(query.getColumn("name").getString());
+            gi.order = query.getColumn("orderNum").getInt();
+            names.append(gi);
+        }
+    }catch(std::exception& e) {
+        QByteArray err = e.what();
+        qDebug() << "groupNameList" << err;
+    }
+    return names;
 }
 
 bool QWoSshConf::save(const HostInfo &hi)
@@ -597,7 +637,7 @@ bool QWoSshConf::save(const HostInfo &hi)
             update.bind("@host", hi.host.toStdString());
             update.bind("@port", hi.port);
             update.bind("@loginName", hi.user.toStdString());
-            update.bind("@loginPassword", hi.password.toStdString());
+            update.bind("@loginPassword", QWoUtils::aesEncrypt(hi.password.toUtf8(), PASSWORD_ENCRYPT).toStdString());
             update.bind("@identityFile", hi.identityFile.toStdString());
             update.bind("@scriptFile", hi.scriptFile.toStdString());
             update.bind("@script", hi.script.toStdString());
@@ -626,7 +666,7 @@ bool QWoSshConf::save(const HostInfo &hi)
             insert.bind("@host", hi.host.toStdString());
             insert.bind("@port", hi.port);
             insert.bind("@loginName", hi.user.toStdString());
-            insert.bind("@loginPassword", hi.password.toStdString());
+            insert.bind("@loginPassword", QWoUtils::aesEncrypt(hi.password.toUtf8(), PASSWORD_ENCRYPT).toStdString());
             insert.bind("@identityFile", hi.identityFile.toStdString());
             insert.bind("@scriptFile", hi.scriptFile.toStdString());
             insert.bind("@script", hi.script.toStdString());
@@ -650,19 +690,6 @@ bool QWoSshConf::save(const HostInfo &hi)
     return true;
 }
 
-bool QWoSshConf::initialize(const QString& dbFile)
-{
-    try{
-        SQLite::Database db(dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
-        createIdentitiesTable(db);
-        createServersTable(db);
-        return true;
-    }catch(...) {
-        qWarning() << "failed to initialize sqlite:" << dbFile;
-    }
-    return false;
-}
-
 bool QWoSshConf::databaseValid(const QString &dbFile)
 {
     try {
@@ -680,6 +707,143 @@ bool QWoSshConf::databaseValid(const QString &dbFile)
         }
     } catch (...) {
         qWarning() << "databaseValid" << dbFile;
+    }
+    return false;
+}
+
+QList<GroupInfo> QWoSshConf::groupList() const
+{
+    return m_groups;
+}
+
+QStringList QWoSshConf::groupNameList() const
+{
+    QStringList names;
+    for(auto it = m_groups.begin(); it != m_groups.end(); it++) {
+        const GroupInfo &gi = *it;
+        names.append(gi.name);
+    }
+    return names;
+}
+
+bool QWoSshConf::renameGroup(const QString &nameNew, const QString &nameOld)
+{
+    if(_renameGroup(nameNew, nameOld)) {
+        for(auto it = m_groups.begin(); it != m_groups.end(); it++) {
+            GroupInfo& gi = *it;
+            if(nameOld == gi.name) {
+                gi.name = nameNew;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool QWoSshConf::updateGroup(const QString &name, int order)
+{
+    if(_updateGroup(name, order)) {
+        for(auto it = m_groups.begin(); it != m_groups.end(); it++) {
+            GroupInfo& gi = *it;
+            if(name == gi.name) {
+                m_groups.erase(it);
+                break;
+            }
+        }
+        GroupInfo gi;
+        gi.name = name;
+        gi.order = order;
+        m_groups.append(gi);
+        std::sort(m_groups.begin(), m_groups.end());
+        return true;
+    }
+    return false;
+}
+
+bool QWoSshConf::removeGroup(const QString &name)
+{
+    if(_removeGroup(name)) {
+        for(auto it = m_groups.begin(); it != m_groups.end(); it++) {
+            GroupInfo& gi = *it;
+            if(name == gi.name) {
+                m_groups.erase(it);
+                return true;
+            }
+        }
+    }
+    return true;
+}
+
+bool QWoSshConf::_renameGroup(const QString &nameNew, const QString &nameOld)
+{
+    try{
+        SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        if(!db.tableExists("groups")) {
+            if(!createGroupsTable(db)) {
+                return false;
+            }
+        }
+        SQLite::Statement update(db, "UPDATE groups SET name=@nameNew WHERE name=@nameOld");
+        update.reset();
+        update.bind("@nameNew", nameNew.toStdString());
+        update.bind("@nameOld", nameOld.toStdString());
+        int cnt = update.exec();
+        qDebug() << "renameGroup" << nameOld << nameNew << cnt;
+        return cnt > 0;
+    }catch(std::exception& e) {
+        qDebug() << "QWoSshConf::renameGroup" << e.what();
+    }
+    return false;
+}
+
+bool QWoSshConf::_updateGroup(const QString &name, int order)
+{
+    try{
+        SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        if(!db.tableExists("groups")) {
+            if(!createGroupsTable(db)) {
+                return false;
+            }
+        }
+        SQLite::Statement update(db, "UPDATE groups SET orderNum=@orderNum WHERE name=@name");
+        update.reset();
+        update.bind("@name", name.toStdString());
+        update.bind("@orderNum", order);
+        int cnt = update.exec();
+        if(cnt == 1) {
+            qDebug() << "update group" << name << cnt;
+            return true;
+        }
+        QString now = QDateTime::currentDateTime().toString("yyyy/dd/MM hh:mm:ss");
+        SQLite::Statement insert(db, "INSERT INTO groups (name,orderNum,ct) VALUES (@name,@orderNum,@ct)");
+        insert.reset();
+        insert.bind("@name", name.toStdString());
+        insert.bind("@orderNum", order);
+        insert.bind("@ct", now.toStdString());
+        cnt = insert.exec();
+        qDebug() << "insert group" << name << cnt;
+        return true;
+    }catch(std::exception& e) {
+        qDebug() << "QWoSshConf::updateGroup" << e.what();
+    }
+    return false;
+}
+
+bool QWoSshConf::_removeGroup(const QString &name)
+{
+    try{
+        SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        if(!db.tableExists("groups")) {
+            if(!createGroupsTable(db)) {
+                return false;
+            }
+        }
+        SQLite::Statement task(db, QString("DELETE FROM groups WHERE name='%1'").arg(name).toUtf8());
+        int cnt = task.exec();
+        qDebug() << "delete" << name << cnt;
+        return true;
+    }catch(std::exception& e) {
+        qDebug() << "QWoSshConf::removeGroup" << e.what();
     }
     return false;
 }
@@ -707,7 +871,35 @@ bool QWoSshConf::backup(const QString &dbBackup)
 bool QWoSshConf::refresh()
 {
     init();
-    m_hosts = loadFromSqlite(m_dbFile);
+    m_hosts = loadServerFromSqlite(m_dbFile);
+    m_groups = loadGroupFromSqlite(m_dbFile);
+    QStringList adds;
+    for(auto it = m_hosts.begin(); it != m_hosts.end(); it++) {
+        const HostInfo& hi = it.value();
+        bool find = false;
+        for(auto gt = m_groups.begin(); gt != m_groups.end(); gt++) {
+            const GroupInfo& gi = *gt;
+            if(hi.group == gi.name) {
+                find = true;
+                break;
+            }
+        }
+        if(!find) {
+            if(!adds.contains(hi.group)) {
+                adds.append(hi.group);
+            }
+        }
+    }
+    for(int i = 0; i < adds.length(); i++) {
+        QString name = adds.at(i);
+        if(!name.isEmpty()){
+            GroupInfo gi;
+            _updateGroup(name, 0);
+            gi.name = name;
+            gi.order = -1;
+            m_groups.append(gi);
+        }
+    }
     return true;
 }
 
@@ -722,8 +914,12 @@ bool QWoSshConf::exportToFile(const QString &path)
     return true;
 }
 
-bool QWoSshConf::remove(const QString &name)
+bool QWoSshConf::removeServer(const QString &name)
 {
+    if(!m_hosts.contains(name)) {
+        return false;
+    }
+    m_hosts.remove(name);
     try{
         SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
         if(!db.tableExists("identities")) {
@@ -735,6 +931,43 @@ bool QWoSshConf::remove(const QString &name)
         return true;
     }catch(std::exception& e) {
         qDebug() << "QWoSshConf::remove" << e.what();
+    }
+    return false;
+}
+
+bool QWoSshConf::removeServerByGroup(const QString &name)
+{
+    try{
+        SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        if(!db.tableExists("identities")) {
+            return false;
+        }
+        SQLite::Statement insert(db, QString("DELETE FROM servers WHERE groupName='%1'").arg(name).toUtf8());
+        int cnt = insert.exec();
+        qDebug() << "remove server" << name << cnt;
+        return true;
+    }catch(std::exception& e) {
+        qDebug() << "QWoSshConf::removeAllByGroup" << e.what();
+    }
+    return false;
+}
+
+bool QWoSshConf::renameServerGroup(const QString &nameNew, const QString &nameOld)
+{
+    try{
+        SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        if(!db.tableExists("servers")) {
+            return false;
+        }
+        SQLite::Statement update(db, "UPDATE servers SET groupName=@nameNew WHERE groupName=@nameOld");
+        update.reset();
+        update.bind("@nameNew", nameNew.toStdString());
+        update.bind("@nameOld", nameOld.toStdString());
+        int cnt = update.exec();
+        qDebug() << "renameServerGroup" << nameOld << nameNew << cnt;
+        return cnt > 0;
+    }catch(std::exception& e) {
+        qDebug() << "QWoSshConf::renameServerGroup" << e.what();
     }
     return false;
 }
@@ -801,7 +1034,7 @@ void QWoSshConf::updatePassword(const QString &name, const QString &password)
 QList<HostInfo> QWoSshConf::hostList(EHostType type) const
 {
     QList<HostInfo> hosts = m_hosts.values();
-    std::sort(hosts.begin(), hosts.end(), lessThan);
+    std::sort(hosts.begin(), hosts.end());
     if(type != All) {
         for(QList<HostInfo>::iterator iter = hosts.begin(); iter != hosts.end();) {
             const HostInfo& hi = *iter;
@@ -827,7 +1060,7 @@ QStringList QWoSshConf::hostNameList(EHostType type) const
         return names;
     }
     QList<HostInfo> hosts = m_hosts.values();
-    std::sort(hosts.begin(), hosts.end(), lessThan);
+    std::sort(hosts.begin(), hosts.end());
     QStringList names;
     if(type != All) {
         for(QList<HostInfo>::iterator iter = hosts.begin(); iter != hosts.end();iter++) {

@@ -18,9 +18,9 @@
 #include <QDebug>
 #include <QPixmap>
 
+Q_GLOBAL_STATIC(QWoHostListModel, glistModel)
 QWoHostListModel::QWoHostListModel(QObject *parent)
     : QAbstractListModel (parent)
-    , m_maxColumn(1)
 {
     m_sshIcon = QIcon(QPixmap(":/woterm/resource/skin/ssh2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
     m_sftpIcon = QIcon(QPixmap(":/woterm/resource/skin/sftp.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
@@ -39,13 +39,7 @@ QWoHostListModel::~QWoHostListModel()
 
 QWoHostListModel *QWoHostListModel::instance()
 {
-    static QWoHostListModel *model = new QWoHostListModel();
-    return model;
-}
-
-void QWoHostListModel::setMaxColumnCount(int cnt)
-{
-    m_maxColumn = cnt;
+    return glistModel;
 }
 
 int QWoHostListModel::widthColumn(const QFont &ft, int i)
@@ -65,9 +59,9 @@ int QWoHostListModel::widthColumn(const QFont &ft, int i)
 void QWoHostListModel::refreshList()
 {
     if(QWoSshConf::instance()->refresh()){
-        emit beginResetModel();
+        beginResetModel();
         m_hosts = QWoSshConf::instance()->hostList();
-        emit endResetModel();
+        endResetModel();
     }
 }
 
@@ -324,7 +318,7 @@ void QWoHostListModel::sort(int column, Qt::SortOrder order)
 
 int QWoHostListModel::columnCount(const QModelIndex &parent) const
 {
-    return m_maxColumn;
+    return 4;
 }
 
 Qt::DropActions QWoHostListModel::supportedDropActions() const

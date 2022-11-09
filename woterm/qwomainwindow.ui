@@ -61,6 +61,7 @@
     </property>
     <addaction name="actionOption"/>
     <addaction name="actionIdentityManage"/>
+    <addaction name="actionAdministrator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -152,7 +153,7 @@
      <normaloff>:/woterm/resource/skin/keyset.png</normaloff>:/woterm/resource/skin/keyset.png</iconset>
    </property>
    <property name="text">
-    <string>Identity Manage</string>
+    <string>Identity manage</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -190,6 +191,15 @@
    </property>
    <property name="text">
     <string>Restore</string>
+   </property>
+  </action>
+  <action name="actionAdministrator">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/password .png</normaloff>:/woterm/resource/skin/password .png</iconset>
+   </property>
+   <property name="text">
+    <string>Administrator</string>
    </property>
   </action>
  </widget>

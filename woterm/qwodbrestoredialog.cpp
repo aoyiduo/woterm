@@ -15,6 +15,7 @@
 #include "qwosetting.h"
 #include "qwosshconf.h"
 #include "qwohostlistmodel.h"
+#include "qwohosttreemodel.h"
 
 #include <QFileDialog>
 #include <QTimer>
@@ -65,6 +66,7 @@ void QWoDBRestoreDialog::onRestoreButtonClicked()
     }
     if(QWoSshConf::instance()->restore(path)) {
         QWoHostListModel::instance()->refreshList();
+        QWoHostTreeModel::instance()->refreshList();
         QMessageBox::information(this, tr("Restore information"), tr("success to restore database."));
     }else{
         QMessageBox::information(this, tr("Restore information"), tr("failed to restore database."));

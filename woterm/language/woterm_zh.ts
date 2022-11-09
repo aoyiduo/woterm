@@ -4,7 +4,7 @@
 <context>
     <name>English</name>
     <message>
-        <location filename="../qwosetting.cpp" line="162"/>
+        <location filename="../qwosetting.cpp" line="164"/>
         <source>English</source>
         <translation>简体中文</translation>
     </message>
@@ -98,6 +98,21 @@
         <source>Classics pallete mode</source>
         <translation>经典调色板模式</translation>
     </message>
+    <message>
+        <location filename="../qwoutils.cpp" line="667"/>
+        <source>Ultimate version</source>
+        <translation>旗舰版</translation>
+    </message>
+    <message>
+        <location filename="../qwoutils.cpp" line="667"/>
+        <source>this is the feature of the ultimate version, please upgrade to latest version.</source>
+        <translation>此为旗舰版功能，请升级至最升版本。</translation>
+    </message>
+    <message>
+        <location filename="../qwoutils.cpp" line="678"/>
+        <source>Password input</source>
+        <translation>密码输入</translation>
+    </message>
 </context>
 <context>
     <name>QRLoginPtyClient</name>
@@ -137,45 +152,92 @@
         <translation>当前版本：</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.ui" line="52"/>
+        <location filename="../qwoaboutdialog.ui" line="65"/>
         <source>Latest version:</source>
         <translation>最新版本：</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.ui" line="76"/>
+        <location filename="../qwoaboutdialog.ui" line="89"/>
         <source>Offcie website:</source>
         <translation>官网：</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.ui" line="119"/>
+        <location filename="../qwoaboutdialog.ui" line="151"/>
         <source>Check Version</source>
         <translation>检查版本</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.cpp" line="69"/>
-        <location filename="../qwoaboutdialog.cpp" line="81"/>
-        <location filename="../qwoaboutdialog.cpp" line="86"/>
         <source>version check</source>
-        <translation>版本检查</translation>
+        <translation type="vanished">版本检查</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.cpp" line="69"/>
         <source>Failed For %1</source>
-        <translation>失败原因</translation>
+        <translation type="vanished">失败原因</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.cpp" line="81"/>
         <source>Found New Version: %1, Try To Download?</source>
-        <translation>发现新版本：%1，现在去下载？</translation>
+        <translation type="vanished">发现新版本：%1，现在去下载？</translation>
     </message>
     <message>
-        <location filename="../qwoaboutdialog.cpp" line="86"/>
         <source>No New Version</source>
-        <translation>已经是最新版本</translation>
+        <translation type="vanished">已经是最新版本</translation>
     </message>
     <message>
         <source>TextLabel</source>
         <translation type="vanished">标签</translation>
+    </message>
+</context>
+<context>
+    <name>QWoAdminDialog</name>
+    <message>
+        <location filename="../qwoadmindialog.ui" line="14"/>
+        <source>Dialog</source>
+        <translation>对话框</translation>
+    </message>
+    <message>
+        <location filename="../qwoadmindialog.ui" line="26"/>
+        <source>This password is very important and must be remembered.</source>
+        <translation>该密码非常重要，需妥善保存。</translation>
+    </message>
+    <message>
+        <location filename="../qwoadmindialog.ui" line="35"/>
+        <source>Password:</source>
+        <translation>密码：</translation>
+    </message>
+    <message>
+        <location filename="../qwoadmindialog.ui" line="57"/>
+        <source>save</source>
+        <translation>保存</translation>
+    </message>
+    <message>
+        <location filename="../qwoadmindialog.ui" line="87"/>
+        <source>Login when startup</source>
+        <translation>软件启动时，需要登录。</translation>
+    </message>
+    <message>
+        <location filename="../qwoadmindialog.ui" line="94"/>
+        <source>Look up password</source>
+        <translation>查看会话密码。</translation>
+    </message>
+    <message>
+        <location filename="../qwoadmindialog.ui" line="121"/>
+        <source>Close</source>
+        <translation>关闭</translation>
+    </message>
+    <message>
+        <location filename="../qwoadmindialog.cpp" line="14"/>
+        <source>Administator</source>
+        <translation>管理员</translation>
+    </message>
+    <message>
+        <location filename="../qwoadmindialog.cpp" line="54"/>
+        <source>Parameter error</source>
+        <translation>参数错误</translation>
+    </message>
+    <message>
+        <location filename="../qwoadmindialog.cpp" line="54"/>
+        <source>The password should not empty.</source>
+        <translation>密码不能为空。</translation>
     </message>
 </context>
 <context>
@@ -221,42 +283,80 @@
         <translation>恢复</translation>
     </message>
     <message>
-        <location filename="../qwodbrestoredialog.cpp" line="32"/>
+        <location filename="../qwodbrestoredialog.cpp" line="33"/>
         <source>Database Restore</source>
         <translation>数据库恢复</translation>
     </message>
     <message>
-        <location filename="../qwodbrestoredialog.cpp" line="48"/>
+        <location filename="../qwodbrestoredialog.cpp" line="49"/>
         <source>Restore Session Database</source>
         <translation>恢复数据库</translation>
     </message>
     <message>
-        <location filename="../qwodbrestoredialog.cpp" line="59"/>
-        <location filename="../qwodbrestoredialog.cpp" line="63"/>
-        <location filename="../qwodbrestoredialog.cpp" line="68"/>
+        <location filename="../qwodbrestoredialog.cpp" line="60"/>
+        <location filename="../qwodbrestoredialog.cpp" line="64"/>
         <location filename="../qwodbrestoredialog.cpp" line="70"/>
+        <location filename="../qwodbrestoredialog.cpp" line="72"/>
         <source>Restore information</source>
         <translation>恢复信息</translation>
     </message>
     <message>
-        <location filename="../qwodbrestoredialog.cpp" line="59"/>
+        <location filename="../qwodbrestoredialog.cpp" line="60"/>
         <source>please select a backup file to restore</source>
         <translation>选择一个备份文件去恢复</translation>
     </message>
     <message>
-        <location filename="../qwodbrestoredialog.cpp" line="63"/>
+        <location filename="../qwodbrestoredialog.cpp" line="64"/>
         <source>The backup file is incorrect or corrupt</source>
         <translation>备份文件已经损坏或格式不符合要求。</translation>
     </message>
     <message>
-        <location filename="../qwodbrestoredialog.cpp" line="68"/>
+        <location filename="../qwodbrestoredialog.cpp" line="70"/>
         <source>success to restore database.</source>
         <translation>数据库恢复成功。</translation>
     </message>
     <message>
-        <location filename="../qwodbrestoredialog.cpp" line="70"/>
+        <location filename="../qwodbrestoredialog.cpp" line="72"/>
         <source>failed to restore database.</source>
         <translation>数据库恢复失败。</translation>
+    </message>
+</context>
+<context>
+    <name>QWoGroupInputDialog</name>
+    <message>
+        <location filename="../qwogroupinputdialog.ui" line="14"/>
+        <source>Dialog</source>
+        <translation>对话框</translation>
+    </message>
+    <message>
+        <location filename="../qwogroupinputdialog.ui" line="22"/>
+        <source>Name:</source>
+        <translation>名称：</translation>
+    </message>
+    <message>
+        <location filename="../qwogroupinputdialog.ui" line="36"/>
+        <source>Order:</source>
+        <translation>顺序：</translation>
+    </message>
+    <message>
+        <location filename="../qwogroupinputdialog.ui" line="89"/>
+        <source>Apply</source>
+        <translation>应用</translation>
+    </message>
+    <message>
+        <location filename="../qwogroupinputdialog.ui" line="96"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../qwogroupinputdialog.cpp" line="24"/>
+        <source>New group</source>
+        <translation>新建组</translation>
+    </message>
+    <message>
+        <location filename="../qwogroupinputdialog.cpp" line="24"/>
+        <source>Modify group</source>
+        <translation>修改组</translation>
     </message>
 </context>
 <context>
@@ -403,22 +503,22 @@
 <context>
     <name>QWoHostListModel</name>
     <message>
-        <location filename="../qwohostlistmodel.cpp" line="113"/>
+        <location filename="../qwohostlistmodel.cpp" line="107"/>
         <source>Name</source>
         <translation>名字</translation>
     </message>
     <message>
-        <location filename="../qwohostlistmodel.cpp" line="115"/>
+        <location filename="../qwohostlistmodel.cpp" line="109"/>
         <source>Host</source>
         <translation>主机名</translation>
     </message>
     <message>
-        <location filename="../qwohostlistmodel.cpp" line="117"/>
+        <location filename="../qwohostlistmodel.cpp" line="111"/>
         <source>Type</source>
         <translation>类型</translation>
     </message>
     <message>
-        <location filename="../qwohostlistmodel.cpp" line="119"/>
+        <location filename="../qwohostlistmodel.cpp" line="113"/>
         <source>Memo</source>
         <translation>备忘</translation>
     </message>
@@ -434,19 +534,24 @@
 <context>
     <name>QWoHostTreeModel</name>
     <message>
-        <location filename="../qwohosttreemodel.cpp" line="157"/>
+        <location filename="../qwohosttreemodel.cpp" line="116"/>
         <source>Name</source>
         <translation>名字</translation>
     </message>
     <message>
-        <location filename="../qwohosttreemodel.cpp" line="159"/>
+        <location filename="../qwohosttreemodel.cpp" line="116"/>
         <source>Host</source>
         <translation>主机名</translation>
     </message>
     <message>
-        <location filename="../qwohosttreemodel.cpp" line="161"/>
+        <location filename="../qwohosttreemodel.cpp" line="116"/>
         <source>Memo</source>
         <translation>备忘</translation>
+    </message>
+    <message>
+        <location filename="../qwohosttreemodel.cpp" line="116"/>
+        <source>Type</source>
+        <translation>类型</translation>
     </message>
 </context>
 <context>
@@ -722,57 +827,50 @@
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="110"/>
+        <location filename="../qwomainwindow.ui" line="111"/>
         <source>Tool Bar</source>
         <translation>工具栏</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="119"/>
+        <location filename="../qwomainwindow.ui" line="120"/>
         <source>Session List</source>
         <translation>会话列表</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="128"/>
-        <location filename="../qwomainwindow.cpp" line="411"/>
+        <location filename="../qwomainwindow.ui" line="129"/>
+        <location filename="../qwomainwindow.cpp" line="454"/>
         <source>Option</source>
         <translation>选项</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="183"/>
+        <location filename="../qwomainwindow.ui" line="156"/>
+        <source>Identity manage</source>
+        <translation>证书管理</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.ui" line="184"/>
         <source>Backup</source>
         <translation>备份</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="192"/>
+        <location filename="../qwomainwindow.ui" line="193"/>
         <source>Restore</source>
         <translation>恢复</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="155"/>
-        <source>Identity Manage</source>
-        <translation>证书管理</translation>
+        <location filename="../qwomainwindow.ui" line="202"/>
+        <source>Administrator</source>
+        <translation>管理员</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="173"/>
+        <location filename="../qwomainwindow.ui" line="174"/>
         <source>Online Document</source>
         <translation>在线文档</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="178"/>
+        <location filename="../qwomainwindow.ui" line="179"/>
         <source>Office Wetsite</source>
         <translation>官网</translation>
-    </message>
-    <message>
-        <source>Session Backup</source>
-        <translation type="vanished">备份</translation>
-    </message>
-    <message>
-        <source>Session Restore</source>
-        <translation type="vanished">恢复</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation type="vanished">编辑</translation>
     </message>
     <message>
         <location filename="../qwomainwindow.ui" line="53"/>
@@ -793,8 +891,8 @@
         <translation type="vanished">窗口</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="67"/>
-        <location filename="../qwomainwindow.cpp" line="415"/>
+        <location filename="../qwomainwindow.ui" line="68"/>
+        <location filename="../qwomainwindow.cpp" line="458"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
@@ -803,12 +901,12 @@
         <translation type="vanished">新建...</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="146"/>
+        <location filename="../qwomainwindow.ui" line="147"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="105"/>
+        <location filename="../qwomainwindow.ui" line="106"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
@@ -861,78 +959,124 @@
         <translation type="vanished">发现新版本：%1，现在去下载？</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="59"/>
+        <location filename="../qwomainwindow.cpp" line="64"/>
         <source>WoTerm</source>
         <translation>WoTerm</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="65"/>
+        <location filename="../qwomainwindow.cpp" line="70"/>
         <source>Session Manager</source>
         <translation>会话管理</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="121"/>
+        <location filename="../qwomainwindow.cpp" line="126"/>
         <source>Confirm</source>
         <translation>确认</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="121"/>
+        <location filename="../qwomainwindow.cpp" line="126"/>
         <source>Exit Or Not?</source>
         <translation>退出或取消</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="264"/>
+        <location filename="../qwomainwindow.cpp" line="277"/>
         <source>Version check</source>
         <translation>版本检查</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="264"/>
+        <location filename="../qwomainwindow.cpp" line="277"/>
         <source>a new version of %1 is found, do you want to update it?</source>
         <translation>发现新版本%1，是否需要更新？</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="293"/>
+        <location filename="../qwomainwindow.cpp" line="306"/>
         <source>Backup Session Database</source>
         <translation>备份数据库</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="302"/>
+        <location filename="../qwomainwindow.cpp" line="315"/>
         <source>Failure</source>
         <translation>失败</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="302"/>
+        <location filename="../qwomainwindow.cpp" line="315"/>
         <source>failed to backup the session list.</source>
         <translation>备份数据库失败。</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="336"/>
+        <location filename="../qwomainwindow.cpp" line="349"/>
         <source>Language</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="336"/>
+        <location filename="../qwomainwindow.cpp" line="349"/>
         <source>The language has been changed, restart application to take effect right now.</source>
         <translation>语言已经被修改，需要重启才能生效，是否立即重启？</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="403"/>
+        <location filename="../qwomainwindow.cpp" line="405"/>
+        <source>Password input</source>
+        <translation>密码输入</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.cpp" line="406"/>
+        <source>Login to the configuration of administrator for the first time.<byte value="xd"/>
+Please input password to activate it.</source>
+        <translation>首次使用管理员配置需要输入新密码激活它</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.cpp" line="406"/>
+        <source>Please input password to verify.</source>
+        <translation>请输入密码进行验证。</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.cpp" line="415"/>
+        <source>Password error</source>
+        <translation>参数错误</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.cpp" line="415"/>
+        <source>the password is not right.</source>
+        <translation>密码不正确。</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.cpp" line="446"/>
         <source>Toolbar</source>
         <translation>工具栏</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="137"/>
-        <location filename="../qwomainwindow.cpp" line="404"/>
+        <location filename="../qwomainwindow.cpp" line="505"/>
+        <source>Administrator login</source>
+        <translation>管理员登录</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.cpp" line="506"/>
+        <source>Please input password to login application.</source>
+        <translation>请输入密码登录应用</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.cpp" line="516"/>
+        <source>Login failure</source>
+        <translation>登录失败</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.cpp" line="516"/>
+        <source>The password is wrong, %1 times left to try.</source>
+        <translation>密码错误，剩余%1次尝试机会。</translation>
+    </message>
+    <message>
+        <location filename="../qwomainwindow.ui" line="138"/>
+        <location filename="../qwomainwindow.cpp" line="447"/>
         <source>New</source>
         <translation>新建</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="405"/>
+        <location filename="../qwomainwindow.cpp" line="448"/>
         <source>Manage</source>
         <translation>管理</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="406"/>
+        <location filename="../qwomainwindow.cpp" line="449"/>
         <source>List</source>
         <translation>列表</translation>
     </message>
@@ -941,13 +1085,13 @@
         <translation type="vanished">设置</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.cpp" line="413"/>
+        <location filename="../qwomainwindow.cpp" line="456"/>
         <source>Keys</source>
         <translation>证书管理</translation>
     </message>
     <message>
-        <location filename="../qwomainwindow.ui" line="164"/>
-        <location filename="../qwomainwindow.cpp" line="416"/>
+        <location filename="../qwomainwindow.ui" line="165"/>
+        <location filename="../qwomainwindow.cpp" line="459"/>
         <source>About</source>
         <translation>关于...</translation>
     </message>
@@ -1343,82 +1487,92 @@
 <context>
     <name>QWoSessionList</name>
     <message>
-        <location filename="../qwosessionlist.cpp" line="79"/>
+        <location filename="../qwosessionlist.cpp" line="106"/>
         <source>Enter keyword to search</source>
         <translation>关键字搜索</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="169"/>
+        <location filename="../qwosessionlist.cpp" line="202"/>
         <source>name</source>
         <translation>名字</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="170"/>
+        <location filename="../qwosessionlist.cpp" line="203"/>
         <source>host</source>
         <translation>主机名</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="171"/>
+        <location filename="../qwosessionlist.cpp" line="204"/>
         <source>memo</source>
         <translation>备忘</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="336"/>
-        <location filename="../qwosessionlist.cpp" line="341"/>
+        <location filename="../qwosessionlist.cpp" line="416"/>
+        <location filename="../qwosessionlist.cpp" line="421"/>
         <source>ReloadAll</source>
         <translation>重新加载</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="337"/>
-        <location filename="../qwosessionlist.cpp" line="342"/>
+        <location filename="../qwosessionlist.cpp" line="417"/>
+        <location filename="../qwosessionlist.cpp" line="422"/>
         <source>Add</source>
         <translation>增加</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="344"/>
+        <location filename="../qwosessionlist.cpp" line="424"/>
         <source>SshConnect</source>
         <translation>SSH连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="347"/>
+        <location filename="../qwosessionlist.cpp" line="427"/>
         <source>SftpConnect</source>
         <translation>SFTP连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="350"/>
+        <location filename="../qwosessionlist.cpp" line="430"/>
         <source>TelnetConnect</source>
         <translation>TELNET连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="353"/>
+        <location filename="../qwosessionlist.cpp" line="433"/>
         <source>RLoginConnect</source>
         <translation>RLOGIN连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="356"/>
+        <location filename="../qwosessionlist.cpp" line="436"/>
         <source>MstscConnect</source>
         <translation>MSTSC连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="359"/>
+        <location filename="../qwosessionlist.cpp" line="439"/>
         <source>VncConnect</source>
         <translation>VNC连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="362"/>
+        <location filename="../qwosessionlist.cpp" line="442"/>
         <source>SerialConnect</source>
         <translation>串口连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="364"/>
+        <location filename="../qwosessionlist.cpp" line="444"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location filename="../qwosessionlist.cpp" line="365"/>
-        <location filename="../qwosessionlist.cpp" line="367"/>
+        <location filename="../qwosessionlist.cpp" line="445"/>
+        <location filename="../qwosessionlist.cpp" line="447"/>
         <source>Delete</source>
         <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="../qwosessionlist.cpp" line="451"/>
+        <source>Show tree mode</source>
+        <translation>树状展示</translation>
+    </message>
+    <message>
+        <location filename="../qwosessionlist.cpp" line="453"/>
+        <source>Show list mode</source>
+        <translation>列表展示</translation>
     </message>
 </context>
 <context>
@@ -1429,25 +1583,25 @@
         <translation>对话框</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.ui" line="26"/>
+        <location filename="../qwosessionmanage.ui" line="40"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.ui" line="43"/>
+        <location filename="../qwosessionmanage.ui" line="57"/>
         <source>New</source>
         <translation>新建</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.ui" line="60"/>
-        <location filename="../qwosessionmanage.cpp" line="271"/>
+        <location filename="../qwosessionmanage.ui" line="74"/>
+        <location filename="../qwosessionmanage.cpp" line="296"/>
         <source>Modify</source>
         <translation>修改</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.ui" line="77"/>
-        <location filename="../qwosessionmanage.cpp" line="487"/>
-        <location filename="../qwosessionmanage.cpp" line="489"/>
+        <location filename="../qwosessionmanage.ui" line="91"/>
+        <location filename="../qwosessionmanage.cpp" line="570"/>
+        <location filename="../qwosessionmanage.cpp" line="572"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>
@@ -1460,130 +1614,135 @@
         <translation type="vanished">关闭</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="40"/>
+        <location filename="../qwosessionmanage.cpp" line="46"/>
         <source>Session List</source>
         <translation>会话列表</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="76"/>
+        <location filename="../qwosessionmanage.cpp" line="53"/>
+        <source>Mode</source>
+        <translation>模式</translation>
+    </message>
+    <message>
+        <location filename="../qwosessionmanage.cpp" line="91"/>
         <source>Enter keyword to search target quickly</source>
         <translation>关键字搜索</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="113"/>
-        <location filename="../qwosessionmanage.cpp" line="132"/>
-        <location filename="../qwosessionmanage.cpp" line="151"/>
-        <location filename="../qwosessionmanage.cpp" line="170"/>
-        <location filename="../qwosessionmanage.cpp" line="189"/>
-        <location filename="../qwosessionmanage.cpp" line="208"/>
-        <location filename="../qwosessionmanage.cpp" line="227"/>
-        <location filename="../qwosessionmanage.cpp" line="239"/>
-        <location filename="../qwosessionmanage.cpp" line="371"/>
-        <location filename="../qwosessionmanage.cpp" line="381"/>
-        <location filename="../qwosessionmanage.cpp" line="399"/>
+        <location filename="../qwosessionmanage.cpp" line="131"/>
+        <location filename="../qwosessionmanage.cpp" line="150"/>
+        <location filename="../qwosessionmanage.cpp" line="169"/>
+        <location filename="../qwosessionmanage.cpp" line="188"/>
+        <location filename="../qwosessionmanage.cpp" line="207"/>
+        <location filename="../qwosessionmanage.cpp" line="226"/>
+        <location filename="../qwosessionmanage.cpp" line="245"/>
+        <location filename="../qwosessionmanage.cpp" line="257"/>
+        <location filename="../qwosessionmanage.cpp" line="422"/>
+        <location filename="../qwosessionmanage.cpp" line="432"/>
+        <location filename="../qwosessionmanage.cpp" line="450"/>
         <source>Info</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="113"/>
-        <location filename="../qwosessionmanage.cpp" line="132"/>
-        <location filename="../qwosessionmanage.cpp" line="151"/>
-        <location filename="../qwosessionmanage.cpp" line="170"/>
-        <location filename="../qwosessionmanage.cpp" line="189"/>
-        <location filename="../qwosessionmanage.cpp" line="208"/>
-        <location filename="../qwosessionmanage.cpp" line="227"/>
-        <location filename="../qwosessionmanage.cpp" line="239"/>
-        <location filename="../qwosessionmanage.cpp" line="381"/>
-        <location filename="../qwosessionmanage.cpp" line="399"/>
+        <location filename="../qwosessionmanage.cpp" line="131"/>
+        <location filename="../qwosessionmanage.cpp" line="150"/>
+        <location filename="../qwosessionmanage.cpp" line="169"/>
+        <location filename="../qwosessionmanage.cpp" line="188"/>
+        <location filename="../qwosessionmanage.cpp" line="207"/>
+        <location filename="../qwosessionmanage.cpp" line="226"/>
+        <location filename="../qwosessionmanage.cpp" line="245"/>
+        <location filename="../qwosessionmanage.cpp" line="257"/>
+        <location filename="../qwosessionmanage.cpp" line="432"/>
+        <location filename="../qwosessionmanage.cpp" line="450"/>
         <source>no selection</source>
         <translation>没有选中项</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="271"/>
+        <location filename="../qwosessionmanage.cpp" line="296"/>
         <source>No Selection</source>
         <translation>没有选中项</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="295"/>
+        <location filename="../qwosessionmanage.cpp" line="346"/>
         <source>Import File</source>
         <translation>导入文件</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="304"/>
-        <location filename="../qwosessionmanage.cpp" line="320"/>
-        <location filename="../qwosessionmanage.cpp" line="325"/>
-        <location filename="../qwosessionmanage.cpp" line="336"/>
+        <location filename="../qwosessionmanage.cpp" line="355"/>
+        <location filename="../qwosessionmanage.cpp" line="371"/>
+        <location filename="../qwosessionmanage.cpp" line="376"/>
+        <location filename="../qwosessionmanage.cpp" line="387"/>
         <source>warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="304"/>
+        <location filename="../qwosessionmanage.cpp" line="355"/>
         <source>it&apos;s not a ssh config format: %1</source>
         <translation>文件格式错误：%1</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="320"/>
+        <location filename="../qwosessionmanage.cpp" line="371"/>
         <source>failed to find the identify file list in config file for bad path: %1</source>
         <translation>无法获取证书文件列表</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="325"/>
+        <location filename="../qwosessionmanage.cpp" line="376"/>
         <source>bad identify file: %1</source>
         <translation>错误的证书文件</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="336"/>
+        <location filename="../qwosessionmanage.cpp" line="387"/>
         <source>The config file contain the follow identify&apos;s files, Please export them before do this action.</source>
         <translation>配置文件中包括了相关证书文件，请先导出证书后，再导入该配置文件</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="371"/>
+        <location filename="../qwosessionmanage.cpp" line="422"/>
         <source>can&apos;t open over 6 session in same page.</source>
         <translation>同一个窗口内无法打开超过六个会话。</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="460"/>
-        <location filename="../qwosessionmanage.cpp" line="464"/>
+        <location filename="../qwosessionmanage.cpp" line="543"/>
+        <location filename="../qwosessionmanage.cpp" line="547"/>
         <source>Add</source>
         <translation>增加</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="466"/>
+        <location filename="../qwosessionmanage.cpp" line="549"/>
         <source>SshConnect</source>
         <translation>SSH连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="469"/>
+        <location filename="../qwosessionmanage.cpp" line="552"/>
         <source>SftpConnect</source>
         <translation>SFTP连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="472"/>
+        <location filename="../qwosessionmanage.cpp" line="555"/>
         <source>TelnetConnect</source>
         <translation>TELNET连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="475"/>
+        <location filename="../qwosessionmanage.cpp" line="558"/>
         <source>RLoginConnect</source>
         <translation>RLOGIN连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="478"/>
+        <location filename="../qwosessionmanage.cpp" line="561"/>
         <source>MstscConnect</source>
         <translation>MSTSC连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="481"/>
+        <location filename="../qwosessionmanage.cpp" line="564"/>
         <source>VncConnect</source>
         <translation>VNC连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="484"/>
+        <location filename="../qwosessionmanage.cpp" line="567"/>
         <source>SerialConnect</source>
         <translation>串口连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionmanage.cpp" line="486"/>
+        <location filename="../qwosessionmanage.cpp" line="569"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
@@ -1905,8 +2064,8 @@
     </message>
     <message>
         <location filename="../qwosessionproperty.ui" line="95"/>
-        <location filename="../qwosessionproperty.cpp" line="287"/>
-        <location filename="../qwosessionproperty.cpp" line="303"/>
+        <location filename="../qwosessionproperty.cpp" line="302"/>
+        <location filename="../qwosessionproperty.cpp" line="318"/>
         <source>Default:22</source>
         <translation>默认：22</translation>
     </message>
@@ -1966,134 +2125,159 @@
         <translation>流控协议：</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.ui" line="337"/>
+        <location filename="../qwosessionproperty.ui" line="339"/>
+        <source>  GroupName:</source>
+        <translation>组名：</translation>
+    </message>
+    <message>
+        <location filename="../qwosessionproperty.ui" line="349"/>
+        <source>...</source>
+        <translation>...</translation>
+    </message>
+    <message>
+        <location filename="../qwosessionproperty.ui" line="375"/>
         <source>Memo</source>
         <translation>备忘</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.ui" line="362"/>
+        <location filename="../qwosessionproperty.ui" line="400"/>
         <source>More</source>
         <translation>更多</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.ui" line="369"/>
+        <location filename="../qwosessionproperty.ui" line="407"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.ui" line="376"/>
+        <location filename="../qwosessionproperty.ui" line="414"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.ui" line="383"/>
+        <location filename="../qwosessionproperty.ui" line="421"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="94"/>
+        <location filename="../qwosessionproperty.cpp" line="98"/>
         <source>Session[New]</source>
         <translation>会话[新建]</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="108"/>
+        <location filename="../qwosessionproperty.cpp" line="112"/>
         <source>Session[%1]</source>
         <translation>会话[%1]</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="117"/>
-        <location filename="../qwosessionproperty.cpp" line="171"/>
-        <location filename="../qwosessionproperty.cpp" line="409"/>
-        <location filename="../qwosessionproperty.cpp" line="475"/>
-        <location filename="../qwosessionproperty.cpp" line="501"/>
+        <location filename="../qwosessionproperty.cpp" line="122"/>
+        <location filename="../qwosessionproperty.cpp" line="176"/>
+        <location filename="../qwosessionproperty.cpp" line="424"/>
+        <location filename="../qwosessionproperty.cpp" line="534"/>
+        <location filename="../qwosessionproperty.cpp" line="560"/>
         <source>Password</source>
         <translation>密码</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="119"/>
-        <location filename="../qwosessionproperty.cpp" line="172"/>
+        <location filename="../qwosessionproperty.cpp" line="124"/>
+        <location filename="../qwosessionproperty.cpp" line="177"/>
         <source>Identify</source>
         <translation>证书</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="319"/>
+        <location filename="../qwosessionproperty.cpp" line="334"/>
         <source>Default:23</source>
         <translation>默认：23</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="334"/>
+        <location filename="../qwosessionproperty.cpp" line="349"/>
         <source>Default:513</source>
         <translation>默认：513</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="349"/>
+        <location filename="../qwosessionproperty.cpp" line="364"/>
         <source>Default:3389</source>
         <translation>默认：3389</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="364"/>
+        <location filename="../qwosessionproperty.cpp" line="379"/>
         <source>Default:590x</source>
         <translation>默认：590x</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="480"/>
-        <location filename="../qwosessionproperty.cpp" line="488"/>
-        <location filename="../qwosessionproperty.cpp" line="492"/>
+        <location filename="../qwosessionproperty.cpp" line="444"/>
+        <source>Please input the administrator password</source>
+        <translation>请输入管理员密码</translation>
+    </message>
+    <message>
         <location filename="../qwosessionproperty.cpp" line="506"/>
-        <location filename="../qwosessionproperty.cpp" line="511"/>
-        <location filename="../qwosessionproperty.cpp" line="519"/>
-        <location filename="../qwosessionproperty.cpp" line="523"/>
-        <location filename="../qwosessionproperty.cpp" line="575"/>
-        <location filename="../qwosessionproperty.cpp" line="580"/>
-        <location filename="../qwosessionproperty.cpp" line="585"/>
-        <location filename="../qwosessionproperty.cpp" line="591"/>
+        <source>Parameter error</source>
+        <translation>参数错误</translation>
+    </message>
+    <message>
+        <location filename="../qwosessionproperty.cpp" line="506"/>
+        <source>The group name is already exist.</source>
+        <translation>组名已经存在。</translation>
+    </message>
+    <message>
+        <location filename="../qwosessionproperty.cpp" line="539"/>
+        <location filename="../qwosessionproperty.cpp" line="547"/>
+        <location filename="../qwosessionproperty.cpp" line="551"/>
+        <location filename="../qwosessionproperty.cpp" line="565"/>
+        <location filename="../qwosessionproperty.cpp" line="570"/>
+        <location filename="../qwosessionproperty.cpp" line="578"/>
+        <location filename="../qwosessionproperty.cpp" line="582"/>
+        <location filename="../qwosessionproperty.cpp" line="634"/>
+        <location filename="../qwosessionproperty.cpp" line="639"/>
+        <location filename="../qwosessionproperty.cpp" line="644"/>
+        <location filename="../qwosessionproperty.cpp" line="650"/>
         <source>Info</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="480"/>
+        <location filename="../qwosessionproperty.cpp" line="539"/>
         <source>The identity file can&apos;t be empty</source>
         <translation>证书文件不能为空</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="506"/>
+        <location filename="../qwosessionproperty.cpp" line="565"/>
         <source>The identify file can&apos;t be empty</source>
         <translation>证书文件不能为空</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="511"/>
+        <location filename="../qwosessionproperty.cpp" line="570"/>
         <source>failed to find the identify file</source>
         <translation>无法查到证书文件</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="488"/>
-        <location filename="../qwosessionproperty.cpp" line="519"/>
+        <location filename="../qwosessionproperty.cpp" line="547"/>
+        <location filename="../qwosessionproperty.cpp" line="578"/>
         <source>ProxyJump can&apos;t be same with name, change to another one.</source>
         <translation>名字不能与跳板机名字相同，请更换其它跳板机名字</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="492"/>
-        <location filename="../qwosessionproperty.cpp" line="523"/>
+        <location filename="../qwosessionproperty.cpp" line="551"/>
+        <location filename="../qwosessionproperty.cpp" line="582"/>
         <source>The userName can&apos;t be empty</source>
         <translation>登录名不能为空</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="575"/>
+        <location filename="../qwosessionproperty.cpp" line="634"/>
         <source>The name can&apos;t be empty</source>
         <translation>会话名不能为空</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="580"/>
+        <location filename="../qwosessionproperty.cpp" line="639"/>
         <source>The host can&apos;t be empty</source>
         <translation>主机名不能为空</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="585"/>
+        <location filename="../qwosessionproperty.cpp" line="644"/>
         <source>The port should be at [10,65535]</source>
         <translation>端口取值范围必须是[10,65535]之间</translation>
     </message>
     <message>
-        <location filename="../qwosessionproperty.cpp" line="591"/>
+        <location filename="../qwosessionproperty.cpp" line="650"/>
         <source>The session name had been used, Change to another name.</source>
         <translation>会话名已经被占用，请更换其它名字</translation>
     </message>

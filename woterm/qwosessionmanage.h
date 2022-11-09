@@ -13,7 +13,6 @@
 #define QWOSESSIONMANAGE_H
 
 #include "qwoglobal.h"
-#include "qwohostlistmodel.h"
 
 #include <QDialog>
 #include <QPointer>
@@ -25,6 +24,8 @@ class QWoSessionManage;
 
 class QKxTermWidget;
 class QStringListModel;
+class QWoHostTreeModel;
+class QWoHostListModel;
 class QSortFilterProxyModel;
 class QWoTreeView;
 
@@ -59,14 +60,18 @@ private slots:
     void onTreeViewOpenInDifferentPage();
     void onTreeItemSelected(const QModelIndex& idx);
     void onTreeItemDoubleClicked(const QModelIndex& idx);
+    void onTreeModelSwitch();
 private:
-    void refreshList();
+    Q_INVOKABLE void refreshList();
+    Q_INVOKABLE void resizeHeader();
     bool handleTreeViewContextMenu(QContextMenuEvent *ev);
 protected:
     bool eventFilter(QObject *obj, QEvent *ev);
 private:
     Ui::QWoSessionManage *ui;
-    QPointer<QWoHostListModel> m_model;
+    QPointer<QWoHostListModel> m_listModel;
+    QPointer<QWoHostTreeModel> m_treeModel;
+    QPointer<QAbstractItemModel> m_model;
     QPointer<QSortFilterProxyModel> m_proxyModel;
     QPointer<QWoTreeView> m_tree;
 };

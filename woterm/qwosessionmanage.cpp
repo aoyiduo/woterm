@@ -20,6 +20,11 @@
 #include "qwosshconf.h"
 #include "qwotreeview.h"
 #include "qwoidentify.h"
+#include "qwosortfilterproxymodel.h"
+#include "qwohosttreemodel.h"
+#include "qwohostlistmodel.h"
+#include "qwogroupinputdialog.h"
+#include "qkxver.h"
 
 #include <QFileDialog>
 #include <QMenu>
@@ -29,6 +34,7 @@
 #include <QMessageBox>
 #include <QSortFilterProxyModel>
 #include <QContextMenuEvent>
+#include <QHeaderView>
 
 QWoSessionManage::QWoSessionManage(QWidget *parent)
     : QDialog(parent)
@@ -39,10 +45,21 @@ QWoSessionManage::QWoSessionManage(QWidget *parent)
     ui->setupUi(this);
     setWindowTitle(tr("Session List"));
 
-    m_model = QWoHostListModel::instance();
-    m_model->setMaxColumnCount(4);
-    m_proxyModel = new QSortFilterProxyModel(this);
-    m_proxyModel->setSourceModel(m_model);
+    m_listModel = QWoHostListModel::instance();
+    m_treeModel = QWoHostTreeModel::instance();
+
+    m_proxyModel = new QWoSortFilterProxyModel(4, this);
+    m_proxyModel->setRecursiveFilteringEnabled(true);
+    ui->btnModel->setText(tr("Mode"));
+    if(QWoSetting::isListModel("manage")|| !QKxVer::isUltimate()) {
+        ui->btnModel->setIcon(QIcon(":/woterm/resource/skin/list.png"));
+        m_proxyModel->setSourceModel(m_listModel);
+        m_model = m_listModel;
+    }else{
+        ui->btnModel->setIcon(QIcon(":/woterm/resource/skin/tree.png"));
+        m_proxyModel->setSourceModel(m_treeModel);
+        m_model = m_treeModel;
+    }
 
     QVBoxLayout *layout = new QVBoxLayout(ui->frame);
     ui->frame->setLayout(layout);
@@ -51,18 +68,15 @@ QWoSessionManage::QWoSessionManage(QWidget *parent)
     layout->setMargin(0);
     m_tree = new QWoTreeView(ui->frame);
     m_tree->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_tree->setSelectionMode(QAbstractItemView::MultiSelection);
+    m_tree->setIndentation(10);
     layout->addWidget(m_tree);
     m_tree->installEventFilter(this);
-
     m_tree->setModel(m_proxyModel);
-    int w = m_model->widthColumn(m_tree->font(), 0);
-    if(w < 100) {
-        w = 100;
-    }
-    m_tree->setColumnWidth(0, w+30);
-    m_tree->setColumnWidth(1, 200);
     m_tree->setIconSize(QSize(24,24));
+    resizeHeader();
+
 
     QObject::connect(ui->filter, SIGNAL(textChanged(const QString&)), this, SLOT(onEditTextChanged(const QString&)));
     QObject::connect(ui->btnOpen, SIGNAL(clicked()), this, SLOT(onOpenReady()));
@@ -71,9 +85,12 @@ QWoSessionManage::QWoSessionManage(QWidget *parent)
     QObject::connect(ui->btnNew, SIGNAL(clicked()), this, SLOT(onNewReady()));
     QObject::connect(m_tree, SIGNAL(itemChanged(const QModelIndex&)), this, SLOT(onTreeItemSelected(const QModelIndex&)));
     QObject::connect(m_tree, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onTreeItemDoubleClicked(const QModelIndex&)));
+    QObject::connect(ui->btnModel, SIGNAL(clicked()), this, SLOT(onTreeModelSwitch()));
 
     ui->filter->clear();
     ui->filter->setPlaceholderText(tr("Enter keyword to search target quickly"));
+
+    QMetaObject::invokeMethod(this, "refreshList", Qt::QueuedConnection);
 }
 
 QWoSessionManage::~QWoSessionManage()
@@ -96,6 +113,7 @@ void QWoSessionManage::onEditTextChanged(const QString &txt)
     regex.setPatternSyntax(QRegExp::RegExp2);
     m_proxyModel->setFilterRegExp(regex);
     m_proxyModel->setFilterRole(ROLE_REFILTER);
+    m_tree->expandAll();
 }
 
 void QWoSessionManage::onSshConnectReady()
@@ -258,8 +276,15 @@ void QWoSessionManage::onDeleteReady()
     }
     for(int i = 0; i < idxs.length(); i++) {
         QModelIndex idx = idxs.at(i);
-        QString name = idx.data().toString();
-        QWoSshConf::instance()->remove(name);
+        QVariant group = idx.data(ROLE_GROUP);
+        if(group.isValid()) {
+            const GroupInfo& gi = group.value<GroupInfo>();
+            QWoSshConf::instance()->removeServerByGroup(gi.name);
+            QWoSshConf::instance()->removeGroup(gi.name);
+        }else{
+            QString name = idx.data().toString();
+            QWoSshConf::instance()->removeServer(name);
+        }
     }
     refreshList();
 }
@@ -271,21 +296,47 @@ void QWoSessionManage::onModifyReady()
         QMessageBox::information(this, tr("Modify"), tr("No Selection"));
         return;
     }
-    QVariant host = idx.data(ROLE_HOSTINFO);
-    if(!host.isValid()) {
-        return;
+    QVariant group = idx.data(ROLE_GROUP);
+    if(group.isValid()) {
+        const GroupInfo& gi = group.value<GroupInfo>();
+        QWoGroupInputDialog dlg(gi.name, gi.order, this);
+        QPointer<QWoGroupInputDialog> dlgPtr(&dlg);
+        QObject::connect(&dlg, &QWoGroupInputDialog::apply, this, [&](const QString& name, int order){
+            if(gi.name != name) {
+                // modify group name.
+                QWoSshConf::instance()->updateGroup(gi.name, order);
+                QWoSshConf::instance()->renameGroup(name, gi.name);
+                QWoSshConf::instance()->renameServerGroup(name, gi.name);
+            }else{
+                QWoSshConf::instance()->updateGroup(name, order);
+            }
+            dlgPtr->done(QDialog::Accepted);
+        });
+        if(dlg.exec() != QDialog::Accepted){
+            return;
+        }
+    }else{
+        QVariant host = idx.data(ROLE_HOSTINFO);
+        if(!host.isValid()) {
+            return;
+        }
+        HostInfo hi = host.value<HostInfo>();
+        QWoSessionProperty dlg(this);
+        dlg.setSession(hi.name);
+        int err = dlg.exec();
+        if(err == QWoSessionProperty::Cancel) {
+            return;
+        }
     }
-    HostInfo hi = host.value<HostInfo>();
-    QWoSessionProperty dlg(this);
-    dlg.setSession(hi.name);
-    dlg.exec();
     refreshList();
 }
 
 void QWoSessionManage::onNewReady()
 {
     QWoSessionProperty dlg(this);
-    dlg.exec();
+    if(dlg.exec() == QWoSessionProperty::Cancel) {
+        return;
+    }
     refreshList();
 }
 
@@ -416,7 +467,11 @@ void QWoSessionManage::onTreeItemDoubleClicked(const QModelIndex &idx)
     if(!idx.isValid()) {
         return;
     }
-    HostInfo hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
+    QVariant v = idx.data(ROLE_HOSTINFO);
+    if(!v.isValid()) {
+        return;
+    }
+    HostInfo hi = v.value<HostInfo>();
     switch(hi.type) {
     case SshWithSftp:
         emit readyToConnect(hi.name, EOT_SSH);
@@ -443,10 +498,38 @@ void QWoSessionManage::onTreeItemDoubleClicked(const QModelIndex &idx)
     close();
 }
 
+void QWoSessionManage::onTreeModelSwitch()
+{
+    if(!QWoUtils::isUltimateVersion(this)) {
+        return;
+    }
+    if(m_model == m_listModel) {
+        ui->btnModel->setIcon(QIcon(":/woterm/resource/skin/tree.png"));
+        m_proxyModel->setSourceModel(m_treeModel);
+        m_model = m_treeModel;
+        QWoSetting::setListModel("manage", false);
+    }else{
+        ui->btnModel->setIcon(QIcon(":/woterm/resource/skin/list.png"));
+        m_proxyModel->setSourceModel(m_listModel);
+        m_model = m_listModel;
+        QWoSetting::setListModel("manage", true);
+    }
+    resizeHeader();
+}
+
 void QWoSessionManage::refreshList()
 {
     QWoSshConf::instance()->refresh();
-    m_model->refreshList();
+    m_listModel->refreshList();
+    m_treeModel->refreshList();
+    resizeHeader();
+}
+
+void QWoSessionManage::resizeHeader()
+{
+    m_tree->setColumnWidth(0, 200);
+    m_tree->setColumnWidth(1, 200);
+    m_tree->setColumnWidth(2, 90);
 }
 
 bool QWoSessionManage::handleTreeViewContextMenu(QContextMenuEvent *ev)

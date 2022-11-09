@@ -67,6 +67,7 @@ private slots:
     void onActionWebsiteTriggered();
     void onActionScriptRunTriggered();
     void onActionSshKeyManageTriggered();
+    void onActionAdminTriggered();
 
 private:
     void initMenuBar();
@@ -74,6 +75,8 @@ private:
     void initStatusBar();
     void restoreLastState();
     void saveLastState();
+
+    bool checkAdminLogin();
 private:
     Ui::QWoMainWindow *ui;
     QPointer<QTabBar> m_tab;

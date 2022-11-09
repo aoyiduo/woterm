@@ -14,6 +14,7 @@
 #include "qwotelnettermwidgetimpl.h"
 #include "qworlogintermwidgetimpl.h"
 #include "qwosftpwidgetimpl.h"
+#include "qwosftpexwidgetimpl.h"
 #include "qwoserialwidgetimpl.h"
 #include "qwovncwidgetimpl.h"
 #include "qwordpwidgetimpl.h"
@@ -24,6 +25,7 @@
 #include "qwoutils.h"
 #include "qwosshconf.h"
 #include "qwofloatwindow.h"
+#include "qkxver.h"
 
 #include <QTabBar>
 #include <QResizeEvent>
@@ -100,12 +102,21 @@ bool QWoShower::openSftp(const QString &target, int gid)
     if(gid < 0) {
         gid = QWoUtils::gid();
     }
-    QWoSftpWidgetImpl *impl = new QWoSftpWidgetImpl(target, gid, m_tab, this);
-    createTab(impl, m_ftpico, target);
-    impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
-    impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/sftp.png");
-    emit floatChanged(impl, false);
+    if(QKxVer::isUltimate()) {
+        QWoSftpExWidgetImpl *impl = new QWoSftpExWidgetImpl(target, gid, m_tab, this);
+        createTab(impl, m_ftpico, target);
+        impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
+        impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
+        impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/sftp.png");
+        emit floatChanged(impl, false);
+    }else{
+        QWoSftpWidgetImpl *impl = new QWoSftpWidgetImpl(target, gid, m_tab, this);
+        createTab(impl, m_ftpico, target);
+        impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
+        impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
+        impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/sftp.png");
+        emit floatChanged(impl, false);
+    }
     return true;
 }
 

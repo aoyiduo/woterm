@@ -15,8 +15,10 @@
 #include <QString>
 
 
+class QWidget;
 class QLayout;
 struct addrinfo;
+
 
 class QWoUtils
 {
@@ -61,4 +63,14 @@ public:
     static bool openself(const QString& type, const QString& target, bool pkexec=false);
 
     static int parseVersion(const QString& ver);
+
+    /*encrypt*/
+    static QByteArray aesOfb128Encrypt(const QByteArray &all, const QByteArray &pass);
+    static QByteArray aesOfb128Decrypt(const QByteArray &all, const QByteArray &pass);
+    static QByteArray aesEncrypt(const QByteArray& all, const QByteArray &pass="WoTerm@2022-11-6");
+    static QByteArray aesDecrypt(const QByteArray& all, const QByteArray &pass="WoTerm@2022-11-6");
+
+    /*version*/
+    static bool isUltimateVersion(QWidget *parent);
+    static QString getPassword(QWidget *parent, const QString& label);
 };

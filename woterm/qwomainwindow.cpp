@@ -18,17 +18,21 @@
 #include "ui_qwomainwindow.h"
 #include "qwosessionmanage.h"
 #include "qwoaboutdialog.h"
+#include "qwoadmindialog.h"
 #include "qwoidentifydialog.h"
 #include "version.h"
 #include "qkxhttpclient.h"
 #include "qwoutils.h"
 #include "qwosettingdialog.h"
 #include "qwosshconf.h"
+#include "qwohostlistmodel.h"
+#include "qwohosttreemodel.h"
 #include "qwosessionproperty.h"
 #include "qwosessionmoreproperty.h"
 #include "qwosshconf.h"
 #include "qwodbrestoredialog.h"
 #include "qkxprocesslaunch.h"
+#include "qkxver.h"
 #include "version.h"
 
 #include <QApplication>
@@ -48,6 +52,7 @@
 #include <QTimer>
 #include <QDebug>
 #include <QProcess>
+#include <QInputDialog>
 
 QWoMainWindow::QWoMainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -192,7 +197,7 @@ void QWoMainWindow::onAppStart()
     {
         // version check.
         QKxHttpClient *http = new QKxHttpClient(this);
-        QObject::connect(http, SIGNAL(result(int,const QByteArray&)), this, SLOT(onVersionCheck(int,const QByteArray&)));
+        QObject::connect(http, SIGNAL(result(int,QByteArray)), this, SLOT(onVersionCheck(int,QByteArray)));
         QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
         http->get("http://down.woterm.com/.ver");
     }
@@ -243,18 +248,26 @@ void QWoMainWindow::onAppStart()
             }
         }
     }
+    {
+        if(!checkAdminLogin()) {
+            QCoreApplication::quit();
+        }
+    }
 }
 
 void QWoMainWindow::onVersionCheck(int code, const QByteArray &body)
 {
-    qDebug() << code << body;
-    QString verBody = body.trimmed();
-    if(body[0] == 'v') {
-        verBody = verBody.mid(1);
+    if(body.isEmpty()) {
+        return;
     }
-    int verLatest = QWoUtils::parseVersion(verBody);
-    int verCurrent = QWoUtils::parseVersion(WOTERM_VERSION);
     if(code == 200) {
+        qDebug() << code << body;
+        QString verBody = body.trimmed();
+        if(body[0] == 'v') {
+            verBody = verBody.mid(1);
+        }
+        int verLatest = QWoUtils::parseVersion(verBody);
+        int verCurrent = QWoUtils::parseVersion(WOTERM_VERSION);
         if(verCurrent < verLatest) {
             bool pop = QWoSetting::shouldPopupUpgradeMessage(verBody);
             if(!pop) {
@@ -380,6 +393,35 @@ void QWoMainWindow::onActionSshKeyManageTriggered()
     QWoIdentifyDialog::open(true, this);
 }
 
+void QWoMainWindow::onActionAdminTriggered()
+{
+    if(!QWoUtils::isUltimateVersion(this)) {
+        return;
+    }
+    QString pass = QWoSetting::adminPassword();
+    QInputDialog input(this);
+    input.setWindowFlags(input.windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    input.setMinimumWidth(350);
+    input.setWindowTitle(tr("Password input"));
+    input.setLabelText(pass.isEmpty() ? tr("Login to the configuration of administrator for the first time.\r\nPlease input password to activate it.") : tr("Please input password to verify."));
+    input.setTextEchoMode(QLineEdit::Password);
+    int err = input.exec();
+    if(err == 0) {
+        return;
+    }
+    QString hitTxt = input.textValue();
+    if(!pass.isEmpty()) {
+        if(pass != hitTxt) {
+            QMessageBox::information(this, tr("Password error"), tr("the password is not right."));
+            return;
+        }
+    }else{
+        QWoSetting::setAdminPassword(hitTxt.toUtf8());
+    }
+    QWoAdminDialog dlg(this);
+    dlg.exec();
+}
+
 void QWoMainWindow::initMenuBar()
 {
     ui->menuBar->setNativeMenuBar(false);
@@ -395,6 +437,7 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionDocument, SIGNAL(triggered()), this, SLOT(onActionHelpTriggered()));
     QObject::connect(ui->actionWetsite, SIGNAL(triggered()), this, SLOT(onActionWebsiteTriggered()));
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onActionAboutTriggered()));
+    QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));
 }
 
 void QWoMainWindow::initToolBar()
@@ -443,4 +486,37 @@ void QWoMainWindow::saveLastState()
     QWoSetting::setValue("mainwindow/lastLayout", state);
     QByteArray geom = saveGeometry();
     QWoSetting::setValue("mainwindow/geometry", geom);
+}
+
+bool QWoMainWindow::checkAdminLogin()
+{
+    if(!QKxVer::isUltimate()) {
+        return true;
+    }
+    QString pass = QWoSetting::adminPassword();
+    if(pass.isEmpty()) {
+        return true;
+    }
+    if(!QWoSetting::startupByAdmin()) {
+        return true;
+    }
+
+    for(int i = 4; i >= 0; i--) {
+        QInputDialog input(this);
+        input.setWindowFlags(input.windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        input.setMinimumWidth(350);
+        input.setWindowTitle(tr("Administrator login"));
+        input.setLabelText(tr("Please input password to login application."));
+        input.setTextEchoMode(QLineEdit::Password);
+        int err = input.exec();
+        if(err == 0) {
+            return false;
+        }
+        QString hitTxt = input.textValue();
+        if(pass == hitTxt) {
+            return true;
+        }
+        QMessageBox::information(this, tr("Login failure"), tr("The password is wrong, %1 times left to try.").arg(i));
+    }
+    return false;
 }

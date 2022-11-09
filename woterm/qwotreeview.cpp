@@ -19,6 +19,21 @@ QWoTreeView::QWoTreeView(QWidget *parent)
 
 }
 
+void QWoTreeView::drawRow(QPainter *painter, const QStyleOptionViewItem &options, const QModelIndex &index) const
+{
+    bool open = options.state & QStyle::State_Open;
+    QVariant v = model()->data(index, ROLE_GROUP);
+    if(v.isValid()) {
+        model()->setData(index, open, ROLE_GROUP_STATE);
+    }
+    QTreeView::drawRow(painter, options, index);
+}
+
+void QWoTreeView::drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const
+{
+    //QTreeView::drawBranches(painter, rect, index);
+}
+
 void QWoTreeView::keyPressEvent(QKeyEvent *e)
 {
     if(e->key() == Qt::Key_Up || e->key() == Qt::Key_Down) {

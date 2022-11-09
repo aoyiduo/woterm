@@ -14,14 +14,20 @@
 #include "qwosshconf.h"
 #include "qwohostinfoedit.h"
 #include "qwohostlistmodel.h"
-#include "qwolistview.h"
+#include "qwohosttreemodel.h"
+#include "qwotreeview.h"
 #include "qwosessionproperty.h"
+#include "qwogroupinputdialog.h"
+#include "qwosortfilterproxymodel.h"
+#include "qkxver.h"
+#include "qwoutils.h"
 
 #include <QCloseEvent>
 #include <QVBoxLayout>
 #include <QLineEdit>
 #include <QListView>
 #include <QApplication>
+#include <QHeaderView>
 #include <QFile>
 #include <QRegExp>
 #include <QDebug>
@@ -48,29 +54,50 @@ QWoSessionList::QWoSessionList(QWidget *parent)
 
     QHBoxLayout *hlayout = new QHBoxLayout(this);
     layout->addLayout(hlayout);
-    m_list = new QWoListView(this);
+    m_tree = new QWoTreeView(this);
     m_input = new QLineEdit(this);
     m_info = new QPlainTextEdit(this);
+    m_btnModel = new QPushButton(this);
+    m_btnModel->setObjectName("modelLayout");    
+    m_btnModel->setIconSize(QSize(16,16));
+    QObject::connect(m_btnModel, SIGNAL(clicked()), this, SLOT(onListViewGroupLayout()));
+    hlayout->setContentsMargins(3, 0, 0, 0);
+    hlayout->addWidget(m_btnModel);
     hlayout->addWidget(m_input);
-    layout->addWidget(m_list);
+    layout->addWidget(m_tree);
     layout->addWidget(m_info);
-    layout->setSpacing(5);
+    layout->setSpacing(8);
     m_info->setReadOnly(true);
     m_info->setFixedHeight(150);
-    m_list->installEventFilter(this);
-    m_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    m_list->setSelectionMode(QAbstractItemView::MultiSelection);
+    m_tree->installEventFilter(this);
+    m_tree->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_tree->setSelectionMode(QAbstractItemView::MultiSelection);
+    m_tree->setIndentation(10);
+    m_tree->setHeaderHidden(true);
 
-    m_model = QWoHostListModel::instance();
-    m_proxyModel = new QSortFilterProxyModel(this);
-    m_proxyModel->setSourceModel(m_model);
-    m_list->setModel(m_proxyModel);
+    m_listModel = QWoHostListModel::instance();
+    m_treeModel = QWoHostTreeModel::instance();
+    m_proxyModel = new QWoSortFilterProxyModel(1, this);
+    m_proxyModel->setRecursiveFilteringEnabled(true);
+
+    if(QWoSetting::isListModel("docker") || !QKxVer::isUltimate()) {
+        m_btnModel->setIcon(QIcon(":/woterm/resource/skin/list.png"));
+        m_proxyModel->setSourceModel(m_listModel);
+        m_model = m_listModel;
+    }else{
+        m_btnModel->setIcon(QIcon(":/woterm/resource/skin/tree.png"));
+        m_proxyModel->setSourceModel(m_treeModel);
+        m_model = m_treeModel;
+    }
+
+    m_tree->setModel(m_proxyModel);
 
     QObject::connect(m_input, SIGNAL(returnPressed()), this, SLOT(onEditReturnPressed()));
     QObject::connect(m_input, SIGNAL(textChanged(const QString&)), this, SLOT(onEditTextChanged(const QString&)));
-    QObject::connect(m_list, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onListItemDoubleClicked(const QModelIndex&)));
-    QObject::connect(m_list, SIGNAL(itemChanged(const QModelIndex&)), this, SLOT(onListCurrentItemChanged(const QModelIndex&)));
-    QObject::connect(m_list, SIGNAL(returnKeyPressed()), this, SLOT(onListReturnKeyPressed()));
+    QObject::connect(m_tree, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onListItemDoubleClicked(const QModelIndex&)));
+    QObject::connect(m_tree, SIGNAL(itemChanged(const QModelIndex&)), this, SLOT(onListCurrentItemChanged(const QModelIndex&)));
+    QObject::connect(m_tree, SIGNAL(returnKeyPressed()), this, SLOT(onListReturnKeyPressed()));
 
     QTimer *timer = new QTimer(this);
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
@@ -96,7 +123,12 @@ void QWoSessionList::init()
 void QWoSessionList::refreshList()
 {
     QWoSshConf::instance()->refresh();
-    m_model->refreshList();
+    if(m_model == m_listModel) {
+        m_listModel->refreshList();
+    }else{
+        m_treeModel->refreshList();
+    }
+    QMetaObject::invokeMethod(m_tree, "expandAll", Qt::QueuedConnection);
 }
 
 void QWoSessionList::onReloadSessionList()
@@ -122,9 +154,10 @@ void QWoSessionList::onEditTextChanged(const QString &txt)
     m_proxyModel->setFilterRole(ROLE_REFILTER);
     QModelIndex idx = m_proxyModel->index(0, 0);
     if(idx.isValid()) {
-        m_list->clearSelection();
-        m_list->setCurrentIndex(idx);
+        m_tree->clearSelection();
+        m_tree->setCurrentIndex(idx);
     }
+    QMetaObject::invokeMethod(m_tree, "expandAll", Qt::QueuedConnection);
 }
 
 void QWoSessionList::onListItemDoubleClicked(const QModelIndex &item)
@@ -175,7 +208,7 @@ void QWoSessionList::onListCurrentItemChanged(const QModelIndex &item)
 
 void QWoSessionList::onListReturnKeyPressed()
 {
-    QModelIndex idx = m_list->currentIndex();
+    QModelIndex idx = m_tree->currentIndex();
     onListItemDoubleClicked(idx);
 }
 
@@ -207,13 +240,13 @@ void QWoSessionList::onEditReturnPressed()
     if(cnt <= 0) {
         return;
     }
-    QModelIndex idx = m_list->currentIndex();
+    QModelIndex idx = m_tree->currentIndex();
     onListItemDoubleClicked(idx);
 }
 
 void QWoSessionList::onListViewItemOpenSsh()
 {
-    QModelIndex idx = m_list->currentIndex();
+    QModelIndex idx = m_tree->currentIndex();
     if(!idx.isValid()) {
         return;
     }
@@ -223,7 +256,7 @@ void QWoSessionList::onListViewItemOpenSsh()
 
 void QWoSessionList::onListViewItemOpenSftp()
 {
-    QModelIndex idx = m_list->currentIndex();
+    QModelIndex idx = m_tree->currentIndex();
     if(!idx.isValid()) {
         return;
     }
@@ -233,7 +266,7 @@ void QWoSessionList::onListViewItemOpenSftp()
 
 void QWoSessionList::onListViewItemOpenTelnet()
 {
-    QModelIndex idx = m_list->currentIndex();
+    QModelIndex idx = m_tree->currentIndex();
     if(!idx.isValid()) {
         return;
     }
@@ -243,7 +276,7 @@ void QWoSessionList::onListViewItemOpenTelnet()
 
 void QWoSessionList::onListViewItemOpenRLogin()
 {
-    QModelIndex idx = m_list->currentIndex();
+    QModelIndex idx = m_tree->currentIndex();
     if(!idx.isValid()) {
         return;
     }
@@ -253,7 +286,7 @@ void QWoSessionList::onListViewItemOpenRLogin()
 
 void QWoSessionList::onListViewItemOpenMstsc()
 {
-    QModelIndex idx = m_list->currentIndex();
+    QModelIndex idx = m_tree->currentIndex();
     if(!idx.isValid()) {
         return;
     }
@@ -263,7 +296,7 @@ void QWoSessionList::onListViewItemOpenMstsc()
 
 void QWoSessionList::onListViewItemOpenVnc()
 {
-    QModelIndex idx = m_list->currentIndex();
+    QModelIndex idx = m_tree->currentIndex();
     if(!idx.isValid()) {
         return;
     }
@@ -273,7 +306,7 @@ void QWoSessionList::onListViewItemOpenVnc()
 
 void QWoSessionList::onListViewItemOpenSerialPort()
 {
-    QModelIndex idx = m_list->currentIndex();
+    QModelIndex idx = m_tree->currentIndex();
     if(!idx.isValid()) {
         return;
     }
@@ -288,22 +321,44 @@ void QWoSessionList::onListViewItemReload()
 
 void QWoSessionList::onListViewItemModify()
 {
-    QModelIndex idx = m_list->currentIndex();
+    QModelIndex idx = m_tree->currentIndex();
     if(!idx.isValid()) {
         return;
     }
-    const HostInfo& hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
-    QWoSessionProperty dlg(this);
-    dlg.setSession(hi.name);
-    QObject::connect(&dlg, SIGNAL(readyToConnect(const QString&,int)), this, SIGNAL(readyToConnect(const QString&,int)));
-    dlg.exec();
+    QVariant group = idx.data(ROLE_GROUP);
+    if(group.isValid()) {
+        const GroupInfo& gi = group.value<GroupInfo>();
+        QStringList names = QWoSshConf::instance()->groupNameList();
+        QWoGroupInputDialog dlg(gi.name, gi.order, this);
+        QPointer<QWoGroupInputDialog> dlgPtr(&dlg);
+        QObject::connect(&dlg, &QWoGroupInputDialog::apply, this, [&](const QString& name, int order){
+            if(gi.name != name) {
+                // modify group name.
+                QWoSshConf::instance()->updateGroup(gi.name, order);
+                QWoSshConf::instance()->renameGroup(name, gi.name);
+                QWoSshConf::instance()->renameServerGroup(name, gi.name);
+            }else{
+                QWoSshConf::instance()->updateGroup(name, order);
+            }
+            dlgPtr->done(QDialog::Accepted);
+        });
+        if(dlg.exec() != QDialog::Accepted){
+            return;
+        }
+    }else{
+        const HostInfo& hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
+        QWoSessionProperty dlg(this);
+        dlg.setSession(hi.name);
+        QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), this, SIGNAL(readyToConnect(QString,int)));
+        dlg.exec();
+    }
     refreshList();
 }
 
 void QWoSessionList::onListViewItemAdd()
 {
     QWoSessionProperty dlg(this);
-    QObject::connect(&dlg, SIGNAL(readyToConnect(const QString&,int)), this, SIGNAL(readyToConnect(const QString&,int)));
+    QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), this, SIGNAL(readyToConnect(QString,int)));
     dlg.exec();
     refreshList();
 }
@@ -314,19 +369,44 @@ void QWoSessionList::onListViewItemDelete()
     if(btn == QMessageBox::No) {
         return ;
     }
-    QItemSelectionModel *model = m_list->selectionModel();
+    QItemSelectionModel *model = m_tree->selectionModel();
     QModelIndexList idxs = model->selectedIndexes();
     for(int i = 0; i < idxs.length(); i++) {
         QModelIndex idx = idxs.at(i);
-        QString name = idx.data().toString();
-        QWoSshConf::instance()->remove(name);
+        QVariant group = idx.data(ROLE_GROUP);
+        if(group.isValid()) {
+            const GroupInfo& gi = group.value<GroupInfo>();
+            QWoSshConf::instance()->removeServerByGroup(gi.name);
+            QWoSshConf::instance()->removeGroup(gi.name);
+        }else{
+            QString name = idx.data().toString();
+            QWoSshConf::instance()->removeServer(name);
+        }
     }
     refreshList();
 }
 
+void QWoSessionList::onListViewGroupLayout()
+{
+    if(!QWoUtils::isUltimateVersion(this)) {
+        return;
+    }
+    if(m_model == m_listModel) {
+        m_btnModel->setIcon(QIcon(":/woterm/resource/skin/tree.png"));
+        m_proxyModel->setSourceModel(m_treeModel);
+        m_model = m_treeModel;
+        QWoSetting::setListModel("docker", false);
+    }else{
+        m_btnModel->setIcon(QIcon(":/woterm/resource/skin/list.png"));
+        m_proxyModel->setSourceModel(m_listModel);
+        m_model = m_listModel;
+        QWoSetting::setListModel("docker", true);        
+    }
+}
+
 bool QWoSessionList::handleListViewContextMenu(QContextMenuEvent *ev)
 {
-    QItemSelectionModel *model = m_list->selectionModel();
+    QItemSelectionModel *model = m_tree->selectionModel();
     QModelIndexList idxs = model->selectedIndexes();
 
     QMenu menu(this);
@@ -366,6 +446,13 @@ bool QWoSessionList::handleListViewContextMenu(QContextMenuEvent *ev)
     }else{
         menu.addAction(tr("Delete"), this, SLOT(onListViewItemDelete()));
     }
+    if(QKxVer::isUltimate()) {
+        if(m_model == m_listModel) {
+            menu.addAction(tr("Show tree mode"), this, SLOT(onListViewGroupLayout()));
+        }else{
+            menu.addAction(tr("Show list mode"), this, SLOT(onListViewGroupLayout()));
+        }
+    }
     m_menu->exec(ev->globalPos());
     return true;
 }
@@ -382,7 +469,7 @@ void QWoSessionList::closeEvent(QCloseEvent *event)
 bool QWoSessionList::eventFilter(QObject *obj, QEvent *ev)
 {
     QEvent::Type t = ev->type();
-    if(obj == m_list) {
+    if(obj == m_tree) {
         if(t == QEvent::ContextMenu) {
             return handleListViewContextMenu(dynamic_cast<QContextMenuEvent*>(ev));
         }else if(t == QEvent::Enter || t == QEvent::Leave) {

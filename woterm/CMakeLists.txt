@@ -21,13 +21,15 @@ set(SOURCE_FILES
     qwoapplication.cpp
     qkxbuttonassist.cpp
     qwoaboutdialog.cpp
+    qwoadmindialog.cpp
     qwocommandlineinput.cpp
     qwoevent.cpp
     qwohostinfoedit.cpp
     qwohostinfolist.cpp
+    qwohosttreemodel.cpp
     qwohostlistmodel.cpp
     qwohostsimplelist.cpp
-    qwohosttreemodel.cpp
+    qwosortfilterproxymodel.cpp
     qwoidentifydialog.cpp
     qwoidentify.cpp
     qwoidentifycreatedialog.cpp
@@ -61,10 +63,13 @@ set(SOURCE_FILES
     qworlogintermwidgetimpl.cpp
     qwotreeview.cpp
     qwosftpwidget.cpp
+    qwosftpexwidget.cpp
     qwosftpwidgetimpl.cpp
+    qwosftpexwidgetimpl.cpp
     qwosftplistmodel.cpp
     qwosftpdownmgrmodel.cpp
     qwosftptransferwidget.cpp
+    qwosftpextransferwidget.cpp
     qwoserialinput.cpp
     qwoserialwidgetimpl.cpp
     qwordpwidget.cpp
@@ -80,6 +85,7 @@ set(SOURCE_FILES
     qwoshortcutmodel.cpp
     qwoshortcutdelegate.cpp
     qwodbrestoredialog.cpp
+    qwogroupinputdialog.cpp
     qwotelnet.cpp
     qwoutils.cpp
     qwowidget.cpp
@@ -92,14 +98,16 @@ set(HEADER_FILES
     qwoapplication.h
     qkxbuttonassist.h
     qwoaboutdialog.h
+    qwoadmindialog.h
     qwocommandlineinput.h
     qwoevent.h
     qwoglobal.h
     qwohostinfoedit.h
     qwohostinfolist.h
     qwohostlistmodel.h
-    qwohostsimplelist.h
     qwohosttreemodel.h
+    qwohostsimplelist.h
+    qwosortfilterproxymodel.h
     qwoidentifydialog.h
     qwoidentify.h
     qwoidentifycreatedialog.h
@@ -133,10 +141,13 @@ set(HEADER_FILES
     qworlogintermwidgetimpl.h
     qwotreeview.h
     qwosftpwidget.h
+    qwosftpexwidget.h
     qwosftpwidgetimpl.h
+    qwosftpexwidgetimpl.h
     qwosftplistmodel.h
     qwosftpdownmgrmodel.h
     qwosftptransferwidget.h
+    qwosftpextransferwidget.h
     qwoserialinput.h
     qwoserialwidgetimpl.h
     qwordpwidget.h
@@ -152,6 +163,7 @@ set(HEADER_FILES
     qwoshortcutmodel.h
     qwoshortcutdelegate.h
     qwodbrestoredialog.h
+    qwogroupinputdialog.h
     qwotelnet.h
     qwoutils.h
     qwowidget.h
@@ -164,6 +176,7 @@ set(HEADER_FILES
 set(OTHER_FILES
     qwoterm.qrc
     qwoaboutdialog.ui
+    qwoadmindialog.ui
     qwocommandlineinput.ui
     qwohostinfo.ui
     qwohostinfolist.ui
@@ -183,13 +196,17 @@ set(OTHER_FILES
     qwotermmask.ui
     qwoserialinput.ui
     qwosftpwidget.ui
-    qwosftptransferwidget.ui    
+    qwosftpexwidget.ui
+    qwosftptransferwidget.ui
+    qwosftpextransferwidget.ui
     qwovnctoolform.ui
     qwovncftpwidget.ui
     qwodbrestoredialog.ui
+    qwogroupinputdialog.ui
 )
 
-include_directories(${KXTERM_ROOT_DIR}
+include_directories(${KXVER_ROOT_DIR}
+    ${KXTERM_ROOT_DIR}
     ${KXVNC_ROOT_DIR}
     ${MODEM_ROOT_DIR}
     ${KXFTP_ROOT_DIR}
@@ -217,7 +234,7 @@ link_directories(${OPENSSL_ROOT_DIR}/lib
     ${LIBSQLITE_ROOT_DIR}/lib
 )
 
-link_libraries(kxterm kxutil kxftp kxvnc)
+link_libraries(kxver kxterm kxutil kxftp kxvnc)
 if(WIN32)
     message("window system.")
     link_libraries(ws2_32)
@@ -226,6 +243,11 @@ if(WIN32)
     else()
         link_libraries(SQLiteCpp sqlite3 ssh qssh rdp zmodem libtelnet)
     endif()
+    add_library(openssl_crypto STATIC IMPORTED)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/lib/libcrypto.lib)
+    link_libraries(openssl_crypto)
+
     set(BUILD_VERSION_MAJOR 0)
     set(BUILD_VERSION_MINOR 0)
     set(BUILD_VERSION_PATCH 0)
@@ -248,6 +270,12 @@ if(WIN32)
 elseif(APPLE)
     message("apple system.")
     link_libraries(SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet SQLiteCpp)
+
+    add_library(openssl_crypto STATIC IMPORTED)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/lib/libcrypto.a)
+    link_libraries(openssl_crypto)
+
     # NOTE: Don't include the path in MACOSX_BUNDLE_ICON_FILE -- this is
     # the property added to Info.plist    
 
@@ -271,6 +299,11 @@ elseif(APPLE)
 else()
     message("linux system.")
     link_libraries(dl SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet SQLiteCpp)
+    add_library(openssl_crypto STATIC IMPORTED)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/lib/libcrypto.a)
+    link_libraries(openssl_crypto)
+
     add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${OTHER_FILES} ${LangSrcs})
 endif()
 
