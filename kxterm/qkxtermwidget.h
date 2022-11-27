@@ -33,6 +33,8 @@ public:
     void setTermName(const QString& name);
 
     void setFindShortCut(QKeySequence key);
+signals:
+    void activePathArrived(const QString& path);
 protected:
     void resizeEvent(QResizeEvent *ev);
     bool eventFilter(QObject *watched, QEvent *event);

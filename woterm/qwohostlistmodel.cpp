@@ -93,10 +93,11 @@ int QWoHostListModel::rowCount(const QModelIndex &parent) const
 
 QModelIndex QWoHostListModel::sibling(int row, int column, const QModelIndex &idx) const
 {
-    if (!idx.isValid() || column != 0 || row >= m_hosts.count() || row < 0)
+    if (!idx.isValid() || row >= m_hosts.count() || row < 0){
         return QModelIndex();
+    }
 
-    return createIndex(row, 0);
+    return createIndex(row, column);
 }
 
 QVariant QWoHostListModel::headerData(int section, Qt::Orientation orientation, int role) const

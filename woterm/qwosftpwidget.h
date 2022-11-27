@@ -12,75 +12,118 @@
 #ifndef QWOSFTPWIDGET_H
 #define QWOSFTPWIDGET_H
 
+#include "qwoglobal.h"
+
 #include <QWidget>
 #include <QPointer>
+#include <QList>
+#include <QFileInfo>
 
 namespace Ui {
 class QWoSftpWidget;
 }
 
 class QWoSshFtp;
-class QWoSftpListModel;
+class QWoSftpLocalModel;
+class QWoSftpRemoteModel;
 class QWoTermMask;
 class QWoPasswordInput;
-class QWoSftpDownMgrModel;
 class QFileDialog;
 class QWoTreeView;
 class QSortFilterProxyModel;
 class QWoSftpTransferWidget;
 class QWoLoadingWidget;
+class QSplitter;
+class QTreeView;
 
 class QWoSftpWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit QWoSftpWidget(const QString& target, int gid, QWidget *parent = 0);
+    explicit QWoSftpWidget(const QString& target, int gid, bool assist, QWidget *parent = 0);
     ~QWoSftpWidget();
 
+    void tryToSyncPath(const QString& path);
 private:
     void openHome();
+    void openDir(const QStringList& paths);
     void openDir(const QString& path);
     void init(QObject *obj, const QString& type);
-    void mkDir(const QString& path, const QString& name, int mode);
-    void rmDir(const QString& path, const QString& name);
-    void unlink(const QString& path, const QString& name);
+    void mkDir(const QString& path, int mode);
+    void rmDir(const QString& path);
+    void unlink(const QString& path);
     int textWidth(const QString& txt, const QFont& ft);
-    void download(const QString& remote, const QString& local);
-    void upload(const QString& local, const QString& remote);
+    bool canTransfer();
+    void release();
 protected:
     // for close safely.
     virtual QList<QString> collectUnsafeCloseMessage();
 protected slots:
     void onTransferAbort();
-    void onCommandStart(int type);
-    void onCommandFinish(int type);
+    void onTransferCommandStart(int type, const QVariantMap& userData);
+    void onTransferCommandFinish(int type, const QVariantMap& userData);
+    void onTransferAdjustSize();
+
+    /*dir or file.*/
+    void onCommandStart(int type, const QVariantMap& userData);
+    void onCommandFinish(int type, const QVariantMap& userData);
     void onConnectionStart();
     void onConnectionFinished(bool ok);
-    void onProgress(int type, int v);
     void onFinishArrived(int code);
-    void onErrorArrived(const QByteArray& buf);
+    void onErrorArrived(const QString& err, const QVariantMap& userData);
     void onInputArrived(const QString& title, const QString& prompt, bool visible);
     void onPasswordArrived(const QString& host, const QByteArray& pass);
     void onPasswordInputResult(const QString& pass, bool isSave);
     void onSessionReconnect();
     void onForceToCloseThisSession();
-    void onListItemDoubleClicked(const QModelIndex& item);
-    void onListCurrentItemChanged(const QModelIndex& item);
-    void onListReturnKeyPressed();
-    void onMenuReturnTopDirectory();
-    void onMenuGoHomeDirectory();
-    void onMenuReloadDirectory();
-    void onMenuCreateDirectory();
-    void onMenuRemoveDirectory();
-    void onMenuRemoveFile();
-    void onMenuEnterDirectory();
-    void onMenuTryEnterDirectory();
-    void onMenuDownload();
-    void onMenuUpload();
+    void onLocalItemDoubleClicked(const QModelIndex& item);
+    void onLocalContextMenuRequested(const QPoint &pos);
+    void onLocalMenuDeselectAll();
+    void onLocalMenuSelectAll();
+    void onLocalMenuReturnTopDirectory();
+    void onLocalMenuGoHomeDirectory();
+    void onLocalMenuReloadDirectory();
+    void onLocalMenuCreateDirectory();
+    void onLocalMenuRemoveSelection();
+    void onLocalMenuEnterDirectory();
+    void onLocalMenuTryEnterDirectory();
+    void onLocalMenuUpload();
+    void onLocalResetModel();
+
+    void onRemoteItemDoubleClicked(const QModelIndex& item);
+    void onRemoteContextMenuRequested(const QPoint& pos);
+    void onRemoteMenuSelectAll();
+    void onRemoteMenuDeselectAll();
+    void onRemoteMenuReturnTopDirectory();
+    void onRemoteMenuGoHomeDirectory();
+    void onRemoteMenuReloadDirectory();
+    void onRemoteMenuCreateDirectory();
+    void onRemoteMenuRemoveSelection();
+    void onRemoteMenuEnterDirectory();
+    void onRemoteMenuTryEnterDirectory();
+    void onRemoteMenuDownload();
+    void onRemoteMenuUpload();
+    void onRemoteResetModel();
     void onNewSessionMultiplex();
-    void onResetModel();
     void onAdjustPosition();
+
+    /* remote */
+    void onRemoteHomeButtonClicked();
+    void onRemoteBackButtonClicked();
+    void onRemoteForwardButtonClicked();
+    void onRemoteReloadButtonClicked();
+    void onRemoteFollowButtonClicked();
+    void onRemoteTransferButtonClicked();
+    void onRemotePathChanged(const QString& path);
+    /* local */
+    void onLocalHomeButtonClicked();
+    void onLocalBackButtonClicked();
+    void onLocalForwardButtonClicked();
+    void onLocalReloadButtonClicked();
+    void onLocalBrowserButtonClicked();
+    void onLocalPathChanged(const QString& path);
+
 protected:
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     void resizeEvent(QResizeEvent *ev);
@@ -88,25 +131,27 @@ protected:
 
 private:
     Q_INVOKABLE void reconnect();
-private:
-    bool handleListContextMenu(QContextMenuEvent* ev);
-
+    QList<FileInfo> remoteSelections();
+    QList<QFileInfo> localSelections();
 private:
     friend class QWoSftpWidgetImpl;
     Ui::QWoSftpWidget *ui;
     int m_gid;
+    bool m_isUltimate;
 
-    QPointer<QWoSftpListModel> m_model;
+    QPointer<QWoSftpRemoteModel> m_remoteModel;
+    QPointer<QWoSftpLocalModel> m_localModel;
     QPointer<QSortFilterProxyModel> m_proxyModel;
     QPointer<QWoSshFtp> m_sftp;
     QPointer<QWoPasswordInput> m_passInput;
     QPointer<QWoTermMask> m_mask;
     QPointer<QWoLoadingWidget> m_loading;
-    QPointer<QWoTreeView> m_list;
+    QPointer<QTreeView> m_local, m_remote;
     QPointer<QWoSftpTransferWidget> m_transfer;
     QString m_target;
     bool m_savePassword;
     bool m_bexit;
+    bool m_bAssist;
 };
 
 #endif // QWOSFTPWIDGET_H

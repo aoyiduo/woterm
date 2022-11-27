@@ -729,6 +729,14 @@ void QVte::handleDefault(wchar_t c)
 
 void QVte::parseString()
 {
+#if 0
+    QStringList args;
+    for(int i = 0; i < str_data.nargs; i++) {
+        QString arg = QString::fromWCharArray(str_data.getArg(i));
+        args.append(arg);
+    }
+    qDebug() << "parseString" << args;
+#endif
     switch (str_data.type()) {
     case StringData::ST_OSC:
         if (str_data.parse(str_data.data(), 1) == 1) {

@@ -33,7 +33,7 @@ QWoAboutDialog::QWoAboutDialog(QWidget *parent) :
     ui->setupUi(this);
 
     ui->verNow->setText(WOTERM_VERSION);
-    ui->authorizeLevel->setText(QKxVer::isUltimate() ? "Ultimate" : "Free");
+    ui->authorizeLevel->setText(QKxVer::isUltimate() ? "Ultimate beta" : "Free");
 
     ui->website->setText("<a href=\"http://www.woterm.com\">http://www.woterm.com</a>");
     ui->website->setOpenExternalLinks(true);

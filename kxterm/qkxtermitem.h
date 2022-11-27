@@ -175,6 +175,7 @@ signals:
     void scrollValueChanged(int lines, int position);
     void backgroundChanged(const QColor &clr);
     void titleChanged(const QString& title);
+    void activePathArrived(const QString& path);
 
 public slots:
     void onScreenChanged();
@@ -184,6 +185,7 @@ public slots:
     void onRepaintTimeout();
     void onTripleClickTimeout();
     void onSelectClickTimeout();
+    void onGuessActivePathChanged(const QString& path);
 public:
     Q_INVOKABLE void resetState();
     Q_INVOKABLE void echoInput(const QByteArray& data);
@@ -296,6 +298,8 @@ private:
     QPointF m_touch;
 
     QColor m_backgroundColor;
+
+    QString m_pathActive;
 
     QKeySequence m_keyCopy;
     QKeySequence m_keyPaste;

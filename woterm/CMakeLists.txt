@@ -62,14 +62,13 @@ set(SOURCE_FILES
     qworlogintermwidget.cpp
     qworlogintermwidgetimpl.cpp
     qwotreeview.cpp
+    qwosftptask.cpp
     qwosftpwidget.cpp
-    qwosftpexwidget.cpp
     qwosftpwidgetimpl.cpp
-    qwosftpexwidgetimpl.cpp
-    qwosftplistmodel.cpp
-    qwosftpdownmgrmodel.cpp
+    qwosftplocalmodel.cpp
+    qwosftpremotemodel.cpp
+    qwosftpqueuemodel.cpp
     qwosftptransferwidget.cpp
-    qwosftpextransferwidget.cpp
     qwoserialinput.cpp
     qwoserialwidgetimpl.cpp
     qwordpwidget.cpp
@@ -140,14 +139,13 @@ set(HEADER_FILES
     qworlogintermwidget.h
     qworlogintermwidgetimpl.h
     qwotreeview.h
+    qwosftptask.h
     qwosftpwidget.h
-    qwosftpexwidget.h
     qwosftpwidgetimpl.h
-    qwosftpexwidgetimpl.h
-    qwosftplistmodel.h
-    qwosftpdownmgrmodel.h
+    qwosftplocalmodel.h
+    qwosftpremotemodel.h
+    qwosftpqueuemodel.h
     qwosftptransferwidget.h
-    qwosftpextransferwidget.h
     qwoserialinput.h
     qwoserialwidgetimpl.h
     qwordpwidget.h
@@ -196,9 +194,7 @@ set(OTHER_FILES
     qwotermmask.ui
     qwoserialinput.ui
     qwosftpwidget.ui
-    qwosftpexwidget.ui
     qwosftptransferwidget.ui
-    qwosftpextransferwidget.ui
     qwovnctoolform.ui
     qwovncftpwidget.ui
     qwodbrestoredialog.ui

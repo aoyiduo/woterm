@@ -56,3 +56,9 @@ void QWoTermMask::contextMenuEvent(QContextMenuEvent *ev)
 {
     return;
 }
+
+void QWoTermMask::showEvent(QShowEvent *ev)
+{
+    QWoWidget::showEvent(ev);
+    raise();
+}

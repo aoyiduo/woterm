@@ -40,17 +40,21 @@ public:
     void setInputResult(const QString& pass);
     void shellWrite(QWoSshChannel *cli, const QByteArray& buf);
     void shellSize(QWoSshChannel *cli, int cols, int rows);
-    void sftpOpenDir(QWoSshChannel *cli, const QString& path);
-    void sftpMkDir(QWoSshChannel *cli, const QString& path, const QString& name, int mode);
-    void sftpRmDir(QWoSshChannel *cli, const QString& path, const QString& name);
-    void sftpUnlink(QWoSshChannel *cli, const QString &path, const QString &name);
-    void sftpDownload(QWoSshChannel *cli, const QString& remote, const QString& local);
-    void sftpUpload(QWoSshChannel *cli, const QString& local, const QString& remote);
+    void sftpOpenDir(QWoSshChannel *cli, const QStringList& paths, const QVariantMap& user);
+    void sftpMkDir(QWoSshChannel *cli, const QString& path, int mode, const QVariantMap& user);
+    void sftpRmDir(QWoSshChannel *cli, const QString& path, const QVariantMap& user);
+    void sftpUnlink(QWoSshChannel *cli, const QString &path, const QVariantMap& user);
+    void sftpDownload(QWoSshChannel *cli, const QString& remote, const QString& local, int policy, const QVariantMap& user);
+    void sftpUpload(QWoSshChannel *cli, const QString& local, const QString& remote, int policy, const QVariantMap& user);
+    void sftpListFile(QWoSshChannel *cli, const QString& path, const QVariantMap& user);
     void sftpAbort(QWoSshChannel *cli);
-    void internalUploadNext(QWoSshChannel *cli);
+    void internalUploadNext(QWoSshChannel *cli, const QVariantMap& user);
+    void internalListFileNext(QWoSshChannel *cli, const QByteArray& path, const QVariantMap& user);
+    void internalRemoveFileNext(QWoSshChannel *cli, const QByteArray& path, bool isDir, const QVariantMap& user);
+    void internalAsyncTaskNext(QWoSshChannel *cli, uchar type, const QByteArray& data = QByteArray());
 signals:
     void finishArrived(int);
-    void errorArrived(const QByteArray& buf);
+    void errorArrived(const QString& err, const QVariantMap& userData);
     void passwordArrived(const QString& host, const QByteArray& buf);
     void inputArrived(const QString& host, const QString& prompt, bool visble);
     void connectionStart();
@@ -86,7 +90,7 @@ public:
     QWoSSHConnection *connection();
 signals:
     void finishArrived(int);
-    void errorArrived(const QByteArray& buf);    
+    void errorArrived(const QString& err, const QVariantMap& userData);
     void passwordArrived(const QString& host, const QByteArray& buf);
     void inputArrived(const QString& host, const QString& prompt, bool visble);
     void connectionStart();
@@ -132,23 +136,33 @@ class QWoSshFtp : public QWoSshChannel
 {
     Q_OBJECT
 public:
+    enum TransferPolicy {
+        TP_Skip = 0,
+        TP_Append = 1,
+        TP_Override = 2
+    };
+public:
     explicit QWoSshFtp(QObject *parent= nullptr);
     virtual ~QWoSshFtp();
-    void openDir(const QString& path = QString("."));
-    void mkDir(const QString& path, const QString& name, int mode);
-    void rmDir(const QString& path, const QString& name);
-    void unlink(const QString &path, const QString &name);
-    void download(const QString& remote, const QString& local);
-    void upload(const QString& local, const QString& remote);
+    void setLogFile(const QString& logFile);
+    void openDir(const QStringList& paths, const QVariantMap& user=QVariantMap());
+    void openDir(const QString& path="~", const QVariantMap& user=QVariantMap());
+    void mkDir(const QString& path, int mode, const QVariantMap& user=QVariantMap());
+    void rmDir(const QString& path, const QVariantMap& user=QVariantMap());
+    void unlink(const QString &path, const QVariantMap& user=QVariantMap());
+    void download(const QString& remote, const QString& local, TransferPolicy policy = TP_Append, const QVariantMap& user=QVariantMap());
+    void upload(const QString& local, const QString& remote, TransferPolicy policy = TP_Append, const QVariantMap& user=QVariantMap());
+    void listFile(const QString& path="~", const QVariantMap& user=QVariantMap());
     void abort();
 signals:
-    void commandStart(int type);
-    void commandFinish(int type);
-    void progress(int type, int v);
-    void dirOpen(const QString& path, const QVariantList& data);
-    void response(int type, const QVariant& data);
-private slots:
-    void onResponse(int type, const QVariant& data);
+    void commandStart(int type, const QVariantMap& user);
+    void commandFinish(int type, const QVariantMap& user);
+    void progress(int type, int v, const QVariantMap& user);
+    void dirOpen(const QString& path, const QVariantList& data, const QVariantMap& user);
+    // only file result. not any dir.
+    // path: the current path.
+    // data: the file info under the current path.
+    void fileList(const QVariantList& data, const QVariantMap& user);
 private:
     virtual void init();
 };

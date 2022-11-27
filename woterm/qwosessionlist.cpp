@@ -58,7 +58,7 @@ QWoSessionList::QWoSessionList(QWidget *parent)
     m_input = new QLineEdit(this);
     m_info = new QPlainTextEdit(this);
     m_btnModel = new QPushButton(this);
-    m_btnModel->setObjectName("modelLayout");    
+    m_btnModel->setObjectName("modelLayout");
     m_btnModel->setIconSize(QSize(16,16));
     QObject::connect(m_btnModel, SIGNAL(clicked()), this, SLOT(onListViewGroupLayout()));
     hlayout->setContentsMargins(3, 0, 0, 0);
@@ -89,8 +89,8 @@ QWoSessionList::QWoSessionList(QWidget *parent)
         m_btnModel->setIcon(QIcon(":/woterm/resource/skin/tree.png"));
         m_proxyModel->setSourceModel(m_treeModel);
         m_model = m_treeModel;
-    }
-
+    }    
+    m_btnModel->setVisible(QKxVer::isUltimate());
     m_tree->setModel(m_proxyModel);
 
     QObject::connect(m_input, SIGNAL(returnPressed()), this, SLOT(onEditReturnPressed()));

@@ -30,7 +30,6 @@ public:
     static QString privateKeyboardLayoutPath();
     static QString privateTranslationPath();
     static QString sshServerFilePath();
-    static QString sshServerDbPath();
     static QString lastJsLoadPath();
     static void setLastJsLoadPath(const QString& path);
     static QString languageFile();
@@ -38,13 +37,19 @@ public:
     static QString languageName(const QString& path);
     static void setLanguageFile(const QString& path);
 
+    static QString sshServerDbPath();
+    static QString sftpTaskDbPath();
+    static QString sftpTaskLogPath();
+
     static QString lastBackupPath();
     static void setLastBackupPath(const QString& path);
 
     /* upgrade */
-    static bool shouldPopupUpgradeMessage(const QString& ver);
-    static void setNextUpgradeDate(const QString& ver, const QDate &dt);
-    static void setIgnoreTodayUpgrade(const QString& ver);
+    static bool shouldPopupUpgradeUltimate();
+    static void setIgnoreTodayUpgradeUltimate();
+    static bool shouldPopupUpgradeVersionMessage(const QString& ver);
+    static void setNextUpgradeVersionDate(const QString& ver, const QDate &dt);
+    static void setIgnoreTodayUpgradeVersion(const QString& ver);
     static void setSkipThisVersion(const QString& ver);
 
     static bool isListModel(const QString& where);

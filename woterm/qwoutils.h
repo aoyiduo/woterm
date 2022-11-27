@@ -73,4 +73,7 @@ public:
     /*version*/
     static bool isUltimateVersion(QWidget *parent);
     static QString getPassword(QWidget *parent, const QString& label);
+
+    /* remove directory */
+    static bool removeDirectory(const QString& path);
 };

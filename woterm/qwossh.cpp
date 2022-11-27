@@ -70,6 +70,9 @@ static ulong LOCAL_IP = inet_addr("127.0.0.1");
 #define MT_FTP_UPLOAD       (15)
 #define MT_FTP_UPLOADNEXT   (16)
 #define MT_FTP_ABORT        (17)
+#define MT_FTP_LISTFILE     (18)
+#define MT_FTP_LISTFILENEXT (19)
+#define MT_FTP_REMOVEFILENEXT  (20)
 
 
 class QSshInteractiveClient : public QSshAuthClient
@@ -202,21 +205,29 @@ class QWoPowerSftp : public QWoSshFtp
     ssh_channel m_channel;
     sftp_session m_sftp;
 
-    enum ETransfer { eIdle, eUpload, eDownload};
-    ETransfer m_transfer;
+    enum EAsynOperation { eNone, eUpload, eDownload, eRmDir, eListFile};
+    EAsynOperation m_opAsync;
+    QList<MsgRequest> m_asyncTasks;
+
+    QVariantMap m_userData;
 
     QFile m_lfile;
     sftp_file m_rfile;
-    qint64 m_cnt, m_total;
+    qint64 m_total;
     int m_asyncRequest, m_percent;
     QByteArray m_pathCurrent;
     bool m_abort;
+    // for list file next.
+    QList<QByteArray> m_listFileNext;
+    // for rmDir
+    QList<QVariantMap> m_rmDirNext;
+    QString m_errorString;
 public:
     explicit QWoPowerSftp(QObject *parent = nullptr)
      : QWoSshFtp(parent)
      , m_channel(nullptr)
      , m_sftp(nullptr)
-     , m_transfer(eIdle)
+     , m_opAsync(eNone)
      , m_rfile(nullptr)
      , m_abort(false) {
 
@@ -230,17 +241,118 @@ public:
         }
     }
 
-    void uploadNext() {
+    bool uploadNext(const QVariantMap& user) {
         if(m_conn) {
-            m_conn->internalUploadNext(this);
+            m_conn->internalUploadNext(this, user);
+        }
+        return true;
+    }
+
+    bool listFileNext(const QVariantMap& user) {
+        if(m_listFileNext.isEmpty()) {
+            return false;
+        }
+        if(m_conn) {
+            QByteArray path = m_listFileNext.takeFirst();
+            m_conn->internalListFileNext(this, path, user);
+            return true;
+        }
+        return false;
+    }
+
+    bool rmDirNext(const QVariantMap& user) {
+        if(m_rmDirNext.isEmpty()) {
+            return false;
+        }
+        if(m_conn) {
+            QVariantMap next = m_rmDirNext.takeLast();
+            QByteArray path = next.value("filePath").toByteArray();
+            bool isDir = next.value("isDir").toBool();
+            m_conn->internalRemoveFileNext(this, path, isDir, user);
+            return true;
+        }
+        return false;
+    }
+
+    void runAyncTaskNext() {
+        if(!m_asyncTasks.isEmpty()) {
+            const MsgRequest& req = m_asyncTasks.takeFirst();
+            m_conn->internalAsyncTaskNext(this, req.type, req.data);
         }
     }
 
 private:
-    void handleError(const QString& err) {
-        emit errorArrived(err.toUtf8());
+    void handleError(const QString& err, const QVariantMap& userData) {
+        m_errorString = err;
+        emit errorArrived(err, userData);
     }
 
+    void handleCommandStart(int type, const QVariantMap& user) {
+        emit commandStart(type, user);
+    }
+
+    void handleCommandFinish(int type, const QVariantMap& user) {
+        emit commandFinish(type, user);
+        runAyncTaskNext();
+    }
+
+    QVariantMap openDirResult(int err, const QVariantMap& user) {
+        return reasonResult(err, user);
+    }
+
+    QVariantMap uploadResult(int err, const QVariantMap& user) {
+        return reasonResult(err, user);
+    }
+
+    QVariantMap unlinkResult(int err, const QVariantMap& user) {
+        return reasonResult(err, user);
+    }
+
+    QVariantMap mkDirResult(int err, const QVariantMap& user) {
+        QVariantMap dm = user;
+        if(err == -999) {
+            dm.insert("reason", "abort");
+        }else if(err < 0) {
+            int code = sftpLastError(dm);
+            if(code == SSH_FX_FILE_ALREADY_EXISTS) {
+                dm.insert("reason", "ok");
+            }else if(code == 0 || code == SSH_FX_NO_CONNECTION || code == SSH_FX_CONNECTION_LOST) {
+                // net broken, will has code == 0. so add it.
+                dm.insert("reason", "fatal");
+            }else{
+                dm.insert("reason", "error");
+            }
+        }else{
+            dm.insert("reason", "ok");
+        }
+        return dm;
+    }
+
+    QVariantMap rmDirResult(int err, const QVariantMap& user) {
+        return reasonResult(err, user);
+    }
+
+    QVariantMap reasonResult(int err, const QVariantMap& user) {
+        QVariantMap dm = user;
+        if(err == -999) {
+            dm.insert("reason", "abort");
+        }else if(err < 0) {
+            int code = sftpLastError(dm);
+            if(code == 0 || code == SSH_FX_NO_CONNECTION || code == SSH_FX_CONNECTION_LOST) {
+                // net broken, will has code == 0. so add it.
+                dm.insert("reason", "fatal");
+            }else{
+                dm.insert("reason", "error");
+            }
+        }else{
+            dm.insert("reason", "ok");
+        }
+        return dm;
+    }
+
+    /**
+     * It cannot be fully trusted. In some cases, it returns an error code of 0 even though the network is disconnected
+     */
     bool isFtpFatal() {
         int code = sftp_get_error(m_sftp);
         if(code == SSH_FX_NO_CONNECTION || code == SSH_FX_CONNECTION_LOST) {
@@ -249,66 +361,146 @@ private:
         return false;
     }
 
-    void handleFtpErrorMessage() {
+    int sftpLastError(QVariantMap& dm) {
         int code = sftp_get_error(m_sftp);
         switch (code) {
         case SSH_FX_FILE_ALREADY_EXISTS:
-            handleError(tr("An attempt to create an already existing file or directory has been made"));
+            dm.insert("errorString", tr("The file is already exist"));
             break;
         case SSH_FX_NO_SUCH_FILE:
         case SSH_FX_NO_SUCH_PATH:
-            handleError(tr("No such file or directory path exists"));
+            dm.insert("errorString", tr("No such file or directory path exists"));
             break;
         case SSH_FX_PERMISSION_DENIED:
-            handleError(tr("Permission denied"));
+            dm.insert("errorString", tr("Permission denied"));
             break;
         case SSH_FX_FAILURE:
-            handleError(tr("Generic failure"));
+            dm.insert("errorString", tr("Generic failure"));
             break;
         case SSH_FX_BAD_MESSAGE:
-            handleError(tr("Garbage received from server"));
+            dm.insert("errorString", tr("Garbage received from server"));
             break;
         case SSH_FX_NO_CONNECTION:
-            handleError(tr("No connection has been set up"));
+            dm.insert("errorString", tr("No connection has been set up"));
             break;
         case SSH_FX_CONNECTION_LOST:
-            handleError(tr("There was a connection, but we lost it"));
+            dm.insert("errorString", tr("There was a connection, but we lost it"));
             break;
         case SSH_FX_OP_UNSUPPORTED:
-            handleError(tr("Operation not supported by the server"));
+            dm.insert("errorString", tr("Operation not supported by the server"));
             break;
         case SSH_FX_INVALID_HANDLE:
-            handleError(tr("Invalid file handle"));
+            dm.insert("errorString", tr("Invalid file handle"));
             break;
         case SSH_FX_WRITE_PROTECT:
-            handleError(tr("We are trying to write on a write-protected filesystem"));
+            dm.insert("errorString", tr("We are trying to write on a write-protected filesystem"));
             break;
         case SSH_FX_NO_MEDIA:
-            handleError(tr("No media in remote drive"));
+            dm.insert("errorString", tr("No media in remote drive"));
             break;
         }
-    }
-
-    int runOpenDir(const QByteArray &path) {
-        emit commandStart(MT_FTP_OPENDIR);
-        int code = _runOpenDir(path);
-        emit commandFinish(MT_FTP_OPENDIR);
         return code;
     }
 
-    int _runOpenDir(const QByteArray& path) {
-        sftp_dir dir = sftp_opendir(m_sftp, path);
-        if(dir == nullptr) {
-            handleFtpErrorMessage();
-            if(isFtpFatal()) {
+    int runListFile(const QByteArray& path, const QVariantMap& user) {
+        m_abort = false;
+        m_userData = user;
+        m_errorString.clear();
+        handleCommandStart(MT_FTP_LISTFILE, user);
+        m_listFileNext.clear();
+        m_opAsync = eListFile;
+        int code = _runListFile(path, user);
+        if(code <= 0) {
+            m_opAsync = eNone;
+            m_listFileNext.clear();
+            handleCommandFinish(MT_FTP_LISTFILE, reasonResult(code, user));
+        }
+        return code;
+    }
+
+    int _runListFile(const QByteArray& _path, const QVariantMap& user) {
+        QByteArray path = _path;
+        if(path.startsWith('~')) {
+            char *tmp = sftp_canonicalize_path(m_sftp, ".");
+            if(tmp == nullptr) {
                 return -1;
             }
-            return 1;
+            path = path.mid(1);
+            path.insert(0, tmp);
+            ssh_string_free_char(tmp);
+        }
+        sftp_dir dir = sftp_opendir(m_sftp, path);
+        if(dir == nullptr) {
+            return -2;
+        }
+        QByteArray basePath = user.value("basePath").toByteArray();
+        sftp_attributes attr;
+        QList<QVariant> files;
+        while ((attr = sftp_readdir(m_sftp, dir)) != nullptr && !m_abort){
+            QByteArray name = attr->name;
+            if(name == "." || name == "..") {
+                continue;
+            }
+            if(attr->type == 2) {
+                m_listFileNext.append(path + "/" + name);
+            }else{
+                QVariantMap v;
+                QByteArray filePath = path + "/" + name;
+                filePath = filePath.replace(0, basePath.length(), "./");
+                v.insert("filePath", filePath);
+                v.insert("fileSize", qint64(attr->size));
+                files.append(v);
+            }
+            sftp_attributes_free(attr);
+        }
+        emit fileList(files, user);
+        if (sftp_closedir(dir) != SSH_NO_ERROR) {
+            return -3;
+        }
+        if(m_abort) {
+            return -999;
+        }
+        return listFileNext(user) ? 1 : 0;
+    }
+
+    int runOpenDir(const QStringList &paths, const QVariantMap& user) {
+        m_abort = false;
+        m_userData = user;
+        m_errorString.clear();
+        handleCommandStart(MT_FTP_OPENDIR, user);
+        int code = 0;
+        for(int i = 0; i < paths.length(); i++) {
+            QString path = paths.at(i);
+            QVariantMap dm = user;
+            dm.insert("path", path);
+            code = _runOpenDir(path.toUtf8(), dm);
+            if(code == 0) {
+                break;
+            }
+        }
+        handleCommandFinish(MT_FTP_OPENDIR, reasonResult(code, user));
+        return code;
+    }
+
+    int _runOpenDir(const QByteArray& _paths, const QVariantMap& user) {
+        QByteArray path = _paths;
+        if(path.startsWith('~')) {
+            char *tmp = sftp_canonicalize_path(m_sftp, ".");
+            if(tmp == nullptr) {
+                return -1;
+            }
+            path = path.mid(1);
+            path.insert(0, tmp);
+            ssh_string_free_char(tmp);
+        }
+        sftp_dir dir = sftp_opendir(m_sftp, path);
+        if(dir == nullptr) {
+            return -2;
         }
         sftp_attributes attr;
         QList<QList<QByteArray>> all;
         int ownerMax = 0, groupMax = 0, sizeMax = 0, dateMax = 0, nameMax = 0;
-        while ((attr = sftp_readdir(m_sftp, dir)) != nullptr){
+        while ((attr = sftp_readdir(m_sftp, dir)) != nullptr && !m_abort){
             QByteArray longName(attr->longname);
             QByteArray type = QWoUtils::filePermissionToText(attr->type, attr->permissions);
             QByteArray owner(attr->owner);
@@ -355,6 +547,7 @@ private:
             mdata.insert("longName", item.at(0));
             QString label = item.at(1);
             mdata.insert("type", QString("%1").arg(label.at(0)));
+            mdata.insert("permission", label);
             {
                 QByteArray owner = item.at(2);
                 mdata.insert("owner", owner);
@@ -403,130 +596,186 @@ private:
             mdata.insert("label", label);
             vall.append(mdata);
         }
-        if (!sftp_dir_eof(dir)) {
-            handleFtpErrorMessage();
-            if(isFtpFatal()) {
-                return -1;
-            }
-        }
         if (sftp_closedir(dir) != SSH_NO_ERROR) {
-            handleFtpErrorMessage();
-            if(isFtpFatal()) {
-                return -1;
-            }
+            return -3;
         }
         char *tmp = sftp_canonicalize_path(m_sftp, path);
-        QVariantMap md;
-        md.insert("list", vall);
-        md.insert("path", QByteArray(tmp));
+        if(tmp == nullptr) {
+            return -4;
+        }
+        QVariantMap dm = user;
+        dm.insert("absPath", QByteArray(tmp));
+        emit dirOpen(QByteArray(tmp), vall, dm);
+        ssh_string_free_char(tmp);
         m_pathCurrent = tmp;
-        emit response(FTP_TYPE_OPENDIR, md);
         return 0;
     }
 
-    int runDownload(const QByteArray& remote, const QByteArray& local) {
-        emit progress(MT_FTP_DOWNLOAD, 0);
-        emit commandStart(MT_FTP_DOWNLOAD);
-        int code = _runDownload(remote, local);        
+    int runDownload(const QByteArray& remote, const QByteArray& local, int policy, const QVariantMap& user) {
+        m_abort = false;
+        m_userData = user;
+        m_errorString.clear();
+        handleCommandStart(MT_FTP_DOWNLOAD, user);
+        emit progress(MT_FTP_DOWNLOAD, 0, user);
+        m_opAsync = eDownload;
+        int code = _runDownload(remote, local, policy, user);
+        if(code <= 0) {
+            m_opAsync = eNone;
+            handleCommandFinish(MT_FTP_DOWNLOAD, reasonResult(code, user));
+        }
         return code;
     }
 
-    int _runDownload(const QByteArray& remote, const QByteArray& local) {
+    int _runDownload(const QByteArray& remote, const QByteArray& local, int policy, const QVariantMap& user) {
         sftp_attributes attr = sftp_stat(m_sftp, remote);
         if(attr == nullptr) {
-            handleFtpErrorMessage();
-            if(isFtpFatal()) {
-                return -1;
-            }
-            return 0;
+            return -2;
         }
         int total = attr->size;
         sftp_attributes_free(attr);
         sftp_file rf = sftp_open(m_sftp, remote, O_RDONLY, 0);
         if(rf == nullptr) {
-            handleFtpErrorMessage();
-            if(isFtpFatal()) {
-                return -1;
-            }
-            return 0;
+            return -4;
         }
-        m_lfile.setFileName(local);
+        QString filePath = QDir::cleanPath(QString::fromUtf8(local));
+        QString path = filePath.left(filePath.lastIndexOf('/'));
+        QDir d;
+        d.mkpath(path);
+        m_lfile.setFileName(filePath);
+        qint64 seekOffset = 0;
         if(m_lfile.exists()) {
+            if(policy == QWoSshFtp::TP_Override){
+                m_lfile.remove();
+                if(!m_lfile.open(QFile::WriteOnly)) {
+                    sftp_close(rf);
+                    return -5;
+                }
+            }else{
+                if(!m_lfile.open(QFile::Append)) {
+                    sftp_close(rf);
+                    return -6;
+                }
+                seekOffset = m_lfile.size();
+            }
+        }else{
+            if(!m_lfile.open(QFile::WriteOnly)) {
+                sftp_close(rf);
+                return -7;
+            }
+        }
+
+        if(m_lfile.size() == total) {
             sftp_close(rf);
-            handleError(tr("Skip it for the local file had exist."));
+            m_lfile.close();
             return 0;
         }
-        if(!m_lfile.open(QFile::WriteOnly)) {
+        if(sftp_seek64(rf, seekOffset) < 0) {
             sftp_close(rf);
-            handleError(tr("Failed to open the local file."));
-            return 0;
+            m_lfile.close();
+            return -8;
         }
+
         m_rfile = rf;
-        m_transfer = eDownload;
-        m_cnt = 0;
         m_percent = 0;
-        m_total = total+1;
+        m_total = total;
         sftp_file_set_nonblocking(rf);
         m_asyncRequest = sftp_async_read_begin(rf, MAX_BUFFER);
-        return 0;
+        return 1;
     }
 
     int _runDownloading() {
         if(m_abort) {
-            return 0;
+            return -999;
         }
         QByteArray buf(MAX_BUFFER, Qt::Uninitialized);
         int n = sftp_async_read(m_rfile, buf.data(), buf.length(), m_asyncRequest);
         if(n <= 0){
             return n;
         }
-        m_asyncRequest = sftp_async_read_begin(m_rfile, MAX_BUFFER);
-        m_cnt += n;
-        int v = m_cnt * 100 / m_total;
-        if(v != m_percent) {
-            m_percent = v;
-            emit progress(MT_FTP_DOWNLOAD, v);
-        }
         m_lfile.write(buf, n);
+        m_asyncRequest = sftp_async_read_begin(m_rfile, MAX_BUFFER);
+        if(m_total > 0) {
+            int v = m_lfile.size() * 100 / m_total;
+            if(v != m_percent) {
+                m_percent = v;
+                emit progress(MT_FTP_DOWNLOAD, v, m_userData);
+            }
+        }else{
+            emit progress(MT_FTP_DOWNLOAD, 0, m_userData);
+        }
         return n;
     }
 
 
-    int runUpload(const QByteArray& local, const QByteArray& remote) {
-        emit progress(MT_FTP_UPLOAD, 0);
-        emit commandStart(MT_FTP_UPLOAD);
-        int code = _runUpload(local, remote);
+    int runUpload(const QByteArray& local, const QByteArray& remote, int policy, const QVariantMap& user) {
+        m_abort = false;
+        m_userData = user;
+        m_errorString.clear();
+        handleCommandStart(MT_FTP_UPLOAD, user);
+        emit progress(MT_FTP_UPLOAD, 0, user);
+        m_opAsync = eUpload;
+        int code = _runUpload(local, remote, policy, user);
+        if(code <= 0) {
+            m_opAsync = eNone;
+            handleCommandFinish(MT_FTP_UPLOAD, uploadResult(code, user));
+        }
         return code;
     }
 
-    int _runUpload(const QByteArray& local, const QByteArray& remote) {
+    int _runUpload(const QByteArray& local, const QByteArray& remote, int policy, const QVariantMap& user) {
         int access_type = O_WRONLY | O_CREAT | O_TRUNC;
+        int fileOffset = 0;
+        sftp_attributes attr = sftp_stat(m_sftp, remote);
+        if(attr == nullptr) {
+            // file not exist.
+            QString path = QDir::cleanPath(remote);
+            path = path.left(path.lastIndexOf('/'));
+            sftp_mkdir(m_sftp, path.toUtf8(), 0x1FF);
+        }else{
+            fileOffset = attr->size;
+            sftp_attributes_free(attr);
+            if(policy == QWoSshFtp::TP_Override) {
+                fileOffset = 0;
+                access_type = O_WRONLY | O_CREAT | O_TRUNC;
+            }else{
+                access_type = O_WRONLY|O_APPEND;
+            }
+        }
         sftp_file wf = sftp_open(m_sftp, remote, access_type, 0600);
         if(wf == nullptr) {
-            handleFtpErrorMessage();
-            if(isFtpFatal()) {
-                return -1;
-            }
-            return 0;
+            return -1;
         }
         m_lfile.setFileName(local);
         if(!m_lfile.open(QFile::ReadOnly)) {
             sftp_close(wf);
-            handleError(tr("Failed to open local file."));
-            return 0;
+            return -2;
+        }
+        if(m_lfile.size() == 0) {
+            sftp_close(wf);
+            m_lfile.close();
+            return -3;
+        }
+
+        if(fileOffset > 0) {
+            if(sftp_seek64(wf, fileOffset) != SSH_OK) {
+                sftp_close(wf);
+                return -4;
+            }
+            if(!m_lfile.seek(fileOffset)) {
+                sftp_close(wf);
+                return -5;
+            }
         }
         m_rfile = wf;
-        m_transfer = eUpload;
-        m_cnt = 0;
-        m_percent = 0;
-        m_total = m_lfile.size()+1;
-        uploadNext();
-        return 0;
+        m_total = m_lfile.size();
+        m_percent =  m_lfile.pos() * 100 / m_total;
+        emit progress(MT_FTP_UPLOAD, m_percent, m_userData);
+        return uploadNext(user) ? 1 : 0;
     }
 
-    int _runUploading() {
+    int _runUploading(const QVariantMap& user) {
         if(m_abort) {
-            return 0;
+            return -999;
         }
         if(!m_lfile.isOpen()) {
             return -1;
@@ -536,77 +785,117 @@ private:
         }
         char buffer[MAX_BUFFER];
         int n = m_lfile.read(buffer, MAX_BUFFER);
-        if(sftp_write(m_rfile, buffer, n) != n) {
-            return -1;
+        int err = sftp_write(m_rfile, buffer, n);
+        if(err != n) {
+            return -2;
         }
         int v =  m_lfile.pos() * 100 / m_total;
         if(v != m_percent) {
             m_percent = v;
-            emit progress(MT_FTP_UPLOAD, v);
+            emit progress(MT_FTP_UPLOAD, v, m_userData);
         }
-        uploadNext();
-        return n;
+        return uploadNext(user) ? 1 : 0;
     }
 
-    int runUnlink(const QByteArray& path, const QByteArray& name) {
-        emit commandStart(MT_FTP_UNLINK);
-        int code = _runUnlink(path + "/" + name);
-        if(code == 0) {
-            code = _runOpenDir(path);
-        }
-        emit commandFinish(MT_FTP_UNLINK);
+    int runUnlink(const QByteArray& path, const QVariantMap& user) {
+        m_abort = false;
+        m_userData = user;
+        m_errorString.clear();
+        handleCommandStart(MT_FTP_UNLINK, user);
+        int code = _runUnlink(path, user);
+        handleCommandFinish(MT_FTP_UNLINK, unlinkResult(code, user));
         return code;
     }
 
-    int _runUnlink(const QByteArray& path) {
+    int _runUnlink(const QByteArray& path, const QVariantMap& user) {
         if(sftp_unlink(m_sftp, path) != SSH_OK) {
-            handleFtpErrorMessage();
-            if(isFtpFatal()) {
-                return -1;
-            }
-            return 1;
+            return -1;
         }
         return 0;
     }
 
-    int runRmDir(const QByteArray& path, const QByteArray& name) {
-        emit commandStart(MT_FTP_RMDIR);
-        int code = _runRmDir(path + "/" + name);
-        if(code == 0) {
-            code = _runOpenDir(path);
+    int runRmDir(const QByteArray& path, const QVariantMap& user) {
+        m_abort = false;
+        m_userData = user;
+        m_errorString.clear();
+        m_rmDirNext.clear();
+        handleCommandStart(MT_FTP_RMDIR, user);
+        m_opAsync = eRmDir;
+        int code = _runRmDir(path, true, user);
+        if(code <= 0) {
+            m_opAsync = eNone;
+            handleCommandFinish(MT_FTP_RMDIR, rmDirResult(code, user));
         }
-        emit commandFinish(MT_FTP_RMDIR);
         return code;
     }
 
-    int _runRmDir(const QByteArray& path) {
-        if(sftp_rmdir(m_sftp, path) != SSH_OK) {
-            handleFtpErrorMessage();
-            if(isFtpFatal()) {
+    int _runRmDir(const QByteArray& _path, bool isDir, const QVariantMap& user) {
+        QByteArray path = _path;
+        if(path.startsWith('~')) {
+            char *tmp = sftp_canonicalize_path(m_sftp, ".");
+            if(tmp == nullptr) {
                 return -1;
             }
-            return 1;
+            path = path.mid(1);
+            path.insert(0, tmp);
+            ssh_string_free_char(tmp);
         }
-        return 0;
+        if(!isDir) {
+            if(sftp_unlink(m_sftp, path) != SSH_OK) {
+                return -2;
+            }
+        }else{
+            sftp_dir dir = sftp_opendir(m_sftp, path);
+            if(dir == nullptr) {
+                return -3;
+            }
+            sftp_attributes attr;
+            QList<QVariantMap> files;
+            while ((attr = sftp_readdir(m_sftp, dir)) != nullptr && !m_abort){
+                QByteArray name = attr->name;
+                if(name == "." || name == "..") {
+                    continue;
+                }
+                QVariantMap dm;
+                dm.insert("filePath", path + "/" + name);
+                dm.insert("isDir", attr->type == 2);
+                files.append(dm);
+                sftp_attributes_free(attr);
+            }
+            if (sftp_closedir(dir) != SSH_NO_ERROR) {
+                return -4;
+            }
+            if(m_abort) {
+                return -999;
+            }
+            if(files.isEmpty()) {
+                if(sftp_rmdir(m_sftp, path) != SSH_OK) {
+                    return -5;
+                }
+            }else{
+                QVariantMap dm;
+                dm.insert("filePath", path);
+                dm.insert("isDir", true);
+                m_rmDirNext.append(dm);
+                m_rmDirNext.append(files);
+            }
+        }
+        return rmDirNext(user) ? 1 : 0;
     }
 
-    int runMkDir(const QByteArray& path, const QByteArray& name, int mode) {
-        emit commandStart(MT_FTP_MKDIR);
-        int code = _runMkDir(path + "/" + name, mode);
-        if(code == 0) {
-            code = _runOpenDir(path);
-        }
-        emit commandFinish(MT_FTP_MKDIR);
+    int runMkDir(const QByteArray& path, int mode, const QVariantMap& user) {
+        m_abort = false;
+        m_userData = user;
+        m_errorString.clear();
+        handleCommandStart(MT_FTP_MKDIR, user);
+        int code = _runMkDir(path, mode, user);
+        handleCommandFinish(MT_FTP_MKDIR, mkDirResult(code, user));
         return code;
     }
 
-    int _runMkDir(const QByteArray& path, int mode) {
+    int _runMkDir(const QByteArray& path, int mode, const QVariantMap& user) {
         if(sftp_mkdir(m_sftp, path, mode) != SSH_OK) {
-            handleFtpErrorMessage();
-            if(isFtpFatal()) {
-                return -1;
-            }
-            return 1;
+            return -1;
         }
         return 0;
     }    
@@ -614,11 +903,11 @@ private:
     virtual bool handleOpen(void *session){
         sftp_session sftp = sftp_new(ssh_session(session));
         if (sftp == nullptr) {
-            handleError(tr("Error allocating SFTP session: %1").arg(ssh_get_error(ssh_session(session))));
+            handleError(tr("Error allocating SFTP session: %1").arg(ssh_get_error(ssh_session(session))), QVariantMap());
             return false;
         }
         if(sftp_init(sftp) != SSH_OK) {
-            handleError(tr("Error initializing SFTP session: %1").arg(ssh_get_error(sftp)));
+            handleError(tr("Error initializing SFTP session: %1").arg(ssh_get_error(sftp)), QVariantMap());
             return false;
         }
         m_sftp = sftp;
@@ -639,100 +928,141 @@ private:
     }
 
     virtual bool handleRead(){
-        if(m_transfer == eDownload){
+        if(m_opAsync == eDownload){
             int n = _runDownloading();
-            if( n <= 0) {
-                m_transfer = eIdle;
-                sftp_close(m_rfile);
-                m_rfile = nullptr;
-                m_lfile.close();
-                openDir(m_pathCurrent);
-                emit commandFinish(MT_FTP_DOWNLOAD);
+            if(n != SSH_AGAIN){
+                if(n <= 0) {
+                    m_opAsync = eNone;
+                    sftp_close(m_rfile);
+                    m_rfile = nullptr;
+                    m_lfile.close();
+                    handleCommandFinish(MT_FTP_DOWNLOAD, reasonResult(n, m_userData));
+                }
             }
-            if( n < 0) {
-                handleFtpErrorMessage();
-                m_lfile.remove();
-            }
+            return true;
         }
         return true;
     }
 
     virtual bool handleRequest(struct MsgRequest& msg) {
+        try {
+            if(!isFtpFatal()) {
+                _handleRequest(msg);
+            }
+            return !isFtpFatal();
+        } catch (...) {
+            return false;
+        }
+    }
+
+    virtual bool _handleRequest(struct MsgRequest& msg) {
         int type = msg.type;
         QByteArray data = msg.data;
         if(type == MT_FTP_UPLOADNEXT) {
-            int n = _runUploading();
+            QDataStream ds(data);
+            QVariantMap user;
+            ds >> user;
+            int n = _runUploading(user);
             if(n <= 0){
-                sftp_close(m_rfile);
-                m_rfile = nullptr;
+                if(m_rfile) {
+                    sftp_close(m_rfile);
+                    m_rfile = nullptr;
+                }
                 m_lfile.close();
-                m_transfer = eIdle;
-                openDir(m_pathCurrent);
-                emit commandFinish(MT_FTP_UPLOAD);
+                m_opAsync = eNone;
+                handleCommandFinish(MT_FTP_UPLOAD, uploadResult(n, user));
             }
-            return n >= 0;
-        }
-        if(type == MT_FTP_ABORT) {
+            return true;
+        }else if(type == MT_FTP_LISTFILENEXT) {
+            QDataStream ds(data);
+            QVariantMap user;
+            QByteArray path;
+            ds >> path >> user;
+            int n = _runListFile(path, user);
+            if(n <= 0) {
+                m_listFileNext.clear();
+                m_opAsync = eNone;
+                handleCommandFinish(MT_FTP_LISTFILE, reasonResult(n, user));
+            }
+            return true;
+        }else if(type == MT_FTP_REMOVEFILENEXT) {
+            QDataStream ds(data);
+            QVariantMap user;
+            QByteArray path;
+            bool isDir;
+            ds >> path >> isDir >> user;
+            int n = _runRmDir(path, isDir, user);
+            if(n <= 0) {
+                m_rmDirNext.clear();
+                m_opAsync = eNone;
+                handleCommandFinish(MT_FTP_RMDIR, rmDirResult(n, user));
+            }
+            return true;
+        }else if(type == MT_FTP_ABORT) {
             m_abort = true;
             return true;
         }
-        if(m_transfer != eIdle) {
-            handleError(tr("the last request is still running, wait for a while."));
+
+        if(m_opAsync != eNone) {
+            m_asyncTasks.append(msg);
             return true;
         }
-        if(type == MT_FTP_OPENDIR) {
+
+        if(type == MT_FTP_LISTFILE) {
             QDataStream ds(data);
             QByteArray path;
-            ds >> path;
+            QVariantMap user;
+            ds >> path >> user;
             if(path.isEmpty()) {
-                path = ".";
+                path = "~";
             }
-            if(runOpenDir(path) < 0) {
-                return false;
+            return runListFile(path, user);
+        }else if(type == MT_FTP_OPENDIR) {
+            QDataStream ds(data);
+            QStringList paths;
+            QVariantMap user;
+            ds >> paths >> user;
+            if(paths.isEmpty()) {
+                paths.append("~");
             }
+            return runOpenDir(paths, user);
         }else if(type == MT_FTP_MKDIR) {
             QDataStream ds(data);
             QByteArray path;
-            QByteArray name;
+            QVariantMap user;
             int mode;
-            ds >> path >> name >> mode;
-            if(runMkDir(path, name, mode) < 0) {
-                return false;
-            }
+            ds >> path >> mode >> user;
+            return runMkDir(path, mode, user);
         }else if(type == MT_FTP_RMDIR) {
             QDataStream ds(data);
             QByteArray path;
-            QByteArray name;
-            ds >> path >> name;
-            if(runRmDir(path, name) < 0) {
-                return false;
-            }
+            QVariantMap user;
+            ds >> path >> user;
+            return runRmDir(path, user);
         }else if(type == MT_FTP_UNLINK) {
             QDataStream ds(data);
             QByteArray path;
             QByteArray name;
+            QVariantMap user;
             ds >> path >> name;
-            if(runUnlink(path, name) < 0) {
-                return false;
-            }
+            return runUnlink(path, user);
         }else if(type == MT_FTP_UPLOAD) {
             QDataStream ds(data);
             QByteArray local;
             QByteArray remote;
-            ds >> local >> remote;
-            if(runUpload(local, remote) < 0) {
-                return false;
-            }
-            m_abort = false;
+            QVariantMap user;
+            int policy;
+            ds >> local >> remote >> policy >> user;
+            return runUpload(local, remote, policy, user);
         }else if(type == MT_FTP_DOWNLOAD) {
             QDataStream ds(data);
             QByteArray local;
             QByteArray remote;
-            ds >> remote >> local;            
-            if(runDownload(remote,local) < 0) {
-                return false;
-            }
-            m_abort = false;
+            QVariantMap user;
+            int policy;
+            QString logFile;
+            ds >> remote >> local >> policy >> user;
+            return runDownload(remote, local, policy, user);
         }
         return true;
     }
@@ -800,50 +1130,78 @@ public:
         push(MT_PTYSIZE, buf, cli);
     }
 
-    void sftpOpenDir(QWoSshChannel *cli, const QString& path) {
+    void sftpOpenDir(QWoSshChannel *cli, const QStringList& paths, const QVariantMap& user) {
         QByteArray buf;
         QDataStream ds(&buf, QIODevice::WriteOnly);
-        ds << path.toUtf8();
+        ds << paths << user;
         push(MT_FTP_OPENDIR, buf, cli);
     }
 
-    void sftpMkDir(QWoSshChannel *cli, const QString& path, const QString& name, int mode) {
+    void sftpMkDir(QWoSshChannel *cli, const QString& path, int mode, const QVariantMap& user) {
         QByteArray buf;
         QDataStream ds(&buf, QIODevice::WriteOnly);
-        ds << path.toUtf8() << name.toUtf8() << mode;
+        ds << path.toUtf8() << mode << user;
         push(MT_FTP_MKDIR, buf, cli);
     }
 
-    void sftpRmDir(QWoSshChannel *cli, const QString& path, const QString& name) {
+    void sftpRmDir(QWoSshChannel *cli, const QString& path, const QVariantMap& user) {
         QByteArray buf;
         QDataStream ds(&buf, QIODevice::WriteOnly);
-        ds << path.toUtf8() << name.toUtf8();
+        ds << path.toUtf8() << user;
         push(MT_FTP_RMDIR, buf, cli);
     }
 
-    void sftpUnlink(QWoSshChannel *cli, const QString &path, const QString &name) {
+    void sftpUnlink(QWoSshChannel *cli, const QString &path, const QVariantMap& user) {
         QByteArray buf;
         QDataStream ds(&buf, QIODevice::WriteOnly);
-        ds << path.toUtf8() << name.toUtf8();
+        ds << path.toUtf8() << user;
         push(MT_FTP_UNLINK, buf, cli);
     }
 
-    void sftpDownload(QWoSshChannel *cli, const QString& remote, const QString& local) {
+    void sftpDownload(QWoSshChannel *cli, const QString& remote, const QString& local, int policy, const QVariantMap& user) {
         QByteArray buf;
         QDataStream ds(&buf, QIODevice::WriteOnly);
-        ds << remote.toUtf8() << local.toUtf8();
+        ds << remote.toUtf8() << local.toUtf8() << policy << user;
         push(MT_FTP_DOWNLOAD, buf, cli);
     }
 
-    void sftpUpload(QWoSshChannel *cli, const QString& local, const QString& remote) {
+    void sftpUpload(QWoSshChannel *cli, const QString& local, const QString& remote, int policy, const QVariantMap& user) {
         QByteArray buf;
         QDataStream ds(&buf, QIODevice::WriteOnly);
-        ds << local.toUtf8() << remote.toUtf8();
+        ds << local.toUtf8() << remote.toUtf8() << policy << user;
         push(MT_FTP_UPLOAD, buf, cli);
     }
 
-    void internalUploadNext(QWoSshChannel *cli) {
-        push(MT_FTP_UPLOADNEXT, QByteArray(), cli);
+    void sftpListFile(QWoSshChannel *cli, const QString& path, const QVariantMap& user) {
+        QByteArray buf;
+        QDataStream ds(&buf, QIODevice::WriteOnly);
+        ds << path.toUtf8() << user;
+        push(MT_FTP_LISTFILE, buf, cli);
+    }
+
+    void internalUploadNext(QWoSshChannel *cli, const QVariantMap& user) {
+        QByteArray buf;
+        QDataStream ds(&buf, QIODevice::WriteOnly);
+        ds << user;
+        push(MT_FTP_UPLOADNEXT, buf, cli);
+    }
+
+    void internalListFileNext(QWoSshChannel *cli, const QByteArray& path, const QVariantMap& user) {
+        QByteArray buf;
+        QDataStream ds(&buf, QIODevice::WriteOnly);
+        ds << path << user;
+        push(MT_FTP_LISTFILENEXT, buf, cli);
+    }
+
+    void internalRemoveFileNext(QWoSshChannel *cli, const QByteArray& path, bool isDir, const QVariantMap& user) {
+        QByteArray buf;
+        QDataStream ds(&buf, QIODevice::WriteOnly);
+        ds << path << isDir << user;
+        push(MT_FTP_REMOVEFILENEXT, buf, cli);
+    }
+
+    void internalAsyncTaskNext(QWoSshChannel *cli, uchar type, const QByteArray &data) {
+        push(type, data, cli);
     }
 
     void sftpAbort(QWoSshChannel *cli) {
@@ -918,9 +1276,6 @@ private:
                         }else if(msg.type == MT_EXIT) {
                             return 0;
                         }
-                        if(msg.type == MT_FTP_UPLOADNEXT) {
-                            break;
-                        }
                     }
                 }else{
                     return -1;
@@ -929,7 +1284,9 @@ private:
             for(int i = 0; i < MAX_CHANNEL && out[i] != 0; i++) {
                 done = true;
                 QWoSshChannel *chn = m_all.value(out[i]);
-                if(!chn->handleRead()) {
+                if(chn == nullptr) {
+                    m_all.remove(out[i]);
+                }else if(!chn->handleRead()) {
                     channelRemove(chn);
                     chn->handleClose(-1);
                 }else{
@@ -1035,45 +1392,52 @@ void QWoSSHConnection::shellSize(QWoSshChannel*cli, int cols, int rows)
     }
 }
 
-void QWoSSHConnection::sftpOpenDir(QWoSshChannel *cli, const QString &path)
+void QWoSSHConnection::sftpOpenDir(QWoSshChannel *cli, const QStringList &paths, const QVariantMap& user)
 {
     if(m_conn) {
-        m_conn->sftpOpenDir(cli, path);
+        m_conn->sftpOpenDir(cli, paths, user);
     }
 }
 
-void QWoSSHConnection::sftpMkDir(QWoSshChannel *cli, const QString &path, const QString &name, int mode)
+void QWoSSHConnection::sftpMkDir(QWoSshChannel *cli, const QString &path, int mode, const QVariantMap& user)
 {
     if(m_conn) {
-        m_conn->sftpMkDir(cli, path, name, mode);
+        m_conn->sftpMkDir(cli, path, mode, user);
     }
 }
 
-void QWoSSHConnection::sftpRmDir(QWoSshChannel *cli, const QString &path, const QString &name)
+void QWoSSHConnection::sftpRmDir(QWoSshChannel *cli, const QString &path, const QVariantMap& user)
 {
     if(m_conn) {
-        m_conn->sftpRmDir(cli, path, name);
+        m_conn->sftpRmDir(cli, path, user);
     }
 }
 
-void QWoSSHConnection::sftpUnlink(QWoSshChannel *cli, const QString &path, const QString &name)
+void QWoSSHConnection::sftpUnlink(QWoSshChannel *cli, const QString &path, const QVariantMap& user)
 {
     if(m_conn) {
-        m_conn->sftpUnlink(cli, path, name);
+        m_conn->sftpUnlink(cli, path, user);
     }
 }
 
-void QWoSSHConnection::sftpDownload(QWoSshChannel *cli, const QString &remote, const QString &local)
+void QWoSSHConnection::sftpDownload(QWoSshChannel *cli, const QString &remote, const QString &local, int policy, const QVariantMap& user)
 {
     if(m_conn) {
-        m_conn->sftpDownload(cli, remote, local);
+        m_conn->sftpDownload(cli, remote, local, policy, user);
     }
 }
 
-void QWoSSHConnection::sftpUpload(QWoSshChannel *cli, const QString &local, const QString &remote)
+void QWoSSHConnection::sftpUpload(QWoSshChannel *cli, const QString &local, const QString &remote, int policy, const QVariantMap& user)
 {
     if(m_conn) {
-        m_conn->sftpUpload(cli, local, remote);
+        m_conn->sftpUpload(cli, local, remote, policy, user);
+    }
+}
+
+void QWoSSHConnection::sftpListFile(QWoSshChannel *cli, const QString &path, const QVariantMap& user)
+{
+    if(m_conn) {
+        m_conn->sftpListFile(cli, path, user);
     }
 }
 
@@ -1084,10 +1448,31 @@ void QWoSSHConnection::sftpAbort(QWoSshChannel *cli)
     }
 }
 
-void QWoSSHConnection::internalUploadNext(QWoSshChannel *cli)
+void QWoSSHConnection::internalUploadNext(QWoSshChannel *cli, const QVariantMap& user)
 {
     if(m_conn) {
-        m_conn->internalUploadNext(cli);
+        m_conn->internalUploadNext(cli, user);
+    }
+}
+
+void QWoSSHConnection::internalListFileNext(QWoSshChannel *cli, const QByteArray& path, const QVariantMap &user)
+{
+    if(m_conn) {
+        m_conn->internalListFileNext(cli, path, user);
+    }
+}
+
+void QWoSSHConnection::internalRemoveFileNext(QWoSshChannel *cli, const QByteArray &path, bool isDir, const QVariantMap &user)
+{
+    if(m_conn) {
+        m_conn->internalRemoveFileNext(cli, path, isDir, user);
+    }
+}
+
+void QWoSSHConnection::internalAsyncTaskNext(QWoSshChannel *cli, uchar type, const QByteArray &data)
+{
+    if(m_conn) {
+        m_conn->internalAsyncTaskNext(cli, type, data);
     }
 }
 
@@ -1182,15 +1567,15 @@ bool QWoSSHConnection::init(const QString &host)
             return false;
         }
         QObject::connect(cli, SIGNAL(finished()), this, SLOT(onFinished()));
-        QObject::connect(cli, SIGNAL(errorArrived(const QByteArray&)), this, SIGNAL(errorArrived(const QByteArray&)));
-        QObject::connect(cli, SIGNAL(passwordArrived(const QString&,const QByteArray&)), this, SIGNAL(passwordArrived(const QString&,const QByteArray&)));
-        QObject::connect(cli, SIGNAL(inputArrived(const QString&,const QString&,bool)), this, SLOT(onInputArrived(const QString&,const QString&,bool)));
+        QObject::connect(cli, SIGNAL(errorArrived(QString,QVariantMap)), this, SIGNAL(errorArrived(QString,QVariantMap)));
+        QObject::connect(cli, SIGNAL(passwordArrived(QString,QByteArray)), this, SIGNAL(passwordArrived(QString,QByteArray)));
+        QObject::connect(cli, SIGNAL(inputArrived(QString,QString,bool)), this, SLOT(onInputArrived(QString,QString,bool)));
         m_proxys.append(cli);
     }
     QObject::connect(m_conn, SIGNAL(finished()), this, SLOT(onFinished()));
-    QObject::connect(m_conn, SIGNAL(errorArrived(const QByteArray&)), this, SIGNAL(errorArrived(const QByteArray&)));
-    QObject::connect(m_conn, SIGNAL(passwordArrived(const QString&,const QByteArray&)), this, SIGNAL(passwordArrived(const QString&,const QByteArray&)));
-    QObject::connect(m_conn, SIGNAL(inputArrived(const QString&,const QString&,bool)), this, SLOT(onInputArrived(const QString&,const QString&,bool)));
+    QObject::connect(m_conn, SIGNAL(errorArrived(QString,QVariantMap)), this, SIGNAL(errorArrived(QString,QVariantMap)));
+    QObject::connect(m_conn, SIGNAL(passwordArrived(QString,QByteArray)), this, SIGNAL(passwordArrived(QString,QByteArray)));
+    QObject::connect(m_conn, SIGNAL(inputArrived(QString,QString,bool)), this, SLOT(onInputArrived(QString,QString,bool)));
     return true;
 }
 
@@ -1256,9 +1641,9 @@ bool QWoSshChannel::start(const QString &host, int gid)
     bool ct = false;
     m_conn = factory->get(gid, &ct);
     if(ct) {
-        QObject::connect(m_conn, SIGNAL(errorArrived(const QByteArray&)), this, SIGNAL(errorArrived(const QByteArray&)));
-        QObject::connect(m_conn, SIGNAL(passwordArrived(const QString&,const QByteArray&)), this, SIGNAL(passwordArrived(const QString&,const QByteArray&)));
-        QObject::connect(m_conn, SIGNAL(inputArrived(const QString&,const QString&,bool)), this, SIGNAL(inputArrived(const QString&,const QString&,bool)));
+        QObject::connect(m_conn, SIGNAL(errorArrived(QString,QVariantMap)), this, SIGNAL(errorArrived(QString,QVariantMap)));
+        QObject::connect(m_conn, SIGNAL(passwordArrived(QString,QByteArray)), this, SIGNAL(passwordArrived(QString,QByteArray)));
+        QObject::connect(m_conn, SIGNAL(inputArrived(QString,QString,bool)), this, SIGNAL(inputArrived(QString,QString,bool)));
         QObject::connect(m_conn, SIGNAL(connectionStart()), this, SIGNAL(connectionStart()));
         QObject::connect(m_conn, SIGNAL(connectionFinished(bool)), this, SIGNAL(connectionFinished(bool)));
         if(!m_conn->start(host)) {
@@ -1370,41 +1755,53 @@ QWoSshFtp::~QWoSshFtp()
 
 }
 
-void QWoSshFtp::openDir(const QString &path)
+void QWoSshFtp::setLogFile(const QString &logFile)
 {
-    if(path.isEmpty()) {
+
+}
+
+void QWoSshFtp::openDir(const QStringList &paths, const QVariantMap &user)
+{
+    if(paths.isEmpty()) {
         return;
     }
     if(m_conn) {
-        m_conn->sftpOpenDir(this, path);
+        m_conn->sftpOpenDir(this, paths, user);
     }
 }
 
-void QWoSshFtp::mkDir(const QString &path, const QString &name, int mode)
+void QWoSshFtp::openDir(const QString &path, const QVariantMap& user)
+{
+    QStringList paths;
+    paths.append(path);
+    openDir(paths, user);
+}
+
+void QWoSshFtp::mkDir(const QString &path, int mode, const QVariantMap& user)
 {
     QString tmp = QDir::cleanPath(path);
     if(m_conn) {
-        m_conn->sftpMkDir(this, tmp, name, mode);
+        m_conn->sftpMkDir(this, tmp, mode, user);
     }
 }
 
-void QWoSshFtp::rmDir(const QString &path, const QString &name)
+void QWoSshFtp::rmDir(const QString &path, const QVariantMap& user)
 {
     QString tmp = QDir::cleanPath(path);
     if(m_conn) {
-        m_conn->sftpRmDir(this, tmp, name);
+        m_conn->sftpRmDir(this, tmp, user);
     }
 }
 
-void QWoSshFtp::unlink(const QString &path, const QString &name)
+void QWoSshFtp::unlink(const QString &path, const QVariantMap& user)
 {
     QString tmp = QDir::cleanPath(path);
     if(m_conn) {
-        m_conn->sftpUnlink(this, tmp, name);
+        m_conn->sftpUnlink(this, tmp, user);
     }
 }
 
-void QWoSshFtp::download(const QString &remote, const QString &local)
+void QWoSshFtp::download(const QString &remote, const QString &local, TransferPolicy policy, const QVariantMap& user)
 {
     QString path = local;
     if(local.startsWith("file://")) {
@@ -1412,11 +1809,11 @@ void QWoSshFtp::download(const QString &remote, const QString &local)
         path = url.toLocalFile();
     }
     if(m_conn) {
-        m_conn->sftpDownload(this, remote, path);
+        m_conn->sftpDownload(this, remote, path, policy, user);
     }
 }
 
-void QWoSshFtp::upload(const QString &local, const QString &remote)
+void QWoSshFtp::upload(const QString &local, const QString &remote, TransferPolicy policy, const QVariantMap& user)
 {
     QString path = local;
     if(local.startsWith("file://")) {
@@ -1424,7 +1821,14 @@ void QWoSshFtp::upload(const QString &local, const QString &remote)
         path = url.toLocalFile();
     }
     if(m_conn) {
-        m_conn->sftpUpload(this, path, remote);
+        m_conn->sftpUpload(this, path, remote, policy, user);
+    }
+}
+
+void QWoSshFtp::listFile(const QString &path, const QVariantMap& user)
+{
+    if(m_conn) {
+        m_conn->sftpListFile(this, path, user);
     }
 }
 
@@ -1435,21 +1839,9 @@ void QWoSshFtp::abort()
     }
 }
 
-void QWoSshFtp::onResponse(int type, const QVariant &data)
-{
-    if(type == FTP_TYPE_OPENDIR) {
-        QVariantMap md = data.toMap();
-        QString path = md.value("path").toString();
-        QVariantList ls = md.value("list").toList();
-        emit dirOpen(path, ls);
-    }
-}
 
 void QWoSshFtp::init()
 {
-    QObject::connect(this, SIGNAL(response(int,QVariant)), this, SLOT(onResponse(int,QVariant)));
-    QObject::connect(m_conn, SIGNAL(commandStart(int)), this, SIGNAL(commandStart(int)));
-    QObject::connect(m_conn, SIGNAL(commandFinish(int)), this, SIGNAL(commandFinish(int)));
 }
 
 

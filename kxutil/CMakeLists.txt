@@ -16,7 +16,7 @@ endif()
 
 add_definitions(-DKXUTIL_LIBRARY)
 
-find_package(Qt5 COMPONENTS Core Network REQUIRED)
+find_package(Qt5 COMPONENTS Core Network Gui Widgets REQUIRED)
 
 set(SOURCE_FILES
     rc4.cpp
@@ -30,6 +30,7 @@ set(SOURCE_FILES
     qkxlengthbodypacket.cpp
     qkxkeepwakeup.cpp
     qkxprocesslaunch.cpp
+    qkxmessagebox.cpp
 )
 
 set(HEADER_FILES
@@ -47,6 +48,7 @@ set(HEADER_FILES
     qkxlengthbodypacket.h
     qkxkeepwakeup.h
     qkxprocesslaunch.h
+    qkxmessagebox.h
 )
 
 if(WIN32)
@@ -119,6 +121,6 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Gui Qt5::Widgets)
 
 

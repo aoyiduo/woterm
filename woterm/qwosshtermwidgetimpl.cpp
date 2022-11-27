@@ -15,6 +15,7 @@
 #include "qwosshtermwidget.h"
 #include "qwosftpwidget.h"
 #include "qwomainwindow.h"
+#include "qkxver.h"
 
 #include <QTimer>
 #include <QMenu>
@@ -38,6 +39,7 @@ QWoTermWidget *QWoSshTermWidgetImpl::createTermWidget(const QString &target, int
     w->setTermName(name);
     w->setObjectName(name);
 
+    QObject::connect(w, SIGNAL(activePathArrived(QString)), this, SLOT(onActivePathArrived(QString)));
     QObject::connect(w, SIGNAL(sftpAssistant()), this, SLOT(onSftpAssistOpen()));
     return w;
 }
@@ -51,7 +53,7 @@ void QWoSshTermWidgetImpl::handleTabContextMenu(QMenu *menu)
 void QWoSshTermWidgetImpl::onSftpAssistOpen()
 {
     if(m_sftp == nullptr) {
-        m_sftp = new QWoSftpWidget(m_target, m_gid, this);
+        m_sftp = new QWoSftpWidget(m_target, m_gid, true, this);
         addAssistant(m_sftp, true);
         m_sftp->setMinimumWidth(30);
     }
@@ -62,4 +64,11 @@ void QWoSshTermWidgetImpl::onNewSessionMultplex()
 {
     QWoShower *shower = QWoMainWindow::instance()->shower();
     shower->openSsh(m_target, m_gid);
+}
+
+void QWoSshTermWidgetImpl::onActivePathArrived(const QString &path)
+{
+    if(m_sftp != nullptr) {
+        m_sftp->tryToSyncPath(path);
+    }
 }

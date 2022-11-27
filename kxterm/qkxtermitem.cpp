@@ -77,8 +77,9 @@ QKxTermItem::QKxTermItem(QWidget* parent)
     QObject::connect(m_vte, SIGNAL(contentChanged(bool)), this, SLOT(onContentChanged(bool)));
     QObject::connect(m_view, SIGNAL(selectChanged()), this, SLOT(onSelectChanged()));
     QObject::connect(m_vte, SIGNAL(screenChanged()), this, SLOT(onScreenChanged()));
-    QObject::connect(m_vte, SIGNAL(sendData(const QByteArray&)), this, SIGNAL(sendData(const QByteArray&)));
-    QObject::connect(m_vte, SIGNAL(titleChanged(const QString&)), this, SIGNAL(titleChanged(const QString&)));
+    QObject::connect(m_vte, SIGNAL(sendData(QByteArray)), this, SIGNAL(sendData(QByteArray)));
+    QObject::connect(m_vte, SIGNAL(titleChanged(QString)), this, SIGNAL(titleChanged(QString)));
+    QObject::connect(m_vte, SIGNAL(titleChanged(QString)), this, SLOT(onGuessActivePathChanged(QString)));
 
     m_blinker = new QTimer();
     QObject::connect(m_blinker, SIGNAL(timeout()), this, SLOT(onBlinkTimeout()));
@@ -858,6 +859,19 @@ void QKxTermItem::onSelectClickTimeout()
     if(m_selectStart == m_selectEnd && m_selectEnd != QPoint(-1, -1)) {
         m_selectStart = m_selectEnd = QPoint(-1, -1);
     }
+}
+
+void QKxTermItem::onGuessActivePathChanged(const QString &path)
+{
+    int idx = path.indexOf(":~");
+    if(idx < 0) {
+        idx = path.indexOf(":/");
+    }
+    if(idx < 0) {
+        return;
+    }
+    QString pathAct = path.mid(idx+1);
+    emit activePathArrived(pathAct);
 }
 
 void QKxTermItem::paint(QPainter *p)

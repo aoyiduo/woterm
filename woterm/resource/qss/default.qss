@@ -11,6 +11,20 @@ QPlainTextEdit {
     padding:10px;
 }
 
+QWoSftpWidgetImpl{
+    background-color: rgb(74, 181, 232);
+}
+
+QWoSftpTransferWidget{
+    background-color: rgb(166,223,251);
+    border: 1px;
+    border-style: solid;
+    border-color: white;
+    border-radius: 5px;
+    padding:10px;
+    min-width: 300px;
+}
+
 QWidget#inputArea{
     border-radius: 5px;
     background: rgb(85, 204, 255);
@@ -167,7 +181,16 @@ QPushButton{
   border: 1px solid darkgray;
   padding: 5px;
   color: black;
-  min-width: 50px;
+  min-width: 70px;
+}
+
+QPushButton#transferRemove{
+  background-color: rgb(166,223,251);
+  border-radius: 3px;
+  border: 1px solid white;
+  padding: 5px;
+  color: black;
+  min-width: 70px;
 }
 
 QPushButton:hover{

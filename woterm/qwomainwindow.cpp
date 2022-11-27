@@ -61,7 +61,7 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     ui->setupUi(this);
     setMinimumSize(QSize(1024, 700));
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(tr("WoTerm"));
+    setWindowTitle(QKxVer::isUltimate() ? tr("WoTerm ultimate beta") : tr("WoTerm free"));
 
     initMenuBar();
     initToolBar();
@@ -253,6 +253,17 @@ void QWoMainWindow::onAppStart()
             QCoreApplication::quit();
         }
     }
+    {
+        if(!QKxVer::isUltimate()) {
+            if(QWoSetting::shouldPopupUpgradeUltimate()) {
+                int ret = QMessageBox::question(this, tr("Upgrade to ultimate version"), tr("The current version is free. It is recommended to upgrade to the ultimate version."), QMessageBox::Yes|QMessageBox::No);
+                if(ret == QMessageBox::Yes) {
+                    QDesktopServices::openUrl(QUrl("http://woterm.com"));
+                }
+                QWoSetting::setIgnoreTodayUpgradeUltimate();
+            }
+        }
+    }
 }
 
 void QWoMainWindow::onVersionCheck(int code, const QByteArray &body)
@@ -269,11 +280,11 @@ void QWoMainWindow::onVersionCheck(int code, const QByteArray &body)
         int verLatest = QWoUtils::parseVersion(verBody);
         int verCurrent = QWoUtils::parseVersion(WOTERM_VERSION);
         if(verCurrent < verLatest) {
-            bool pop = QWoSetting::shouldPopupUpgradeMessage(verBody);
+            bool pop = QWoSetting::shouldPopupUpgradeVersionMessage(verBody);
             if(!pop) {
                 return;
             }
-            QWoSetting::setIgnoreTodayUpgrade(verBody);
+            QWoSetting::setIgnoreTodayUpgradeVersion(verBody);
             int ret = QMessageBox::question(this, tr("Version check"), tr("a new version of %1 is found, do you want to update it?").arg(verBody), QMessageBox::Yes|QMessageBox::No);
             if(ret == QMessageBox::Yes) {
                 QDesktopServices::openUrl(QUrl("http://woterm.com"));
@@ -422,6 +433,11 @@ void QWoMainWindow::onActionAdminTriggered()
     dlg.exec();
 }
 
+void QWoMainWindow::onActionUltimateTriggered()
+{
+    QDesktopServices::openUrl(QUrl("http://woterm.com"));
+}
+
 void QWoMainWindow::initMenuBar()
 {
     ui->menuBar->setNativeMenuBar(false);
@@ -437,7 +453,13 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionDocument, SIGNAL(triggered()), this, SLOT(onActionHelpTriggered()));
     QObject::connect(ui->actionWetsite, SIGNAL(triggered()), this, SLOT(onActionWebsiteTriggered()));
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onActionAboutTriggered()));
-    QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));
+    if(QKxVer::isUltimate()) {
+        QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));
+        ui->actionUltimate->setVisible(false);
+    }else{
+        ui->actionAdministrator->setVisible(false);
+        QObject::connect(ui->actionUltimate, SIGNAL(triggered()), this, SLOT(onActionUltimateTriggered()));
+    }
 }
 
 void QWoMainWindow::initToolBar()
@@ -455,8 +477,6 @@ void QWoMainWindow::initToolBar()
     //tool->addAction(QIcon(":/woterm/resource/skin/js.png"), tr("Script"), this, SLOT(onActionScriptRunTriggered()));
     tool->addAction(QIcon(":/woterm/resource/skin/keyset.png"), tr("Keys"), this, SLOT(onActionSshKeyManageTriggered()));
     //tool->addAction(QIcon(":/woterm/resource/skin/setting.png"), tr("Setting"), this, SLOT(onActionSettingTriggered()));
-    tool->addAction(QIcon(":/woterm/resource/skin/help.png"), tr("Help"), this, SLOT(onActionHelpTriggered()));
-    tool->addAction(QIcon(":/woterm/resource/skin/about.png"), tr("About"), this, SLOT(onActionAboutTriggered()));
 }
 
 void QWoMainWindow::initStatusBar()

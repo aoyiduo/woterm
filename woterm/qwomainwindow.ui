@@ -70,6 +70,7 @@
     <addaction name="actionWetsite"/>
     <addaction name="actionDocument"/>
     <addaction name="actionAbout"/>
+    <addaction name="actionUltimate"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -200,6 +201,11 @@
    </property>
    <property name="text">
     <string>Administrator</string>
+   </property>
+  </action>
+  <action name="actionUltimate">
+   <property name="text">
+    <string>Upgrade to ultimate version</string>
    </property>
   </action>
  </widget>

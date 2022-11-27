@@ -105,6 +105,31 @@ QString QWoSetting::sshServerDbPath()
     return path;
 }
 
+QString QWoSetting::sftpTaskDbPath()
+{
+    QString path;
+    path = QWoSetting::value("sftp/taskDb", "").toString();
+    if(!QFile::exists(path)) {
+        path = QDir::cleanPath(QWoSetting::applicationDataPath() + "/sftpTask.db");
+        path = QDir::toNativeSeparators(path);
+        return path;
+    }
+    return path;
+}
+
+QString QWoSetting::sftpTaskLogPath()
+{
+    QString path;
+    path = QWoSetting::value("sftp/taskLog", "").toString();
+    if(!QFile::exists(path)) {
+        path = QWoSetting::ensurePath("sftpLog");
+        path = QDir::cleanPath(path);
+        path = QDir::toNativeSeparators(path);
+        return path;
+    }
+    return path;
+}
+
 QString QWoSetting::lastJsLoadPath()
 {
     QString path;
@@ -179,7 +204,24 @@ void QWoSetting::setLastBackupPath(const QString &path)
     setValue("backup/path", path);
 }
 
-bool QWoSetting::shouldPopupUpgradeMessage(const QString &ver)
+bool QWoSetting::shouldPopupUpgradeUltimate()
+{
+    QDate dt = value("upgrade/ultimate").toDate();
+    if(!dt.isValid()) {
+        return true;
+    }
+    QDate today = QDate::currentDate();
+    return today >= dt;
+}
+
+void QWoSetting::setIgnoreTodayUpgradeUltimate()
+{
+    QDate dt = QDate::currentDate();
+    dt = dt.addDays(1);
+    setValue("upgrade/ultimate", dt);
+}
+
+bool QWoSetting::shouldPopupUpgradeVersionMessage(const QString &ver)
 {
     QString verHit = value("upgrade/version").toString();
     if(verHit != ver) {
@@ -197,18 +239,18 @@ bool QWoSetting::shouldPopupUpgradeMessage(const QString &ver)
     return today >= dt;
 }
 
-void QWoSetting::setNextUpgradeDate(const QString& ver, const QDate &dt)
+void QWoSetting::setNextUpgradeVersionDate(const QString& ver, const QDate &dt)
 {
     setValue("upgrade/version", ver);
     setValue("upgrade/date", dt);
     remove("upgrade/skip");
 }
 
-void QWoSetting::setIgnoreTodayUpgrade(const QString &ver)
+void QWoSetting::setIgnoreTodayUpgradeVersion(const QString &ver)
 {
     QDate dt = QDate::currentDate();
     dt = dt.addDays(1);
-    setNextUpgradeDate(ver, dt);
+    setNextUpgradeVersionDate(ver, dt);
 }
 
 void QWoSetting::setSkipThisVersion(const QString &ver)

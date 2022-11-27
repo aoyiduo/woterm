@@ -34,6 +34,7 @@ protected:
 private slots:
     void onSftpAssistOpen();
     void onNewSessionMultplex();
+    void onActivePathArrived(const QString& path);
 private:
     QPointer<QWoSftpWidget> m_sftp;
 };

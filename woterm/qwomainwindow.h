@@ -68,6 +68,7 @@ private slots:
     void onActionScriptRunTriggered();
     void onActionSshKeyManageTriggered();
     void onActionAdminTriggered();
+    void onActionUltimateTriggered();
 
 private:
     void initMenuBar();

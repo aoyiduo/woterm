@@ -42,6 +42,7 @@ enum EHostType{
 #define ROLE_FILEINFO           (Qt::UserRole+5)
 #define ROLE_GROUP              (Qt::UserRole+6)
 #define ROLE_GROUP_STATE        (Qt::UserRole+7)
+#define ROLE_TASKINFO           (Qt::UserRole+8)
 
 struct GroupInfo {
     QString name;
@@ -129,9 +130,64 @@ typedef struct {
     QString size;
     QString date;
     QString label;
+    QString permission;
+    bool isDir() const {
+        return type == 'd';
+    }
+    bool isFile() const {
+        return type == '-';
+    }
+    bool isLink() const {
+        return type == 'l';
+    }
 } FileInfo;
 
+enum ETState {
+    ETS_None = 1,
+    ETS_Ready,
+    ETS_Finished,
+    ETS_Error
+};
+struct TaskInfo {
+    int taskId;
+    QString name;
+    QString local;
+    QString remote;
+    int textWidth;
+    bool isDir;
+    bool isDown;
+    bool isAppend;
+    ETState state;
+    int tryCount;
+    int fileCount;
 
+    TaskInfo() {
+        state = ETS_None;
+        taskId = -1;
+        isDir = isDown = isAppend = false;
+        textWidth = 0;
+        tryCount = 0;
+        fileCount = 0;
+    }
+
+    bool isValid() const {
+        return taskId > 0;
+    }
+
+    void clear() {
+        isDir = isDown = isAppend = false;
+        state = ETS_None;
+        textWidth = 0;
+        taskId = 0;
+        tryCount = 0;
+        fileCount = 0;
+        name.clear();
+        local.clear();
+        remote.clear();
+    }
+};
+
+Q_DECLARE_METATYPE(TaskInfo)
 Q_DECLARE_METATYPE(GroupInfo)
 Q_DECLARE_METATYPE(HostInfo)
 Q_DECLARE_METATYPE(HistoryCommand)

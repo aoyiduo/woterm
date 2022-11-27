@@ -126,6 +126,15 @@
         <file>resource/skin/password .png</file>
         <file>resource/skin/account.png</file>
         <file>resource/skin/eye.png</file>
+        <file>resource/skin/mark.png</file>
+        <file>resource/skin/select2.png</file>
+        <file>resource/skin/select3.png</file>
+        <file>resource/skin/folder2.png</file>
+        <file>resource/skin/select4.png</file>
+        <file>resource/skin/transfer2.png</file>
+        <file>resource/skin/transfer3.png</file>
+        <file>resource/skin/enter4.png</file>
+        <file>resource/skin/history2.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

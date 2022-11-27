@@ -113,6 +113,7 @@ QKxTermWidget::QKxTermWidget(QWidget* parent)
     hbox->addWidget(m_vscroll);
     m_vscroll->setStyleSheet(scrollbar_invalid);
     QObject::connect(m_term, SIGNAL(scrollValueChanged(int,int)), this, SLOT(onTermScrollValueChanged(int,int)));
+    QObject::connect(m_term, SIGNAL(activePathArrived(QString)), this, SIGNAL(activePathArrived(QString)));
     QObject::connect(m_vscroll, SIGNAL(valueChanged(int)), this, SLOT(onScrollValueChanged(int)));
     m_term->installEventFilter(this);
     m_keyFind = QKeySequence(Qt::CTRL + Qt::Key_F);

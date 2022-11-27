@@ -85,7 +85,12 @@ QWoSessionManage::QWoSessionManage(QWidget *parent)
     QObject::connect(ui->btnNew, SIGNAL(clicked()), this, SLOT(onNewReady()));
     QObject::connect(m_tree, SIGNAL(itemChanged(const QModelIndex&)), this, SLOT(onTreeItemSelected(const QModelIndex&)));
     QObject::connect(m_tree, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onTreeItemDoubleClicked(const QModelIndex&)));
-    QObject::connect(ui->btnModel, SIGNAL(clicked()), this, SLOT(onTreeModelSwitch()));
+    if(QKxVer::isUltimate()) {
+        ui->btnModel->setVisible(true);
+        QObject::connect(ui->btnModel, SIGNAL(clicked()), this, SLOT(onTreeModelSwitch()));
+    }else{
+        ui->btnModel->setVisible(false);
+    }
 
     ui->filter->clear();
     ui->filter->setPlaceholderText(tr("Enter keyword to search target quickly"));
@@ -500,9 +505,6 @@ void QWoSessionManage::onTreeItemDoubleClicked(const QModelIndex &idx)
 
 void QWoSessionManage::onTreeModelSwitch()
 {
-    if(!QWoUtils::isUltimateVersion(this)) {
-        return;
-    }
     if(m_model == m_listModel) {
         ui->btnModel->setIcon(QIcon(":/woterm/resource/skin/tree.png"));
         m_proxyModel->setSourceModel(m_treeModel);

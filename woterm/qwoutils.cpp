@@ -686,3 +686,19 @@ QString QWoUtils::getPassword(QWidget *parent, const QString &label)
     return hitTxt;
 }
 
+bool QWoUtils::removeDirectory(const QString &path)
+{
+    QDir d(path);
+    QFileInfoList lsFiles = d.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot);
+    for(auto it = lsFiles.begin(); it != lsFiles.end(); it++) {
+        const QFileInfo& fi = *it;
+        if(fi.isDir()) {
+            QString subPath = fi.absoluteFilePath();
+            removeDirectory(subPath);
+        }else{
+            QFile::remove(fi.absoluteFilePath());
+        }
+    }
+    return d.rmdir(".");
+}
+

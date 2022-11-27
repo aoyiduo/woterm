@@ -33,7 +33,7 @@ QWoSftpWidgetImpl::QWoSftpWidgetImpl(const QString& target, int gid, QTabBar *ta
     , m_gid(gid)
     , m_tab(tab)
 {
-    m_sftp = new QWoSftpWidget(target, gid, this);
+    m_sftp = new QWoSftpWidget(target, gid, false, this);
     QVBoxLayout *layout = new QVBoxLayout(this);
     setLayout(layout);
     layout->setMargin(0);

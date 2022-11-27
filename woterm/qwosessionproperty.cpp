@@ -187,8 +187,10 @@ void QWoSessionProperty::init()
         ui->portTip->setVisible(false);
         QObject::connect(ui->port, SIGNAL(textChanged(QString)), this, SLOT(onPortTextChanged(QString)));
         ui->password->setEchoMode(QLineEdit::Password);
-        QKxButtonAssist *assist = new QKxButtonAssist(":/woterm/resource/skin/eye.png", ui->password);
-        QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
+        if(QKxVer::isUltimate()) {
+            QKxButtonAssist *assist = new QKxButtonAssist(":/woterm/resource/skin/eye.png", ui->password);
+            QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
+        }
     }
 
     //---------------------Local-----------
@@ -433,10 +435,6 @@ void QWoSessionProperty::onPortTextChanged(const QString &txt)
 
 void QWoSessionProperty::onAssistButtonClicked(int idx)
 {
-    if(!QWoUtils::isUltimateVersion(this)) {
-        return;
-    }
-
     QLineEdit::EchoMode mode = ui->password->echoMode();
     if(mode == QLineEdit::Normal) {
         ui->password->setEchoMode(QLineEdit::Password);

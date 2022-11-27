@@ -36,6 +36,7 @@ private:
     void paintEvent(QPaintEvent* paint);
     void mousePressEvent(QMouseEvent *ev);
     void contextMenuEvent(QContextMenuEvent *ev);
+    void showEvent(QShowEvent *ev);
 private:
     Ui::QWoTermMask *ui;
 };

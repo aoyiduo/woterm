@@ -33,8 +33,8 @@ QWoHostSimpleList::QWoHostSimpleList(EHostType type, QWidget *parent)
     m_proxyModel->setSourceModel(m_model);
     ui->hostList->setModel(m_proxyModel);
 
-    QObject::connect(ui->rxfind, SIGNAL(textChanged(const QString&)), this, SLOT(onEditTextChanged(const QString&)));
-    QObject::connect(ui->hostList, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onListItemDoubleClicked(const QModelIndex&)));
+    QObject::connect(ui->rxfind, SIGNAL(textChanged(QString)), this, SLOT(onEditTextChanged(QString)));
+    QObject::connect(ui->hostList, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onListItemDoubleClicked(QModelIndex)));
     QObject::connect(ui->ok, SIGNAL(clicked()), this, SLOT(onOpenSelectSessions()));
 
     ui->rxfind->setReadOnly(true);
