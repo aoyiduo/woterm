@@ -47,6 +47,8 @@ private slots:
     void onTermSizeChanged(int lines, int columns);
     void onSendData(const QByteArray& buf);
     void onCopyToClipboard();
+    void onRestoreLastPath();
+    void onActivePathArrived(const QString& path);
     void onPasteFromClipboard();
     void onPasswordInputResult(const QString& pass, bool isSave);
     void onSessionReconnect();
@@ -74,7 +76,7 @@ protected:
     int isZmodemCommand(const QByteArray &data);
     bool checkProgram(const QByteArray &name);
 private:
-    Q_INVOKABLE void reconnect();
+    Q_INVOKABLE void reconnect(bool restore=false);
     Q_INVOKABLE void executeCommand(const QByteArray& cmd);
 private:
     virtual void resizeEvent(QResizeEvent *ev);
@@ -95,4 +97,6 @@ private:
     QPointer<QShortCut> m_shortCutCopy;
     QPointer<QShortCut> m_shortCutPaste;
     EStateConnect m_stateConnected;
+    QString m_lastActivePath;
+    bool m_restoreLastActivePath;
 };

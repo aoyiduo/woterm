@@ -7,6 +7,6 @@ set path_script=%~dp0
 echo %path_script%
 
 cd %path_script%
-lupdate -recursive %path_script%\..\ -I %path_script%\..\..\kxftp -I %path_script%\..\..\kxvnc -I %path_script%\..\..\kxutil -I %path_script%\..\..\kxterm -ts %path_script%woterm_en.ts
-lupdate -recursive %path_script%\..\ -I %path_script%\..\..\kxftp -I %path_script%\..\..\kxvnc -I %path_script%\..\..\kxutil -I %path_script%\..\..\kxterm -ts %path_script%woterm_zh.ts
+rem lupdate -recursive %path_script%\..\ -I %path_script%\..\..\kxftp -I %path_script%\..\..\kxvnc -I %path_script%\..\..\kxutil -I %path_script%\..\..\kxterm -ts %path_script%woterm_en.ts
+lupdate -recursive %path_script%\..\ %path_script%\..\..\kxftp %path_script%\..\..\kxvnc %path_script%\..\..\kxutil %path_script%\..\..\kxterm -ts %path_script%woterm_zh.ts
 pause

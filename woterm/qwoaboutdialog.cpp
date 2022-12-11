@@ -15,12 +15,12 @@
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QMessageBox>
 #include <QDesktopServices>
 #include <QUrl>
 
 #include "version.h"
 #include "qkxhttpclient.h"
+#include "qkxmessagebox.h"
 #include "qwoutils.h"
 #include "qkxver.h"
 

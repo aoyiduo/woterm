@@ -23,6 +23,7 @@
 #include "qwomainwindow.h"
 #include "qwoshowerwidget.h"
 #include "qwoshower.h"
+#include "qkxmessagebox.h"
 
 #include "qkxtermitem.h"
 
@@ -37,7 +38,6 @@
 #include <QShortcut>
 #include <QFileDialog>
 #include <QFile>
-#include <QMessageBox>
 
 
 QWoTermWidget::QWoTermWidget(const QString& target, int gid, QWidget *parent)
@@ -187,7 +187,7 @@ void QWoTermWidget::onOutputHistoryToFile()
     }
     QFile hit(file);
     if(!hit.open(QFile::WriteOnly)) {
-        QMessageBox::warning(this, tr("Warning"), tr("Failed to create file."));
+        QKxMessageBox::warning(this, tr("Warning"), tr("Failed to create file."));
         return;
     }
     hit.close();

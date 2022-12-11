@@ -10,11 +10,11 @@
 *******************************************************************************************/
 
 #include "qwosetting.h"
+#include "qkxmessagebox.h"
 
 #include <QSettings>
 #include <QApplication>
 #include <QDir>
-#include <QMessageBox>
 #include <QStandardPaths>
 #include <QProcess>
 #include <QTranslator>
@@ -130,6 +130,19 @@ QString QWoSetting::sftpTaskLogPath()
     return path;
 }
 
+QString QWoSetting::tempPath()
+{
+    QString path;
+    path = QWoSetting::value("woterm/temp", "").toString();
+    if(!QFile::exists(path)) {
+        path = QWoSetting::ensurePath("temp");
+        path = QDir::cleanPath(path);
+        path = QDir::toNativeSeparators(path);
+        return path;
+    }
+    return path;
+}
+
 QString QWoSetting::lastJsLoadPath()
 {
     QString path;
@@ -176,7 +189,7 @@ QMap<QString, QString> QWoSetting::allLanguages()
         if(!type.isEmpty()){
             langs.insert(type, path);
         }else{
-            QMessageBox::warning(nullptr, "warning", QString("The language file has no name:%1").arg(path));
+            QKxMessageBox::warning(nullptr, "warning", QString("The language file has no name:%1").arg(path));
         }
     }
     return langs;

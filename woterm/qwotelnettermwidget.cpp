@@ -27,6 +27,7 @@
 
 #include "qkxtermwidget.h"
 #include "qkxtermitem.h"
+#include "qkxmessagebox.h"
 
 
 #include <QTimer>
@@ -34,7 +35,6 @@
 #include <QClipboard>
 #include <QMenu>
 #include <QFileDialog>
-#include <QMessageBox>
 #include <QProcess>
 #include <QDebug>
 #include <QResizeEvent>
@@ -232,7 +232,7 @@ void QWoTelnetTermWidget::onDuplicateInNewWindow()
 void QWoTelnetTermWidget::onModifyThisSession()
 {
     if(!QWoSshConf::instance()->exists(m_target)){
-        QMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete ago"));
+        QKxMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete ago"));
         return;
     }
     QWoSessionProperty dlg(this);

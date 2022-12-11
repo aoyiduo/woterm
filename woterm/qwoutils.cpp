@@ -11,9 +11,11 @@
 
 #include "qwoutils.h"
 #include "qkxver.h"
+#include "qkxmessagebox.h"
+
 #include <QObject>
-#include<QLayout>
-#include<QWidget>
+#include <QLayout>
+#include <QWidget>
 #include <QSpacerItem>
 #include <QDebug>
 #include <QBoxLayout>
@@ -26,7 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <QProcess>
-#include <QMessageBox>
 #include <QInputDialog>
 
 #include <openssl/aes.h>
@@ -645,6 +646,12 @@ QByteArray QWoUtils::aesOfb128Decrypt(const QByteArray &all, const QByteArray &p
 
 QByteArray QWoUtils::aesEncrypt(const QByteArray &all, const QByteArray &pass)
 {
+    if(all.isEmpty()) {
+        return all;
+    }
+    if(all.startsWith("WoTerm:")) {
+        return all;
+    }
     QByteArray result = aesOfb128Encrypt(all, pass);
     QByteArray b64 = result.toBase64(QByteArray::Base64Encoding);
     return "WoTerm:"+b64;
@@ -652,6 +659,9 @@ QByteArray QWoUtils::aesEncrypt(const QByteArray &all, const QByteArray &pass)
 
 QByteArray QWoUtils::aesDecrypt(const QByteArray &all, const QByteArray &pass)
 {
+    if(all.isEmpty()) {
+        return all;
+    }
     if(!all.startsWith("WoTerm:")) {
         return all;
     }
@@ -664,7 +674,7 @@ QByteArray QWoUtils::aesDecrypt(const QByteArray &all, const QByteArray &pass)
 bool QWoUtils::isUltimateVersion(QWidget *parent)
 {
     if(!QKxVer::isUltimate()) {
-        QMessageBox::information(parent, QObject::tr("Ultimate version"), QObject::tr("this is the feature of the ultimate version, please upgrade to latest version."));
+        QKxMessageBox::information(parent, QObject::tr("Ultimate version"), QObject::tr("this is the feature of the ultimate version, please upgrade to latest version."));
         return false;
     }
     return true;

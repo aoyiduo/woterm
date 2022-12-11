@@ -13,17 +13,18 @@
 #include "qwosetting.h"
 #include "qwoutils.h"
 #include "qwoidentify.h"
+#include "qkxmessagebox.h"
 
 #include <SQLiteCpp/SQLiteCpp.h>
 
 #include <QCoreApplication>
 #include <QFile>
 #include <QDebug>
-#include <QMessageBox>
 #include <QBuffer>
 #include <QDir>
 #include <QDateTime>
 #include <QDebug>
+#include <QTimer>
 
 /*
  *  #
@@ -215,10 +216,12 @@ bool QWoSshConf::restore(const QString &dbBackup)
         QFile::remove(m_dbFile);
         SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
         int err = db.backup(dbBackup.toUtf8(), db.Load);
+        resetLater();
         return err == SQLite::OK;
     } catch (...) {
         qDebug() << "SQLite initialize failed";
     }
+
     return false;
 }
 
@@ -726,6 +729,11 @@ QStringList QWoSshConf::groupNameList() const
     return names;
 }
 
+QStringList QWoSshConf::tableList() const
+{
+    return {"servers","groups","identities"};
+}
+
 bool QWoSshConf::renameGroup(const QString &nameNew, const QString &nameOld)
 {
     if(_renameGroup(nameNew, nameOld)) {
@@ -733,6 +741,7 @@ bool QWoSshConf::renameGroup(const QString &nameNew, const QString &nameOld)
             GroupInfo& gi = *it;
             if(nameOld == gi.name) {
                 gi.name = nameNew;
+                resetLater();
                 return true;
             }
         }
@@ -755,6 +764,7 @@ bool QWoSshConf::updateGroup(const QString &name, int order)
         gi.order = order;
         m_groups.append(gi);
         std::sort(m_groups.begin(), m_groups.end());
+        resetLater();
         return true;
     }
     return false;
@@ -767,6 +777,7 @@ bool QWoSshConf::removeGroup(const QString &name)
             GroupInfo& gi = *it;
             if(name == gi.name) {
                 m_groups.erase(it);
+                resetLater();
                 return true;
             }
         }
@@ -846,6 +857,16 @@ bool QWoSshConf::_removeGroup(const QString &name)
         qDebug() << "QWoSshConf::removeGroup" << e.what();
     }
     return false;
+}
+
+void QWoSshConf::resetLater()
+{
+    if(m_timer == nullptr) {
+        m_timer = new QTimer(this);
+        QObject::connect(m_timer, SIGNAL(timeout()), this, SLOT(onResetLater()));
+        m_timer->setSingleShot(true);
+    }
+    m_timer->start(100);
 }
 
 bool QWoSshConf::backup(const QString &dbBackup)
@@ -928,6 +949,7 @@ bool QWoSshConf::removeServer(const QString &name)
         SQLite::Statement insert(db, QString("DELETE FROM servers WHERE name='%1'").arg(name).toUtf8());
         int cnt = insert.exec();
         qDebug() << "remove server" << name << cnt;
+        resetLater();
         return true;
     }catch(std::exception& e) {
         qDebug() << "QWoSshConf::remove" << e.what();
@@ -945,6 +967,7 @@ bool QWoSshConf::removeServerByGroup(const QString &name)
         SQLite::Statement insert(db, QString("DELETE FROM servers WHERE groupName='%1'").arg(name).toUtf8());
         int cnt = insert.exec();
         qDebug() << "remove server" << name << cnt;
+        resetLater();
         return true;
     }catch(std::exception& e) {
         qDebug() << "QWoSshConf::removeAllByGroup" << e.what();
@@ -965,6 +988,7 @@ bool QWoSshConf::renameServerGroup(const QString &nameNew, const QString &nameOl
         update.bind("@nameOld", nameOld.toStdString());
         int cnt = update.exec();
         qDebug() << "renameServerGroup" << nameOld << nameNew << cnt;
+        resetLater();
         return cnt > 0;
     }catch(std::exception& e) {
         qDebug() << "QWoSshConf::renameServerGroup" << e.what();
@@ -975,6 +999,7 @@ bool QWoSshConf::renameServerGroup(const QString &nameNew, const QString &nameOl
 bool QWoSshConf::modify(const HostInfo &hi)
 {
     m_hosts.insert(hi.name, hi);
+    resetLater();
     return save(hi);
 }
 
@@ -984,12 +1009,14 @@ bool QWoSshConf::append(const HostInfo &hi)
         return false;
     }
     m_hosts.insert(hi.name, hi);
+    resetLater();
     return save(hi);
 }
 
 bool QWoSshConf::modifyOrAppend(const HostInfo &hi)
 {
     m_hosts.insert(hi.name, hi);
+    resetLater();
     return save(hi);
 }
 
@@ -1092,6 +1119,13 @@ QList<HostInfo> QWoSshConf::proxyJumpers(const QString& name, int max) const
 void QWoSshConf::onAboutToQuit()
 {
     backup(m_dbFile + ".bak");
+}
+
+void QWoSshConf::onResetLater()
+{
+    QTimer *timer = qobject_cast<QTimer*>(sender());
+    timer->stop();
+    emit dataReset();
 }
 
 HostInfo QWoSshConf::find(const QString &name) const {

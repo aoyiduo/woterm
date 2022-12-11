@@ -18,10 +18,10 @@
 #include "qwoevent.h"
 #include "qwocommandlineinput.h"
 #include "qwoutils.h"
+#include "qkxmessagebox.h"
 
 #include <QCloseEvent>
 #include <QApplication>
-#include <QMessageBox>
 #include <QMenu>
 #include <QLineEdit>
 #include <QTabBar>

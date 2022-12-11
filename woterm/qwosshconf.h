@@ -14,9 +14,11 @@
 #include "qwoglobal.h"
 
 #include <QObject>
+#include <QPointer>
 #include <QHash>
 
 class QBuffer;
+class QTimer;
 
 class QWoSshConf : public QObject
 {
@@ -24,10 +26,11 @@ class QWoSshConf : public QObject
 public:
     static QWoSshConf* instance();
     static bool databaseValid(const QString& dbFile);
-
     /* groud name */
     QList<GroupInfo> groupList() const;
     QStringList groupNameList() const;
+    QStringList tableList() const;
+
     bool renameGroup(const QString& nameNew, const QString& nameOld);
     bool updateGroup(const QString& name, int order = 0);
     bool removeGroup(const QString& name);
@@ -55,8 +58,11 @@ public:
     QStringList hostNameList(EHostType type = All) const;
     QList<HostInfo> proxyJumpers(const QString& name, int max=2) const;
 
+signals:
+    void dataReset();
 private slots:
     void onAboutToQuit();
+    void onResetLater();
 
 protected:
     explicit QWoSshConf(const QString& dbFile, QObject *parent = nullptr);
@@ -67,6 +73,7 @@ private:
     bool _renameGroup(const QString& nameNew, const QString& nameOld);
     bool _updateGroup(const QString& name, int order = 0);
     bool _removeGroup(const QString& name);
+    void resetLater();
 private:
     static QHash<QString, HostInfo> parse(const QByteArray& buf);
     static void importIdentityToSqlite(const QString& path, const QString& dbFile);
@@ -79,4 +86,5 @@ private:
     bool m_bInit;
     QHash<QString, HostInfo> m_hosts;
     QList<GroupInfo> m_groups;
+    QPointer<QTimer> m_timer;
 };

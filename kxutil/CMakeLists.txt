@@ -24,6 +24,9 @@ set(SOURCE_FILES
     qkxsetting.cpp
     qkxhttpclient.cpp
     qkxrc4crypt.cpp
+    qkxaescrypt.cpp
+    qkxabstractcrypt.cpp
+    qkxcipher.cpp
     qkxsharememory.cpp
     qkxlocalpeer.cpp
     qkxmacaddress.cpp
@@ -39,6 +42,9 @@ set(HEADER_FILES
     qkxsetting.h
     qkxhttpclient.h
     qkxrc4crypt.h
+    qkxaescrypt.h
+    qkxabstractcrypt.h
+    qkxcipher.h
     qkxutil_private.h
     qkxutil_share.h
     qkxsharememory.h
@@ -95,28 +101,48 @@ else()
     #set(HEADER_FILES qtunixserversocket.h qtunixsocket.h)
 endif()
 
-include_directories(${ZLIB_ROOT_DIR}/include)
+include_directories(${ZLIB_ROOT_DIR}/include
+    ${OPENSSL_ROOT_DIR}/include
+)
 
-link_directories(${ZLIB_ROOT_DIR}/lib)
+link_directories(${ZLIB_ROOT_DIR}/lib
+    ${OPENSSL_ROOT_DIR}/lib
+)
 
 if(WIN32)
     link_libraries(ws2_32)
+
     add_library(libz_main STATIC IMPORTED)
     set_target_properties(libz_main PROPERTIES IMPORTED_LOCATION
         ${ZLIB_ROOT_DIR}/lib/zlibstatic.lib)
     link_libraries(libz_main)
+
+    add_library(openssl_crypto STATIC IMPORTED)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/lib/libcrypto.lib)
+    link_libraries(openssl_crypto)
 elseif(APPLE)
     message("APPLE Here")
     add_library(libz_main STATIC IMPORTED)
     set_target_properties(libz_main PROPERTIES IMPORTED_LOCATION
         ${ZLIB_ROOT_DIR}/lib/libz.a)
     link_libraries(libz_main)
+
+    add_library(openssl_crypto STATIC IMPORTED)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/lib/libcrypto.a)
+    link_libraries(openssl_crypto)
 else()
     message("other")
     add_library(libz_main STATIC IMPORTED)
     set_target_properties(libz_main PROPERTIES IMPORTED_LOCATION
         ${ZLIB_ROOT_DIR}/lib/libz.a)
     link_libraries(libz_main)
+
+    add_library(openssl_crypto STATIC IMPORTED)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/lib/libcrypto.a)
+    link_libraries(openssl_crypto)
 endif()
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})

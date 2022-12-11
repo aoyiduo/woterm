@@ -19,6 +19,22 @@
 #include <QMultiMap>
 #include <QWaitCondition>
 
+#define MT_FTP_OPENDIR                  (10)
+#define MT_FTP_MKDIR                    (11)
+#define MT_FTP_RMDIR                    (12)
+#define MT_FTP_UNLINK                   (13)
+#define MT_FTP_DOWNLOAD                 (14)
+#define MT_FTP_UPLOAD                   (15)
+#define MT_FTP_UPLOADNEXT               (16)
+#define MT_FTP_ABORT                    (17)
+#define MT_FTP_LISTFILE                 (18)
+#define MT_FTP_LISTFILENEXT             (19)
+#define MT_FTP_REMOVEFILENEXT           (20)
+#define MT_FTP_FILE_INFO                (21)
+#define MT_FTP_MKPATH                   (22)
+#define MT_FTP_READ_FILE_CONTENT        (23)
+#define MT_FTP_WRITE_FILE_CONTENT       (24)
+
 struct MsgRequest;
 class QSshClient;
 class QSshProxyClient;
@@ -36,17 +52,22 @@ public:
     void remove(QWoSshChannel *cli);
     bool hasRunning();
     bool start(const QString& host);
+    bool start(const HostInfo& hi);
     void stop();
     void setInputResult(const QString& pass);
     void shellWrite(QWoSshChannel *cli, const QByteArray& buf);
     void shellSize(QWoSshChannel *cli, int cols, int rows);
     void sftpOpenDir(QWoSshChannel *cli, const QStringList& paths, const QVariantMap& user);
     void sftpMkDir(QWoSshChannel *cli, const QString& path, int mode, const QVariantMap& user);
+    void sftpMkPath(QWoSshChannel *cli, const QString& path, int mode, const QVariantMap& user);
     void sftpRmDir(QWoSshChannel *cli, const QString& path, const QVariantMap& user);
     void sftpUnlink(QWoSshChannel *cli, const QString &path, const QVariantMap& user);
+    void sftpFileContent(QWoSshChannel *cli, const QString& remote, qint64 offset, qint64 maxSize, const QVariantMap& user);
+    void sftpWriteFileContent(QWoSshChannel *cli, const QString& remote, const QByteArray& content, const QVariantMap& user);
     void sftpDownload(QWoSshChannel *cli, const QString& remote, const QString& local, int policy, const QVariantMap& user);
     void sftpUpload(QWoSshChannel *cli, const QString& local, const QString& remote, int policy, const QVariantMap& user);
     void sftpListFile(QWoSshChannel *cli, const QString& path, const QVariantMap& user);
+    void sftpFileInfo(QWoSshChannel *cli, const QString& path, const QVariantMap& user);
     void sftpAbort(QWoSshChannel *cli);
     void internalUploadNext(QWoSshChannel *cli, const QVariantMap& user);
     void internalListFileNext(QWoSshChannel *cli, const QByteArray& path, const QVariantMap& user);
@@ -65,6 +86,7 @@ private slots:
     void onConnectionFinished(bool ok);
 private:
     bool init(const QString& host);
+    bool init(const HostInfo& hi);
     void run();
     bool running();
     bool connectToProxy(int i, const QString& host, ushort port);    
@@ -84,6 +106,7 @@ public:
     explicit QWoSshChannel(QObject *parent=nullptr);
     virtual ~QWoSshChannel();
     bool start(const QString& host, int gid);
+    bool start(const HostInfo& hi, int gid);
     void stop();
     void setInputResult(const QString& pass);
     bool hasRunning();
@@ -148,8 +171,12 @@ public:
     void openDir(const QStringList& paths, const QVariantMap& user=QVariantMap());
     void openDir(const QString& path="~", const QVariantMap& user=QVariantMap());
     void mkDir(const QString& path, int mode, const QVariantMap& user=QVariantMap());
+    void mkPath(const QString& path, int mode, const QVariantMap& user=QVariantMap());
     void rmDir(const QString& path, const QVariantMap& user=QVariantMap());
     void unlink(const QString &path, const QVariantMap& user=QVariantMap());
+    void fileInfo(const QString& path, const QVariantMap& user=QVariantMap());
+    void fileContent(const QString& remote, qint64 offset, qint64 maxSize, const QVariantMap& user=QVariantMap());
+    void writeFileContent(const QString& remote, const QByteArray& content, const QVariantMap& user=QVariantMap());
     void download(const QString& remote, const QString& local, TransferPolicy policy = TP_Append, const QVariantMap& user=QVariantMap());
     void upload(const QString& local, const QString& remote, TransferPolicy policy = TP_Append, const QVariantMap& user=QVariantMap());
     void listFile(const QString& path="~", const QVariantMap& user=QVariantMap());

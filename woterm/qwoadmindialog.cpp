@@ -14,8 +14,7 @@
 
 #include "qwosetting.h"
 #include "qkxbuttonassist.h"
-
-#include <QMessageBox>
+#include "qkxmessagebox.h"
 
 QWoAdminDialog::QWoAdminDialog(QWidget *parent) :
     QDialog(parent),
@@ -62,7 +61,7 @@ void QWoAdminDialog::onPasswordResetClicked()
 {
     QString pass = ui->pass->text();
     if(pass.isEmpty()) {
-        QMessageBox::information(this, tr("Parameter error"), tr("The password should not empty."));
+        QKxMessageBox::information(this, tr("Parameter error"), tr("The password should not empty."));
         return;
     }
     QWoSetting::setAdminPassword(pass);

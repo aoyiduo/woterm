@@ -23,6 +23,8 @@ public:
     static QWoHostTreeModel *instance();
 
     Q_INVOKABLE void refreshList();
+private slots:
+    void onDataReset();
 private:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 private:

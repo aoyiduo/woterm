@@ -30,13 +30,15 @@
 #include "qwosessionproperty.h"
 #include "qwosessionmoreproperty.h"
 #include "qwosshconf.h"
+#include "qwodbbackupdialog.h"
 #include "qwodbrestoredialog.h"
+#include "qwodbpowerrestoredialog.h"
 #include "qkxprocesslaunch.h"
+#include "qkxmessagebox.h"
 #include "qkxver.h"
 #include "version.h"
 
 #include <QApplication>
-#include <QMessageBox>
 #include <QFileDialog>
 #include <QCloseEvent>
 #include <QMenuBar>
@@ -123,7 +125,7 @@ void QWoMainWindow::closeEvent(QCloseEvent *event)
 {
     saveLastState();
 
-    QMessageBox::StandardButton btn = QMessageBox::warning(this, tr("Confirm"), tr("Exit Or Not?"), QMessageBox::Ok|QMessageBox::No);
+    QMessageBox::StandardButton btn = QKxMessageBox::warning(this, tr("Confirm"), tr("Exit Or Not?"), QMessageBox::Ok|QMessageBox::No);
     if(btn == QMessageBox::No) {
         event->setAccepted(false);
         return ;
@@ -256,7 +258,7 @@ void QWoMainWindow::onAppStart()
     {
         if(!QKxVer::isUltimate()) {
             if(QWoSetting::shouldPopupUpgradeUltimate()) {
-                int ret = QMessageBox::question(this, tr("Upgrade to ultimate version"), tr("The current version is free. It is recommended to upgrade to the ultimate version."), QMessageBox::Yes|QMessageBox::No);
+                int ret = QKxMessageBox::question(this, tr("Upgrade to ultimate version"), tr("The current version is free. It is recommended to upgrade to the ultimate version."), QMessageBox::Yes|QMessageBox::No);
                 if(ret == QMessageBox::Yes) {
                     QDesktopServices::openUrl(QUrl("http://woterm.com"));
                 }
@@ -285,7 +287,7 @@ void QWoMainWindow::onVersionCheck(int code, const QByteArray &body)
                 return;
             }
             QWoSetting::setIgnoreTodayUpgradeVersion(verBody);
-            int ret = QMessageBox::question(this, tr("Version check"), tr("a new version of %1 is found, do you want to update it?").arg(verBody), QMessageBox::Yes|QMessageBox::No);
+            int ret = QKxMessageBox::question(this, tr("Version check"), tr("a new version of %1 is found, do you want to update it?").arg(verBody), QMessageBox::Yes|QMessageBox::No);
             if(ret == QMessageBox::Yes) {
                 QDesktopServices::openUrl(QUrl("http://woterm.com"));
             }
@@ -313,24 +315,34 @@ void QWoMainWindow::onActionOpenTriggered()
 
 void QWoMainWindow::onActionBackupTriggered()
 {
-    QString path = QWoSetting::lastBackupPath();
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Backup Session Database"), path, "SQLite3 (*.db *.bak)");
-    qDebug() << "fileName" << fileName;
-    if(fileName.isEmpty()) {
-        return;
-    }
-    QFileInfo fi(fileName);
-    QString last = fi.absolutePath();
-    QWoSetting::setLastBackupPath(last);
-    if(!QWoSshConf::instance()->backup(fileName)) {
-        QMessageBox::warning(this, tr("Failure"), tr("failed to backup the session list."));
+    if(QKxVer::isUltimate()) {
+        QWoDbBackupDialog dlg(this);
+        dlg.exec();
+    }else{
+        QString path = QWoSetting::lastBackupPath();
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Backup Session Database"), path, "SQLite3 (*.db *.bak)");
+        qDebug() << "fileName" << fileName;
+        if(fileName.isEmpty()) {
+            return;
+        }
+        QFileInfo fi(fileName);
+        QString last = fi.absolutePath();
+        QWoSetting::setLastBackupPath(last);
+        if(!QWoSshConf::instance()->backup(fileName)) {
+            QKxMessageBox::warning(this, tr("Failure"), tr("failed to backup the session list."));
+        }
     }
 }
 
 void QWoMainWindow::onActionRestoreTriggered()
 {
-    QWoDBRestoreDialog dlg(this);
-    dlg.exec();
+    if(QKxVer::isUltimate()) {
+        QWoDBPowerRestoreDialog dlg(this);
+        dlg.exec();
+    }else{
+        QWoDBRestoreDialog dlg(this);
+        dlg.exec();
+    }
 }
 
 void QWoMainWindow::onActionExitTriggered()
@@ -357,7 +369,7 @@ void QWoMainWindow::onActionConfigDefaultTriggered()
         QString langNow = QWoSetting::languageFile();
         if(lang != langNow) {
             QWoSetting::setLanguageFile(lang);
-            if(QMessageBox::warning(this, tr("Language"), tr("The language has been changed, restart application to take effect right now."), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
+            if(QKxMessageBox::warning(this, tr("Language"), tr("The language has been changed, restart application to take effect right now."), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
                 QString path = QCoreApplication::instance()->applicationFilePath();                
                 if(::QKxProcessLaunch::startDetached(path)) {
                     QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
@@ -423,7 +435,7 @@ void QWoMainWindow::onActionAdminTriggered()
     QString hitTxt = input.textValue();
     if(!pass.isEmpty()) {
         if(pass != hitTxt) {
-            QMessageBox::information(this, tr("Password error"), tr("the password is not right."));
+            QKxMessageBox::information(this, tr("Password error"), tr("the password is not right."));
             return;
         }
     }else{
@@ -536,7 +548,7 @@ bool QWoMainWindow::checkAdminLogin()
         if(pass == hitTxt) {
             return true;
         }
-        QMessageBox::information(this, tr("Login failure"), tr("The password is wrong, %1 times left to try.").arg(i));
+        QKxMessageBox::information(this, tr("Login failure"), tr("The password is wrong, %1 times left to try.").arg(i));
     }
     return false;
 }

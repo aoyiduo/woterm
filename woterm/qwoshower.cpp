@@ -24,11 +24,11 @@
 #include "qwoutils.h"
 #include "qwosshconf.h"
 #include "qwofloatwindow.h"
+#include "qkxmessagebox.h"
 #include "qkxver.h"
 
 #include <QTabBar>
 #include <QResizeEvent>
-#include <QMessageBox>
 #include <QtGlobal>
 #include <QSplitter>
 #include <QDebug>
@@ -133,7 +133,7 @@ bool QWoShower::openRLogin(const QString &target)
         emit floatChanged(impl, false);
         return true;
     }
-    QMessageBox::StandardButton btn = QMessageBox::warning(this, "Info", "RLogin must be run with root permission, try to run to now?", QMessageBox::Ok|QMessageBox::No);
+    QMessageBox::StandardButton btn = QKxMessageBox::warning(this, "Info", "RLogin must be run with root permission, try to run to now?", QMessageBox::Ok|QMessageBox::No);
     if(btn == QMessageBox::No) {
         return false;
     }
@@ -174,7 +174,7 @@ bool QWoShower::openSerial(const QString &target)
         emit floatChanged(impl, false);
         return true;
     }
-    QMessageBox::StandardButton btn = QMessageBox::warning(this, "Info", "SerialPort must be run with root permission, try to run to now?", QMessageBox::Ok|QMessageBox::No);
+    QMessageBox::StandardButton btn = QKxMessageBox::warning(this, "Info", "SerialPort must be run with root permission, try to run to now?", QMessageBox::Ok|QMessageBox::No);
     if(btn == QMessageBox::No) {
         return false;
     }
@@ -298,7 +298,7 @@ void QWoShower::closeSession(int idx)
         }
         msg.append(tr("\r\n\r\nContinue To Close It?"));
     }
-    QMessageBox::StandardButton btn = QMessageBox::warning(this, tr("CloseSession"), msg, QMessageBox::Ok|QMessageBox::No);
+    QMessageBox::StandardButton btn = QKxMessageBox::warning(this, tr("CloseSession"), msg, QMessageBox::Ok|QMessageBox::No);
     if(btn == QMessageBox::No) {
         return ;
     }
@@ -389,7 +389,7 @@ void QWoShower::onCloseThisTabSession()
     QVariant vimpl = m_tabMenu->property(TAB_TARGET_IMPL);
     QWidget *impl = vimpl.value<QWidget*>();
     if(impl == nullptr) {
-        QMessageBox::warning(this, tr("alert"), tr("failed to find impl infomation"));
+        QKxMessageBox::warning(this, tr("alert"), tr("failed to find impl infomation"));
         return;
     }
     impl->deleteLater();
@@ -403,7 +403,7 @@ void QWoShower::onCloseOtherTabSession()
     QVariant vimpl = m_tabMenu->property(TAB_TARGET_IMPL);
     QWidget *impl = vimpl.value<QWidget*>();
     if(impl == nullptr) {
-        QMessageBox::warning(this, tr("alert"), tr("failed to find impl infomation"));
+        QKxMessageBox::warning(this, tr("alert"), tr("failed to find impl infomation"));
         return;
     }
     for(int i = 0; i < m_tab->count(); i++) {

@@ -24,6 +24,7 @@
 #include "qwohosttreemodel.h"
 #include "qwohostlistmodel.h"
 #include "qwogroupinputdialog.h"
+#include "qkxmessagebox.h"
 #include "qkxver.h"
 
 #include <QFileDialog>
@@ -31,7 +32,6 @@
 #include <QDebug>
 #include <QIntValidator>
 #include <QStringListModel>
-#include <QMessageBox>
 #include <QSortFilterProxyModel>
 #include <QContextMenuEvent>
 #include <QHeaderView>
@@ -133,7 +133,7 @@ void QWoSessionManage::onSshConnectReady()
         break;
     }
     if(targets.isEmpty()){
-        QMessageBox::warning(this, tr("Info"), tr("no selection"));
+        QKxMessageBox::warning(this, tr("Info"), tr("no selection"));
         return;
     }
     emit readyToConnect(targets.at(0), EOT_SSH);
@@ -152,7 +152,7 @@ void QWoSessionManage::onSftpConnectReady()
         break;
     }
     if(targets.isEmpty()){
-        QMessageBox::warning(this, tr("Info"), tr("no selection"));
+        QKxMessageBox::warning(this, tr("Info"), tr("no selection"));
         return;
     }
     emit readyToConnect(targets.at(0), EOT_SFTP);
@@ -171,7 +171,7 @@ void QWoSessionManage::onTelnetConnectReady()
         break;
     }
     if(targets.isEmpty()){
-        QMessageBox::warning(this, tr("Info"), tr("no selection"));
+        QKxMessageBox::warning(this, tr("Info"), tr("no selection"));
         return;
     }
     emit readyToConnect(targets.at(0), EOT_TELNET);
@@ -190,7 +190,7 @@ void QWoSessionManage::onRLoginConnectReady()
         break;
     }
     if(targets.isEmpty()){
-        QMessageBox::warning(this, tr("Info"), tr("no selection"));
+        QKxMessageBox::warning(this, tr("Info"), tr("no selection"));
         return;
     }
     emit readyToConnect(targets.at(0), EOT_RLOGIN);
@@ -209,7 +209,7 @@ void QWoSessionManage::onMstscConnectReady()
         break;
     }
     if(targets.isEmpty()){
-        QMessageBox::warning(this, tr("Info"), tr("no selection"));
+        QKxMessageBox::warning(this, tr("Info"), tr("no selection"));
         return;
     }
     emit readyToConnect(targets.at(0), EOT_MSTSC);
@@ -228,7 +228,7 @@ void QWoSessionManage::onVncConnectReady()
         break;
     }
     if(targets.isEmpty()){
-        QMessageBox::warning(this, tr("Info"), tr("no selection"));
+        QKxMessageBox::warning(this, tr("Info"), tr("no selection"));
         return;
     }
     emit readyToConnect(targets.at(0), EOT_VNC);
@@ -247,7 +247,7 @@ void QWoSessionManage::onSerialPortConnectReady()
         break;
     }
     if(targets.isEmpty()){
-        QMessageBox::warning(this, tr("Info"), tr("no selection"));
+        QKxMessageBox::warning(this, tr("Info"), tr("no selection"));
         return;
     }
     emit readyToConnect(targets.at(0), EOT_SERIALPORT);
@@ -259,7 +259,7 @@ void QWoSessionManage::onOpenReady()
     QItemSelectionModel *model = m_tree->selectionModel();
     QModelIndexList idxs = model->selectedRows();
     if(idxs.isEmpty()) {
-        QMessageBox::warning(this, tr("Info"), tr("no selection"));
+        QKxMessageBox::warning(this, tr("Info"), tr("no selection"));
         return;
     }
     QModelIndex idx = idxs.at(0);
@@ -272,10 +272,10 @@ void QWoSessionManage::onDeleteReady()
     QItemSelectionModel *model = m_tree->selectionModel();
     QModelIndexList idxs = model->selectedRows();
     if(idxs.isEmpty()) {
-        QMessageBox::warning(this, "delete", "no selection?", QMessageBox::Ok|QMessageBox::No);
+        QKxMessageBox::warning(this, "delete", "no selection?", QMessageBox::Ok|QMessageBox::No);
         return;
     }
-    QMessageBox::StandardButton btn = QMessageBox::warning(this, "delete", "delete all the selective items?", QMessageBox::Ok|QMessageBox::No);
+    QMessageBox::StandardButton btn = QKxMessageBox::warning(this, "delete", "delete all the selective items?", QMessageBox::Ok|QMessageBox::No);
     if(btn == QMessageBox::No) {
         return ;
     }
@@ -298,7 +298,7 @@ void QWoSessionManage::onModifyReady()
 {
     QModelIndex idx = m_tree->currentIndex();
     if(!idx.isValid()) {
-        QMessageBox::information(this, tr("Modify"), tr("No Selection"));
+        QKxMessageBox::information(this, tr("Modify"), tr("No Selection"));
         return;
     }
     QVariant group = idx.data(ROLE_GROUP);
@@ -357,7 +357,7 @@ void QWoSessionManage::onImportReady()
     conf.refresh();
     QList<HostInfo> hosts = conf.hostList();
     if(hosts.isEmpty()) {
-        QMessageBox::warning(this, tr("warning"), tr("it's not a ssh config format: %1").arg(fileName));
+        QKxMessageBox::warning(this, tr("warning"), tr("it's not a ssh config format: %1").arg(fileName));
         return;
     }
     QMap<QString, IdentifyInfo> all = QWoIdentify::all();
@@ -373,12 +373,12 @@ void QWoSessionManage::onImportReady()
             }
             path = QDir::cleanPath(path);
             if(!QFile::exists(path)) {
-                QMessageBox::warning(this, tr("warning"), tr("failed to find the identify file list in config file for bad path: %1").arg(path));
+                QKxMessageBox::warning(this, tr("warning"), tr("failed to find the identify file list in config file for bad path: %1").arg(path));
                 return;
             }
             IdentifyInfo info;
             if(!QWoIdentify::infomation(path, &info)) {
-                QMessageBox::warning(this, tr("warning"), tr("bad identify file: %1").arg(path));
+                QKxMessageBox::warning(this, tr("warning"), tr("bad identify file: %1").arg(path));
                 return;
             }
             if(!all.contains(info.fingureprint)){
@@ -389,7 +389,7 @@ void QWoSessionManage::onImportReady()
     }
     if(!needsImport.isEmpty()) {
         QString items = needsImport.keys().join("\r\n");
-        QMessageBox::warning(this, tr("warning"), tr("The config file contain the follow identify's files, Please export them before do this action.")+QString("%1").arg(items));
+        QKxMessageBox::warning(this, tr("warning"), tr("The config file contain the follow identify's files, Please export them before do this action.")+QString("%1").arg(items));
         return;
     }
     //qDebug() << his;    
@@ -424,7 +424,7 @@ void QWoSessionManage::onTreeViewOpenInSamePage()
     QItemSelectionModel *model = m_tree->selectionModel();
     QModelIndexList idxs = model->selectedRows();
     if(idxs.length() > 6) {
-        QMessageBox::information(this, tr("Info"), tr("can't open over 6 session in same page."));
+        QKxMessageBox::information(this, tr("Info"), tr("can't open over 6 session in same page."));
         return;
     }
     QStringList targets;
@@ -434,7 +434,7 @@ void QWoSessionManage::onTreeViewOpenInSamePage()
         targets.append(name);
     }
     if(targets.isEmpty()){
-        QMessageBox::warning(this, tr("Info"), tr("no selection"));
+        QKxMessageBox::warning(this, tr("Info"), tr("no selection"));
         return;
     }
     emit readyToConnect(targets, true);
@@ -452,7 +452,7 @@ void QWoSessionManage::onTreeViewOpenInDifferentPage()
         targets.append(name);
     }
     if(targets.isEmpty()){
-        QMessageBox::warning(this, tr("Info"), tr("no selection"));
+        QKxMessageBox::warning(this, tr("Info"), tr("no selection"));
         return;
     }
     emit readyToConnect(targets, false);

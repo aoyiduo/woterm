@@ -22,11 +22,11 @@
 #include "qwogroupinputdialog.h"
 #include "qkxbuttonassist.h"
 #include "qkxver.h"
+#include "qkxmessagebox.h"
 
 #include <QFileInfo>
 #include <QStringListModel>
 #include <QIntValidator>
-#include <QMessageBox>
 #include <QDebug>
 #include <QDir>
 #include <QTimer>
@@ -439,8 +439,17 @@ void QWoSessionProperty::onAssistButtonClicked(int idx)
     if(mode == QLineEdit::Normal) {
         ui->password->setEchoMode(QLineEdit::Password);
     }else{
+        QString pwdAdmin = QWoSetting::adminPassword();
+        if(pwdAdmin.isEmpty()) {
+            QKxMessageBox::information(this, tr("Administrator"), tr("Please create administrator's password first!"));
+            return;
+        }
         QString pass = QWoUtils::getPassword(this, tr("Please input the administrator password"));
         if(pass.isEmpty()) {
+            return;
+        }
+        if(pass != QWoSetting::adminPassword()) {
+            QKxMessageBox::information(this, tr("Error"), tr("Password error!"));
             return;
         }
         ui->password->setEchoMode(QLineEdit::Normal);
@@ -501,7 +510,7 @@ void QWoSessionProperty::onGroupAddCliecked()
     QPointer<QWoGroupInputDialog> dlgPtr(&dlg);
     QObject::connect(&dlg, &QWoGroupInputDialog::apply, this, [=](const QString& name, int order){
         if(names.contains(name)) {
-            QMessageBox::information(dlgPtr, tr("Parameter error"), tr("The group name is already exist."));
+            QKxMessageBox::information(dlgPtr, tr("Parameter error"), tr("The group name is already exist."));
             return;
         }
         QStringList mynames = names;
@@ -534,7 +543,7 @@ bool QWoSessionProperty::saveConfig()
         }else{
             hi.identityFile = ui->identify->text();
             if(hi.identityFile.isEmpty()) {
-                QMessageBox::warning(this, tr("Info"), tr("The identity file can't be empty"));
+                QKxMessageBox::warning(this, tr("Info"), tr("The identity file can't be empty"));
                 return false;
             }
         }
@@ -542,11 +551,11 @@ bool QWoSessionProperty::saveConfig()
         hi.memo = ui->memo->toPlainText();
         hi.script = ui->command->text();
         if(!hi.name.isEmpty() && hi.name == hi.proxyJump) {
-            QMessageBox::warning(this, tr("Info"), tr("ProxyJump can't be same with name, change to another one."));
+            QKxMessageBox::warning(this, tr("Info"), tr("ProxyJump can't be same with name, change to another one."));
             return false;
         }
         if(hi.user.isEmpty()) {
-            QMessageBox::warning(this, tr("Info"), tr("The userName can't be empty"));
+            QKxMessageBox::warning(this, tr("Info"), tr("The userName can't be empty"));
             return false;
         }
     }else if(type == "SftpOnly") {
@@ -560,12 +569,12 @@ bool QWoSessionProperty::saveConfig()
         }else{
             hi.identityFile = QWoUtils::nameToPath(ui->identify->text());
             if(hi.identityFile.isEmpty()) {
-                QMessageBox::warning(this, tr("Info"), tr("The identify file can't be empty"));
+                QKxMessageBox::warning(this, tr("Info"), tr("The identify file can't be empty"));
                 return false;
             }
             QString identify = QWoSetting::identityFilePath() + "/" + hi.identityFile;
             if(!QFileInfo::exists(identify)) {
-                QMessageBox::warning(this, tr("Info"), tr("failed to find the identify file"));
+                QKxMessageBox::warning(this, tr("Info"), tr("failed to find the identify file"));
                 return false;
             }
             hi.identityFile.insert(0, "woterm:");
@@ -573,11 +582,11 @@ bool QWoSessionProperty::saveConfig()
         hi.proxyJump = ui->proxyJump->text();
         hi.memo = ui->memo->toPlainText();
         if(!hi.name.isEmpty() && hi.name == hi.proxyJump) {
-            QMessageBox::warning(this, tr("Info"), tr("ProxyJump can't be same with name, change to another one."));
+            QKxMessageBox::warning(this, tr("Info"), tr("ProxyJump can't be same with name, change to another one."));
             return false;
         }
         if(hi.user.isEmpty()) {
-            QMessageBox::warning(this, tr("Info"), tr("The userName can't be empty"));
+            QKxMessageBox::warning(this, tr("Info"), tr("The userName can't be empty"));
             return false;
         }
     }else if(type == "Telnet") {
@@ -629,23 +638,23 @@ bool QWoSessionProperty::saveConfig()
         }
     }
     if(hi.name.isEmpty()) {
-        QMessageBox::warning(this, tr("Info"), tr("The name can't be empty"));
+        QKxMessageBox::warning(this, tr("Info"), tr("The name can't be empty"));
         return false;
     }
     if(hi.type != SerialPort) {
         if(hi.host.isEmpty()) {
-            QMessageBox::warning(this, tr("Info"), tr("The host can't be empty"));
+            QKxMessageBox::warning(this, tr("Info"), tr("The host can't be empty"));
             return false;
         }
 
         if(hi.port < 10 || hi.port > 65535) {
-            QMessageBox::warning(this, tr("Info"), tr("The port should be at [10,65535]"));
+            QKxMessageBox::warning(this, tr("Info"), tr("The port should be at [10,65535]"));
             return false;
         }
     }
     if(m_name != hi.name) {
         if(!m_name.isEmpty() && QWoHostListModel::instance()->exists(hi.name)) {
-            QMessageBox::warning(this, tr("Info"), tr("The session name had been used, Change to another name."));
+            QKxMessageBox::warning(this, tr("Info"), tr("The session name had been used, Change to another name."));
             return false;
         }
     }

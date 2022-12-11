@@ -866,11 +866,37 @@ void QKxTermItem::onGuessActivePathChanged(const QString &path)
     int idx = path.indexOf(":~");
     if(idx < 0) {
         idx = path.indexOf(":/");
+        if(idx < 0) {
+            idx = path.indexOf(':');
+            if(idx < 0) {
+                return;
+            }
+            bool ok = false;
+            for(int i = idx+1; i < path.length(); i++) {
+                QChar c = path.at(i);
+                if(path.at(i) == QChar::Space) {
+                    continue;
+                }
+                if(!(c == '/' || c== '~')) {
+                    return;
+                }
+                idx = i;
+                ok = true;
+                break;
+            }
+            if(!ok) {
+                return;
+            }
+        }else{
+            idx += 1;
+        }
+    }else{
+        idx += 1;
     }
     if(idx < 0) {
         return;
     }
-    QString pathAct = path.mid(idx+1);
+    QString pathAct = path.mid(idx);
     emit activePathArrived(pathAct);
 }
 

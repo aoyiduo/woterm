@@ -16,11 +16,11 @@
 #include "qwosshconf.h"
 #include "qwohostlistmodel.h"
 #include "qwohosttreemodel.h"
+#include "qkxmessagebox.h"
 
 #include <QFileDialog>
 #include <QTimer>
 #include <QDir>
-#include <QMessageBox>
 
 
 QWoDBRestoreDialog::QWoDBRestoreDialog(QWidget *parent) :
@@ -57,18 +57,16 @@ void QWoDBRestoreDialog::onRestoreButtonClicked()
 {
     QString path = ui->filePath->text();
     if(path.isEmpty()) {
-        QMessageBox::information(this, tr("Restore information"), tr("please select a backup file to restore"));
+        QKxMessageBox::information(this, tr("Restore information"), tr("please select a backup file to restore"));
         return;
     }
     if(!QWoSshConf::databaseValid(path)) {
-        QMessageBox::information(this, tr("Restore information"), tr("The backup file is incorrect or corrupt"));
+        QKxMessageBox::information(this, tr("Restore information"), tr("The backup file is incorrect or corrupt"));
         return;
     }
     if(QWoSshConf::instance()->restore(path)) {
-        QWoHostListModel::instance()->refreshList();
-        QWoHostTreeModel::instance()->refreshList();
-        QMessageBox::information(this, tr("Restore information"), tr("success to restore database."));
+        QKxMessageBox::information(this, tr("Restore information"), tr("success to restore database."));
     }else{
-        QMessageBox::information(this, tr("Restore information"), tr("failed to restore database."));
+        QKxMessageBox::information(this, tr("Restore information"), tr("failed to restore database."));
     }
 }

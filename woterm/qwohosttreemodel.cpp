@@ -28,6 +28,7 @@ QWoHostTreeModel::QWoHostTreeModel(QObject *parent)
     m_folderCloseIcon = QIcon(QPixmap(":/woterm/resource/skin/dir_close.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
 
     QMetaObject::invokeMethod(this, "refreshList", Qt::QueuedConnection);
+    QObject::connect(QWoSshConf::instance(), SIGNAL(dataReset()), this, SLOT(onDataReset()));
 }
 
 QWoHostTreeModel::~QWoHostTreeModel()
@@ -115,6 +116,11 @@ void QWoHostTreeModel::refreshList()
     QStringList labels;
     labels << tr("Name") <<  tr("Host") << tr("Type") << tr("Memo");
     setHorizontalHeaderLabels(labels);
+}
+
+void QWoHostTreeModel::onDataReset()
+{
+    refreshList();
 }
 
 QVariant QWoHostTreeModel::data(const QModelIndex &index, int role) const

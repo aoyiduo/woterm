@@ -193,6 +193,19 @@ QPushButton#transferRemove{
   min-width: 70px;
 }
 
+QPushButton#restoreButton{
+    border-radius: 3px;
+    border: 1px solid darkgray;
+    padding: 5px;
+    color: black;
+    min-width: 60px;
+}
+
+QPushButton:hover#restoreButton{
+    border: 1px solid rgba(212,35,122,255);
+    color: rgba(212,35,122,255);
+}
+
 QPushButton:hover{
     border: 1px solid rgba(212,35,122,255);
     color: rgba(212,35,122,255);

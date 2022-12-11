@@ -187,6 +187,52 @@ struct TaskInfo {
     }
 };
 
+#define DB_MERGE_ACTION_ADD         (1)
+#define DB_MERGE_ACTION_REMOVE      (2)
+#define DB_MERGE_ACTION_REPLACE     (3)
+struct MergeInfo {
+    QList<QVariantMap> same; //
+    QList<QVariantMap> lhave; // only local has but remote.
+    QList<QVariantMap> rhave; // only remote has but local.
+    QList<QVariantMap> replace; // different, can replace by remote.
+    QList<QVariantMap> remove; // only hidden.
+
+    void clear() {
+        same.clear();
+        lhave.clear();
+        rhave.clear();
+        replace.clear();
+        remove.clear();
+    }
+
+    QList<QVariantMap> result(bool isFull) const {
+        if(isFull) {
+            return rhave + lhave + replace + same;
+        }
+        return rhave + lhave + replace;
+    }
+    QString resultInformation() const {
+        if(rhave.isEmpty() && lhave.isEmpty() && replace.isEmpty()) {
+            return QObject::tr("The current records are exactly the same.");
+        }
+        QStringList summarys;
+        if(!rhave.isEmpty()) {
+            summarys.append(QObject::tr("Number of records that can be added: %1").arg(rhave.length()));
+        }
+        if(!lhave.isEmpty()) {
+            summarys.append(QObject::tr("Number of records that can be removed: %1").arg(lhave.length()));
+        }
+        if(!replace.isEmpty()) {
+            summarys.append(QObject::tr("Number of records that can be replaced: %1").arg(replace.length()));
+        }
+        if(!same.isEmpty()) {
+            summarys.append(QObject::tr("Number of records that are the same: %1").arg(same.length()));
+        }
+        return summarys.join("\r\n");
+    }
+};
+
+Q_DECLARE_METATYPE(MergeInfo)
 Q_DECLARE_METATYPE(TaskInfo)
 Q_DECLARE_METATYPE(GroupInfo)
 Q_DECLARE_METATYPE(HostInfo)

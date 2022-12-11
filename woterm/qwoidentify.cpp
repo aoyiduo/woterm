@@ -169,6 +169,32 @@ bool QWoIdentify::create(const QString &name, const QByteArray &prvKey)
     return false;
 }
 
+bool QWoIdentify::infomation(const QByteArray &name, IdentifyInfo *pinfo)
+{
+    QString dbFile = QWoSetting::sshServerDbPath();
+    try{
+        SQLite::Database db(dbFile.toUtf8(), SQLite::OPEN_READONLY);
+        if(!db.tableExists("identities")) {
+            return false;
+        }
+        SQLite::Statement query(db, "select * from identities where delFlag=0 and where name=@name");
+        query.bind("@name", name.toStdString());
+        while(query.executeStep()) {
+            IdentifyInfo info;
+            QByteArray rsa = QByteArray::fromStdString(query.getColumn("prvKey").getString());
+            if(!infomationByPrivateKey(rsa, &info)) {
+                continue;
+            }
+            info.name = QString::fromStdString(query.getColumn("name").getString());
+            *pinfo = info;
+            return true;
+        }
+    }catch(std::exception& e) {
+        qDebug() << "Identify-information" << e.what();
+    }
+    return false;
+}
+
 bool QWoIdentify::rename(const QString &nameOld, const QString &nameNew)
 {
     QString dbFile = QWoSetting::sshServerDbPath();

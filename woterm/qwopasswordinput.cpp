@@ -12,8 +12,9 @@
 #include "qwopasswordinput.h"
 #include "ui_qwopasswordinput.h"
 
+#include "qkxmessagebox.h"
+
 #include <QPainter>
-#include <QMessageBox>
 #include <QMouseEvent>
 
 QWoPasswordInput::QWoPasswordInput(QWidget *parent)
@@ -62,7 +63,7 @@ void QWoPasswordInput::onClose()
 {
     QString pass = ui->password->text();
     if(pass.isEmpty()) {
-        QMessageBox::StandardButton btn = QMessageBox::warning(this, tr("Tip"), tr("The Password is Empty, continue to finish?"), QMessageBox::Ok|QMessageBox::No);
+        QMessageBox::StandardButton btn = QKxMessageBox::warning(this, tr("Tip"), tr("The Password is Empty, continue to finish?"), QMessageBox::Ok|QMessageBox::No);
         if(btn == QMessageBox::No) {
             return ;
         }

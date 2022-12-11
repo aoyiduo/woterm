@@ -35,7 +35,7 @@ void QKxSetting::setValue(const QString &key, const QVariant &v)
 
 QVariant QKxSetting::value(const QString &key, const QVariant &defval)
 {
-    qDebug() << "fileName" << gSettings->fileName();
+    //qDebug() << "fileName" << gSettings->fileName();
     return gSettings->value(key, defval);
 }
 

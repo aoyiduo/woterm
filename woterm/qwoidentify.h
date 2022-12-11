@@ -28,6 +28,7 @@ public:
     static bool import(const QString& file, IdentifyInfo *pinfo);
     static bool create(const QString& file);
     static bool create(const QString& name, const QByteArray& prvKey);
+    static bool infomation(const QByteArray& name, IdentifyInfo *pinfo);
     static bool rename(const QString& nameOld, const QString& nameNew);
     static bool remove(const QString& name);
     static QMap<QString, IdentifyInfo> loadFromSqlite();

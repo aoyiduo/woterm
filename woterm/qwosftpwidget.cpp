@@ -35,7 +35,6 @@
 #include <QDebug>
 #include <QMenu>
 #include <QFileDialog>
-#include <QMessageBox>
 #include <QDir>
 #include <QSplitter>
 #include <QBoxLayout>
@@ -687,7 +686,7 @@ void QWoSftpWidget::onLocalMenuUpload()
             if(typeTransfer == QMessageBox::Yes ||
                     typeTransfer == QMessageBox::No){
                 QMessageBox::StandardButtons buttonType = QMessageBox::Yes|QMessageBox::No;
-                if(m_isUltimate) {
+                if(m_isUltimate && lsfi.length() > 1) {
                     buttonType |= QMessageBox::YesToAll|QMessageBox::NoToAll;
                 }
                 typeTransfer = QKxMessageBox::warning(this, tr("FileExist"),
@@ -838,7 +837,7 @@ void QWoSftpWidget::onRemoteMenuDownload()
             if(typeTransfer == QMessageBox::Yes ||
                     typeTransfer == QMessageBox::No){
                 QMessageBox::StandardButtons buttonType = QMessageBox::Yes|QMessageBox::No;
-                if(m_isUltimate) {
+                if(m_isUltimate && lsfi.length() > 1) {
                     buttonType |= QMessageBox::YesToAll|QMessageBox::NoToAll;
                 }
                 typeTransfer = QKxMessageBox::warning(this, tr("FileExist"),

@@ -19,6 +19,7 @@
 #include "qwosessionproperty.h"
 #include "qwogroupinputdialog.h"
 #include "qwosortfilterproxymodel.h"
+#include "qkxmessagebox.h"
 #include "qkxver.h"
 #include "qwoutils.h"
 
@@ -40,7 +41,6 @@
 #include <QMenu>
 #include <QAction>
 #include <QPlainTextEdit>
-#include <QMessageBox>
 
 #define MAX_TRY_LEFT  (10)
 
@@ -365,7 +365,7 @@ void QWoSessionList::onListViewItemAdd()
 
 void QWoSessionList::onListViewItemDelete()
 {
-    QMessageBox::StandardButton btn = QMessageBox::warning(this, "delete", "delete all the selective items?", QMessageBox::Ok|QMessageBox::No);
+    QMessageBox::StandardButton btn = QKxMessageBox::warning(this, "delete", "delete all the selective items?", QMessageBox::Ok|QMessageBox::No);
     if(btn == QMessageBox::No) {
         return ;
     }

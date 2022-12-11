@@ -83,7 +83,17 @@ set(SOURCE_FILES
     qwoloadingwidget.cpp
     qwoshortcutmodel.cpp
     qwoshortcutdelegate.cpp
+    qwodbsftpuploadsync.cpp
+    qwodbsftpdownsync.cpp
+    qwodbmergemodel.cpp
+    qwodbidentitymergemodel.cpp
+    qwodbgroupmergemodel.cpp
+    qwodbservermergemodel.cpp
+    qwodbsftpdownlistdialog.cpp
+    qwodbbackupdialog.cpp
+    qwodbsftpdetaildialog.cpp
     qwodbrestoredialog.cpp
+    qwodbpowerrestoredialog.cpp
     qwogroupinputdialog.cpp
     qwotelnet.cpp
     qwoutils.cpp
@@ -160,7 +170,17 @@ set(HEADER_FILES
     qwoloadingwidget.h
     qwoshortcutmodel.h
     qwoshortcutdelegate.h
+    qwodbsftpuploadsync.h
+    qwodbsftpdownsync.h
+    qwodbmergemodel.h
+    qwodbidentitymergemodel.h
+    qwodbgroupmergemodel.h
+    qwodbservermergemodel.h
+    qwodbsftpdownlistdialog.h
+    qwodbbackupdialog.h
+    qwodbsftpdetaildialog.h
     qwodbrestoredialog.h
+    qwodbpowerrestoredialog.h
     qwogroupinputdialog.h
     qwotelnet.h
     qwoutils.h
@@ -197,7 +217,11 @@ set(OTHER_FILES
     qwosftptransferwidget.ui
     qwovnctoolform.ui
     qwovncftpwidget.ui
+    qwodbbackupdialog.ui
+    qwodbsftpdetaildialog.ui
     qwodbrestoredialog.ui
+    qwodbpowerrestoredialog.ui
+    qwodbsftpdownlistdialog.ui
     qwogroupinputdialog.ui
 )
 

@@ -15,9 +15,9 @@
 #include "qwoutils.h"
 #include "qwosetting.h"
 #include "qwoidentify.h"
+#include "qkxmessagebox.h"
 
 #include <QStringListModel>
-#include <QMessageBox>
 #include <QTimer>
 
 #include <libssh/libssh.h>
@@ -49,7 +49,7 @@ void QWoIdentifyCreateDialog::onButtonCreateClicked()
 {
     QString name = ui->name->text();
     if(name.isEmpty()) {
-        QMessageBox::warning(this, "Warning", "The name should not be empty", QMessageBox::Ok);
+        QKxMessageBox::warning(this, "Warning", "The name should not be empty", QMessageBox::Ok);
         return;
     }
     ssh_keytypes_e type = ui->typED25519->isChecked() ? SSH_KEYTYPE_ED25519 : SSH_KEYTYPE_RSA;
@@ -57,7 +57,7 @@ void QWoIdentifyCreateDialog::onButtonCreateClicked()
     ssh_key key = nullptr;
     int err = ssh_pki_generate(type, bits, &key);
     if(err != SSH_OK) {
-        QMessageBox::information(this, tr("info"), QString(tr("failed to create identify:[%1]")).arg(name));
+        QKxMessageBox::information(this, tr("info"), QString(tr("failed to create identify:[%1]")).arg(name));
         return ;
     }
     char *b64 = nullptr;
@@ -68,7 +68,7 @@ void QWoIdentifyCreateDialog::onButtonCreateClicked()
         ssh_string_free_char(b64);
     }
     if(!QWoIdentify::create(name, content)) {
-        QMessageBox::information(this, tr("info"), QString(tr("failed to save identity for name already exist:[%1]")).arg(name));
+        QKxMessageBox::information(this, tr("info"), QString(tr("failed to save identity for name already exist:[%1]")).arg(name));
         return ;
     }
     done(QDialog::Accepted);

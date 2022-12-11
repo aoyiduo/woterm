@@ -15,8 +15,9 @@
 #include "qwosshconf.h"
 #include "qwohostsimplelist.h"
 #include "qwosetting.h"
+#include "qkxmessagebox.h"
 
-#include <QMessageBox>
+
 #include <QPlainTextEdit>
 #include <QFileDialog>
 #include <QDebug>
@@ -79,15 +80,15 @@ void QWoHostInfoEdit::onButtonSaveClicked()
     hi.proxyJump = ui->jump->currentText();
 
     if(hi.name.isEmpty()) {
-        QMessageBox::warning(this, tr("Info"), tr("The name can't be empty"));
+        QKxMessageBox::warning(this, tr("Info"), tr("The name can't be empty"));
         return;
     }
     if(hi.host.isEmpty()) {
-        QMessageBox::warning(this, tr("Info"), tr("The host can't be empty"));
+        QKxMessageBox::warning(this, tr("Info"), tr("The host can't be empty"));
         return;
     }
     if(hi.port < 10 || hi.port > 65535) {
-        QMessageBox::warning(this, tr("Info"), tr("The port should be at [10,65535]"));
+        QKxMessageBox::warning(this, tr("Info"), tr("The port should be at [10,65535]"));
         return;
     }
     close();

@@ -40,6 +40,7 @@ public:
     static QString sshServerDbPath();
     static QString sftpTaskDbPath();
     static QString sftpTaskLogPath();
+    static QString tempPath();
 
     static QString lastBackupPath();
     static void setLastBackupPath(const QString& path);

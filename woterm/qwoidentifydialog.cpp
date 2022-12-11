@@ -17,11 +17,11 @@
 #include "qwoidentifypublickeydialog.h"
 #include "qwoidentifycreatedialog.h"
 #include "qwoidentify.h"
+#include "qkxmessagebox.h"
 
 #include <QFileDialog>
 #include <QDebug>
 #include <QDirModel>
-#include <QMessageBox>
 #include <QProcess>
 #include <QTimer>
 #include <QEventLoop>
@@ -96,16 +96,16 @@ void QWoIdentifyDialog::onButtonImportClicked()
     }
     fileName = QDir::toNativeSeparators(fileName);
     if(QWoIdentify::isPublicKey(fileName)) {
-        QMessageBox::information(this, tr("info"), tr("Public key file import is not supported. Please select a valid private key file."));
+        QKxMessageBox::information(this, tr("info"), tr("Public key file import is not supported. Please select a valid private key file."));
         return;
     }
     if(!QWoIdentify::isPrivateKey(fileName)) {
-        QMessageBox::information(this, tr("info"), tr("Invalid private key file. Please select a valid private key file."));
+        QKxMessageBox::information(this, tr("info"), tr("Invalid private key file. Please select a valid private key file."));
         return;
     }
     IdentifyInfo info;
     if(!QWoIdentify::import(fileName, &info)) {
-        QMessageBox::information(this, tr("info"), tr("the identify's file is bad"));
+        QKxMessageBox::information(this, tr("info"), tr("the identify's file is bad"));
         return;
     }
 
@@ -116,7 +116,7 @@ void QWoIdentifyDialog::onButtonImportClicked()
         QString figure = idx.data(ROLE_IDENTIFY_FIGURE).toString();
         if(figure == info.fingureprint) {
             ui->identify->setCurrentIndex(idx);
-            QMessageBox::information(this, tr("info"), tr("the same identify had been exist by name: %1").arg(name));
+            QKxMessageBox::information(this, tr("info"), tr("the same identify had been exist by name: %1").arg(name));
             return;
         }
     }
@@ -146,7 +146,7 @@ void QWoIdentifyDialog::onButtonExportClicked()
 {
     QModelIndex idx = ui->identify->currentIndex();
     if(!idx.isValid()) {
-        QMessageBox::information(this, tr("info"), tr("no selection"));
+        QKxMessageBox::information(this, tr("info"), tr("no selection"));
         return;
     }
     QAbstractItemModel *model = ui->identify->model();
@@ -177,14 +177,14 @@ void QWoIdentifyDialog::onButtonDeleteClicked()
 {
     QModelIndex idx = ui->identify->currentIndex();
     if(!idx.isValid()) {
-        QMessageBox::information(this, tr("info"), tr("no selection"));
+        QKxMessageBox::information(this, tr("info"), tr("no selection"));
         return;
     }
     QAbstractItemModel *model = ui->identify->model();
     QModelIndex idx2 = model->index(idx.row(), 0);
     QString name = idx2.data().toString();
     if(!QWoIdentify::remove(name)) {
-        QMessageBox::warning(this, tr("Warning"), tr("failed to delete %1").arg(name));
+        QKxMessageBox::warning(this, tr("Warning"), tr("failed to delete %1").arg(name));
         return;
     }
     model->removeRow(idx.row());
@@ -194,7 +194,7 @@ void QWoIdentifyDialog::onButtonSelectClicked()
 {
     QModelIndex idx = ui->identify->currentIndex();
     if(!idx.isValid()) {
-        QMessageBox::information(this, tr("info"), tr("no selection"));
+        QKxMessageBox::information(this, tr("info"), tr("no selection"));
         return;
     }
     QAbstractItemModel *model = ui->identify->model();
@@ -207,7 +207,7 @@ void QWoIdentifyDialog::onButtonRenameClicked()
 {
     QModelIndex idx = ui->identify->currentIndex();
     if(!idx.isValid()) {
-        QMessageBox::information(this, tr("info"), tr("no selection"));
+        QKxMessageBox::information(this, tr("info"), tr("no selection"));
         return;
     }
     QAbstractItemModel *model = ui->identify->model();
@@ -218,7 +218,7 @@ void QWoIdentifyDialog::onButtonRenameClicked()
         return;
     }
     if(!QWoIdentify::rename(name, nameNew)) {
-        QMessageBox::warning(this, tr("Warning"), tr("failed to rename '%1' to '%2'").arg(name).arg(nameNew));
+        QKxMessageBox::warning(this, tr("Warning"), tr("failed to rename '%1' to '%2'").arg(name).arg(nameNew));
         return;
     }
     reload();
@@ -228,14 +228,14 @@ void QWoIdentifyDialog::onButtonViewClicked()
 {
     QModelIndex idx = ui->identify->currentIndex();
     if(!idx.isValid()) {
-        QMessageBox::information(this, tr("info"), tr("no selection"));
+        QKxMessageBox::information(this, tr("info"), tr("no selection"));
         return;
     }
     QAbstractItemModel *model = ui->identify->model();
     QModelIndex idx2 = model->index(idx.row(), 0);
     QString key = idx2.data(ROLE_IDENTIFY_PUBKEY).toString();
     if(key.isEmpty()) {
-        QMessageBox::information(this, tr("info"), tr("no selection"));
+        QKxMessageBox::information(this, tr("info"), tr("no selection"));
         return;
     }
     QString name = idx2.data().toString();

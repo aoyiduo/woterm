@@ -24,10 +24,12 @@
 #include "qwoevent.h"
 #include "qwosessionproperty.h"
 #include "qwofloatwindow.h"
+#include "qkxmessagebox.h"
 
 #include "qkxtermwidget.h"
 #include "qkxtermitem.h"
 #include "qwoshower.h"
+
 
 
 #include <QTimer>
@@ -35,10 +37,10 @@
 #include <QClipboard>
 #include <QMenu>
 #include <QFileDialog>
-#include <QMessageBox>
 #include <QProcess>
 #include <QDebug>
 #include <QResizeEvent>
+#include <QPushButton>
 
 QWoSshTermWidget::QWoSshTermWidget(const QString& target, int gid, QWidget *parent)
     : QWoTermWidget(target, gid, parent)
@@ -46,11 +48,13 @@ QWoSshTermWidget::QWoSshTermWidget(const QString& target, int gid, QWidget *pare
     , m_stateConnected(ESC_Ready)
 {
     QObject::connect(m_term, SIGNAL(termSizeChanged(int,int)), this, SLOT(onTermSizeChanged(int,int)));
-    QObject::connect(m_term, SIGNAL(sendData(const QByteArray&)), this, SLOT(onSendData(const QByteArray&)));
+    QObject::connect(m_term, SIGNAL(sendData(QByteArray)), this, SLOT(onSendData(QByteArray)));
+    QObject::connect(m_term, SIGNAL(activePathArrived(QString)), this, SLOT(onActivePathArrived(QString)));
     m_modem = QWoModemFactory::instance()->create(false);
-    QObject::connect(m_modem, SIGNAL(dataArrived(const QByteArray&)), this, SLOT(onZmodemDataArrived(const QByteArray&)));
-    QObject::connect(m_modem, SIGNAL(statusArrived(const QByteArray&)), this, SLOT(onZmodemStatusArrived(const QByteArray&)));
+    QObject::connect(m_modem, SIGNAL(dataArrived(QByteArray)), this, SLOT(onZmodemDataArrived(QByteArray)));
+    QObject::connect(m_modem, SIGNAL(statusArrived(QByteArray)), this, SLOT(onZmodemStatusArrived(QByteArray)));
     QObject::connect(m_modem, SIGNAL(finished()), this, SLOT(onZmodemFinished()));
+
 
     QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);
 }
@@ -99,6 +103,10 @@ void QWoSshTermWidget::onDataArrived(const QByteArray &buf)
             //qDebug() << "onDataArrived" << buf;
         }
     }else{
+        if(m_restoreLastActivePath) {
+            m_ssh->write("\r\ncd " + m_lastActivePath.toUtf8() + "\r\n");
+            m_restoreLastActivePath = false;
+        }
         if(m_term->appMode()) {
             m_term->parse(buf);
         }else{
@@ -152,8 +160,12 @@ void QWoSshTermWidget::onSendData(const QByteArray &buf)
 #endif
     if(m_stateConnected == ESC_Disconnected) {
         if(m_dlgConfirm == nullptr) {
-            m_dlgConfirm = new QMessageBox(QMessageBox::Question, tr("Reconnection confirmation"), tr("Continue to connect to the server?"), QMessageBox::Yes|QMessageBox::No, this);
-            if(m_dlgConfirm->exec() == QMessageBox::Yes) {
+            m_dlgConfirm = new QKxMessageBox(QMessageBox::Question, tr("Reconnection confirmation"), tr("Continue to connect to the server?"), QMessageBox::Yes|QMessageBox::No, this);
+            QPushButton *btn = new QPushButton(tr("Restore"), m_dlgConfirm);
+            QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onRestoreLastPath()));
+            m_dlgConfirm->addButton(btn, QMessageBox::ActionRole);
+            int code = m_dlgConfirm->exec();
+            if(code == QMessageBox::Yes) {
                 QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);
             }
             m_dlgConfirm->deleteLater();
@@ -173,6 +185,19 @@ void QWoSshTermWidget::onSendData(const QByteArray &buf)
 void QWoSshTermWidget::onCopyToClipboard()
 {
     termItem()->tryToCopy();
+}
+
+void QWoSshTermWidget::onRestoreLastPath()
+{
+    if(m_dlgConfirm) {
+        m_dlgConfirm->done(QMessageBox::LastButton + 1);
+        reconnect(true);
+    }
+}
+
+void QWoSshTermWidget::onActivePathArrived(const QString &path)
+{
+    m_lastActivePath = path;
 }
 
 void QWoSshTermWidget::onPasteFromClipboard()
@@ -255,7 +280,7 @@ void QWoSshTermWidget::onNewSessionMultiplex()
 void QWoSshTermWidget::onModifyThisSession()
 {
     if(!QWoSshConf::instance()->exists(m_target)){
-        QMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete ago"));
+        QKxMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete ago"));
         return;
     }
     QWoSessionProperty dlg(this);
@@ -273,7 +298,7 @@ void QWoSshTermWidget::onZmodemSend(bool local)
 //            if(local) {
 //                m_term->parseError("failed to find rz program, please install lrzsz.");
 //                m_term->waitInput();
-//                QMessageBox::warning(this, tr("warning"), tr("failed to find rz program, please install lrzsz."));
+//                QKxMessageBox::warning(this, tr("warning"), tr("failed to find rz program, please install lrzsz."));
 //            }
 //            return;
 //        }
@@ -416,7 +441,7 @@ bool QWoSshTermWidget::checkProgram(const QByteArray &name)
     return code == 0;
 }
 
-void QWoSshTermWidget::reconnect()
+void QWoSshTermWidget::reconnect(bool restore)
 {
     if(m_passInput) {
         m_passInput->deleteLater();
@@ -429,19 +454,25 @@ void QWoSshTermWidget::reconnect()
 
     QObject::connect(m_ssh, SIGNAL(connectionFinished(bool)), this, SLOT(onConnectionFinished(bool)));
     QObject::connect(m_ssh, SIGNAL(finishArrived(int)), this, SLOT(onFinishArrived(int)));
-    QObject::connect(m_ssh, SIGNAL(dataArrived(const QByteArray&)), this, SLOT(onDataArrived(const QByteArray&)));
-    QObject::connect(m_ssh, SIGNAL(errorArrived(const QByteArray&)), this, SLOT(onErrorArrived(const QByteArray&)));
-    QObject::connect(m_ssh, SIGNAL(passwordArrived(const QString&,const QByteArray&)), this, SLOT(onPasswordArrived(const QString&,const QByteArray&)));
-    QObject::connect(m_ssh, SIGNAL(inputArrived(const QString&,const QString&,bool)), this, SLOT(onInputArrived(const QString&,const QString&,bool)));
+    QObject::connect(m_ssh, SIGNAL(dataArrived(QByteArray)), this, SLOT(onDataArrived(QByteArray)));
+    QObject::connect(m_ssh, SIGNAL(errorArrived(QByteArray)), this, SLOT(onErrorArrived(QByteArray)));
+    QObject::connect(m_ssh, SIGNAL(passwordArrived(QString,QByteArray)), this, SLOT(onPasswordArrived(QString,QByteArray)));
+    QObject::connect(m_ssh, SIGNAL(inputArrived(QString,QString,bool)), this, SLOT(onInputArrived(QString,QString,bool)));
     m_ssh->start(m_target, m_gid);
     QSize sz = m_term->termSize();
     m_ssh->updateSize(sz.width(), sz.height());
     showLoading(true);
 
 
-    HostInfo hi = QWoSshConf::instance()->find(m_target);
-    if(!hi.script.isEmpty()){
-        executeCommand(hi.script.toUtf8());
+    if(restore) {
+        qDebug() << "path";
+        m_restoreLastActivePath = true;
+    }else{
+        m_restoreLastActivePath = false;
+        HostInfo hi = QWoSshConf::instance()->find(m_target);
+        if(!hi.script.isEmpty()){
+            executeCommand(hi.script.toUtf8());
+        }
     }
 
     m_stateConnected = ESC_Connecting;
@@ -453,10 +484,10 @@ void QWoSshTermWidget::executeCommand(const QByteArray &cmd)
         QWoSshFactory::instance()->release(m_cmd);
     }
     m_cmd = QWoSshFactory::instance()->createShell(true);
-    QObject::connect(m_cmd, SIGNAL(dataArrived(const QByteArray&)), this, SLOT(onDataArrived(const QByteArray&)));
-    QObject::connect(m_cmd, SIGNAL(errorArrived(const QByteArray&)), this, SLOT(onErrorArrived(const QByteArray&)));
-    QObject::connect(m_cmd, SIGNAL(passwordArrived(const QString&,const QByteArray&)), this, SLOT(onPasswordArrived(const QString&,const QByteArray&)));
-    QObject::connect(m_cmd, SIGNAL(inputArrived(const QString&,const QString&,bool)), this, SLOT(onInputArrived(const QString&,const QString&,bool)));
+    QObject::connect(m_cmd, SIGNAL(dataArrived(QByteArray)), this, SLOT(onDataArrived(QByteArray)));
+    QObject::connect(m_cmd, SIGNAL(errorArrived(QByteArray)), this, SLOT(onErrorArrived(QByteArray)));
+    QObject::connect(m_cmd, SIGNAL(passwordArrived(QString,QByteArray)), this, SLOT(onPasswordArrived(QString,QByteArray)));
+    QObject::connect(m_cmd, SIGNAL(inputArrived(QString,QString,bool)), this, SLOT(onInputArrived(QString,QString,bool)));
     m_cmd->start(m_target, m_gid);
     QSize sz = m_term->termSize();
     m_cmd->updateSize(sz.width(), sz.height());

@@ -19,10 +19,10 @@
 #include "qkxtermwidget.h"
 #include "qkxtermitem.h"
 #include "qwosessionproperty.h"
+#include "qkxmessagebox.h"
 
 #include <QCloseEvent>
 #include <QApplication>
-#include <QMessageBox>
 #include <QMenu>
 #include <QLineEdit>
 #include <QTabBar>
@@ -129,7 +129,7 @@ void QWoSerialWidgetImpl::onConnectReady(const QString &target)
     }
     if(!QWoSshConf::instance()->find(m_target, &hi)) {
         m_input->reset();
-        QMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete"));
+        QKxMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete"));
         return;
     }
 
@@ -173,7 +173,7 @@ void QWoSerialWidgetImpl::onConnectReady(const QString &target)
     }
     if(!m_serial->open(QIODevice::ReadWrite)) {
         m_input->reset();
-        QMessageBox::warning(this, tr("Error"), tr("Failed to open device."));
+        QKxMessageBox::warning(this, tr("Error"), tr("Failed to open device."));
         return;
     }
     QString params;
@@ -201,7 +201,7 @@ void QWoSerialWidgetImpl::onSendText(const QString &txt)
 void QWoSerialWidgetImpl::onMoreReady()
 {
     if(!QWoSshConf::instance()->exists(m_target)){
-        QMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete"));
+        QKxMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete"));
         return;
     }
     QWoSessionProperty dlg(this);
@@ -360,7 +360,7 @@ void QWoSerialTermWidget::onCopyToClipboard()
 void QWoSerialTermWidget::onModifyThisSession()
 {
     if(!QWoSshConf::instance()->exists(m_target)){
-        QMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete ago"));
+        QKxMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete ago"));
         return;
     }
     QWoSessionProperty dlg(this);

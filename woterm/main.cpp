@@ -14,13 +14,14 @@
 #include <QIcon>
 #include <QMenuBar>
 #include <QProcess>
-#include <QMessageBox>
 #include <QList>
 #include <QByteArray>
 #include <QStyleFactory>
 #include <QSharedPointer>
 #include <QPointer>
 #include <QWeakPointer>
+
+#include "qkxcipher.h"
 
 #include "qwoglobal.h"
 #include "qwoapplication.h"
@@ -32,6 +33,7 @@
 #include "qwoutils.h"
 #include "qwossh.h"
 #include "qkxutils.h"
+#include "qkxmessagebox.h"
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {

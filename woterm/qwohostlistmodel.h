@@ -33,6 +33,8 @@ public:
     bool exists(const QString &name);
     void resetAllProperty(QString v);
     void modifyOrAppend(const HostInfo& hi);
+private slots:
+    void onDataReset();
 private:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QModelIndex sibling(int row, int column, const QModelIndex &idx) const override;

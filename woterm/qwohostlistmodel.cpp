@@ -30,6 +30,8 @@ QWoHostListModel::QWoHostListModel(QObject *parent)
     m_vncIcon = QIcon(QPixmap(":/woterm/resource/skin/vnc2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
     m_serialIcon = QIcon(QPixmap(":/woterm/resource/skin/serialport.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
     QMetaObject::invokeMethod(this, "refreshList", Qt::QueuedConnection);
+
+    QObject::connect(QWoSshConf::instance(), SIGNAL(dataReset()), this, SLOT(onDataReset()));
 }
 
 QWoHostListModel::~QWoHostListModel()
@@ -81,6 +83,11 @@ void QWoHostListModel::modifyOrAppend(const HostInfo &hi)
     if(QWoSshConf::instance()->modifyOrAppend(hi)){
         refreshList();
     }
+}
+
+void QWoHostListModel::onDataReset()
+{
+    refreshList();
 }
 
 int QWoHostListModel::rowCount(const QModelIndex &parent) const
