@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -17,6 +17,7 @@
 #include "qwoserialwidgetimpl.h"
 #include "qwovncwidgetimpl.h"
 #include "qwordpwidgetimpl.h"
+#include "qwoptytermwidgetimpl.h"
 #include "qwomainwindow.h"
 #include "qwosshconf.h"
 #include "qwoevent.h"
@@ -49,6 +50,7 @@ QWoShower::QWoShower(QTabBar *tab, QWidget *parent)
     : QStackedWidget (parent)
     , m_tab(tab)
 {
+    m_ptyico = QIcon(":/woterm/resource/skin/console.png");
     m_sshico = QIcon(":/woterm/resource/skin/ssh2.png");
     m_ftpico = QIcon(":/woterm/resource/skin/sftp.png");
     m_telico = QIcon(":/woterm/resource/skin/telnet.png");
@@ -74,6 +76,14 @@ QWoShower::~QWoShower()
 
 bool QWoShower::openLocalShell()
 {
+    int gid = QWoUtils::gid();
+    QString target = tr("Local shell");
+    QWoPtyTermWidgetImpl *impl = new QWoPtyTermWidgetImpl(target, gid, m_tab, this);
+    createTab(impl, m_ptyico, target);
+    impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
+    impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/console.png");
+    emit floatChanged(impl, false);
     return true;
 }
 
@@ -163,22 +173,15 @@ bool QWoShower::openVnc(const QString &target)
     return true;
 }
 
-bool QWoShower::openSerial(const QString &target)
+bool QWoShower::openSerialPort()
 {
-    if(QWoUtils::isRootUser()) {
-        QWoSerialWidgetImpl *impl = new QWoSerialWidgetImpl(target, QWoUtils::gid(), m_tab, this);
-        createTab(impl, m_serico, target);
-        impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
-        impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-        impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/serialport.png");
-        emit floatChanged(impl, false);
-        return true;
-    }
-    QMessageBox::StandardButton btn = QKxMessageBox::warning(this, "Info", "SerialPort must be run with root permission, try to run to now?", QMessageBox::Ok|QMessageBox::No);
-    if(btn == QMessageBox::No) {
-        return false;
-    }
-    QWoUtils::openself("serial", target, true);
+    QString target = tr("SerialPort");
+    QWoSerialWidgetImpl *impl = new QWoSerialWidgetImpl(target, QWoUtils::gid(), m_tab, this);
+    createTab(impl, m_serico, target);
+    impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
+    impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/serialport.png");
+    emit floatChanged(impl, false);
     return true;
 }
 
@@ -292,11 +295,13 @@ void QWoShower::closeSession(int idx)
     QMap<QString, QString> wmsg = target->collectUnsafeCloseMessage();
     QString msg = tr("Close Or Not");
     if(!wmsg.isEmpty()) {
-        msg.append(tr("The follow event will be stop before close this session.\r\n\r\n"));
+        msg.append(tr("The follow event will be stop before close this session."));
+        msg.append("\r\n");
         for(QMap<QString, QString>::iterator iter = wmsg.begin(); iter != wmsg.end(); iter++) {
             msg.append(QString("%1: %2").arg(iter.key()).arg(iter.value()));
         }
-        msg.append(tr("\r\n\r\nContinue To Close It?"));
+        msg.append("\r\n");
+        msg.append(tr("Continue To Close It?"));
     }
     QMessageBox::StandardButton btn = QKxMessageBox::warning(this, tr("CloseSession"), msg, QMessageBox::Ok|QMessageBox::No);
     if(btn == QMessageBox::No) {
@@ -321,7 +326,7 @@ bool QWoShower::tabMouseButtonPress(QMouseEvent *ev)
     QPoint pt = ev->pos();
     int idx = m_tab->tabAt(pt);
     if(idx < 0) {
-        emit openSessionManage();
+        onTabContextMenu(ev);
         return false;
     }
     qDebug() << "tab hit" << idx;
@@ -489,4 +494,24 @@ void QWoShower::onCleanNilFloatWindow()
             it++;
         }
     }
+}
+
+void QWoShower::onTabContextMenu(QMouseEvent *ev)
+{
+    if(ev->buttons() & Qt::RightButton) {
+        QMenu menu;
+        menu.addAction(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open remote session"), this, SLOT(onOpenRemoteSession()));
+        menu.addAction(QIcon(":/woterm/resource/skin/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
+        menu.exec(QCursor::pos());
+    }
+}
+
+void QWoShower::onOpenRemoteSession()
+{
+    QMetaObject::invokeMethod(QWoMainWindow::instance(), "onOpenRemoteSession", Qt::QueuedConnection);
+}
+
+void QWoShower::onOpenLocalSession()
+{
+    openLocalShell();
 }

@@ -24,6 +24,7 @@
 #include "qwoshowerwidget.h"
 #include "qwoshower.h"
 #include "qkxmessagebox.h"
+#include "qwoptytermwidget.h"
 
 #include "qkxtermitem.h"
 
@@ -40,15 +41,17 @@
 #include <QFile>
 
 
-QWoTermWidget::QWoTermWidget(const QString& target, int gid, QWidget *parent)
+QWoTermWidget::QWoTermWidget(const QString& target, int gid, ETermType ttype, QWidget *parent)
     : QKxTermWidget(parent)
     , m_target(target)
     , m_gid(gid)
     , m_bexit(false)
+    , m_ttype(ttype)
 {
     static int idx = 0;
     setObjectName(QString("QWoTermWidget:%1").arg(idx++));
     addToTermImpl();
+    setAttribute(Qt::WA_StyledBackground);
     setAttribute(Qt::WA_DeleteOnClose);
     initDefault();
     initCustom();
@@ -163,9 +166,19 @@ void QWoTermWidget::initDefault()
 
 void QWoTermWidget::initCustom()
 {
-    HostInfo hi = QWoSshConf::instance()->find(m_target);
-    QVariantMap mdata = QWoUtils::qBase64ToVariant(hi.property).toMap();
-    resetProperty(mdata);
+    if(m_ttype == ETTLocalShell) {
+        QString val = QWoSetting::value("property/localShell").toString();
+        QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
+        resetProperty(mdata);
+    }else if(m_ttype == ETTSerialPort) {
+        QString val = QWoSetting::value("property/serialPort").toString();
+        QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
+        resetProperty(mdata);
+    }else{
+        HostInfo hi = QWoSshConf::instance()->find(m_target);
+        QVariantMap mdata = QWoUtils::qBase64ToVariant(hi.property).toMap();
+        resetProperty(mdata);
+    }
 }
 
 void QWoTermWidget::onResetTermSize()

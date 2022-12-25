@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -17,5 +17,6 @@ QWoShowerWidget::QWoShowerWidget(const QString &target, QWidget *parent)
     , m_id(0)
     , m_target(target)
 {
+    setAttribute(Qt::WA_StyledBackground);
     setAttribute(Qt::WA_DeleteOnClose);
 }

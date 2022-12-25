@@ -14,8 +14,10 @@
 #include <QToolButton>
 #include <QHBoxLayout>
 #include <QVariant>
+#include <QFrame>
+#include <QSpacerItem>
 
-QKxButtonAssist::QKxButtonAssist(const QString& icon, QWidget *parent)
+QKxButtonAssist::QKxButtonAssist(const QString& icon, bool frame, QWidget *parent)
     : QObject(parent)
 {
     QHBoxLayout *layout = new QHBoxLayout(parent);
@@ -25,18 +27,50 @@ QKxButtonAssist::QKxButtonAssist(const QString& icon, QWidget *parent)
     parent->setLayout(layout);
     layout->addItem(new QSpacerItem(20, 20, QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
     m_layout = layout;
-    append(icon);
+    append(icon, frame);
 }
 
-void QKxButtonAssist::append(const QString &icon)
+QKxButtonAssist::QKxButtonAssist(const QString &icon, QWidget *parent)
+    : QKxButtonAssist(icon, true, parent)
+{
+
+}
+
+QToolButton *QKxButtonAssist::append(const QString &icon, bool frame)
 {
     QWidget *p = qobject_cast<QWidget*>(parent());
     QToolButton *btn = new QToolButton(p);
+    btn->setObjectName("buttonAssist");
     btn->setIcon(QIcon(icon));
-    btn->setProperty("index", m_layout->count() - 1);
+    btn->setProperty("index", m_btns.length());
+    if(!frame){
+        QString style = "QToolButton{border:0}\r\n";
+        style += "QToolButton:hover{background-color:rgba(255,255,255,128)}\r\n";
+        style += "QToolButton:pressed{background-color:rgba(200,200,200,128)}";
+        btn->setStyleSheet(style);
+    }
     QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onClicked()));
-    m_layout->addWidget(btn);
+    m_layout->insertWidget(1, btn);
     m_btns.append(btn);
+    return btn;
+}
+
+QToolButton *QKxButtonAssist::button(int idx)
+{
+    if(idx < 0 || idx >= m_btns.length()) {
+        return nullptr;
+    }
+    return m_btns[idx];
+}
+
+void QKxButtonAssist::appendSeperator()
+{
+    QWidget *p = qobject_cast<QWidget*>(parent());
+    QFrame *seperator = new QFrame(p);
+    seperator->setFrameShape(QFrame::VLine);
+    seperator->setFrameShadow(QFrame::Plain);
+    seperator->setObjectName("buttonAssistVLine");
+    m_layout->insertWidget(1, seperator);
 }
 
 void QKxButtonAssist::setEnabled(int idx, bool on)
@@ -57,9 +91,15 @@ bool QKxButtonAssist::isEnabled(int idx)
     return btn->isEnabled();
 }
 
+void QKxButtonAssist::setIconMargins(int m)
+{
+    m_layout->setContentsMargins(m,m,m,m);
+}
+
 void QKxButtonAssist::onClicked()
 {
     QToolButton *btn = qobject_cast<QToolButton*>(sender());
     QVariant v = btn->property("index");
     emit clicked(v.toInt());
+    emit pressed(btn);
 }

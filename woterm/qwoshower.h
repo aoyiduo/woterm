@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -48,7 +48,7 @@ public:
     bool openRLogin(const QString& target);
     bool openMstsc(const QString& target);
     bool openVnc(const QString& target);
-    bool openSerial(const QString& target);
+    bool openSerialPort();
     void setBackgroundColor(const QColor& clr);
     void openFindDialog();
 
@@ -85,8 +85,12 @@ private slots:
     void onCloseOtherTabSession();
     void onFloatThisTabSession();
     void onCleanNilFloatWindow();
+    void onTabContextMenu(QMouseEvent *ev);
+    void onOpenRemoteSession();
+    void onOpenLocalSession();
 
 private:
+    QIcon m_ptyico;
     QIcon m_telico;
     QIcon m_sshico;
     QIcon m_ftpico;

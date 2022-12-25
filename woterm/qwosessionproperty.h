@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -33,7 +33,7 @@ public:
 public:
     explicit QWoSessionProperty(QWidget *parent = 0);
     ~QWoSessionProperty();
-    void setSession(const QString& name);
+    bool setSession(const QString& name);
 
 signals:
     void readyToConnect(const QString& host, int type);

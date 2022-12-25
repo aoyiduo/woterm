@@ -35,6 +35,8 @@
 #include "qwodbpowerrestoredialog.h"
 #include "qkxprocesslaunch.h"
 #include "qkxmessagebox.h"
+#include "qwomenubutton.h"
+#include "qkxbuttonassist.h"
 #include "qkxver.h"
 #include "version.h"
 
@@ -55,6 +57,8 @@
 #include <QDebug>
 #include <QProcess>
 #include <QInputDialog>
+#include <QToolButton>
+#include <QSslSocket>
 
 QWoMainWindow::QWoMainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -90,12 +94,13 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     m_shower = new QWoShower(m_tab, this);
 
     QObject::connect(m_shower, SIGNAL(tabEmpty()), this, SLOT(onShouldAppExit()));
-    QObject::connect(m_shower, SIGNAL(openSessionManage()), this, SLOT(onActionOpenTriggered()));
+    QObject::connect(m_shower, SIGNAL(openSessionManage()), this, SLOT(onActionOpenRemoteTriggered()));
 
     QVBoxLayout *layout = new QVBoxLayout(central);
     central->setLayout(layout);
     layout->setSpacing(0);
     layout->setMargin(0);
+    setContentsMargins(0,0,0,0);
 
     layout->addWidget(m_tab);
     layout->addWidget(m_shower);
@@ -134,7 +139,7 @@ void QWoMainWindow::closeEvent(QCloseEvent *event)
     QMainWindow::closeEvent(event);
 }
 
-void QWoMainWindow::onNewTerm()
+void QWoMainWindow::onNewSession()
 {
     QWoSessionProperty dlg(this);
     QObject::connect(&dlg, SIGNAL(readyToConnect(const QString&, int)), this, SLOT(onSessionReadyToConnect(const QString&,int)));
@@ -142,11 +147,21 @@ void QWoMainWindow::onNewTerm()
     QWoHostListModel::instance()->refreshList();
 }
 
-void QWoMainWindow::onOpenTerm()
+void QWoMainWindow::onOpenRemoteSession()
 {
     QWoSessionManage dlg(this);
     QObject::connect(&dlg, SIGNAL(readyToConnect(const QString&,int)), this, SLOT(onSessionReadyToConnect(const QString&,int)));
     dlg.exec();
+}
+
+void QWoMainWindow::onOpenLocalSession()
+{
+    m_shower->openLocalShell();
+}
+
+void QWoMainWindow::onOpenSerialPort()
+{
+    m_shower->openSerialPort();
 }
 
 void QWoMainWindow::onLayout()
@@ -181,9 +196,6 @@ void QWoMainWindow::onSessionReadyToConnect(const QString &target, int type)
     case EOT_VNC:
         m_shower->openVnc(target);
         break;
-    case EOT_SERIALPORT:
-        m_shower->openSerial(target);
-        break;
     default:
         break;
     }
@@ -191,10 +203,11 @@ void QWoMainWindow::onSessionReadyToConnect(const QString &target, int type)
 
 void QWoMainWindow::onAppStart()
 {
+    if(QSslSocket::supportsSsl())
     {
         QKxHttpClient *http = new QKxHttpClient(this);
         QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
-        http->get("https://hm.baidu.com/hm.js?bbffebc017090c1957c90f7deca2582e");
+        http->get("http://hm.baidu.com/hm.js?bbffebc017090c1957c90f7deca2582e");
     }
     {
         // version check.
@@ -238,7 +251,7 @@ void QWoMainWindow::onAppStart()
                     m_shower->openRLogin(target);
                     break;
                 case SerialPort:
-                    m_shower->openSerial(target);
+                    m_shower->openSerialPort();
                     break;
                 case Mstsc:
                     m_shower->openMstsc(target);
@@ -303,14 +316,35 @@ void QWoMainWindow::onShouldAppExit()
     QApplication::exit();
 }
 
-void QWoMainWindow::onActionNewTriggered()
+void QWoMainWindow::onButtonAssistClicked(QToolButton *btn)
 {
-    onNewTerm();
+    QRect rt = btn->rect();
+    QPoint pt = btn->mapToGlobal(rt.bottomLeft());
+    QMenu menu(this);
+    menu.addAction(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open remote session"), this, SLOT(onOpenRemoteSession()));
+    menu.addAction(QIcon(":/woterm/resource/skin/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
+    menu.addAction(QIcon(":/woterm/resource/skin/serialport.png"), tr("Open serialport session"), this, SLOT(onOpenSerialPort()));
+    menu.exec(pt);
 }
 
-void QWoMainWindow::onActionOpenTriggered()
+void QWoMainWindow::onActionNewTriggered()
 {
-    onOpenTerm();
+    onNewSession();
+}
+
+void QWoMainWindow::onActionOpenRemoteTriggered()
+{
+    onOpenRemoteSession();
+}
+
+void QWoMainWindow::onActionOpenLocalTriggered()
+{
+    onOpenLocalSession();
+}
+
+void QWoMainWindow::onActionOpenSerialportTriggered()
+{
+    onOpenSerialPort();
 }
 
 void QWoMainWindow::onActionBackupTriggered()
@@ -426,7 +460,7 @@ void QWoMainWindow::onActionAdminTriggered()
     input.setWindowFlags(input.windowFlags() & ~Qt::WindowContextHelpButtonHint);
     input.setMinimumWidth(350);
     input.setWindowTitle(tr("Password input"));
-    input.setLabelText(pass.isEmpty() ? tr("Login to the configuration of administrator for the first time.\r\nPlease input password to activate it.") : tr("Please input password to verify."));
+    input.setLabelText(pass.isEmpty() ? tr("Login to the configuration of administrator for the first time, Please input password to activate it.") : tr("Please input password to verify."));
     input.setTextEchoMode(QLineEdit::Password);
     int err = input.exec();
     if(err == 0) {
@@ -454,7 +488,9 @@ void QWoMainWindow::initMenuBar()
 {
     ui->menuBar->setNativeMenuBar(false);
     QObject::connect(ui->actionSessionNew, SIGNAL(triggered()), this, SLOT(onActionNewTriggered()));
-    QObject::connect(ui->actionSessionManage, SIGNAL(triggered()), this, SLOT(onActionOpenTriggered()));
+    QObject::connect(ui->actionOpenRemote, SIGNAL(triggered()), this, SLOT(onActionOpenRemoteTriggered()));
+    QObject::connect(ui->actionOpenLocal, SIGNAL(triggered()), this, SLOT(onActionOpenLocalTriggered()));
+    QObject::connect(ui->actionOpenSerialport, SIGNAL(triggered()), this, SLOT(onActionOpenSerialportTriggered()));
     QObject::connect(ui->actionBackup, SIGNAL(triggered()), this, SLOT(onActionBackupTriggered()));
     QObject::connect(ui->actionRestore, SIGNAL(triggered()), this, SLOT(onActionRestoreTriggered()));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(onActionExitTriggered()));
@@ -478,17 +514,15 @@ void QWoMainWindow::initToolBar()
 {
     QToolBar *tool = ui->mainToolBar;
     tool->setWindowTitle(tr("Toolbar"));
-    tool->addAction(QIcon(":/woterm/resource/skin/add2.png"), tr("New"), this, SLOT(onNewTerm()));
-    tool->addAction(QIcon(":/woterm/resource/skin/nodes.png"), tr("Manage"), this, SLOT(onOpenTerm()));
+    tool->addAction(QIcon(":/woterm/resource/skin/add2.png"), tr("New"), this, SLOT(onNewSession()));
+    QPushButton *btn = new QPushButton(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open"), tool);
+    btn->setObjectName("menuButton");
+    QKxButtonAssist *btnAssist = new QKxButtonAssist(":/woterm/resource/skin/arrowdown.png", false, btn);
+    QObject::connect(btnAssist, SIGNAL(pressed(QToolButton*)), this, SLOT(onButtonAssistClicked(QToolButton*)));
+    btnAssist->appendSeperator();
+    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onOpenRemoteSession()));
+    tool->addWidget(btn);
     tool->addAction(QIcon(":/woterm/resource/skin/layout.png"), tr("List"), this, SLOT(onLayout()));
-
-//    QAction *import = tool->addAction(QIcon(":/woterm/resource/skin/import.png"), tr("Import"));
-//    QObject::connect(import, SIGNAL(triggered()), this, SLOT(onActionImportTriggered()));
-
-    tool->addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Option"), this, SLOT(onActionConfigDefaultTriggered()));
-    //tool->addAction(QIcon(":/woterm/resource/skin/js.png"), tr("Script"), this, SLOT(onActionScriptRunTriggered()));
-    tool->addAction(QIcon(":/woterm/resource/skin/keyset.png"), tr("Keys"), this, SLOT(onActionSshKeyManageTriggered()));
-    //tool->addAction(QIcon(":/woterm/resource/skin/setting.png"), tr("Setting"), this, SLOT(onActionSettingTriggered()));
 }
 
 void QWoMainWindow::initStatusBar()

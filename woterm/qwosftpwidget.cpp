@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -53,6 +53,8 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
     , m_bexit(false)
     , m_bAssist(assist)
 {
+    setAttribute(Qt::WA_StyledBackground, true);
+
     ui->setupUi(this);
     m_transfer = new QWoSftpTransferWidget(target, gid, m_isUltimate, this);
     m_transfer->installEventFilter(this);

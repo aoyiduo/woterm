@@ -327,7 +327,9 @@ void QWoSessionManage::onModifyReady()
         }
         HostInfo hi = host.value<HostInfo>();
         QWoSessionProperty dlg(this);
-        dlg.setSession(hi.name);
+        if(!dlg.setSession(hi.name)) {
+            return;
+        }
         int err = dlg.exec();
         if(err == QWoSessionProperty::Cancel) {
             return;

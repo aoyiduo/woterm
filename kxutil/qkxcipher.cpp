@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -365,6 +365,7 @@ bool QKxCipher::aesXtsEncrypt(const QByteArray &in, QByteArray &out, const QByte
     return on;
 }
 
+#ifdef OPENSSL_1_1_1
 bool QKxCipher::aesOcbEncrypt(const QByteArray &in, QByteArray &out, const QByteArray &key, const QByteArray &ivec, bool enc)
 {
     if(!(key.size() == 16 || key.size() == 24 || key.size() == 32)) {
@@ -390,6 +391,7 @@ bool QKxCipher::aesOcbEncrypt(const QByteArray &in, QByteArray &out, const QByte
     EVP_CIPHER_CTX_free(ctx);
     return on;
 }
+#endif
 
 
 const int DES_BLOCK_SIZE = 8;
@@ -640,6 +642,7 @@ void QKxCipher::test()
         aesXtsEncrypt(out, out2, key, key, false);
         Q_ASSERT(in == out2);
     }
+#ifdef OPENSSL_1_1_1
     {
         QByteArray in = "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789";
         QByteArray out, out2, key = "123";
@@ -648,6 +651,7 @@ void QKxCipher::test()
         aesOcbEncrypt(out, out2, key, key, false);
         Q_ASSERT(in == out2);
     }
+#endif
     {
         QByteArray in = "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789";
         QByteArray out, out2, key = "123";

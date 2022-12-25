@@ -18,8 +18,9 @@
 #include "qwoevent.h"
 #include "qkxtermwidget.h"
 #include "qkxtermitem.h"
-#include "qwosessionproperty.h"
+#include "qwosessionmoreproperty.h"
 #include "qkxmessagebox.h"
+#include "qwosetting.h"
 
 #include <QCloseEvent>
 #include <QApplication>
@@ -32,7 +33,7 @@
 #include <QSerialPort>
 #include <QTimer>
 
-#define INPUT_MINI_HEIGHT   (130)
+#define INPUT_MINI_HEIGHT   (160)
 
 QWoSerialWidgetImpl::QWoSerialWidgetImpl(const QString& target, int gid, QTabBar *tab, QWidget *parent)
     : QWoShowerWidget(target, parent)
@@ -49,7 +50,7 @@ QWoSerialWidgetImpl::QWoSerialWidgetImpl(const QString& target, int gid, QTabBar
     layout->addWidget(m_root);
     m_term = new QWoSerialTermWidget(target, this);
     m_root->addWidget(m_term);
-    m_input = new QWoSerialInput(target, this);
+    m_input = new QWoSerialInput(m_term, this);
     m_input->setMinimumHeight(INPUT_MINI_HEIGHT);
     m_root->addWidget(m_input);
     m_root->setChildrenCollapsible(false);    
@@ -65,17 +66,8 @@ QWoSerialWidgetImpl::QWoSerialWidgetImpl(const QString& target, int gid, QTabBar
     connect(m_serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError()));
 
     QObject::connect(m_input, SIGNAL(destroyed(QObject*)), this, SLOT(onDestroyReady()));
-    QObject::connect(m_input, SIGNAL(connectReady(QString)), this, SLOT(onConnectReady(QString)));
-    QObject::connect(m_input, SIGNAL(disconnect()), this, SLOT(onDisconnect()));
-    QObject::connect(m_input, SIGNAL(sendText(QString)), this, SLOT(onSendText(QString)));
     QObject::connect(m_input, SIGNAL(moreReady()), this, SLOT(onMoreReady()));
     QMetaObject::invokeMethod(this, "init", Qt::QueuedConnection);
-
-//    QTimer *timer = new QTimer(this);
-//    timer->start(1000);
-//    QObject::connect(timer, &QTimer::timeout, [=](){
-//        pasteFormat("QObject::connect(m_input, SIGNAL(destroyed(QObject*)), this, SLOT(onDestroyReady()));QObject::connect(m_input, SIGNAL(destroyed(QObject*)), this, SLOT(onDestroyReady()));QObject::connect(m_input, SIGNAL(destroyed(QObject*)), this, SLOT(onDestroyReady()));QObject::connect(m_input, SIGNAL(destroyed(QObject*)), this, SLOT(onDestroyReady()));QObject::connect(m_input, SIGNAL(destroyed(QObject*)), this, SLOT(onDestroyReady()));");
-//    });
 }
 
 QWoSerialWidgetImpl::~QWoSerialWidgetImpl()
@@ -185,7 +177,6 @@ void QWoSerialWidgetImpl::onConnectReady(const QString &target)
     params.append(QString("FlowControl:%1\r\n").arg(hi.flowControl));
     params.append(QString("Parity:%1").arg(hi.parity));
     params.append("\r\n");
-    parseError(params.toUtf8());
 }
 
 void QWoSerialWidgetImpl::onDisconnect()
@@ -193,22 +184,15 @@ void QWoSerialWidgetImpl::onDisconnect()
     m_serial->close();
 }
 
-void QWoSerialWidgetImpl::onSendText(const QString &txt)
-{
-    m_serial->write(txt.toUtf8());
-}
-
 void QWoSerialWidgetImpl::onMoreReady()
 {
-    if(!QWoSshConf::instance()->exists(m_target)){
-        QKxMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete"));
-        return;
-    }
-    QWoSessionProperty dlg(this);
-    dlg.setSession(m_target);
-    int ret = dlg.exec();
-    if(ret == QWoSessionProperty::Save) {
-        m_term->reloadProperty();
+    QByteArray prop = QWoSetting::value("property/localShell").toByteArray();
+    QWoSessionMoreProperty dlg(this);
+    dlg.setCustom(SshWithSftp, prop);
+    dlg.exec();
+    QString result = dlg.result();
+    if(!result.isEmpty()) {
+        QWoSetting::setValue("property/localShell", result);
     }
 }
 
@@ -217,10 +201,6 @@ void QWoSerialWidgetImpl::onMoreReady()
 void QWoSerialWidgetImpl::handleRead()
 {
     QByteArray buf = m_serial->readAll();
-    if(m_input->isAutoNewLine()) {
-        parse("\r\n");
-    }
-    pasteFormat(buf);
 }
 
 void QWoSerialWidgetImpl::handleError()
@@ -230,7 +210,6 @@ void QWoSerialWidgetImpl::handleError()
         return;
     }
     QString sz = tr("An I/O error occurred from port %1, error: %2").arg(m_serial->portName()).arg(m_serial->errorString());
-    parseError(sz.toUtf8());
     if(m_serial->isOpen()) {
         m_serial->close();
     }
@@ -261,68 +240,8 @@ void QWoSerialWidgetImpl::setTabText(const QString &title)
     }
 }
 
-void QWoSerialWidgetImpl::parse(const QByteArray &data)
-{
-    QKxTermItem *term = m_term->termItem();
-    term->parse(data);
-}
-
-void QWoSerialWidgetImpl::pasteFormat(const QByteArray &buf)
-{
-    if(!m_input->isTextMode()) {
-        QByteArray data;
-        QList<QByteArray> lines = buf.split('\n');
-        for(int i = 0; i < lines.length(); i++) {
-            data.append(hexPrettyFormat(lines.at(i)));
-        }
-        parse(data);
-    }else{
-        parse(buf);
-    }
-}
-
-void QWoSerialWidgetImpl::parseError(const QByteArray &data)
-{
-    QKxTermItem *term = m_term->termItem();
-    term->parseError(data);
-}
-
-QByteArray QWoSerialWidgetImpl::hexPrettyFormat(const QByteArray &buf)
-{
-    int i, j;
-    int len = buf.length();
-    int cnt = hexCount();
-    QByteArray result;
-    for(i=0; i < len; i += cnt) {
-        result.append("   ") ;
-        for(j=0; j<cnt && i+j<len; j++){
-            char tmp[15] = {0};
-            unsigned char c = buf[i+j];
-            sprintf(tmp, "%2.2x ", c);
-            result.append(tmp);
-        }
-        for(; j < cnt; ++j){
-            result.append("   ");
-        }
-        result.append("  |") ;
-        for(j=0; j < cnt && i+j<len; j++){
-            unsigned char c = buf[i+j];
-            result.append((c < 040 || c >= 0177) ? '.' : c ) ;
-        }
-        result.append("|\r\n") ;
-    }
-    return result;
-}
-
-int QWoSerialWidgetImpl::hexCount()
-{
-    QKxTermItem *term = m_term->termItem();
-    QSize sz = term->termSize();
-    return (sz.width() - 10) / 4;
-}
-
 QWoSerialTermWidget::QWoSerialTermWidget(const QString &target, QWidget *parent)
-    : QWoTermWidget(target, 0, parent)
+    : QWoTermWidget(target, 0, ETTSerialPort, parent)
 {
 
 }
@@ -359,14 +278,13 @@ void QWoSerialTermWidget::onCopyToClipboard()
 
 void QWoSerialTermWidget::onModifyThisSession()
 {
-    if(!QWoSshConf::instance()->exists(m_target)){
-        QKxMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete ago"));
-        return;
-    }
-    QWoSessionProperty dlg(this);
-    dlg.setSession(m_target);
-    int ret = dlg.exec();
-    if(ret == QWoSessionProperty::Save) {
+    QByteArray prop = QWoSetting::value("property/serialPort").toByteArray();
+    QWoSessionMoreProperty dlg(this);
+    dlg.setCustom(SshWithSftp, prop);
+    dlg.exec();
+    QString result = dlg.result();
+    if(!result.isEmpty()) {
+        QWoSetting::setValue("property/serialPort", result);
         initCustom();
     }
 }

@@ -41,9 +41,10 @@
 #include <QDebug>
 #include <QResizeEvent>
 #include <QPushButton>
+#include <QMessageBox>
 
 QWoSshTermWidget::QWoSshTermWidget(const QString& target, int gid, QWidget *parent)
-    : QWoTermWidget(target, gid, parent)
+    : QWoTermWidget(target, gid, ETTSerialPort, parent)
     , m_savePassword(false)
     , m_stateConnected(ESC_Ready)
 {
@@ -123,8 +124,9 @@ void QWoSshTermWidget::onDataArrived(const QByteArray &buf)
 
 }
 
-void QWoSshTermWidget::onErrorArrived(const QByteArray &buf)
+void QWoSshTermWidget::onErrorArrived(const QByteArray &buf, const QVariantMap& userData)
 {
+    Q_UNUSED(userData);
     QKxTermItem *qterm = termItem();
     qterm->parseError(buf);
 }
@@ -455,7 +457,7 @@ void QWoSshTermWidget::reconnect(bool restore)
     QObject::connect(m_ssh, SIGNAL(connectionFinished(bool)), this, SLOT(onConnectionFinished(bool)));
     QObject::connect(m_ssh, SIGNAL(finishArrived(int)), this, SLOT(onFinishArrived(int)));
     QObject::connect(m_ssh, SIGNAL(dataArrived(QByteArray)), this, SLOT(onDataArrived(QByteArray)));
-    QObject::connect(m_ssh, SIGNAL(errorArrived(QByteArray)), this, SLOT(onErrorArrived(QByteArray)));
+    QObject::connect(m_ssh, SIGNAL(errorArrived(QByteArray,QVariantMap)), this, SLOT(onErrorArrived(QByteArray,QVariantMap)));
     QObject::connect(m_ssh, SIGNAL(passwordArrived(QString,QByteArray)), this, SLOT(onPasswordArrived(QString,QByteArray)));
     QObject::connect(m_ssh, SIGNAL(inputArrived(QString,QString,bool)), this, SLOT(onInputArrived(QString,QString,bool)));
     m_ssh->start(m_target, m_gid);
@@ -485,7 +487,7 @@ void QWoSshTermWidget::executeCommand(const QByteArray &cmd)
     }
     m_cmd = QWoSshFactory::instance()->createShell(true);
     QObject::connect(m_cmd, SIGNAL(dataArrived(QByteArray)), this, SLOT(onDataArrived(QByteArray)));
-    QObject::connect(m_cmd, SIGNAL(errorArrived(QByteArray)), this, SLOT(onErrorArrived(QByteArray)));
+    QObject::connect(m_cmd, SIGNAL(errorArrived(QByteArray,QVariantMap)), this, SLOT(onErrorArrived(QByteArray,QVariantMap)));
     QObject::connect(m_cmd, SIGNAL(passwordArrived(QString,QByteArray)), this, SLOT(onPasswordArrived(QString,QByteArray)));
     QObject::connect(m_cmd, SIGNAL(inputArrived(QString,QString,bool)), this, SLOT(onInputArrived(QString,QString,bool)));
     m_cmd->start(m_target, m_gid);

@@ -14,6 +14,7 @@
 #include "qwotermwidget.h"
 
 #include <QPointer>
+#include <QVariantMap>
 
 class QWoSshTermWidgetImpl;
 class QWoSshShell;
@@ -41,7 +42,7 @@ private slots:
     void onConnectionFinished(bool ok);
     void onFinishArrived(int code);
     void onDataArrived(const QByteArray& buf);
-    void onErrorArrived(const QByteArray& buf);
+    void onErrorArrived(const QByteArray& buf, const QVariantMap& userData= QVariantMap());
     void onInputArrived(const QString& title, const QString& prompt, bool visible);
     void onPasswordArrived(const QString& host, const QByteArray& pass);
     void onTermSizeChanged(int lines, int columns);

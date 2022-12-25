@@ -11,6 +11,7 @@
 
 #include "qwoapplication.h"
 #include "qwosetting.h"
+#include "qkxprocesslaunch.h"
 
 #include <QStyleFactory>
 #include <QDebug>
@@ -19,11 +20,13 @@
 #include <QDir>
 #include <QTranslator>
 #include <QLibraryInfo>
+#include <QLibrary>
 
 
 QWoApplication::QWoApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
+
     setAttribute(Qt::AA_DontUseNativeMenuBar);
     setWindowIcon(QIcon(":/woterm/resource/skin/woterm4.png"));
 

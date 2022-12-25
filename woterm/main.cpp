@@ -65,6 +65,7 @@ void test()
 int main(int argc, char *argv[])
 {
     //qInstallMessageHandler(myMessageOutput);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #ifdef Q_OS_WIN
     static QWoApplication app(argc, argv);
 #else

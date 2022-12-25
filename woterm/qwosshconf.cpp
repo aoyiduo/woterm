@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -565,6 +565,9 @@ QHash<QString, HostInfo> QWoSshConf::loadServerFromSqlite(const QString &dbFile)
         while(query.executeStep()) {
             HostInfo hi;
             hi.type = EHostType(query.getColumn("type").getInt());
+            if(hi.type == SerialPort) {
+                continue;
+            }
             hi.name = QString::fromStdString(query.getColumn("name").getString());
             hi.host = QString::fromStdString(query.getColumn("host").getString());
             hi.port = query.getColumn("port").getInt();

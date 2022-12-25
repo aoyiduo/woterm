@@ -40,7 +40,7 @@
 #include <QResizeEvent>
 
 QWoTelnetTermWidget::QWoTelnetTermWidget(const QString& target, int gid, QWidget *parent)
-    : QWoTermWidget(target, gid, parent)
+    : QWoTermWidget(target, gid, ETTRemoteTarget, parent)
     , m_savePassword(false)
     , m_stateConnected(ESC_Ready)
 {

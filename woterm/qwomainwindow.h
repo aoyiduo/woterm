@@ -24,6 +24,7 @@ class QToolBar;
 class QWoShower;
 class QWoSessionList;
 class QWoCommandHistoryForm;
+class QToolButton;
 
 namespace Ui {
 class QWoMainWindow;
@@ -42,18 +43,23 @@ public:
 protected:
     void closeEvent(QCloseEvent *event);
 private slots:
-    void onNewTerm();
-    void onOpenTerm();
+    void onNewSession();
+    void onOpenRemoteSession();
+    void onOpenLocalSession();
+    void onOpenSerialPort();
     void onLayout();
     void onEditConfig();    
     void onSessionReadyToConnect(const QString& target, int type);
     void onAppStart();
     void onVersionCheck(int code, const QByteArray& body);
     void onShouldAppExit();
+    void onButtonAssistClicked(QToolButton *btn);
 
 private slots:
     void onActionNewTriggered();
-    void onActionOpenTriggered();
+    void onActionOpenRemoteTriggered();
+    void onActionOpenLocalTriggered();
+    void onActionOpenSerialportTriggered();
     void onActionBackupTriggered();
     void onActionRestoreTriggered();
     void onActionExitTriggered();

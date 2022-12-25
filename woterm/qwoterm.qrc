@@ -135,6 +135,8 @@
         <file>resource/skin/transfer3.png</file>
         <file>resource/skin/enter4.png</file>
         <file>resource/skin/history2.png</file>
+        <file>resource/skin/console.png</file>
+        <file>resource/skin/arrowdown.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

@@ -1,4 +1,4 @@
-QMainWindow,QMessageBox,QInputDialog,QDialog{
+﻿QMainWindow,QMessageBox,QInputDialog,QDialog{
     background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgb(223, 242, 255), stop:1 rgb(85, 204, 255));
 }
 
@@ -11,7 +11,19 @@ QPlainTextEdit {
     padding:10px;
 }
 
+QWoShowerWidget {
+    background-color: black;
+}
+
+QWoSftpWidget {
+    background-color: rgb(74, 181, 232);
+}
+
 QWoSftpWidgetImpl{
+    background-color: rgb(74, 181, 232);
+}
+
+QWoSerialInput{
     background-color: rgb(74, 181, 232);
 }
 
@@ -151,7 +163,9 @@ QMenu::item:selected {
     background: rgb(85, 204, 255);
 }
 
-QMenu::icon { /* appearance of a 'checked' icon */
+
+/*
+QMenu::icon {
     position: absolute;
     top: 3px;
     right: 3px;
@@ -159,7 +173,7 @@ QMenu::icon { /* appearance of a 'checked' icon */
     left: 10px;
 }
 
-QMenu::icon:checked { /* appearance of a 'checked' icon */
+QMenu::icon:checked {
     background: black;
     border: 5px inset black;
     position: absolute;
@@ -168,6 +182,7 @@ QMenu::icon:checked { /* appearance of a 'checked' icon */
     bottom: 2px;
     left: 10px;
 }
+*/
 
 QMenu::separator {
     height: 2px;
@@ -233,6 +248,30 @@ QPushButton#modelLayout{
 }
 
 QPushButton:hover#modelLayout{
+    border: 1px solid magenta;
+    color: rgba(212,35,122,255);
+}
+
+QPushButton#menuButton{
+    border-radius: 3px;
+    border: 1px solid darkgray;
+    padding: 3px;
+    padding-left: 5px;
+    color: black;
+    max-width: 80px;
+    text-align: left;
+}
+
+QFrame#buttonAssistVLine{
+    border-width: 1px;
+    border-left-color: transparent;
+    border-right-color: darkgray;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-style: solid;
+}
+
+QPushButton:hover#menuButton{
     border: 1px solid magenta;
     color: rgba(212,35,122,255);
 }

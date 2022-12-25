@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -105,7 +105,7 @@ QWoSessionProperty::~QWoSessionProperty()
     delete ui;
 }
 
-void QWoSessionProperty::setSession(const QString &name)
+bool QWoSessionProperty::setSession(const QString &name)
 {
     m_name = name;
     HostInfo hi = QWoSshConf::instance()->find(name);
@@ -145,8 +145,9 @@ void QWoSessionProperty::setSession(const QString &name)
     }else if(hi.type == Vnc) {
         ui->type->setCurrentText("Vnc");
     }else if(hi.type == SerialPort) {
-        ui->type->setCurrentText("SerialPort");
+        return false;
     }
+    return true;
 }
 
 void QWoSessionProperty::init()
@@ -163,7 +164,6 @@ void QWoSessionProperty::init()
         ways.append("RLogin");
         ways.append("Rdp/Mstsc");
         ways.append("Vnc");
-        ways.append("SerialPort");
         ui->type->setModel(new QStringListModel(ways, this));
         QObject::connect(ui->type, SIGNAL(currentIndexChanged(QString)), this, SLOT(onTypeCurrentIndexChanged(QString)));
         ui->type->setCurrentIndex(0);
@@ -408,7 +408,7 @@ void QWoSessionProperty::onTypeConnect()
     }else if(type == "Vnc") {
         readyToConnect(name, EOT_VNC);
     }else if(type == "SerialPort") {
-        readyToConnect(name, EOT_SERIALPORT);
+        return;
     }
     done(Connect);
 }

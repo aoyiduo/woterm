@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -34,8 +34,9 @@ public:
     static bool aesCtrEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, const QByteArray& ivec, bool enc);
     static bool aesGcmEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, const QByteArray& ivec, bool enc);
     static bool aesXtsEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, const QByteArray& ivec, bool enc);
+#ifdef OPENSSL_1_1_1
     static bool aesOcbEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, const QByteArray& ivec, bool enc);
-
+#endif
     // des
     static bool tripleDesEcbEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, bool enc);
     static bool tripleDesCbcEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, const QByteArray& ivec, bool enc);

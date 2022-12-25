@@ -45,7 +45,13 @@ class QWoTermWidget : public QKxTermWidget
 {
     Q_OBJECT
 public:
-    explicit QWoTermWidget(const QString& target, int gid, QWidget *parent=nullptr);
+    enum ETermType {
+        ETTRemoteTarget,
+        ETTLocalShell,
+        ETTSerialPort
+    };
+public:
+    explicit QWoTermWidget(const QString& target, int gid, ETermType ttype, QWidget *parent=nullptr);
     virtual ~QWoTermWidget();
 
     void closeAndDelete();
@@ -92,4 +98,5 @@ protected:
     int m_gid;
     bool m_bexit;
     QString m_historyFile;
+    ETermType m_ttype;
 };

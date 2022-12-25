@@ -348,7 +348,9 @@ void QWoSessionList::onListViewItemModify()
     }else{
         const HostInfo& hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
         QWoSessionProperty dlg(this);
-        dlg.setSession(hi.name);
+        if(!dlg.setSession(hi.name)) {
+            return;
+        }
         QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), this, SIGNAL(readyToConnect(QString,int)));
         dlg.exec();
     }

@@ -29,8 +29,12 @@ QKxHttpClient::~QKxHttpClient()
     qDebug() << "deleteLater";
 }
 
-bool QKxHttpClient::get(const QString &url)
+bool QKxHttpClient::get(const QString &_url)
 {
+    QString url = _url.simplified();
+
+    //QString ssl = QSslSocket::sslLibraryBuildVersionString();
+
     if(m_reply != nullptr && !m_reply->isFinished()) {
         return false;
     }

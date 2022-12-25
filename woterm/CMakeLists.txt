@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+﻿cmake_minimum_required(VERSION 3.1)
 
 project(woterm LANGUAGES CXX)
 
@@ -10,6 +10,10 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #set(CMAKE_EXE_LINKER_FLAGS /NODEFAULTLIB:"LIBCMT.lib;LIBCMT.lib")
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
 
 find_package(Qt5 COMPONENTS Core Gui Widgets SerialPort LinguistTools REQUIRED)
 
@@ -20,6 +24,7 @@ set(SOURCE_FILES
     main.cpp
     qwoapplication.cpp
     qkxbuttonassist.cpp
+    qwomenubutton.cpp
     qwoaboutdialog.cpp
     qwoadmindialog.cpp
     qwocommandlineinput.cpp
@@ -58,6 +63,8 @@ set(SOURCE_FILES
     qwosshtermwidgetimpl.cpp
     qwotelnettermwidget.cpp
     qwotelnettermwidgetimpl.cpp
+    qwoptytermwidget.cpp
+    qwoptytermwidgetimpl.cpp
     qworlogin.cpp
     qworlogintermwidget.cpp
     qworlogintermwidgetimpl.cpp
@@ -100,12 +107,14 @@ set(SOURCE_FILES
     qwowidget.cpp
     qwolineedit.cpp
     qwossh.cpp
+    qwopty.cpp
     qmodem.cpp
 )
 
 set(HEADER_FILES
     qwoapplication.h
     qkxbuttonassist.h
+    qwomenubutton.h
     qwoaboutdialog.h
     qwoadmindialog.h
     qwocommandlineinput.h
@@ -145,6 +154,8 @@ set(HEADER_FILES
     qwosshtermwidgetimpl.h
     qwotelnettermwidget.h
     qwotelnettermwidgetimpl.h
+    qwoptytermwidget.h
+    qwoptytermwidgetimpl.h
     qworlogin.h
     qworlogintermwidget.h
     qworlogintermwidgetimpl.h
@@ -187,6 +198,7 @@ set(HEADER_FILES
     qwowidget.h
     qwolineedit.h
     qwossh.h
+    qwopty.h
     qmodem.h
     version.h
 )
@@ -194,6 +206,7 @@ set(HEADER_FILES
 set(OTHER_FILES
     qwoterm.qrc
     qwoaboutdialog.ui
+    qwomenubutton.ui
     qwoadmindialog.ui
     qwocommandlineinput.ui
     qwohostinfo.ui
@@ -240,6 +253,8 @@ include_directories(${KXVER_ROOT_DIR}
     ${LIBYUV_ROOT_DIR}/include
     ${LIBMODEM_ROOT_DIR}/include
     ${LIBSQLITE_ROOT_DIR}/include
+    ${LIBWINPTY_ROOT_DIR}/include
+    ${LIBPTYQT_ROOT_DIR}/include
 )
 
 
@@ -252,6 +267,8 @@ link_directories(${OPENSSL_ROOT_DIR}/lib
     ${LIBTELNET_ROOT_DIR}/lib
     ${LIBMODEM_ROOT_DIR}/lib
     ${LIBSQLITE_ROOT_DIR}/lib
+    ${LIBWINPTY_ROOT_DIR}/lib
+    ${LIBPTYQT_ROOT_DIR}/lib
 )
 
 link_libraries(kxver kxterm kxutil kxftp kxvnc)
@@ -259,15 +276,15 @@ if(WIN32)
     message("window system.")
     link_libraries(ws2_32)
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
-        link_libraries(SQLiteCppd sqlite3d sshd qsshd rdpd zmodemd libtelnetd)
+        link_libraries(winpty ptyqtd SQLiteCppd sqlite3d sshd qsshd rdpd zmodemd libtelnetd)
     else()
-        link_libraries(SQLiteCpp sqlite3 ssh qssh rdp zmodem libtelnet)
+        link_libraries(winpty ptyqt SQLiteCpp sqlite3 ssh qssh rdp zmodem libtelnet)
     endif()
+
     add_library(openssl_crypto STATIC IMPORTED)
     set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
         ${OPENSSL_ROOT_DIR}/lib/libcrypto.lib)
     link_libraries(openssl_crypto)
-
     set(BUILD_VERSION_MAJOR 0)
     set(BUILD_VERSION_MINOR 0)
     set(BUILD_VERSION_PATCH 0)
@@ -289,7 +306,7 @@ if(WIN32)
     target_sources(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc")
 elseif(APPLE)
     message("apple system.")
-    link_libraries(SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet SQLiteCpp)
+    link_libraries(ptyqt SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet)
 
     add_library(openssl_crypto STATIC IMPORTED)
     set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
@@ -318,10 +335,10 @@ elseif(APPLE)
     )
 else()
     message("linux system.")
-    link_libraries(dl SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet SQLiteCpp)
+    link_libraries(dl ptyqt SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet SQLiteCpp)
     add_library(openssl_crypto STATIC IMPORTED)
     set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/lib/libcrypto.a)
+        ${OPENSSL_ROOT_DIR}/lib/libcrypto.so.1.1)
     link_libraries(openssl_crypto)
 
     add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${OTHER_FILES} ${LangSrcs})

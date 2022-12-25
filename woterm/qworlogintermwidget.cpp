@@ -41,7 +41,7 @@
 #include <QResizeEvent>
 
 QWoRLoginTermWidget::QWoRLoginTermWidget(const QString& target, int gid, QWidget *parent)
-    : QWoTermWidget(target, gid, parent)
+    : QWoTermWidget(target, gid, ETTRemoteTarget, parent)
     , m_savePassword(false)
 {
     QObject::connect(m_term, SIGNAL(termSizeChanged(int,int)), this, SLOT(onTermSizeChanged(int,int)));

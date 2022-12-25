@@ -58,7 +58,6 @@ private slots:
     void onNewSessionMultplex();
     void onConnectReady(const QString& target);
     void onDisconnect();
-    void onSendText(const QString& txt);
     void onMoreReady();
     void handleRead();
     void handleError();
@@ -66,11 +65,6 @@ private:
     Q_INVOKABLE void init();
 private:
     void setTabText(const QString& title);
-    void parse(const QByteArray& data);
-    void pasteFormat(const QByteArray& data);
-    void parseError(const QByteArray& data);
-    QByteArray hexPrettyFormat(const QByteArray& buf);
-    int hexCount();
 private:
     const int m_gid;
     const QPointer<QTabBar> m_tab;

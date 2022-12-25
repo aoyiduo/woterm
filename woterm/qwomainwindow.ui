@@ -40,8 +40,16 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuOpen">
+     <property name="title">
+      <string>Open</string>
+     </property>
+     <addaction name="actionOpenRemote"/>
+     <addaction name="actionOpenLocal"/>
+     <addaction name="actionOpenSerialport"/>
+    </widget>
     <addaction name="actionSessionNew"/>
-    <addaction name="actionSessionManage"/>
+    <addaction name="menuOpen"/>
     <addaction name="separator"/>
     <addaction name="actionRestore"/>
     <addaction name="actionBackup"/>
@@ -139,15 +147,6 @@
     <string>New</string>
    </property>
   </action>
-  <action name="actionSessionManage">
-   <property name="icon">
-    <iconset resource="qwoterm.qrc">
-     <normaloff>:/woterm/resource/skin/nodes.png</normaloff>:/woterm/resource/skin/nodes.png</iconset>
-   </property>
-   <property name="text">
-    <string>Open</string>
-   </property>
-  </action>
   <action name="actionIdentityManage">
    <property name="icon">
     <iconset resource="qwoterm.qrc">
@@ -206,6 +205,33 @@
   <action name="actionUltimate">
    <property name="text">
     <string>Upgrade to ultimate version</string>
+   </property>
+  </action>
+  <action name="actionOpenRemote">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/nodes.png</normaloff>:/woterm/resource/skin/nodes.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open remote session</string>
+   </property>
+  </action>
+  <action name="actionOpenLocal">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/console.png</normaloff>:/woterm/resource/skin/console.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open local session</string>
+   </property>
+  </action>
+  <action name="actionOpenSerialport">
+   <property name="icon">
+    <iconset resource="qwoterm.qrc">
+     <normaloff>:/woterm/resource/skin/serialport.png</normaloff>:/woterm/resource/skin/serialport.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open serialport session</string>
    </property>
   </action>
  </widget>

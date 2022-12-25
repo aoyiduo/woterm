@@ -908,6 +908,7 @@ void QKxTermItem::paint(QPainter *p)
     p->save();
     p->setFont(m_font);
     p->setLayoutDirection(Qt::LeftToRight);
+    p->setRenderHint(QPainter::TextAntialiasing);
     m_blinkRects.clear();
     m_cursorRect = QRect();
     for(int r = 0; r < m_rows && r < m_image.length(); r++) {

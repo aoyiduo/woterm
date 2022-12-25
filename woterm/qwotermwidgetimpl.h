@@ -1,4 +1,4 @@
-﻿/*******************************************************************************************
+/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -28,7 +28,7 @@ class QWoTermWidgetImpl : public QWoShowerWidget
     Q_OBJECT
 public:
     explicit QWoTermWidgetImpl(const QString& target, int gid, QTabBar *tab, QWidget *parent=nullptr);
-    ~QWoTermWidgetImpl();
+    virtual ~QWoTermWidgetImpl();
     void joinToVertical(const QString& target);
     void joinToHorizontal(int row, const QString& target);    
 signals:

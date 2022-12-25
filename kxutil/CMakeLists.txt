@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+﻿cmake_minimum_required(VERSION 3.1)
 
 project(kxutil LANGUAGES CXX)
 
@@ -17,6 +17,8 @@ endif()
 add_definitions(-DKXUTIL_LIBRARY)
 
 find_package(Qt5 COMPONENTS Core Network Gui Widgets REQUIRED)
+find_package(Qt5Core CONFIG REQUIRED Private)
+find_package(Qt5Gui CONFIG REQUIRED Private)
 
 set(SOURCE_FILES
     rc4.cpp
@@ -141,12 +143,12 @@ else()
 
     add_library(openssl_crypto STATIC IMPORTED)
     set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/lib/libcrypto.a)
+        ${OPENSSL_ROOT_DIR}/lib/libcrypto.so.1.1)
     link_libraries(openssl_crypto)
 endif()
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Gui Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::CorePrivate Qt5::GuiPrivate Qt5::Network Qt5::Gui Qt5::Widgets)
 
 

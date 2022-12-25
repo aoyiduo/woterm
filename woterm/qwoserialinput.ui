@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>743</width>
-    <height>192</height>
+    <width>788</width>
+    <height>658</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,7 +21,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_3">
    <property name="spacing">
-    <number>0</number>
+    <number>6</number>
    </property>
    <property name="leftMargin">
     <number>0</number>
@@ -36,12 +36,18 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QWidget" name="panel" native="true">
+    <widget class="QWidget" name="typeArea" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>400</width>
+       <height>0</height>
+      </size>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
@@ -49,7 +55,7 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>COM:</string>
+           <string>SerialPort:</string>
           </property>
          </widget>
         </item>
@@ -62,98 +68,6 @@
            </sizepolicy>
           </property>
          </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <property name="leftMargin">
-         <number>6</number>
-        </property>
-        <property name="rightMargin">
-         <number>6</number>
-        </property>
-        <item>
-         <widget class="QCheckBox" name="line">
-          <property name="text">
-           <string>Auto new line</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="hex">
-          <property name="text">
-           <string>Text mode</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btnReflesh">
-          <property name="minimumSize">
-           <size>
-            <width>90</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Reflesh</string>
-          </property>
-          <property name="icon">
-           <iconset resource="qwoterm.qrc">
-            <normaloff>:/woterm/resource/skin/reload.png</normaloff>:/woterm/resource/skin/reload.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btnConnect">
-          <property name="minimumSize">
-           <size>
-            <width>90</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Connect</string>
-          </property>
-          <property name="icon">
-           <iconset resource="qwoterm.qrc">
-            <normaloff>:/woterm/resource/skin/run.png</normaloff>:/woterm/resource/skin/run.png</iconset>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
         </item>
         <item>
          <widget class="QPushButton" name="btnMore">
@@ -172,33 +86,477 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QPushButton" name="btnDisconnect">
-          <property name="minimumSize">
-           <size>
-            <width>90</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Disconnect</string>
-          </property>
-          <property name="icon">
-           <iconset resource="qwoterm.qrc">
-            <normaloff>:/woterm/resource/skin/stop.png</normaloff>:/woterm/resource/skin/stop.png</iconset>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>
-       <widget class="QLabel" name="tip">
-        <property name="styleSheet">
-         <string notr="true">color: rgb(255, 0, 0);</string>
+       <widget class="QWidget" name="udpServerArea" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
         </property>
-        <property name="text">
-         <string>Failed to find any com device.</string>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Host:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="hostUdpLocal"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Port:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="portUdpLocal">
+             <property name="maximumSize">
+              <size>
+               <width>80</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnUdpListen">
+             <property name="text">
+              <string>Listen</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="udpServerTip">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Client:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="udpClientBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="udpClientArea" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
         </property>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_13">
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Host:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="hostUdpRemote"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>Port:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="portUdpRemote">
+             <property name="maximumSize">
+              <size>
+               <width>80</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnUdpStart">
+             <property name="text">
+              <string>Start</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="udpClientTip">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="comxArea" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_15">
+           <item>
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>BaudRate:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="baudRate">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>DataBits:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="dataBits">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_14">
+           <item>
+            <widget class="QLabel" name="label_11">
+             <property name="text">
+              <string>StopBits:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="stopBits">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>FlowControl:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="flowControl">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="label_10">
+             <property name="text">
+              <string>Parity:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="parity">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnConnect">
+             <property name="text">
+              <string>Connect</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="comxTip">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="tcpServerArea" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Host:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="hostTcpLocal"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_13">
+             <property name="text">
+              <string>Port:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="portTcpLocal">
+             <property name="maximumSize">
+              <size>
+               <width>80</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnTcpListen">
+             <property name="text">
+              <string>Listen</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_16">
+           <item>
+            <widget class="QLabel" name="label_14">
+             <property name="text">
+              <string>Client:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="tcpClientBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="tcpServerTip">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="tcpClientArea" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>30</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_17">
+           <item>
+            <widget class="QLabel" name="label_15">
+             <property name="text">
+              <string>Host:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="hostTcpRemote"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_16">
+             <property name="text">
+              <string>Port:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="portTcpRemote">
+             <property name="maximumSize">
+              <size>
+               <width>80</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnTcpConnect">
+             <property name="text">
+              <string>Conntect</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="tcpClientTip">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
       <item>
@@ -206,13 +564,10 @@
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::MinimumExpanding</enum>
-        </property>
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>0</height>
+          <height>40</height>
          </size>
         </property>
        </spacer>
@@ -221,46 +576,135 @@
     </widget>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="edit"/>
-   </item>
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <property name="leftMargin">
-      <number>9</number>
+    <widget class="QWidget" name="sendArea" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>0</height>
+      </size>
      </property>
-     <property name="topMargin">
-      <number>9</number>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
      </property>
-     <property name="rightMargin">
-      <number>9</number>
-     </property>
-     <property name="bottomMargin">
-      <number>9</number>
-     </property>
-     <item>
-      <widget class="QPushButton" name="btnSend">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>90</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>send</string>
-       </property>
-       <property name="icon">
-        <iconset resource="qwoterm.qrc">
-         <normaloff>:/woterm/resource/skin/enter2.png</normaloff>:/woterm/resource/skin/enter2.png</iconset>
-       </property>
-      </widget>
-     </item>
-    </layout>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="leftMargin">
+       <number>9</number>
+      </property>
+      <property name="topMargin">
+       <number>9</number>
+      </property>
+      <property name="rightMargin">
+       <number>9</number>
+      </property>
+      <property name="bottomMargin">
+       <number>9</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QCheckBox" name="hexOutput">
+          <property name="text">
+           <string>Output as hex mode</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="hexInput">
+          <property name="text">
+           <string>Input as hex mode</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>100</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_12">
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnClear">
+          <property name="text">
+           <string>Clear</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnSend">
+          <property name="text">
+           <string>Send</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>
