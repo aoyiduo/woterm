@@ -32,6 +32,9 @@
 #include <QFocusEvent>
 #include <QPainter>
 #include <QLabel>
+#include <QDrag>
+#include <QMimeData>
+#include <QFontDatabase>
 
 #define REPAINT_TIMEOUT1 (20)
 #define REPAINT_TIMEOUT2 (40)
@@ -51,6 +54,9 @@ QKxTermItem::QKxTermItem(QWidget* parent)
     , m_tripleClick(false)
     , m_blinkAlway(false)
     , m_bEchoInputEnabled(false)
+    , m_readOnly(false)
+    , m_dragActived(false)
+    , m_ptDraged(-1,-1)
 {
     static int idx = 0;
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -58,6 +64,7 @@ QKxTermItem::QKxTermItem(QWidget* parent)
     setAttribute(Qt::WA_InputMethodEnabled, true);
     setObjectName(QString("QKxTermItem:%1").arg(idx++));
     setInputEnable(true);
+
 
     m_keyCopy = QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_C);
     m_keyPaste = QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_V);
@@ -98,19 +105,20 @@ QKxTermItem::QKxTermItem(QWidget* parent)
 
     setKeyLayoutByName(DEFAULT_KEY_LAYOUT);
     setColorSchema(DEFAULT_COLOR_SCHEMA);
-    QFont font;
-    QString suggest = QKxUtils::suggestFamily();
-    font.setFamily(suggest);
-    font.setPointSize(DEFAULT_FONT_SIZE);
-    font.setWeight(QFont::Normal);
-    //font.setStyleHint(QFont::TypeWriter);
-    //font.setStyleStrategy(QFont::StyleStrategy(QFont::ForceIntegerMetrics));
-    font.setStyleName(QString());
-    font.setStyleHint(QFont::Monospace);
-    font.setStyleStrategy(QFont::StyleStrategy(QFont::ForceIntegerMetrics|QFont::PreferAntialias));
-    font.setFixedPitch(true);
-    font.setKerning(false);
+
+    QStringList families = QKxUtils::availableFontFamilies();
+    QString family;
+    for(auto it = families.begin(); it != families.end(); it++) {
+        if(families.contains(*it)) {
+            family = *it;
+            break;
+        }
+    }
+    int pt = QKxUtils::suggestFontSize(family, DEFAULT_FONT_SIZE);
+    QFont font = createFont(family, pt);
     setFont(font);
+    setFocusPolicy(Qt::StrongFocus);
+    QTimer::singleShot(100, this, SLOT(onSetActive()));
 }
 
 QFont QKxTermItem::font() const
@@ -121,12 +129,30 @@ QFont QKxTermItem::font() const
 void QKxTermItem::setFont(const QFont &ft)
 {
     if(ft != m_font) {
-        m_font = ft;        
+        int pt = QKxUtils::suggestFontSize(ft.family(), ft.pointSize());
+        m_font = ft;
+        m_font.setPointSize(pt);
         updateFontInfo();
         updateTermSize();
         updateView(PF_FullScreen);
         m_vte->setFont(ft);
     }
+}
+
+QFont QKxTermItem::createFont(const QString &family, int fontSize)
+{
+    QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    int strategy = QFont::PreferAntialias|QFont::ForceIntegerMetrics;
+    font.setFamily(family);
+    font.setPointSize(fontSize);
+    // don't not open the follow code.
+    //font.setWeight(QFont::Normal);
+    //font.setStyle(QFont::StyleNormal);
+    font.setFixedPitch(true);
+    font.setKerning(false); // must be false.
+    font.setStyleName(QString()); // must be empty. or will effect different weight.
+    font.setStyleHint(QFont::TypeWriter, QFont::StyleStrategy(strategy));
+    return font;
 }
 
 QString QKxTermItem::textCodec() const
@@ -147,6 +173,33 @@ bool QKxTermItem::inputEnable() const
 void QKxTermItem::setInputEnable(bool on)
 {
 
+}
+
+bool QKxTermItem::readOnly() const
+{
+    return m_readOnly;
+}
+
+void QKxTermItem::setReadyOnly(bool on)
+{
+    m_readOnly = on;
+}
+
+bool QKxTermItem::dragCopyAndPaste() const
+{
+    return m_dragActived;
+}
+
+void QKxTermItem::setDragCopyAndPaste(bool on)
+{
+    m_dragActived = on;
+    setAcceptDrops(on);
+}
+
+bool QKxTermItem::isOverSelection(const QPoint &_pt)
+{
+    QPoint pt = widgetPointToTermViewPosition(_pt);
+    return m_view->isOverSelection(pt);
 }
 
 int QKxTermItem::fontSize() const
@@ -347,6 +400,13 @@ void QKxTermItem::setTermName(const QString &name)
     resetTitlePosition(false);
 }
 
+void QKxTermItem::showTermName(bool on)
+{
+    if(m_title) {
+        m_title->setVisible(on);
+    }
+}
+
 QPoint QKxTermItem::cursorToScreenPosition()
 {
     return m_view->cursorToScreenPosition();
@@ -404,7 +464,7 @@ bool QKxTermItem::trapCommand(const QString &cmd, QString &content, int &code, i
     if(_cmd.at(_cmd.length() - 1) != '\r') {
         _cmd.append('\r');
     }
-    emit sendData(_cmd);
+    handleSendData(_cmd);
 
     QPoint pt1 = m_view->cursorToViewPosition();
     int id = m_view->setCapture(pt1);
@@ -420,7 +480,7 @@ bool QKxTermItem::trapCommand(const QString &cmd, QString &content, int &code, i
 
 void QKxTermItem::waitInput()
 {
-    emit sendData("\r");
+    handleSendData("\r");
     wait();
 }
 
@@ -554,6 +614,10 @@ void QKxTermItem::tryToCopy()
 
 void QKxTermItem::tryToPaste()
 {
+    if(m_readOnly) {
+        return;
+    }
+
     QClipboard *clip = QGuiApplication::clipboard();
     QString clipTxt = clip->text();
 
@@ -562,7 +626,7 @@ void QKxTermItem::tryToPaste()
             m_echoInput->tryToPaste(clipTxt);
         }else{
             QByteArray buf = clipTxt.toUtf8();
-            emit sendData(buf);
+            handleSendData(buf);
         }
     }
 }
@@ -598,7 +662,7 @@ int QKxTermItem::wait(int timeout)
 
 int QKxTermItem::lastExitCode()
 {
-    emit sendData("echo $?\r");
+    handleSendData("echo $?\r");
     QPoint pt1 = m_view->cursorToViewPosition();
     int id = m_view->setCapture(pt1);
     if(wait() != 0) {
@@ -653,6 +717,13 @@ void QKxTermItem::resetTitlePosition(bool bycursor)
     m_title->setGeometry(sz.width() - sh.width() - 1, y, sh.width(), sh.height());
 }
 
+QPoint QKxTermItem::widgetPointToTermViewPosition(const QPoint &pt)
+{
+    int x = pt.x() / m_fontWidth;
+    int y = pt.y() / (m_fontHeight + m_spaceLine + m_lineWidth);
+    return QPoint(x, y + m_scrollValue);
+}
+
 void QKxTermItem::parse(const QByteArray &data)
 {
     //qDebug() << data;
@@ -660,6 +731,22 @@ void QKxTermItem::parse(const QByteArray &data)
         m_echoInput->updateCursor(true);
     }
     m_vte->process(data);
+}
+
+void QKxTermItem::parseTest()
+{
+    QByteArray seqTxt;
+    seqTxt.append("\033[31mRed \033[32mGreen \033[33mYellow \033[34mBlue");
+    seqTxt.append("\033[35mMagenta \033[36mCyan \033[37mWhite \033[39mDefault");
+    seqTxt.append("\033[40mBlack \033[41mRed \033[42mGreen \033[43mYellow \033[44mBlue");
+    seqTxt.append("\033[45mMagenta \033[46mCyan \033[47mWhite \033[49mDefault");
+    seqTxt.append("\033[0m\033[01;31mThis is a simple test");
+    seqTxt.append("\033[0m\033[32mThis is a simple test");
+    seqTxt.append("\033[0m\033[01;33mThis is a simple test");
+    seqTxt.append("\033[0m\033[34mThis is a simple test");
+    seqTxt.append("\033[0m\033[01;35mThis is a simple test");
+    seqTxt.append("\033[0m\033[36mThis is a simple test");
+    parse(seqTxt);
 }
 
 void QKxTermItem::parseError(const QByteArray &data)
@@ -673,6 +760,11 @@ void QKxTermItem::parseError(const QByteArray &data)
     buf.append(data);
     buf.append(redPenOff, offLength);
     m_vte->process(buf);
+}
+
+void QKxTermItem::directSendData(const QByteArray &data)
+{
+    handleSendData(data);
 }
 
 void QKxTermItem::updateTermSize(int rows, int cols)
@@ -900,6 +992,13 @@ void QKxTermItem::onGuessActivePathChanged(const QString &path)
     emit activePathArrived(pathAct);
 }
 
+void QKxTermItem::onSetActive()
+{
+    raise();
+    activateWindow();
+    setFocus();
+}
+
 void QKxTermItem::paint(QPainter *p)
 {
     if(m_image.isEmpty()) {
@@ -908,7 +1007,9 @@ void QKxTermItem::paint(QPainter *p)
     p->save();
     p->setFont(m_font);
     p->setLayoutDirection(Qt::LeftToRight);
-    p->setRenderHint(QPainter::TextAntialiasing);
+    //p->setCompositionMode(QPainter::CompositionMode_SourceOver);
+    //QPainter::Antialiasing | QPainter::HighQualityAntialiasing
+    p->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::HighQualityAntialiasing);
     m_blinkRects.clear();
     m_cursorRect = QRect();
     for(int r = 0; r < m_rows && r < m_image.length(); r++) {
@@ -934,13 +1035,13 @@ void QKxTermItem::focusInEvent(QFocusEvent *ev)
 {
     m_focus = true;
     ev->accept();
-    m_ptClicked = QPoint(-1, -1);
+    m_ptDraged = m_ptClicked = QPoint(-1, -1);
 }
 
 void QKxTermItem::focusOutEvent(QFocusEvent *ev)
 {
     m_focus = false;
-    m_ptClicked = QPoint(-1, -1);
+    m_ptDraged = m_ptClicked = QPoint(-1, -1);
 }
 
 void QKxTermItem::resizeEvent(QResizeEvent *ev)
@@ -1054,8 +1155,9 @@ void QKxTermItem::keyReleaseEvent(QKeyEvent *ev)
 void QKxTermItem::mousePressEvent(QMouseEvent *ev)
 {
     ev->accept();
-    setFocus();    
-    if(ev->buttons() & Qt::LeftButton) {        
+    setFocus();
+    if(ev->buttons() & Qt::LeftButton) {
+        m_ptDraged = QPoint(-1,-1);
         if(m_tripleClick) {
             // only world selection can come here.
             QMap<QPoint, QPoint> sels = m_view->selection();
@@ -1076,13 +1178,17 @@ void QKxTermItem::mousePressEvent(QMouseEvent *ev)
         Qt::KeyboardModifiers modifier = ev->modifiers();
         if(modifier & Qt::ShiftModifier) {
             if(m_selectEnd != m_selectStart) {
-                QPoint pt = ev->pos();
-                int l = pt.x() / m_fontWidth;
-                int t = pt.y() / (m_fontHeight + m_spaceLine + m_lineWidth);
-                m_selectEnd = QPoint(l, t + m_scrollValue);
+                QPoint pt = widgetPointToTermViewPosition(ev->pos());
+                m_selectEnd = QPoint(pt.x(), pt.y() + m_scrollValue);
                 m_view->setSelection(m_selectStart, m_selectEnd);
                 return;
             }
+        }
+        m_ptClicked = QPoint(-1,-1);
+        QPoint pt = widgetPointToTermViewPosition(ev->pos());
+        if(m_dragActived && m_view->isOverSelection(pt)) {
+            m_ptDraged = ev->pos();
+            return;
         }
         clearSelection();
         m_ptClicked = ev->pos();
@@ -1093,17 +1199,31 @@ void QKxTermItem::mouseMoveEvent(QMouseEvent *ev)
 {
     if(ev->buttons() & Qt::LeftButton) {
         QPoint pt = ev->pos();
+        if(m_dragActived && m_ptDraged != QPoint(-1,-1)) {
+            int x = qAbs(pt.x() - m_ptDraged.x());
+            int y = qAbs(pt.y() - m_ptDraged.y());
+            if( x < 5 &&  y < 5) {
+                QDrag drag(this);
+                QMimeData *mimeData = new QMimeData(); // can not delete it for QDrag will auto delete it.
+                QString txtSel = selectedText();
+                mimeData->setText(txtSel);
+                drag.setMimeData(mimeData);
+                drag.exec(Qt::CopyAction|Qt::MoveAction);
+                if(!txtSel.isEmpty()) {
+                    handleSendData(txtSel.toUtf8());
+                }
+                m_ptDraged = QPoint(-1,-1);
+                return;
+            }
+        }
+
         if(m_ptClicked == QPoint(-1,-1)) {
             return;
         }
         if(m_selectStart == QPoint(-1,-1)){
-            int l = m_ptClicked.x() / m_fontWidth;
-            int t = m_ptClicked.y() / (m_fontHeight + m_spaceLine + m_lineWidth);
-            m_selectStart = m_selectEnd = QPoint(l, t + m_scrollValue);
+            m_selectStart = m_selectEnd = widgetPointToTermViewPosition(m_ptClicked);
         }
-        int r = pt.x() / m_fontWidth;
-        int b = pt.y() / (m_fontHeight + m_spaceLine + m_lineWidth);
-        m_selectEnd = QPoint(r, b + m_scrollValue);
+        m_selectEnd = widgetPointToTermViewPosition(pt);
         m_view->setSelection(m_selectStart, m_selectEnd);
     }
 }
@@ -1111,6 +1231,10 @@ void QKxTermItem::mouseMoveEvent(QMouseEvent *ev)
 void QKxTermItem::mouseReleaseEvent(QMouseEvent *ev)
 {
     QPoint pt = ev->pos();
+    if(m_dragActived && pt == m_ptDraged) {
+        clearSelection();
+    }
+    m_ptDraged = QPoint(-1,-1);
 
     int key = 0;
     switch(ev->button()) {
@@ -1148,23 +1272,23 @@ void QKxTermItem::mouseReleaseEvent(QMouseEvent *ev)
                 int cnt = 0;
                 //pressed
                 cnt = sprintf(buf, "\033[M%c%c%c", modifier + key + 32, x + 32, y + 32);
-                emit sendData(QByteArray(buf, cnt));
+                handleSendData(QByteArray(buf, cnt));
                 //release
                 cnt = sprintf(buf, "\033[M%c%c%c", modifier + 3 + 32, x + 32, y + 32);
-                emit sendData(QByteArray(buf, cnt));
+                handleSendData(QByteArray(buf, cnt));
             }
         }else if(states & TF_MOUSE_1006) {
             int cnt = 0;
             cnt = sprintf(buf, "\033[<%d;%d;%d%c", modifier, x, y, 'M');
-            emit sendData(QByteArray(buf, cnt));
+            handleSendData(QByteArray(buf, cnt));
             cnt = sprintf(buf, "\033[<%d;%d;%d%c", modifier, x, y, 'm');
-            emit sendData(QByteArray(buf, cnt));
+            handleSendData(QByteArray(buf, cnt));
         }else if(states & TF_MOUSE_1015) {
             int cnt = 0;
             cnt = sprintf(buf, "\033[%d;%d;%dM", modifier + key + 32, x, y);
-            emit sendData(QByteArray(buf, cnt));
+            handleSendData(QByteArray(buf, cnt));
             cnt = sprintf(buf, "\033[%d;%d;%dM", modifier + 3 + 32, x, y);
-            emit sendData(QByteArray(buf, cnt));
+            handleSendData(QByteArray(buf, cnt));
         }
     }
 }
@@ -1173,10 +1297,8 @@ void QKxTermItem::mouseDoubleClickEvent(QMouseEvent *ev)
 {
     ev->accept();
     if(ev->buttons() & Qt::LeftButton) {
-        QPoint pt = ev->pos();
-        int x = pt.x() / m_fontWidth;
-        int y = pt.y() / (m_fontHeight + m_spaceLine + m_lineWidth);
-        m_view->selectWord(QPoint(x, y + m_scrollValue));
+        QPoint pt = widgetPointToTermViewPosition(ev->pos());
+        m_view->selectWord(pt);
         m_tripleClick = true;
         QTimer::singleShot(500,this, SLOT(onTripleClickTimeout()));
     }
@@ -1210,9 +1332,7 @@ void QKxTermItem::wheelEvent(QWheelEvent *ev)
     if((btns & Qt::LeftButton) && m_selectEnd.y() > 0 && m_selectStart.y() > 0) {
         QPoint pt = ev->pos();
          //qDebug() << "mouseMoveEvent" << rt;
-         int r = pt.x() / m_fontWidth;
-         int b = pt.y() / (m_fontHeight + m_spaceLine + m_lineWidth);
-         m_selectEnd = QPoint(r, b + m_scrollValue);
+         m_selectEnd = widgetPointToTermViewPosition(pt);
          m_view->setSelection(m_selectStart, m_selectEnd);
     }
 }
@@ -1295,6 +1415,27 @@ bool QKxTermItem::eventFilter(QObject *obj, QEvent *ev)
     return QWidget::eventFilter(obj, ev);
 }
 
+void QKxTermItem::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->setAccepted(event->source() == this);
+}
+
+void QKxTermItem::dragMoveEvent(QDragMoveEvent *event)
+{
+    qDebug() << "dragMoveEvent";
+}
+
+void QKxTermItem::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    qDebug() << "dragLeaveEvent";
+}
+
+void QKxTermItem::dropEvent(QDropEvent *event)
+{
+    event->setAccepted(event->source() == this);
+    event->setDropAction(Qt::LinkAction);
+}
+
 void QKxTermItem::updateView(QKxTermItem::PaintFlag flags)
 {
     m_flagPaints |= flags;
@@ -1331,11 +1472,12 @@ void QKxTermItem::updateFontInfo()
     QFont ft = m_font;
     ft.setUnderline(true);
     ft.setOverline(true);
-    QFontMetricsF fm(ft);
+    QFontMetrics fm(ft);
+#ifdef NOT_NEED_20230101
     QSizeF sz = fm.size(Qt::TextSingleLine|Qt::TextDontClip, LTR_OVERRIDE_CHAR+QLatin1String(REPCHAR));
     uint cnt = qstrlen(REPCHAR);
-    int w = qRound(sz.width() / cnt);
-    int h = qRound(sz.height());
+    int w = sz.width() / cnt;
+    int h = sz.height();
     int n = fm.lineWidth();
     if(n < 2) {
         n = 2;
@@ -1343,6 +1485,11 @@ void QKxTermItem::updateFontInfo()
     qreal i = fm.underlinePos();
     qreal ascent = fm.ascent();
     qreal descent = fm.descent();
+#else
+    int w = fm.horizontalAdvance(QLatin1Char('M'));
+    int h = fm.height();
+    int n = fm.lineWidth();
+#endif
     m_fontWidth = w;
     m_fontHeight = h;
     m_lineWidth = n; // the width of the underline and strikeout lines, adjusted for the point size of the font.
@@ -1465,7 +1612,7 @@ void QKxTermItem::drawLine(QPainter *p, int row,  const TermLine &line)
         }
         out.append(QChar(iter->c));
         bool bCursor = false;
-        if(col == line.xcur) {
+        if(col == line.xcur && !m_readOnly) {
             iter++;
             bCursor = true;
         }else{
@@ -1634,7 +1781,7 @@ void QKxTermItem::handleKeyEvent(QKeyEvent *ev)
         char tmp[100];
         sprintf(tmp, "0x%x", ev->key());
         qDebug() << "keyPressEvent:" << tmp  << "buf:" << buf << "text:" << ev->text();
-        emit sendData(buf);
+        handleSendData(buf);
     }else{
         if(ev->key() >= 0x40 && ev->key() < 0x5f && (ev->modifiers() & Qt::ControlModifier)) {
             buf.append(ev->key() & 0x1f);
@@ -1651,9 +1798,17 @@ void QKxTermItem::handleKeyEvent(QKeyEvent *ev)
             char tmp[100];
             sprintf(tmp, "0x%x", ev->key());
             qDebug() << "keyPressEvent" << tmp << ev->text();
-            emit sendData(buf);
+            handleSendData(buf);
         }
     }
+}
+
+void QKxTermItem::handleSendData(const QByteArray &buf)
+{
+    if(m_readOnly) {
+        return;
+    }
+    emit sendData(buf);
 }
 
 void QKxTermItem::scroll(int yoffset)

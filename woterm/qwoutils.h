@@ -77,4 +77,6 @@ public:
     /* remove directory */
     static bool removeDirectory(const QString& path);
 
+    static QString findShellPath();
+
 };

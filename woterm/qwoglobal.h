@@ -43,6 +43,7 @@ enum EHostType{
 #define ROLE_GROUP              (Qt::UserRole+6)
 #define ROLE_GROUP_STATE        (Qt::UserRole+7)
 #define ROLE_TASKINFO           (Qt::UserRole+8)
+#define ROLE_CUSTOM_FONT        (Qt::UserRole+9)
 
 struct GroupInfo {
     QString name;

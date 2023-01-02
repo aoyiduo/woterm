@@ -26,15 +26,19 @@ public:
     static QKxKeyTranslator *keyboardLayout(const QString& name);
     static QStringList availableColorSchemas();
     static QString colorSchemaPath(const QString& name);
+    static void setCustomFontPath(const QString& path);
+    static QStringList customFontFamilies();
+    static void removeCustomFontFamily(const QString& name, QStringList& fileErrs);
+    static QStringList systemFontFamilies();
     static QStringList availableFontFamilies();
-    static bool hasFamily(const QString& family);
-    static QString suggestFamily();
-    static QFont suggestFont();
-    static bool fontCanUsed(const QFont& ft);
-    static bool fontCanUsed(const QString& family);
-    static bool generateSpecialCharactorWidth();
-    static int specialCharactorCount(wchar_t c);
-
+    static QStringList suggestFamilies();
+    static QStringList familyStyles(const QString& family);
+    static int suggestFontSize(const QString& family, int pt);
+    static bool isFixedPitch(const QFont &font);
+private:
+    static QStringList fontRemoveList();
+    static QStringList removeFontList();
+    static void appentFontRemoveList(const QStringList& dels);
 };
 
 #endif // QUTILS_H

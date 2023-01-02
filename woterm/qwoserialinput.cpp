@@ -163,6 +163,16 @@ QWoSerialInput::QWoSerialInput(QWoTermWidget *term, QWidget *parent)
     }
 
     ui->edit->installEventFilter(this);
+
+    m_outTimer = new QTimer(this);
+    QObject::connect(m_outTimer, SIGNAL(timeout()), this, SLOT(onOutputTimeout()));
+    m_outTimer->start(10);
+    int ms = QWoSetting::value("serialPort/splitTimeout", 300).toInt();
+    ui->msInput->setText(QString("%1").arg(ms));
+    ui->msInput->setValidator(new QIntValidator(1, 1000, ui->msInput));
+    bool checked = QWoSetting::value("serialPort/splitChecked", true).toBool();
+    ui->splitOutput->setChecked(checked);
+    QObject::connect(ui->splitOutput, SIGNAL(clicked()), this, SLOT(onSplitOutputButtonClicked()));
 }
 
 QWoSerialInput::~QWoSerialInput()
@@ -316,6 +326,26 @@ void QWoSerialInput::onComxError()
     QString msg = m_serialPort->errorString();
     ui->comxTip->setVisible(!msg.isEmpty());
     ui->comxTip->setText(msg);
+}
+
+void QWoSerialInput::onOutputTimeout()
+{
+    qint64 elapse = 1;
+    if(ui->splitOutput->isChecked()) {
+        elapse = ui->msInput->text().toInt();
+    }
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    for(auto it = m_output.begin(); it != m_output.end();){
+        QString who = it.key();
+        TimeOutput to = it.value();
+        if(now - to.tmLast > elapse) {
+            it = m_output.erase(it);
+            QList<QByteArray> lines = formatText(to.buf);
+            parse("<", who.toUtf8(), lines);
+        }else{
+            it++;
+        }
+    }
 }
 
 void QWoSerialInput::onServerTcpNewConnection()
@@ -534,6 +564,12 @@ void QWoSerialInput::onEditTextChanged()
     QTextCursor tc2 = ui->edit->textCursor();
     tc2.setPosition(txtBeforeNow.length());
     ui->edit->setTextCursor(tc2);
+}
+
+void QWoSerialInput::onSplitOutputButtonClicked()
+{
+    QWoSetting::setValue("serialPort/splitTimeout", ui->msInput->text());
+    QWoSetting::setValue("serialPort/splitChecked", ui->splitOutput->isChecked());
 }
 
 bool QWoSerialInput::handleTcpListen(bool start)
@@ -831,8 +867,10 @@ QString QWoSerialInput::socketName(const QAbstractSocket *socket) const
 
 void QWoSerialInput::handleDataRecv(const QString &who, const QByteArray &buf)
 {
-    QList<QByteArray> lines = formatText(buf);
-    parse("<", who.toUtf8(), lines);
+    TimeOutput out = m_output.take(who);
+    out.tmLast = QDateTime::currentMSecsSinceEpoch();
+    out.buf.append(buf);
+    m_output.insert(who, out);
 }
 
 void QWoSerialInput::handleDataSend(const QString &who, const QByteArray &buf)
@@ -843,6 +881,9 @@ void QWoSerialInput::handleDataSend(const QString &who, const QByteArray &buf)
 
 void QWoSerialInput::parse(const QByteArray& arrow, const QByteArray &_who, const QList<QByteArray> &_lines)
 {
+    if(_lines.isEmpty()) {
+        return;
+    }
     QByteArray who=arrow+_who;
     int nSpace = NAME_SECTION_LENGTH - who.length();
     if(nSpace > 0) {

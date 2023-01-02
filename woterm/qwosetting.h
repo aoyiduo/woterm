@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -41,6 +41,7 @@ public:
     static QString sftpTaskDbPath();
     static QString sftpTaskLogPath();
     static QString tempPath();
+    static QString fontBackupPath();
 
     static QString lastBackupPath();
     static void setLastBackupPath(const QString& path);
@@ -64,6 +65,21 @@ public:
 
     static bool lookupPasswordByAdmin();
     static void setLookupPasswordByAdmin(bool on);
+
+    static QVariantMap localShell();
+    static void setLocalShell(const QVariantMap& dm);
+
+    static QVariantMap serialPort();
+    static void setSerialPort(const QVariantMap& dm);
+
+    static QVariantMap rdpDefault();
+    static void setRdpDefault(const QVariantMap& dm);
+
+    static QVariantMap vncDefault();
+    static void setVncDefault(const QVariantMap& dm);
+
+    static QVariantMap ttyDefault();
+    static void setTtyDefault(const QVariantMap& dm);
 };
 
 #endif

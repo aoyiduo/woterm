@@ -18,7 +18,7 @@
 #include "qwoevent.h"
 #include "qkxtermwidget.h"
 #include "qkxtermitem.h"
-#include "qwosessionmoreproperty.h"
+#include "qwosessionttyproperty.h"
 #include "qkxmessagebox.h"
 #include "qwosetting.h"
 
@@ -186,17 +186,15 @@ void QWoSerialWidgetImpl::onDisconnect()
 
 void QWoSerialWidgetImpl::onMoreReady()
 {
-    QByteArray prop = QWoSetting::value("property/localShell").toByteArray();
-    QWoSessionMoreProperty dlg(this);
-    dlg.setCustom(SshWithSftp, prop);
+    QVariantMap prop = QWoSetting::serialPort();
+    QWoSessionTTYProperty dlg(QWoSessionTTYProperty::ETTY_SerialPort, this);
+    dlg.setCustom(prop);
     dlg.exec();
-    QString result = dlg.result();
+    QVariantMap result = dlg.result();
     if(!result.isEmpty()) {
-        QWoSetting::setValue("property/localShell", result);
+        QWoSetting::setSerialPort(result);
     }
 }
-
-
 
 void QWoSerialWidgetImpl::handleRead()
 {
@@ -243,7 +241,7 @@ void QWoSerialWidgetImpl::setTabText(const QString &title)
 QWoSerialTermWidget::QWoSerialTermWidget(const QString &target, QWidget *parent)
     : QWoTermWidget(target, 0, ETTSerialPort, parent)
 {
-
+    m_term->setReadyOnly(true);
 }
 
 QWoSerialTermWidget::~QWoSerialTermWidget()
@@ -278,13 +276,13 @@ void QWoSerialTermWidget::onCopyToClipboard()
 
 void QWoSerialTermWidget::onModifyThisSession()
 {
-    QByteArray prop = QWoSetting::value("property/serialPort").toByteArray();
-    QWoSessionMoreProperty dlg(this);
-    dlg.setCustom(SshWithSftp, prop);
+    QVariantMap prop = QWoSetting::serialPort();
+    QWoSessionTTYProperty dlg(QWoSessionTTYProperty::ETTY_SerialPort, this);
+    dlg.setCustom(prop);
     dlg.exec();
-    QString result = dlg.result();
+    QVariantMap result = dlg.result();
     if(!result.isEmpty()) {
-        QWoSetting::setValue("property/serialPort", result);
+        QWoSetting::setSerialPort(result);
         initCustom();
     }
 }

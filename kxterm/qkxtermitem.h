@@ -80,12 +80,20 @@ public:
 
     QFont font() const;
     void setFont(const QFont& ft);
-
+    static QFont createFont(const QString& familiy, int fontSize=12);
     QString textCodec() const;
     void setTextCodec(const QString& c);
 
     bool inputEnable() const;
     void setInputEnable(bool on);
+
+    bool readOnly() const;
+    void setReadyOnly(bool on);
+
+    bool dragCopyAndPaste() const;
+    void setDragCopyAndPaste(bool on);
+
+    bool isOverSelection(const QPoint& pt);
 
     int fontSize() const;
     void setFontSize(int sz);
@@ -137,6 +145,7 @@ public:
 
     QString termName() const;
     void setTermName(const QString& name);
+    void showTermName(bool on);
 
     QPoint cursorToScreenPosition();
     QPoint cursorToViewPosition();
@@ -186,11 +195,14 @@ public slots:
     void onTripleClickTimeout();
     void onSelectClickTimeout();
     void onGuessActivePathChanged(const QString& path);
+    void onSetActive();
 public:
     Q_INVOKABLE void resetState();
     Q_INVOKABLE void echoInput(const QByteArray& data);
     Q_INVOKABLE void parse(const QByteArray& data);
+    Q_INVOKABLE void parseTest();
     Q_INVOKABLE void parseError(const QByteArray& data);
+    Q_INVOKABLE void directSendData(const QByteArray& data);
     Q_INVOKABLE void updateTermSize();
     Q_INVOKABLE void updateTermSize(int rows, int cols);
     Q_INVOKABLE void updateScrollPosition(qreal position);
@@ -221,6 +233,11 @@ protected:
     virtual QVariant inputMethodQuery(Qt::InputMethodQuery query) const;    
     virtual bool event(QEvent *e);
     virtual bool eventFilter(QObject *watched, QEvent *ev);
+
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dragLeaveEvent(QDragLeaveEvent *event);
+    virtual void dropEvent(QDropEvent *event);
 private:
     QVariant inputMethodQuery(Qt::InputMethodQuery query, QVariant argument) const;
     void updateView(PaintFlag flag = PF_Normal);
@@ -230,6 +247,7 @@ private:
     void drawLine(QPainter *p, int r, const TermLine& line);
     void drawCursor(QPainter *p, const QRect& rt, const QColor& bg, const QColor& fg,  bool &inverse);
     void handleKeyEvent(QKeyEvent *ev);
+    void handleSendData(const QByteArray& buf);
     void scroll(int offsety);
     bool isLineVisible(int y);
     // -1: timeout.
@@ -238,6 +256,7 @@ private:
     int lastExitCode();
     void initTitle();
     void resetTitlePosition(bool byCursor = false);
+    QPoint widgetPointToTermViewPosition(const QPoint& pt);
 private:
     QPointer<QLabel> m_title;
     QPointer<QVteImpl> m_vte;
@@ -309,6 +328,11 @@ private:
 
     bool m_bEchoInputEnabled;
     QPointer<QKxEchoInput> m_echoInput;
+
+    bool m_readOnly;
+    bool m_dragEnabled;
+    bool m_dragActived;
+    QPoint m_ptDraged;
 };
 
 #endif // QTERM_H

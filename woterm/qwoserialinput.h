@@ -53,6 +53,8 @@ private slots:
     void onComxReadyRead();
     void onComxError();
 
+    void onOutputTimeout();
+
     void onTcpListenButtonClicked();
     void onTcpConnectButtonClicked();
     void onUdpListenButtonClicked();
@@ -63,6 +65,7 @@ private slots:
     void onInputAsHexClicked();
     void onOutputAsHexClicked();
     void onEditTextChanged();
+    void onSplitOutputButtonClicked();
 private:
     bool handleTcpListen(bool start);
     void refleshTcpClients();
@@ -88,12 +91,20 @@ private:
     virtual bool eventFilter(QObject *obj, QEvent *ev);
 private:
     Ui::QWoSerialInput *ui;
+    struct TimeOutput {
+        QByteArray buf;
+        qint64 tmLast;
+        TimeOutput() {
+            tmLast = 0;
+        }
+    };
+    QMap<QString, TimeOutput> m_output;
     QPointer<QWoTermWidget> m_term;
     QPointer<QTcpServer> m_tcpServer;
     QList<QPointer<QTcpSocket>> m_tcpClients;
     QPointer<QTcpSocket> m_tcpClient, m_tcpConnect;
     QPointer<QUdpSocket> m_udpServer, m_udpConnect;
-    QPointer<QTimer> m_udpTimer;
+    QPointer<QTimer> m_udpTimer, m_outTimer;
     QMap<QString, qint64> m_udpActived;
     QPointer<QSerialPort> m_serialPort;
 };

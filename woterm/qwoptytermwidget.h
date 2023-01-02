@@ -53,6 +53,7 @@ private slots:
     void onTitleChanged(const QString& title);
 private:
     Q_INVOKABLE void reconnect();
+    QString shellPath() const;
 private:
     virtual void resizeEvent(QResizeEvent *ev);
     virtual void contextMenuEvent(QContextMenuEvent *ev);

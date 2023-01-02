@@ -19,6 +19,9 @@
 #include "qwoidentifydialog.h"
 #include "qwohostsimplelist.h"
 #include "qwosessionmoreproperty.h"
+#include "qwosessionrdpproperty.h"
+#include "qwosessionvncproperty.h"
+#include "qwosessionttyproperty.h"
 #include "qwogroupinputdialog.h"
 #include "qkxbuttonassist.h"
 #include "qkxver.h"
@@ -479,27 +482,43 @@ void QWoSessionProperty::onIdentifyFileBrowser()
     ui->identify->setText(fileName);
 }
 
-
-
 void QWoSessionProperty::onMoreConfig()
 {
-    QWoSessionMoreProperty dlg(this);
     QString txt = ui->type->currentText();
     QString shower = showerType(txt);
     EHostType type = hostType(txt);
-    QString prop = m_props.value(shower);
+    QVariantMap prop = m_props.value(shower);
     if(prop.isEmpty() && !m_name.isEmpty()) {
         HostInfo hi = QWoSshConf::instance()->find(m_name);
         QString shower2 = hostType2ShowerType(hi.type);
-        if(shower2 == shower) {
-            prop = hi.property;
+        if(shower2 == shower && !hi.property.isEmpty()) {
+            prop = QWoUtils::qBase64ToVariant(hi.property).toMap();
         }
     }
-    dlg.setCustom(type, prop);
-    dlg.exec();
-    QString result = dlg.result();
-    if(!result.isEmpty()) {
-        m_props.insert(shower, result);
+    if(type == Mstsc) {
+        QWoSessionRDPProperty dlg(this);
+        dlg.setCustom(prop);
+        dlg.exec();
+        QVariantMap result = dlg.result();
+        if(!result.isEmpty()) {
+            m_props.insert(shower, result);
+        }
+    }else if(type == Vnc) {
+        QWoSessionVNCProperty dlg(this);
+        dlg.setCustom(prop);
+        dlg.exec();
+        QVariantMap result = dlg.result();
+        if(!result.isEmpty()) {
+            m_props.insert(shower, result);
+        }
+    }else{
+        QWoSessionTTYProperty dlg(QWoSessionTTYProperty::ETTY_RemoteTarget, this);
+        dlg.setCustom(prop);
+        dlg.exec();
+        QVariantMap result = dlg.result();
+        if(!result.isEmpty()) {
+            m_props.insert(shower, result);
+        }
     }
 }
 
@@ -659,9 +678,9 @@ bool QWoSessionProperty::saveConfig()
         }
     }
     QString key = hostType2ShowerType(hi.type);
-    QString prop = m_props.value(key);
+    QVariantMap prop = m_props.value(key);
     if(!prop.isEmpty()) {
-        hi.property = prop;
+        hi.property = QWoUtils::qVariantToBase64(prop);
     }
     hi.group = ui->groupBox->currentText();
     QWoHostListModel::instance()->modifyOrAppend(hi);

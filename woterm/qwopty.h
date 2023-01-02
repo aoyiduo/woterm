@@ -25,7 +25,7 @@ public:
     explicit QWoPty(QObject *parent = nullptr);
     virtual ~QWoPty();
     bool hasRunning();
-    bool start(int cols,int rows);
+    bool start(int cols,int rows, const QString& shellPath);
     void stop();
     virtual void write(const QByteArray& buf) = 0;
     virtual void updateSize(int cols, int rows) = 0;
@@ -38,7 +38,7 @@ private slots:
     virtual void onReadyRead() = 0;
     virtual void onFinished() = 0;
 private:
-    virtual bool init(int cols, int rows) = 0;
+    virtual bool init(int cols, int rows, const QString& shell) = 0;
     virtual bool cleanup() = 0;
     virtual bool isRunning() = 0;
 };

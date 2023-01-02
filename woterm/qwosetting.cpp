@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -140,6 +140,14 @@ QString QWoSetting::tempPath()
         path = QDir::toNativeSeparators(path);
         return path;
     }
+    return path;
+}
+
+QString QWoSetting::fontBackupPath()
+{
+    QString path = QWoSetting::ensurePath("font");
+    path = QDir::cleanPath(path);
+    path = QDir::toNativeSeparators(path);
     return path;
 }
 
@@ -320,4 +328,69 @@ bool QWoSetting::lookupPasswordByAdmin()
 void QWoSetting::setLookupPasswordByAdmin(bool on)
 {
     setValue("admin/lookupPassword", on);
+}
+
+QVariantMap QWoSetting::localShell()
+{
+    QString val = QWoSetting::value("property/localShell").toString();
+    QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
+    return mdata;
+}
+
+void QWoSetting::setLocalShell(const QVariantMap &dm)
+{
+    QString v = QWoUtils::qVariantToBase64(dm);
+    QWoSetting::setValue("property/localShell", v);
+}
+
+QVariantMap QWoSetting::serialPort()
+{
+    QString val = QWoSetting::value("property/serialPort").toString();
+    QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
+    return mdata;
+}
+
+void QWoSetting::setSerialPort(const QVariantMap &dm)
+{
+    QString v = QWoUtils::qVariantToBase64(dm);
+    QWoSetting::setValue("property/serialPort", v);
+}
+
+QVariantMap QWoSetting::rdpDefault()
+{
+    QString val = QWoSetting::value("property/rdpDefault").toString();
+    QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
+    return mdata;
+}
+
+void QWoSetting::setRdpDefault(const QVariantMap &dm)
+{
+    QString v = QWoUtils::qVariantToBase64(dm);
+    QWoSetting::setValue("property/rdpDefault", v);
+}
+
+QVariantMap QWoSetting::vncDefault()
+{
+    QString val = QWoSetting::value("property/vncDefault").toString();
+    QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
+    return mdata;
+}
+
+void QWoSetting::setVncDefault(const QVariantMap &dm)
+{
+    QString v = QWoUtils::qVariantToBase64(dm);
+    QWoSetting::setValue("property/vncDefault", v);
+}
+
+QVariantMap QWoSetting::ttyDefault()
+{
+    QString val = QWoSetting::value("property/ttyDefault").toString();
+    QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
+    return mdata;
+}
+
+void QWoSetting::setTtyDefault(const QVariantMap &dm)
+{
+    QString v = QWoUtils::qVariantToBase64(dm);
+    QWoSetting::setValue("property/ttyDefault", v);
 }

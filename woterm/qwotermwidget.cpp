@@ -71,25 +71,12 @@ QWoTermWidget::QWoTermWidget(const QString& target, int gid, ETermType ttype, QW
     m_term->bindShortCut(QKxTermItem::SCK_SelectUp, mdata.value("SCK_SelectUp", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectUp)).value<QKeySequence>());
     m_term->bindShortCut(QKxTermItem::SCK_SelectDown, mdata.value("SCK_SelectDown", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectDown)).value<QKeySequence>());
     m_term->bindShortCut(QKxTermItem::SCK_SelectHome, mdata.value("SCK_SelectHome", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectHome)).value<QKeySequence>());
-    m_term->bindShortCut(QKxTermItem::SCK_SelectEnd, mdata.value("SCK_SelectEnd", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectEnd)).value<QKeySequence>());
+    m_term->bindShortCut(QKxTermItem::SCK_SelectEnd, mdata.value("SCK_SelectEnd", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectEnd)).value<QKeySequence>()); 
 }
 
 QWoTermWidget::~QWoTermWidget()
 {
     removeFromTermImpl();
-}
-
-bool hasTerm(QSplitter *splitter) {
-    for(int i = 0; i < splitter->count(); i++) {
-        QSplitter *hit = qobject_cast<QSplitter*>(splitter->widget(i));
-        if(hit == nullptr) {
-            return true;
-        }
-        if(hasTerm(hit)) {
-            return true;
-        }
-    }
-    return false;
 }
 
 void QWoTermWidget::closeAndDelete()
@@ -159,20 +146,17 @@ bool QWoTermWidget::event(QEvent *ev)
 
 void QWoTermWidget::initDefault()
 {
-    QString val = QWoSetting::value("property/default").toString();
-    QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
+    QVariantMap mdata = QWoSetting::ttyDefault();
     resetProperty(mdata);
 }
 
 void QWoTermWidget::initCustom()
 {
     if(m_ttype == ETTLocalShell) {
-        QString val = QWoSetting::value("property/localShell").toString();
-        QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
+        QVariantMap mdata = QWoSetting::localShell();
         resetProperty(mdata);
     }else if(m_ttype == ETTSerialPort) {
-        QString val = QWoSetting::value("property/serialPort").toString();
-        QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
+        QVariantMap mdata = QWoSetting::serialPort();
         resetProperty(mdata);
     }else{
         HostInfo hi = QWoSshConf::instance()->find(m_target);
@@ -253,11 +237,8 @@ void QWoTermWidget::resetProperty(QVariantMap mdata)
 
     QString fontName = mdata.value("fontName", DEFAULT_FONT_FAMILY).toString();
     int fontSize = mdata.value("fontSize", DEFAULT_FONT_SIZE).toInt();
-    QFont ft = m_term->font();
-    ft.setFamily(fontName);
-    ft.setPointSize(fontSize);
+    QFont ft = QKxTermItem::createFont(fontName, fontSize);
     m_term->setFont(ft);
-
     QString cursorType = mdata.value("cursorType", "block").toString();
     if(cursorType.isEmpty() || cursorType == "block") {
         m_term->setCursorType(QKxTermItem::CT_Block);
@@ -268,6 +249,9 @@ void QWoTermWidget::resetProperty(QVariantMap mdata)
     }
     int lines = mdata.value("historyLength", DEFAULT_HISTORY_LINE_LENGTH).toInt();
     m_term->setHistorySize(lines);
+    bool dragPaste = mdata.value("dragPaste", false).toBool();
+    m_term->setDragCopyAndPaste(dragPaste);
+    m_rkeyPaste = mdata.value("rkeyPaste", false).toBool();
 }
 
 void QWoTermWidget::splitWidget(const QString& target, int gid, bool vertical)

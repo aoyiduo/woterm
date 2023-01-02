@@ -423,14 +423,14 @@ void QWoRLoginTermWidget::resizeEvent(QResizeEvent *ev)
 
 void QWoRLoginTermWidget::contextMenuEvent(QContextMenuEvent *ev)
 {
-//    QQuickItem *bar = findBar();
-//    if(bar->isVisible()) {
-//        QRectF rt = QRectF(bar->position(), QSizeF(bar->width(), bar->height()));
-//        QPointF pt = ev->pos();
-//        if(rt.contains(pt)) {
-//            return ;
-//        }
-//    }
+    if(m_rkeyPaste) {
+        if(m_term->isOverSelection(ev->pos())) {
+            QString txtSel = m_term->selectedText();
+            m_term->directSendData(txtSel.toUtf8());
+            return;
+        }
+    }
+
     if(m_menu == nullptr) {
         m_menu = new QMenu(this);
         m_copy = m_menu->addAction(tr("Copy"));

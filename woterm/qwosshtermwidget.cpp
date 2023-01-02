@@ -44,7 +44,7 @@
 #include <QMessageBox>
 
 QWoSshTermWidget::QWoSshTermWidget(const QString& target, int gid, QWidget *parent)
-    : QWoTermWidget(target, gid, ETTSerialPort, parent)
+    : QWoTermWidget(target, gid, ETTRemoteTarget, parent)
     , m_savePassword(false)
     , m_stateConnected(ESC_Ready)
 {
@@ -124,11 +124,11 @@ void QWoSshTermWidget::onDataArrived(const QByteArray &buf)
 
 }
 
-void QWoSshTermWidget::onErrorArrived(const QByteArray &buf, const QVariantMap& userData)
+void QWoSshTermWidget::onErrorArrived(const QString &buf, const QVariantMap& userData)
 {
     Q_UNUSED(userData);
     QKxTermItem *qterm = termItem();
-    qterm->parseError(buf);
+    qterm->parseError(buf.toUtf8());
 }
 
 void QWoSshTermWidget::onInputArrived(const QString &title, const QString &prompt, bool visble)
@@ -256,6 +256,11 @@ void QWoSshTermWidget::onHorizontalInviteView()
 void QWoSshTermWidget::onCloseThisSession()
 {
     closeAndDelete();
+}
+
+void QWoSshTermWidget::onPasteTestFont()
+{
+    m_term->parseTest();
 }
 
 void QWoSshTermWidget::onForceToCloseThisSession()
@@ -457,7 +462,7 @@ void QWoSshTermWidget::reconnect(bool restore)
     QObject::connect(m_ssh, SIGNAL(connectionFinished(bool)), this, SLOT(onConnectionFinished(bool)));
     QObject::connect(m_ssh, SIGNAL(finishArrived(int)), this, SLOT(onFinishArrived(int)));
     QObject::connect(m_ssh, SIGNAL(dataArrived(QByteArray)), this, SLOT(onDataArrived(QByteArray)));
-    QObject::connect(m_ssh, SIGNAL(errorArrived(QByteArray,QVariantMap)), this, SLOT(onErrorArrived(QByteArray,QVariantMap)));
+    QObject::connect(m_ssh, SIGNAL(errorArrived(QString,QVariantMap)), this, SLOT(onErrorArrived(QString,QVariantMap)));
     QObject::connect(m_ssh, SIGNAL(passwordArrived(QString,QByteArray)), this, SLOT(onPasswordArrived(QString,QByteArray)));
     QObject::connect(m_ssh, SIGNAL(inputArrived(QString,QString,bool)), this, SLOT(onInputArrived(QString,QString,bool)));
     m_ssh->start(m_target, m_gid);
@@ -487,7 +492,7 @@ void QWoSshTermWidget::executeCommand(const QByteArray &cmd)
     }
     m_cmd = QWoSshFactory::instance()->createShell(true);
     QObject::connect(m_cmd, SIGNAL(dataArrived(QByteArray)), this, SLOT(onDataArrived(QByteArray)));
-    QObject::connect(m_cmd, SIGNAL(errorArrived(QByteArray,QVariantMap)), this, SLOT(onErrorArrived(QByteArray,QVariantMap)));
+    QObject::connect(m_cmd, SIGNAL(errorArrived(QString,QVariantMap)), this, SLOT(onErrorArrived(QString,QVariantMap)));
     QObject::connect(m_cmd, SIGNAL(passwordArrived(QString,QByteArray)), this, SLOT(onPasswordArrived(QString,QByteArray)));
     QObject::connect(m_cmd, SIGNAL(inputArrived(QString,QString,bool)), this, SLOT(onInputArrived(QString,QString,bool)));
     m_cmd->start(m_target, m_gid);
@@ -508,55 +513,61 @@ void QWoSshTermWidget::resizeEvent(QResizeEvent *ev)
 
 void QWoSshTermWidget::contextMenuEvent(QContextMenuEvent *ev)
 {
-    if(m_menu == nullptr) {
-        m_menu = new QMenu(this);        
-        m_copy = m_menu->addAction(tr("Copy"));
-        QObject::connect(m_copy, SIGNAL(triggered()), this, SLOT(onCopyToClipboard()));
-        m_paste = m_menu->addAction(tr("Paste"));
-        QObject::connect(m_paste, SIGNAL(triggered()), this, SLOT(onPasteFromClipboard()));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/reload.png"), tr("Force Reconnect"), this, SLOT(onForceToReconnect()));
-        QAction *vsplit = m_menu->addAction(QIcon(":/woterm/resource/skin/vsplit.png"), tr("Split Vertical"));
-        QObject::connect(vsplit, SIGNAL(triggered()), this, SLOT(onVerticalSplitView()));
-        QAction *hsplit = m_menu->addAction(QIcon(":/woterm/resource/skin/hsplit.png"), tr("Split Horizontal"));
-        QObject::connect(hsplit, SIGNAL(triggered()), this, SLOT(onHorizontalSplitView()));
-#ifdef INVITE_SPLITE
-        QAction *vinvite = m_menu->addAction(QIcon(":/woterm/resource/skin/vaddsplit.png"), tr("Add To Vertical"));
-        QObject::connect(vinvite, SIGNAL(triggered()), this, SLOT(onVerticalInviteView()));
-        QAction *hinvite = m_menu->addAction(QIcon(":/woterm/resource/skin/haddsplit.png"), tr("Add To Horizontal"));
-        QObject::connect(hinvite, SIGNAL(triggered()), this, SLOT(onHorizontalInviteView()));
-#endif
-        m_menu->addAction(QIcon(":/woterm/resource/skin/sftp.png"), tr("Sftp Assistant"), this, SLOT(onSftpConnectReady()));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
-        m_menu->addAction(tr("Duplicate in new window"), this, SLOT(onDuplicateInNewWindow()));
-        m_menu->addAction(tr("New session multiplex"), this, SLOT(onNewSessionMultiplex()));
-        //m_menu->addAction(tr("Reset terminal size"), this, SLOT(onResetTermSize()));
-        m_menu->addSeparator();
-        m_menu->addAction(tr("Clean history"), this, SLOT(onCleanHistory()));
-        m_output = m_menu->addAction(tr("Output history to file"), this, SLOT(onOutputHistoryToFile()));
-        m_stop = m_menu->addAction(tr("Stop history to file"), this, SLOT(onStopOutputHistoryFile()));
-        m_menu->addSeparator();
-        m_menu->addAction(QIcon(":/woterm/resource/skin/upload.png"), tr("Zmodem upload"), this, SLOT(onZmodemSend()));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/download.png"), tr("Zmodem receive"), this, SLOT(onZmodemRecv()));
-        m_menu->addAction(tr("Zmodem abort"), this, SLOT(onZmodemAbort()), QKeySequence(Qt::CTRL +  Qt::Key_C));
-        m_menu->addSeparator();
-        QWoFloatWindow *wfloat = qobject_cast<QWoFloatWindow*>(topLevelWidget());
-        if(wfloat == nullptr) {
-            m_menu->addAction(tr("Float This Tab"), this, SLOT(onFloatThisTab()));
+    if(m_rkeyPaste) {
+        if(m_term->isOverSelection(ev->pos())) {
+            QString txtSel = m_term->selectedText();
+            m_term->directSendData(txtSel.toUtf8());
+            return;
         }
-        m_menu->addAction(tr("Close Session"), this, SLOT(onCloseThisSession()));
     }
+
     QKxTermItem *term = termItem();
-    QString selTxt = term->selectedText();
+    QString selTxt = term->selectedText();    
     //qDebug() << "selectText" << selTxt;
-    m_copy->setDisabled(selTxt.isEmpty());
-    m_output->setVisible(m_historyFile.isEmpty());
-    m_stop->setVisible(!m_historyFile.isEmpty());
     QClipboard *clip = QGuiApplication::clipboard();
     QString clipTxt = clip->text();
-    m_paste->setDisabled(clipTxt.isEmpty());
-    m_menu->exec(QCursor::pos());
-    m_menu->deleteLater();
+
+    QMenu menu(this);
+    if(!selTxt.isEmpty()) {
+        menu.addAction(tr("Copy"), this, SLOT(onCopyToClipboard()));
+    }
+    if(!clipTxt.isEmpty()) {
+        menu.addAction(tr("Paste"), this, SLOT(onPasteFromClipboard()));
+    }
+
+    menu.addAction(QIcon(":/woterm/resource/skin/reload.png"), tr("Force Reconnect"), this, SLOT(onForceToReconnect()));
+    QAction *vsplit = menu.addAction(QIcon(":/woterm/resource/skin/vsplit.png"), tr("Split Vertical"));
+    QObject::connect(vsplit, SIGNAL(triggered()), this, SLOT(onVerticalSplitView()));
+    QAction *hsplit = menu.addAction(QIcon(":/woterm/resource/skin/hsplit.png"), tr("Split Horizontal"));
+    QObject::connect(hsplit, SIGNAL(triggered()), this, SLOT(onHorizontalSplitView()));
+
+    menu.addAction(QIcon(":/woterm/resource/skin/sftp.png"), tr("Sftp Assistant"), this, SLOT(onSftpConnectReady()));
+    menu.addAction(QIcon(":/woterm/resource/skin/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
+    menu.addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
+    menu.addAction(tr("Duplicate in new window"), this, SLOT(onDuplicateInNewWindow()));
+    menu.addAction(tr("New session multiplex"), this, SLOT(onNewSessionMultiplex()));
+    //menu.addAction(tr("Reset terminal size"), this, SLOT(onResetTermSize()));
+    menu.addSeparator();
+    menu.addAction(tr("Clean history"), this, SLOT(onCleanHistory()));
+    if(m_historyFile.isEmpty()) {
+        menu.addAction(tr("Output history to file"), this, SLOT(onOutputHistoryToFile()));
+    }else{
+        menu.addAction(tr("Stop history to file"), this, SLOT(onStopOutputHistoryFile()));
+    }
+    menu.addSeparator();
+    menu.addAction(QIcon(":/woterm/resource/skin/upload.png"), tr("Zmodem upload"), this, SLOT(onZmodemSend()));
+    menu.addAction(QIcon(":/woterm/resource/skin/download.png"), tr("Zmodem receive"), this, SLOT(onZmodemRecv()));
+    menu.addAction(tr("Zmodem abort"), this, SLOT(onZmodemAbort()), QKeySequence(Qt::CTRL +  Qt::Key_C));
+    menu.addSeparator();
+    QWoFloatWindow *wfloat = qobject_cast<QWoFloatWindow*>(topLevelWidget());
+    if(wfloat == nullptr) {
+        menu.addAction(tr("Float This Tab"), this, SLOT(onFloatThisTab()));
+    }
+    menu.addAction(tr("Close Session"), this, SLOT(onCloseThisSession()));
+#ifdef QT_DEBUG
+    menu.addAction(tr("Test font"), this, SLOT(onPasteTestFont()));
+#endif
+    menu.exec(QCursor::pos());
 }
 
 QList<QString> QWoSshTermWidget::collectUnsafeCloseMessage()

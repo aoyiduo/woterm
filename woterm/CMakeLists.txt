@@ -27,6 +27,7 @@ set(SOURCE_FILES
     qwomenubutton.cpp
     qwoaboutdialog.cpp
     qwoadmindialog.cpp
+    qwosystemoptiondialog.cpp
     qwocommandlineinput.cpp
     qwoevent.cpp
     qwohostinfoedit.cpp
@@ -48,6 +49,9 @@ set(SOURCE_FILES
     qwosessionlist.cpp
     qwosessionmanage.cpp
     qwosessionproperty.cpp
+    qwosessionrdpproperty.cpp
+    qwosessionvncproperty.cpp
+    qwosessionttyproperty.cpp
     qwosessionmoreproperty.cpp
     qwosetting.cpp
     qwosettingdialog.cpp
@@ -102,6 +106,7 @@ set(SOURCE_FILES
     qwodbrestoredialog.cpp
     qwodbpowerrestoredialog.cpp
     qwogroupinputdialog.cpp
+    qwofontlistmodel.cpp
     qwotelnet.cpp
     qwoutils.cpp
     qwowidget.cpp
@@ -117,6 +122,7 @@ set(HEADER_FILES
     qwomenubutton.h
     qwoaboutdialog.h
     qwoadmindialog.h
+    qwosystemoptiondialog.h
     qwocommandlineinput.h
     qwoevent.h
     qwoglobal.h
@@ -139,6 +145,9 @@ set(HEADER_FILES
     qwosessionlist.h
     qwosessionmanage.h
     qwosessionproperty.h
+    qwosessionrdpproperty.h
+    qwosessionvncproperty.h
+    qwosessionttyproperty.h
     qwosessionmoreproperty.h
     qwosetting.h
     qwosettingdialog.h
@@ -193,6 +202,7 @@ set(HEADER_FILES
     qwodbrestoredialog.h
     qwodbpowerrestoredialog.h
     qwogroupinputdialog.h
+    qwofontlistmodel.h
     qwotelnet.h
     qwoutils.h
     qwowidget.h
@@ -208,6 +218,7 @@ set(OTHER_FILES
     qwoaboutdialog.ui
     qwomenubutton.ui
     qwoadmindialog.ui
+    qwosystemoptiondialog.ui
     qwocommandlineinput.ui
     qwohostinfo.ui
     qwohostinfolist.ui
@@ -222,6 +233,9 @@ set(OTHER_FILES
     qwosftpnamedialog.ui
     qwosessionmanage.ui
     qwosessionproperty.ui
+    qwosessionrdpproperty.ui
+    qwosessionvncproperty.ui
+    qwosessionttyproperty.ui
     qwosessionmoreproperty.ui
     qwosettingdialog.ui
     qwotermmask.ui

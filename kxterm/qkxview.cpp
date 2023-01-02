@@ -96,7 +96,20 @@ QMap<QPoint,QPoint> QKxView::selection()
     return m_screen->selectionToView();
 }
 
-void QKxView::setSelection(QPoint start, QPoint end)
+bool QKxView::isOverSelection(const QPoint &pt)
+{
+    QMap<QPoint,QPoint> sel = m_screen->selectionToView();
+    if(sel.isEmpty()) {
+        return false;
+    }
+    const QPoint& pt1 = sel.firstKey();
+    const QPoint& pt2 = sel.last();
+    QRect rt(pt1, pt2);
+    rt = rt.normalized();
+    return rt.contains(pt);
+}
+
+void QKxView::setSelection(const QPoint &start, const QPoint &end)
 {
     m_screen->setSelectionToView(start, end);
     m_selectedText.clear();
@@ -110,7 +123,7 @@ void QKxView::setSelection(const QMap<QPoint, QPoint> &sels)
     emit selectChanged();
 }
 
-void QKxView::selectWord(QPoint pt)
+void QKxView::selectWord(const QPoint& pt)
 {
     int cols = m_screen->columens();
     int x = pt.x();

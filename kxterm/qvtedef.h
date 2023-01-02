@@ -18,13 +18,22 @@
 #include <QVector>
 #include <QPoint>
 
-#define DEFAULT_FONT_FAMILY "Courier New"
-#define DEFAULT_KEY_LAYOUT  "default"
-#define DEFAULT_TEXT_CODEC  "UTF-8"
-#define DEFAULT_FONT_SIZE (13)
-#define DEFAULT_COLOR_SCHEMA  "Ubuntu"
 
-#define INVALID_POINT_VALUE (-0x7FFFFF)
+#ifdef Q_OS_WIN
+#define DEFAULT_FONT_FAMILY ("Courier New")
+#elif defined(Q_OS_MAC)
+#define DEFAULT_FONT_FAMILY ("SF Mono")
+#else
+#define DEFAULT_FONT_FAMILY ("Monospace")
+#endif
+
+
+#define DEFAULT_KEY_LAYOUT      ("default")
+#define DEFAULT_TEXT_CODEC      ("UTF-8")
+#define DEFAULT_FONT_SIZE       (12)
+#define DEFAULT_COLOR_SCHEMA    ("Ubuntu")
+
+#define INVALID_POINT_VALUE     (-0x7FFFFF)
 
 #define REPCHAR   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefgjijklmnopqrstuvwxyz0123456789./+@"
 const QChar LTR_OVERRIDE_CHAR( 0x202D );

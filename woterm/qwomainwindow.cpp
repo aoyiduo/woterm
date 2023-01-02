@@ -28,7 +28,10 @@
 #include "qwohostlistmodel.h"
 #include "qwohosttreemodel.h"
 #include "qwosessionproperty.h"
-#include "qwosessionmoreproperty.h"
+#include "qwosessionttyproperty.h"
+#include "qwosessionrdpproperty.h"
+#include "qwosessionvncproperty.h"
+#include "qwosystemoptiondialog.h"
 #include "qwosshconf.h"
 #include "qwodbbackupdialog.h"
 #include "qwodbrestoredialog.h"
@@ -394,19 +397,38 @@ void QWoMainWindow::onActionSessionListTriggered()
     onLayout();
 }
 
-void QWoMainWindow::onActionConfigDefaultTriggered()
+void QWoMainWindow::onActionTTYOptionsTriggered()
 {
-    QWoSessionMoreProperty dlg(this);
+    QWoSessionTTYProperty dlg(QWoSessionTTYProperty::ETTY_Default, this);
     dlg.exec();
-    QString lang = dlg.language();
-    if(!lang.isEmpty()) {
-        QString langNow = QWoSetting::languageFile();
-        if(lang != langNow) {
-            QWoSetting::setLanguageFile(lang);
-            if(QKxMessageBox::warning(this, tr("Language"), tr("The language has been changed, restart application to take effect right now."), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
-                QString path = QCoreApplication::instance()->applicationFilePath();                
-                if(::QKxProcessLaunch::startDetached(path)) {
-                    QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+}
+
+void QWoMainWindow::onActionVNCOptionsTriggered()
+{
+    QWoSessionVNCProperty dlg(this);
+    dlg.exec();
+}
+
+void QWoMainWindow::onActionRDPOptionsTriggered()
+{
+    QWoSessionRDPProperty dlg(this);
+    dlg.exec();
+}
+
+void QWoMainWindow::onActionSystemOptionsTriggered()
+{
+    QWoSystemOptionDialog dlg(this);
+    if(dlg.exec() == QDialog::Accepted) {
+        QString lang = dlg.language();
+        if(!lang.isEmpty()) {
+            QString langNow = QWoSetting::languageFile();
+            if(lang != langNow) {
+                QWoSetting::setLanguageFile(lang);
+                if(QKxMessageBox::warning(this, tr("Language"), tr("The language has been changed, restart application to take effect right now."), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
+                    QString path = QCoreApplication::instance()->applicationFilePath();
+                    if(::QKxProcessLaunch::startDetached(path)) {
+                        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+                    }
                 }
             }
         }
@@ -496,7 +518,10 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(onActionExitTriggered()));
     QObject::connect(ui->actionToolBar, SIGNAL(triggered()), this, SLOT(onActionToolbarTriggered()));
     QObject::connect(ui->actionSessionList, SIGNAL(triggered()), this, SLOT(onActionSessionListTriggered()));
-    QObject::connect(ui->actionOption, SIGNAL(triggered()), this, SLOT(onActionConfigDefaultTriggered()));
+    QObject::connect(ui->actionTTYOptions, SIGNAL(triggered()), this, SLOT(onActionTTYOptionsTriggered()));
+    QObject::connect(ui->actionVNCOptions, SIGNAL(triggered()), this, SLOT(onActionVNCOptionsTriggered()));
+    QObject::connect(ui->actionRDPOptions, SIGNAL(triggered()), this, SLOT(onActionRDPOptionsTriggered()));
+    QObject::connect(ui->actionSystemOptions, SIGNAL(triggered()), this, SLOT(onActionSystemOptionsTriggered()));
     QObject::connect(ui->actionIdentityManage, SIGNAL(triggered()), this, SLOT(onActionSshKeyManageTriggered()));
     QObject::connect(ui->actionDocument, SIGNAL(triggered()), this, SLOT(onActionHelpTriggered()));
     QObject::connect(ui->actionWetsite, SIGNAL(triggered()), this, SLOT(onActionWebsiteTriggered()));

@@ -10,13 +10,15 @@
 *******************************************************************************************/
 
 #include "qwopty.h"
+#include "qwosetting.h"
+#include "qwoutils.h"
 
 #include <ptyqt.h>
-
 #include <QProcessEnvironment>
 #include <QDebug>
 #include <QFile>
 #include <QStandardPaths>
+#include <QDir>
 
 QWoPty::QWoPty(QObject *parent)
     : QObject(parent)
@@ -34,9 +36,9 @@ bool QWoPty::hasRunning()
     return isRunning();
 }
 
-bool QWoPty::start(int cols, int rows)
+bool QWoPty::start(int cols, int rows, const QString &shellPath)
 {
-    return init(cols, rows);
+    return init(cols, rows, shellPath);
 }
 
 void QWoPty::stop()
@@ -57,7 +59,7 @@ public:
         cleanup();
     }
 
-    bool init(int cols, int rows) {
+    bool init(int cols, int rows, const QString& _shellPath) {
         if(m_pty) {
             return false;
         }
@@ -68,22 +70,12 @@ public:
              rows = 20;
         }
         IPtyProcess::PtyType ptyType;
-        QString shellPath;
+        QString shellPath = _shellPath;
 #ifdef Q_OS_WIN
         ptyType = IPtyProcess::WinPty;
-        QByteArray cmdPath = qgetenv("ComSpec");
-        if(cmdPath.isEmpty()) {
-            cmdPath = "c:\\Windows\\system32\\cmd.exe";
+        if(shellPath.isEmpty()){
+            shellPath = QWoUtils::findShellPath();
         }
-        if(!QFile::exists(cmdPath)) {
-            cmdPath = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe";
-        }
-        if(!QFile::exists(cmdPath)) {
-            emit errorArrived(tr("Failed to find any command program.").toUtf8());
-            emit finishArrived(-1);
-            return  false;
-        }
-        shellPath = cmdPath;
         QString version = QSysInfo::kernelVersion();
         qint32 buildNumber = version.split(".").last().toInt();
         if (buildNumber >= CONPTY_MINIMAL_WINDOWS_VERSION) {
@@ -94,18 +86,14 @@ public:
         qDebug() << version << buildNumber << ptyType;
 #else
         ptyType = IPtyProcess::UnixPty;
-        QStringList programs = {QString::fromUtf8(qgetenv("SHELL")), "/bin/bash", "/bin/sh"};
-        QString exec;
-        for(int i = 0; i < programs.length(); i++) {
-            exec = QStandardPaths::findExecutable(programs.at(i));
-            if(!exec.isEmpty()) {
-                break;
-            }
+        if(shellPath.isEmpty()) {
+            shellPath = QWoUtils::findShellPath();
         }
-        shellPath = exec;
 #endif
         m_pty = PtyQt::createPtyProcess(ptyType);
-        if(!m_pty->startProcess(shellPath, QProcessEnvironment::systemEnvironment().toStringList(), qint16(cols), qint16(rows))
+        QString workPath = QDir::homePath();
+        workPath = QDir::toNativeSeparators(workPath);
+        if(!m_pty->startProcess(shellPath, workPath, QProcessEnvironment::systemEnvironment().toStringList(), qint16(cols), qint16(rows))
                 || !m_pty->lastError().isEmpty()) {
             QString errMsg = m_pty->lastError();
             delete m_pty;

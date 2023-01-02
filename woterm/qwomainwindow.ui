@@ -67,7 +67,16 @@
     <property name="title">
      <string>Tool</string>
     </property>
-    <addaction name="actionOption"/>
+    <widget class="QMenu" name="menuGlobal_option">
+     <property name="title">
+      <string>Terminal options</string>
+     </property>
+     <addaction name="actionTTYOptions"/>
+     <addaction name="actionVNCOptions"/>
+     <addaction name="actionRDPOptions"/>
+    </widget>
+    <addaction name="menuGlobal_option"/>
+    <addaction name="actionSystemOptions"/>
     <addaction name="actionIdentityManage"/>
     <addaction name="actionAdministrator"/>
    </widget>
@@ -127,15 +136,6 @@
    </property>
    <property name="text">
     <string>Session List</string>
-   </property>
-  </action>
-  <action name="actionOption">
-   <property name="icon">
-    <iconset resource="qwoterm.qrc">
-     <normaloff>:/woterm/resource/skin/palette.png</normaloff>:/woterm/resource/skin/palette.png</iconset>
-   </property>
-   <property name="text">
-    <string>Option</string>
    </property>
   </action>
   <action name="actionSessionNew">
@@ -232,6 +232,26 @@
    </property>
    <property name="text">
     <string>Open serialport session</string>
+   </property>
+  </action>
+  <action name="actionTTYOptions">
+   <property name="text">
+    <string>TTY options</string>
+   </property>
+  </action>
+  <action name="actionVNCOptions">
+   <property name="text">
+    <string>VNC options</string>
+   </property>
+  </action>
+  <action name="actionRDPOptions">
+   <property name="text">
+    <string>RDP options</string>
+   </property>
+  </action>
+  <action name="actionSystemOptions">
+   <property name="text">
+    <string>System options</string>
    </property>
   </action>
  </widget>

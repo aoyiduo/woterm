@@ -23,7 +23,7 @@
 #include "qwomainwindow.h"
 #include "qwoevent.h"
 #include "qwosessionproperty.h"
-#include "qwosessionmoreproperty.h"
+#include "qwosessionttyproperty.h"
 #include "qwofloatwindow.h"
 #include "qwoglobal.h"
 
@@ -184,13 +184,13 @@ void QWoPtyTermWidget::onShowFindBar()
 
 void QWoPtyTermWidget::onModifyThisSession()
 {
-    QByteArray prop = QWoSetting::value("property/localShell").toByteArray();
-    QWoSessionMoreProperty dlg(this);
-    dlg.setCustom(SshWithSftp, prop);
+    QVariantMap prop = QWoSetting::localShell();
+    QWoSessionTTYProperty dlg(QWoSessionTTYProperty::ETTY_LocalShell, this);
+    dlg.setCustom(prop);
     dlg.exec();
-    QString result = dlg.result();
+    QVariantMap result = dlg.result();
     if(!result.isEmpty()) {
-        QWoSetting::setValue("property/localShell", result);
+        QWoSetting::setLocalShell(result);
         initCustom();
     }
 }
@@ -214,7 +214,21 @@ void QWoPtyTermWidget::reconnect()
     QObject::connect(m_pty, SIGNAL(connectionFinished(bool)), this, SLOT(onConnectionFinished(bool)));
     m_term->resetState();
     QSize sz = m_term->termSize();
-    m_pty->start(sz.width(), sz.height());
+    QString val = QWoSetting::value("property/localShell").toString();
+    QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
+    QString path = mdata.value("shellPath").toString();
+    if(!QFile::exists(path)) {
+        path = QWoUtils::findShellPath();
+    }
+    path = QDir::toNativeSeparators(path);
+    m_pty->start(sz.width(), sz.height(), path);
+}
+
+QString QWoPtyTermWidget::shellPath() const
+{
+    QVariantMap mdata = QWoSetting::localShell();
+    QString path = mdata.value("shellPath").toString();
+    return path;
 }
 
 void QWoPtyTermWidget::resizeEvent(QResizeEvent *ev)
@@ -226,6 +240,13 @@ void QWoPtyTermWidget::resizeEvent(QResizeEvent *ev)
 
 void QWoPtyTermWidget::contextMenuEvent(QContextMenuEvent *ev)
 {
+    if(m_rkeyPaste) {
+        if(m_term->isOverSelection(ev->pos())) {
+            QString txtSel = m_term->selectedText();
+            m_term->directSendData(txtSel.toUtf8());
+            return;
+        }
+    }
     if(m_menu == nullptr) {
         m_menu = new QMenu(this);
         m_copy = m_menu->addAction(tr("Copy"));

@@ -65,7 +65,10 @@ private slots:
     void onActionExitTriggered();
     void onActionToolbarTriggered();
     void onActionSessionListTriggered();
-    void onActionConfigDefaultTriggered();
+    void onActionTTYOptionsTriggered();
+    void onActionVNCOptionsTriggered();
+    void onActionRDPOptionsTriggered();
+    void onActionSystemOptionsTriggered();
     void onActionSettingTriggered();
     void onActionFindTriggered();
     void onActionAboutTriggered();

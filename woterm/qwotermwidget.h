@@ -97,6 +97,7 @@ protected:
     QString m_target;
     int m_gid;
     bool m_bexit;
+    bool m_rkeyPaste;
     QString m_historyFile;
     ETermType m_ttype;
 };

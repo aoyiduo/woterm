@@ -42,7 +42,7 @@ private slots:
     void onConnectionFinished(bool ok);
     void onFinishArrived(int code);
     void onDataArrived(const QByteArray& buf);
-    void onErrorArrived(const QByteArray& buf, const QVariantMap& userData= QVariantMap());
+    void onErrorArrived(const QString& buf, const QVariantMap& userData= QVariantMap());
     void onInputArrived(const QString& title, const QString& prompt, bool visible);
     void onPasswordArrived(const QString& host, const QByteArray& pass);
     void onTermSizeChanged(int lines, int columns);
@@ -58,6 +58,7 @@ private slots:
     void onVerticalInviteView();
     void onHorizontalInviteView();
     void onCloseThisSession();
+    void onPasteTestFont();
     void onForceToCloseThisSession();
     void onShowFindBar();
     void onDuplicateInNewWindow();
@@ -88,11 +89,6 @@ private:
     QPointer<QWoSshShell> m_cmd;
     QPointer<QWoPasswordInput> m_passInput;
     QPointer<QMessageBox> m_dlgConfirm;
-    QPointer<QMenu> m_menu;   
-    QPointer<QAction> m_copy;
-    QPointer<QAction> m_paste;
-    QPointer<QAction> m_output;
-    QPointer<QAction> m_stop;
     QPointer<QModem> m_modem;
     bool m_savePassword;
     QPointer<QShortCut> m_shortCutCopy;

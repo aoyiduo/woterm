@@ -58,7 +58,7 @@ private:
 private:
     Ui::QWoSessionProperty *ui;
     QString m_name;
-    QMap<QString, QString> m_props;
+    QMap<QString, QVariantMap> m_props;
     QPointer<QStringListModel> m_model;
 };
 

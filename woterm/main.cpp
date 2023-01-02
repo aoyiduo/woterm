@@ -90,6 +90,10 @@ int main(int argc, char *argv[])
         app.installTranslator(&translator);
     }
 
+    QString fontPath = QWoSetting::fontBackupPath();
+    QKxUtils::setCustomFontPath(fontPath);
+    QKxUtils::availableFontFamilies();
+
     QWoMainWindow *pmw = QWoMainWindow::instance();
     pmw->show();
     QTimer::singleShot(0, pmw, SLOT(onAppStart()));

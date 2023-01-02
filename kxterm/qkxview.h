@@ -40,9 +40,10 @@ public:
     // coordinate is according to global view not screen.
     void clearSelection();
     QMap<QPoint,QPoint> selection();
-    void setSelection(QPoint start, QPoint end);
+    bool isOverSelection(const QPoint& pt);
+    void setSelection(const QPoint& start, const QPoint& end);
     void setSelection(const QMap<QPoint, QPoint>& sels);
-    void selectWord(QPoint pt);
+    void selectWord(const QPoint& pt);
     void selectLine(int y);
     void setSelectionMode();    
     TermLine lineAt(int y) const;

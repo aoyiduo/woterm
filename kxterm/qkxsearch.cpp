@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -20,6 +20,7 @@ QKxSearch::QKxSearch(QKxTermItem *term, QWidget *parent) :
     m_term(term)
 {
     ui->setupUi(this);
+    setAttribute(Qt::WA_StyledBackground);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     QObject::connect(ui->findPrev, SIGNAL(clicked()), this, SLOT(onFindPrev()));
     QObject::connect(ui->findNext, SIGNAL(clicked()), this, SLOT(onFindNext()));

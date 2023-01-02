@@ -224,8 +224,6 @@
         <file>theme/Zenburn.theme</file>
         <file>image/triangle.png</file>
         <file>image/close.png</file>
-        <file>font/CourierNew.ttf</file>
-        <file>font/CourierNewBold.ttf</file>
         <file>image/search.png</file>
         <file>image/next.png</file>
         <file>image/prev.png</file>

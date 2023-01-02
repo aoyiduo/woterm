@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -92,13 +92,13 @@ bool QDBMergeActionDelegate::_editorEvent(QEvent *ev, QAbstractItemModel *model,
         if(t == QEvent::MouseButtonPress) {
             m_tblView->setCurrentIndex(idx);
         }
+        m_event = QEvent::None;
         return false;
     }
 
     if(t == QEvent::MouseMove
             || t == QEvent::MouseButtonPress
             || t == QEvent::MouseButtonRelease) {
-        // QApplication::setOverrideCursor(Qt::PointingHandCursor);
         m_event = t;
     }
     return true;

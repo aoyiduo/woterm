@@ -23,6 +23,7 @@
 #include <QByteArray>
 #include <QDir>
 #include <QCoreApplication>
+#include <QStandardPaths>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -710,5 +711,22 @@ bool QWoUtils::removeDirectory(const QString &path)
         }
     }
     return d.rmdir(".");
+}
+
+QString QWoUtils::findShellPath()
+{
+#ifdef Q_OS_WIN
+    QStringList programs = {qgetenv("ComSpec"), "c:\\Windows\\system32\\cmd.exe", "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"};
+#else
+    QStringList programs = {QString::fromUtf8(qgetenv("SHELL")), "/bin/bash", "/bin/sh"};
+#endif
+    QString exec;
+    for(int i = 0; i < programs.length(); i++) {
+        exec = QStandardPaths::findExecutable(programs.at(i));
+        if(!exec.isEmpty()) {
+            return QDir::toNativeSeparators(exec);
+        }
+    }
+    return "";
 }
 

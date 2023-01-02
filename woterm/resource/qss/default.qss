@@ -23,7 +23,7 @@ QWoSftpWidgetImpl{
     background-color: rgb(74, 181, 232);
 }
 
-QWoSerialInput{
+QWoSerialInput, QKxSearch{
     background-color: rgb(74, 181, 232);
 }
 
@@ -104,6 +104,7 @@ QToolBar {
 QTabBar::tab {
     min-width:8px;
     max-height: 30px;
+    min-height: 20px;
     padding-left: 6px;
     padding-right: 0px;
     padding-top: 3px;

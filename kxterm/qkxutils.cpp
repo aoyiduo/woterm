@@ -19,6 +19,8 @@
 #include <QFontDatabase>
 #include <QDebug>
 #include <QFontMetricsF>
+#include <QFontInfo>
+#include <QDataStream>
 
 static QColor xterm_color256[] = {
     QColor("#000000"),
@@ -353,160 +355,222 @@ QString QKxUtils::colorSchemaPath(const QString &name)
     return schemas.value(name, "");
 }
 
+struct FontCustomInfo {
+    int fid;
+    QStringList families;
+};
 
-static QList<QString> families;
-QStringList QKxUtils::availableFontFamilies()
+#define FONT_FILE_DELETE      ("fontDels.txt")
+static QList<QString> gsysFamilies;
+static QString gfontBackupPath;
+static QMap<QString,FontCustomInfo> gcustomFonts;
+void QKxUtils::setCustomFontPath(const QString &path)
 {
-    if(families.isEmpty()) {
-        QFontDatabase::addApplicationFont(":/kxterm/font/CourierNew.ttf");
-        QFontDatabase::addApplicationFont(":/kxterm/font/CourierNewBold.ttf");
-        QFontDatabase fdb;
+    gfontBackupPath = path;
+}
+
+QStringList QKxUtils::customFontFamilies()
+{
+    QDir d(gfontBackupPath);
+
+    systemFontFamilies();
+
+    QStringList fileDels = removeFontList();
+    QStringList fs = d.entryList(QDir::Files|QDir::NoDotAndDotDot);
+    for(auto it = fs.begin(); it != fs.end(); it++) {
+        QString name = *it;
+        QString fileName = gfontBackupPath + "/" + name;
+        if(name == FONT_FILE_DELETE) {
+            continue;
+        }
+        if(fileDels.contains(fileName)) {
+            continue;
+        }
+        if(gcustomFonts.contains(fileName)) {
+            continue;
+        }
+        int fid = QFontDatabase::addApplicationFont(fileName);
+        if(fid < 0) {
+            continue;
+        }
+        FontCustomInfo fci;
+        fci.fid = fid;
+        fci.families = QFontDatabase::applicationFontFamilies(fid);
+        gcustomFonts.insert(fileName, fci);
+    }
+    QStringList customs;
+    for(auto it = gcustomFonts.begin(); it != gcustomFonts.end(); it++) {
+        FontCustomInfo& fci = *it;
+        for(int i = 0; i < fci.families.length(); i++) {
+            QString tmp = fci.families.at(i);
+            if(customs.contains(tmp)) {
+                continue;
+            }
+            if(gsysFamilies.contains(tmp)) {
+                continue;
+            }
+            customs.append(tmp);
+        }
+    }
+    return customs;
+}
+
+
+void QKxUtils::removeCustomFontFamily(const QString &name, QStringList& fileErrs)
+{
+    for(auto it = gcustomFonts.begin(); it != gcustomFonts.end(); ) {
+        QString fileName = it.key();
+        const FontCustomInfo& fci = it.value();
+        if(fci.families.contains(name)) {
+            if(!QFontDatabase::removeApplicationFont(fci.fid)) {
+                fileErrs.append(fileName);
+                it++;
+                continue;
+            }
+            it = gcustomFonts.erase(it);
+            if(!QFile::remove(fileName)) {
+                fileErrs.append(fileName);
+            }
+        }else{
+            it++;
+        }
+    }
+    if(!fileErrs.isEmpty()){
+        appentFontRemoveList(fileErrs);
+    }
+}
+
+QStringList QKxUtils::systemFontFamilies()
+{
+    if(gsysFamilies.isEmpty()) {
+        static QFontDatabase fdb;
         QStringList list = fdb.families(QFontDatabase::Any);
         for (int i = 0; i < list.size(); ++i) {
             // fix pitch = fix width.
             if(!fdb.isFixedPitch(list.at(i))) {
                 continue;
             }
-            // check bold and normal equal.
-           // if(!fontCanUsed(list.at(i))) {
-           //     continue;
-           // }
-            families.append(list.at(i));
+            gsysFamilies.append(list.at(i));
         }
-        qDebug() << "font List" << families;
+        qDebug() << "font List" << gsysFamilies;
     }
-    return families;
+    return gsysFamilies;
 }
 
-bool QKxUtils::hasFamily(const QString &family)
+QStringList QKxUtils::availableFontFamilies()
 {
-    if(families.isEmpty()) {
-        availableFontFamilies();
+    QStringList sysFamilies = systemFontFamilies();
+    QStringList customs = customFontFamilies();
+    customs.append(sysFamilies);
+    return customs;
+}
+
+bool QKxUtils::isFixedPitch(const QFont &font) {
+    const QFontInfo fi(font);
+    qDebug() << fi.family() << fi.fixedPitch();
+    return fi.fixedPitch();
+}
+
+QStringList QKxUtils::fontRemoveList()
+{
+    QString fileName = gfontBackupPath + "/" + FONT_FILE_DELETE;
+    QStringList fileDels;
+    QFile file(fileName);
+    if(!file.open(QFile::ReadOnly)) {
+        return fileDels;
     }
-    return families.contains(family);
+    QDataStream ds(&file);
+    ds >> fileDels;
+    return fileDels;
 }
 
-QString QKxUtils::suggestFamily()
+QStringList QKxUtils::removeFontList()
 {
-    if(families.isEmpty()) {
-        availableFontFamilies();
-    }
-    if(families.contains(DEFAULT_FONT_FAMILY)) {
-        return DEFAULT_FONT_FAMILY;
-    }
-    return families.first();
-}
-
-QFont QKxUtils::suggestFont()
-{
-    QFont font;
-    QString suggest = QKxUtils::suggestFamily();
-    font.setFamily(suggest);
-    font.setPointSize(DEFAULT_FONT_SIZE);
-    font.setWeight(QFont::Normal);
-    font.setStyleHint(QFont::Monospace);
-    font.setStyleStrategy(QFont::StyleStrategy(QFont::ForceIntegerMetrics|QFont::PreferAntialias));
-    font.setFixedPitch(true);
-    font.setKerning(false);
-    font.setStyleName(QString());
-    return font;
-}
-
-// don't support italic font.
-bool QKxUtils::fontCanUsed(const QFont &ft)
-{
-    const QString& hit("OoDdWMwm.12");
-    QFontMetricsF fm(ft);
-    QSizeF sz = fm.size(Qt::TextSingleLine, hit);
-    QFont ft2 = ft;
-    ft2.setBold(true);   
-    QFontMetricsF fm2(ft2);
-    QSizeF sz2 = fm2.size(Qt::TextSingleLine, hit);
-    return sz.width() == sz2.width();
-}
-
-bool QKxUtils::fontCanUsed(const QString &family)
-{
-    QFont ft(family);
-    ft.setFamily(family);
-    ft.setPointSize(DEFAULT_FONT_SIZE);
-    ft.setWeight(QFont::Normal);
-    ft.setStyleHint(QFont::TypeWriter);
-    ft.setStyleStrategy(QFont::ForceIntegerMetrics);
-    ft.setFixedPitch(true);
-    return fontCanUsed(ft);
-}
-
-static QHash<int,int> m_box;
-int QKxUtils::specialCharactorCount(wchar_t c)
-{
-    if(m_box.isEmpty()) {
-        QFont font = QKxUtils::suggestFont();
-        QFontMetrics fm(font);
-
-        //https://en.wikipedia.org/wiki/Box-drawing_character
-        // box draw.
-        int fw = fm.width("W");
-        // box draw
-        for(int i = 0x2500; i <= 0x257F; i++) {
-            int w = fm.width(i);
-            m_box.insert(i, qRound(float(w) / fw));
-            //qDebug() << QString("{ 0x%1, %2, %3, %4 },").arg(i, 0, 16).arg(qRound(float(w) / fw)).arg(fw).arg(w);
-        }
-
-        //block draw
-        for(int i = 0x2580; i <= 0x259F; i++) {
-            int w = fm.width(i);
-            m_box.insert(i, qRound(float(w) / fw));
-            //qDebug() << QString("{ 0x%1, %2, %3, %4 },").arg(i, 0, 16).arg(qRound(float(w) / fw)).arg(fw).arg(w);
-        }
-
-        // special symbols
-        for(int i = 0x1FB00; i <= 0x1FBFF; i++) {
-            int w = fm.width(i);
-            m_box.insert(i, qRound(float(w) / fw));
+    QStringList fileDels = fontRemoveList();
+    for(auto it = fileDels.begin(); it != fileDels.end(); ) {
+        QString fileName = *it;
+        if(!QFile::exists(fileName)) {
+            it = fileDels.erase(it);
+        }else if(QFile::remove(fileName)) {
+            it = fileDels.erase(it);
+        }else{
+            it++;
         }
     }
-    return m_box.value(c, 0);
+    if(fileDels.isEmpty()) {
+        QString fileName = gfontBackupPath + "/" + FONT_FILE_DELETE;
+        QFile::remove(fileName);
+    }
+    return fileDels;
 }
 
-bool QKxUtils::generateSpecialCharactorWidth()
+void QKxUtils::appentFontRemoveList(const QStringList &_dels)
 {
-    QFont font;
-    QString suggest = QKxUtils::suggestFamily();
-    font.setFamily(suggest);
-    font.setPixelSize(DEFAULT_FONT_SIZE);
-    font.setWeight(QFont::Normal);
-    font.setStyleHint(QFont::Monospace);
-    font.setStyleStrategy(QFont::StyleStrategy(QFont::ForceIntegerMetrics|QFont::PreferAntialias));
-    font.setFixedPitch(true);
-    font.setKerning(false);
-    font.setStyleName(QString());
-    QFontMetrics fm(font);
-
-    //https://en.wikipedia.org/wiki/Box-drawing_character
-    // box draw.
-    int fw = fm.width("W");
-    // box draw
-    for(int i = 0x2500; i <= 0x257F; i++) {
-        int w = fm.width(i);
-        qDebug() << QString("{ 0x%1, %2, %3, %4 },").arg(i, 0, 16).arg(qRound(float(w) / fw)).arg(fw).arg(w);
+    QStringList dels = _dels;
+    QStringList fileDels = fontRemoveList();
+    for(auto it = dels.begin(); it != dels.end(); ) {
+        QString del = *it;
+        if(fileDels.contains(del)) {
+            it = dels.erase(it);
+        }else{
+            it++;
+        }
     }
-
-    //block draw
-    for(int i = 0x2580; i <= 0x259F; i++) {
-        int w = fm.width(i);
-        qDebug() << QString("{ 0x%1, %2, %3, %4 },").arg(i, 0, 16).arg(qRound(float(w) / fw)).arg(fw).arg(w);
+    fileDels.append(dels);
+    QString fileName = gfontBackupPath + "/" + FONT_FILE_DELETE;
+    QFile file(fileName);
+    if(file.open(QFile::WriteOnly)) {
+        QDataStream ds(&file);
+        ds << fileDels;
     }
-    //if(c >= 0x2500 && c <= 0x2573) {
-    //    return 1;
-    //}
-   // if(c >= 0x2574 && c <= 0x257F) {
-    //    return 2;
-    //}
-    // block draw
-    //if(c >= 0x2580 && c <= 0x259F) {
-    //    return 2;
-    //}
-    return true;
+}
+
+QStringList QKxUtils::suggestFamilies()
+{
+    QStringList suggest;
+#if defined (Q_OS_WIN)
+    suggest.append("Courier New");
+    suggest.append("Courier");
+    suggest.append("Terminal");
+#elif defined(Q_OS_MAC)
+    suggest.append("Courier New");
+    suggest.append("Courier");
+    suggest.append("SF Mono");
+    suggest.append("Monaco");
+    suggest.append("Menlo");
+#else
+    suggest.append("Courier 10 Pitch");
+    suggest.append("Monospace");
+#endif
+    return suggest;
+}
+
+QStringList QKxUtils::familyStyles(const QString &family)
+{
+    static QFontDatabase fdb;
+    QStringList styles = fdb.styles(family);
+    if(styles.isEmpty()) {
+        styles.append(""); // style may be is empty.
+    }
+    return styles;
+}
+
+int QKxUtils::suggestFontSize(const QString &family, int pt)
+{
+    static QFontDatabase fdb;
+    QList<int> pts = fdb.pointSizes(family, QString());
+    if(pts.isEmpty()) {
+        return pt;
+    }
+    int pt_distance = 100;
+    for(auto it = pts.begin(); it != pts.end(); it++) {
+        int tmp = *it;
+        if(tmp == pt) {
+            return pt;
+        }
+        if(qAbs(tmp - pt) < qAbs(pt_distance)) {
+            pt_distance = tmp - pt;
+        }
+    }
+    return pt + pt_distance;
 }

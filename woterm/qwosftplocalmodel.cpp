@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -22,7 +22,6 @@ QWoSftpLocalModel::QWoSftpLocalModel(QObject *parent)
     : QAbstractListModel(parent)
 {
     m_font = QGuiApplication::font();
-    m_font.setFamily(QKxUtils::suggestFamily());
 }
 
 QFileInfo QWoSftpLocalModel::fileInfo(const QModelIndex &idx) const
