@@ -50,6 +50,7 @@
     </widget>
     <addaction name="actionSessionNew"/>
     <addaction name="menuOpen"/>
+    <addaction name="actionOpenRemote2"/>
     <addaction name="separator"/>
     <addaction name="actionRestore"/>
     <addaction name="actionBackup"/>
@@ -88,6 +89,7 @@
     <addaction name="actionDocument"/>
     <addaction name="actionAbout"/>
     <addaction name="actionUltimate"/>
+    <addaction name="actionRegister"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -252,6 +254,16 @@
   <action name="actionSystemOptions">
    <property name="text">
     <string>System options</string>
+   </property>
+  </action>
+  <action name="actionOpenRemote2">
+   <property name="text">
+    <string>Open remote session</string>
+   </property>
+  </action>
+  <action name="actionRegister">
+   <property name="text">
+    <string>Register...</string>
    </property>
   </action>
  </widget>

@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -104,8 +104,6 @@ private:
     QPointer<QKxScreen> m_cmdScreen;
     QPointer<QKxScreen> m_appScreen;
     QPointer<QKxScreen> m_screen;
-    int m_rows;
-    int m_cols;
 
     QFont m_font;
     QString m_code;

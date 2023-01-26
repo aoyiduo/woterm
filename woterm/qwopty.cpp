@@ -19,6 +19,7 @@
 #include <QFile>
 #include <QStandardPaths>
 #include <QDir>
+#include <QTimer>
 
 QWoPty::QWoPty(QObject *parent)
     : QObject(parent)
@@ -49,6 +50,7 @@ void QWoPty::stop()
 class QPowerPty : public QWoPty {
 private:
     QPointer<IPtyProcess> m_pty;
+    int m_rows, m_cols;
 public:
     explicit QPowerPty(QObject *parent = nullptr)
         : QWoPty(parent) {
@@ -60,6 +62,8 @@ public:
     }
 
     bool init(int cols, int rows, const QString& _shellPath) {
+        m_cols = cols;
+        m_rows = rows;
         if(m_pty) {
             return false;
         }
@@ -71,6 +75,7 @@ public:
         }
         IPtyProcess::PtyType ptyType;
         QString shellPath = _shellPath;
+        bool bAgent = false;
 #ifdef Q_OS_WIN
         ptyType = IPtyProcess::WinPty;
         if(shellPath.isEmpty()){
@@ -81,36 +86,32 @@ public:
         if (buildNumber >= CONPTY_MINIMAL_WINDOWS_VERSION) {
             qDebug() << "Use ConPty instead of WinPty";
             ptyType = IPtyProcess::ConPty;
+            bAgent = true;
         }
-        ptyType = IPtyProcess::WinPty;
-        qDebug() << version << buildNumber << ptyType;
+        qDebug() << version << buildNumber << ptyType;        
 #else
         ptyType = IPtyProcess::UnixPty;
         if(shellPath.isEmpty()) {
             shellPath = QWoUtils::findShellPath();
         }
 #endif
-        m_pty = PtyQt::createPtyProcess(ptyType);
+        m_pty = PtyQt::createPtyProcess(this, ptyType, bAgent);
         QString workPath = QDir::homePath();
         workPath = QDir::toNativeSeparators(workPath);
-        if(!m_pty->startProcess(shellPath, workPath, QProcessEnvironment::systemEnvironment().toStringList(), qint16(cols), qint16(rows))
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        QStringList lsenv = env.toStringList();
+        if(!m_pty->startProcess(shellPath, workPath, lsenv, qint16(cols), qint16(rows))
                 || !m_pty->lastError().isEmpty()) {
             QString errMsg = m_pty->lastError();
-            delete m_pty;
             emit connectionFinished(false);
             emit errorArrived(errMsg.toUtf8());
             emit finishArrived(-1);
             return false;
         }
-        QObject::connect(m_pty->notifier(), SIGNAL(readyRead()),  this, SLOT(onReadyRead()));
-#ifdef Q_OS_WIN
-        QLocalSocket *localSocket = qobject_cast<QLocalSocket *>(m_pty->notifier());
-        QObject::connect(localSocket, SIGNAL(disconnected()), this, SLOT(onFinished()));
-#else
-        QProcess *shellProcess = qobject_cast<QProcess *>(m_pty->notifier());
-        QObject::connect(shellProcess, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(onFinished()));
-#endif
+        QObject::connect(m_pty, SIGNAL(readyRead()),  this, SLOT(onReadyRead()));
+        QObject::connect(m_pty, SIGNAL(finished()), this, SLOT(onFinished()));
         emit connectionFinished(true);
+        QTimer::singleShot(500, this, SLOT(onDelayUpdateSizeOnFirstTime()));
         return true;
     }
 
@@ -121,6 +122,8 @@ public:
     }
 
     void updateSize(int cols, int rows){
+        m_cols = cols;
+        m_rows = rows;
         if(cols <= 0 || rows <= 0) {
             return;
         }
@@ -129,12 +132,15 @@ public:
         }
     }
 
-    bool cleanup() {
-        IPtyProcess *pty = m_pty;
+    void onDelayUpdateSizeOnFirstTime() {
         if(m_pty) {
-            m_pty = nullptr;
-            pty->kill();
-            delete pty;
+            m_pty->resize(m_cols, m_rows);
+        }
+    }
+
+    bool cleanup() {
+        if(m_pty) {
+            m_pty->deleteLater();
             return true;
         }
         return false;
@@ -144,6 +150,7 @@ public:
         if(m_pty){
             QByteArray all = m_pty->readAll();
             emit dataArrived(all);
+            //qDebug() <<"------begin--------------" << all << "------------end";
         }
     }
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1187</width>
+    <width>1340</width>
     <height>658</height>
    </rect>
   </property>
@@ -625,14 +625,69 @@
          </widget>
         </item>
         <item>
-         <widget class="Line" name="line">
+         <widget class="QCheckBox" name="dataSource">
+          <property name="text">
+           <string>Show data source</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="splitOutput">
+         <widget class="QLabel" name="label_18">
+          <property name="text">
+           <string>Unread buffer length:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="bufLength">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QCheckBox" name="charSplit">
+          <property name="text">
+           <string>Split by special string</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="specialChar">
+          <property name="maximumSize">
+           <size>
+            <width>60</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="msSplit">
           <property name="text">
            <string>Split output only after timeout</string>
           </property>
@@ -656,7 +711,7 @@
          </widget>
         </item>
         <item>
-         <spacer name="horizontalSpacer">
+         <spacer name="horizontalSpacer_2">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -671,59 +726,47 @@
        </layout>
       </item>
       <item>
-       <widget class="QPlainTextEdit" name="edit">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>100</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_12">
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
         <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
+         <widget class="QPlainTextEdit" name="edit">
+          <property name="maximumSize">
            <size>
-            <width>40</width>
-            <height>20</height>
+            <width>16777215</width>
+            <height>100</height>
            </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btnClear">
-          <property name="text">
-           <string>Clear</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnSend">
-          <property name="text">
-           <string>Send</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnClear">
+            <property name="text">
+             <string>Clear</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnSend">
+            <property name="text">
+             <string>Send</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>

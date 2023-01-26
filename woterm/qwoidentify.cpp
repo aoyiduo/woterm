@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -113,7 +113,7 @@ bool QWoIdentify::isPublicKey(const QString &fileName)
     }
     err = ssh_key_is_public(key);
     ssh_key_free(key);
-    return err != 0;
+    return err == 1;
 }
 
 bool QWoIdentify::isPrivateKey(const QString &fileName)
@@ -125,7 +125,7 @@ bool QWoIdentify::isPrivateKey(const QString &fileName)
     }
     err = ssh_key_is_private(key);
     ssh_key_free(key);
-    return err != 0;
+    return err == 1;
 }
 
 bool QWoIdentify::import(const QString &fileName, IdentifyInfo *pinfo)

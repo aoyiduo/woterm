@@ -37,6 +37,8 @@ signals:
 private slots:
     virtual void onReadyRead() = 0;
     virtual void onFinished() = 0;
+    // Because the immediate update may have no effect, the update will be delayed for 500 milliseconds
+    virtual void onDelayUpdateSizeOnFirstTime() = 0;
 private:
     virtual bool init(int cols, int rows, const QString& shell) = 0;
     virtual bool cleanup() = 0;

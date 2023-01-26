@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -27,7 +27,7 @@ protected:
     QByteArray nextPacket();
     void reset();
     void append(const QByteArray& data);
-
+    static int writePacket(QIODevice *iodev, const QByteArray& data);
 private:
     bool m_isHead;
     qint32 m_pos;

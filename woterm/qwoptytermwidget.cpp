@@ -102,7 +102,7 @@ void QWoPtyTermWidget::onSendData(const QByteArray &buf)
     }
     if(m_stateConnected == ESC_Disconnected) {
         if(m_dlgConfirm == nullptr) {
-            m_dlgConfirm = new QKxMessageBox(QMessageBox::Question, tr("Reconnection confirmation"), tr("Continue to connect to the server?"), QMessageBox::Yes|QMessageBox::No, this);
+            m_dlgConfirm = new QKxMessageBox(QMessageBox::Question, tr("Reconnection confirmation"), tr("Continue to connect to this session?"), QMessageBox::Yes|QMessageBox::No, this);
             int code = m_dlgConfirm->exec();
             if(code == QMessageBox::Yes) {
                 QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);

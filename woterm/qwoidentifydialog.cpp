@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -95,10 +95,6 @@ void QWoIdentifyDialog::onButtonImportClicked()
         return;
     }
     fileName = QDir::toNativeSeparators(fileName);
-    if(QWoIdentify::isPublicKey(fileName)) {
-        QKxMessageBox::information(this, tr("info"), tr("Public key file import is not supported. Please select a valid private key file."));
-        return;
-    }
     if(!QWoIdentify::isPrivateKey(fileName)) {
         QKxMessageBox::information(this, tr("info"), tr("Invalid private key file. Please select a valid private key file."));
         return;

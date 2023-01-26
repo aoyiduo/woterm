@@ -34,6 +34,7 @@ protected:
 private slots:
     void onCopyToClipboard();
     void onModifyThisSession();
+    void onCleanThisSession();
 private:
     QPointer<QMenu> m_menu;
     QPointer<QAction> m_copy;

@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -42,6 +42,14 @@ void QKxLengthBodyPacket::append(const QByteArray &data)
         m_pos = 0;
     }
     m_buffer.append(data);
+}
+
+int QKxLengthBodyPacket::writePacket(QIODevice *iodev, const QByteArray &data)
+{
+    QByteArray buf;
+    QDataStream ds(&buf, QIODevice::WriteOnly);
+    ds << data;
+    return iodev->write(buf);
 }
 
 bool QKxLengthBodyPacket::packetAvailable()

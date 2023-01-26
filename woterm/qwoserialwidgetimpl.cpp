@@ -61,6 +61,7 @@ QWoSerialWidgetImpl::QWoSerialWidgetImpl(const QString& target, int gid, QTabBar
     pal.setColor(QPalette::Window, clr);
     setPalette(pal);
 
+
     m_serial = new QSerialPort(this);
     connect(m_serial, SIGNAL(readyRead()), this, SLOT(handleRead()));
     connect(m_serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError()));
@@ -242,6 +243,7 @@ QWoSerialTermWidget::QWoSerialTermWidget(const QString &target, QWidget *parent)
     : QWoTermWidget(target, 0, ETTSerialPort, parent)
 {
     m_term->setReadyOnly(true);
+   // m_term->parse("\x1B[?25l\x1B[?25h\x1B[93mdi\x1B[?25l\x1B[m\x1B[?25h\x1B[?25l\x1B[93m\bdi\x1B[?25hr\x1B[?25l\x1B[m\x1B[?25h\x1B[?25l\x1B[93m\x1B[40;61Hdir\x1B[?25h");
 }
 
 QWoSerialTermWidget::~QWoSerialTermWidget()
@@ -256,6 +258,7 @@ void QWoSerialTermWidget::contextMenuEvent(QContextMenuEvent *ev)
         m_copy = m_menu->addAction(tr("Copy"));
         QObject::connect(m_copy, SIGNAL(triggered()), this, SLOT(onCopyToClipboard()));
         m_menu->addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
+        m_menu->addAction(tr("Clean history"), this, SLOT(onCleanThisSession()));
     }
     QKxTermItem *term = termItem();
     QString selTxt = term->selectedText();
@@ -285,4 +288,9 @@ void QWoSerialTermWidget::onModifyThisSession()
         QWoSetting::setSerialPort(result);
         initCustom();
     }
+}
+
+void QWoSerialTermWidget::onCleanThisSession()
+{
+    m_term->clearAll();
 }

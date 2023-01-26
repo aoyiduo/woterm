@@ -40,6 +40,7 @@
 #include "qkxmessagebox.h"
 #include "qwomenubutton.h"
 #include "qkxbuttonassist.h"
+#include "qkxappregisterdialog.h"
 #include "qkxver.h"
 #include "version.h"
 
@@ -506,11 +507,18 @@ void QWoMainWindow::onActionUltimateTriggered()
     QDesktopServices::openUrl(QUrl("http://woterm.com"));
 }
 
+void QWoMainWindow::onActionRegisterTriggered()
+{
+    QKxAppRegisterDialog dlg(this);
+    dlg.exec();
+}
+
 void QWoMainWindow::initMenuBar()
 {
     ui->menuBar->setNativeMenuBar(false);
     QObject::connect(ui->actionSessionNew, SIGNAL(triggered()), this, SLOT(onActionNewTriggered()));
     QObject::connect(ui->actionOpenRemote, SIGNAL(triggered()), this, SLOT(onActionOpenRemoteTriggered()));
+    QObject::connect(ui->actionOpenRemote2, SIGNAL(triggered()), this, SLOT(onActionOpenRemoteTriggered()));
     QObject::connect(ui->actionOpenLocal, SIGNAL(triggered()), this, SLOT(onActionOpenLocalTriggered()));
     QObject::connect(ui->actionOpenSerialport, SIGNAL(triggered()), this, SLOT(onActionOpenSerialportTriggered()));
     QObject::connect(ui->actionBackup, SIGNAL(triggered()), this, SLOT(onActionBackupTriggered()));
@@ -526,12 +534,18 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionDocument, SIGNAL(triggered()), this, SLOT(onActionHelpTriggered()));
     QObject::connect(ui->actionWetsite, SIGNAL(triggered()), this, SLOT(onActionWebsiteTriggered()));
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onActionAboutTriggered()));
+    QObject::connect(ui->actionRegister, SIGNAL(triggered()), this, SLOT(onActionRegisterTriggered()));
+    ui->actionRegister->setVisible(false);
     if(QKxVer::isUltimate()) {
         QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));
-        ui->actionUltimate->setVisible(false);
+        ui->actionUltimate->setVisible(false);        
+        ui->menuOpen->setVisible(true);
+        ui->actionOpenRemote2->deleteLater();
     }else{
         ui->actionAdministrator->setVisible(false);
         QObject::connect(ui->actionUltimate, SIGNAL(triggered()), this, SLOT(onActionUltimateTriggered()));
+        ui->menuOpen->deleteLater();
+        ui->actionOpenRemote2->setVisible(true);
     }
 }
 
@@ -540,13 +554,18 @@ void QWoMainWindow::initToolBar()
     QToolBar *tool = ui->mainToolBar;
     tool->setWindowTitle(tr("Toolbar"));
     tool->addAction(QIcon(":/woterm/resource/skin/add2.png"), tr("New"), this, SLOT(onNewSession()));
-    QPushButton *btn = new QPushButton(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open"), tool);
-    btn->setObjectName("menuButton");
-    QKxButtonAssist *btnAssist = new QKxButtonAssist(":/woterm/resource/skin/arrowdown.png", false, btn);
-    QObject::connect(btnAssist, SIGNAL(pressed(QToolButton*)), this, SLOT(onButtonAssistClicked(QToolButton*)));
-    btnAssist->appendSeperator();
-    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onOpenRemoteSession()));
-    tool->addWidget(btn);
+
+    if(QKxVer::isUltimate()){
+        QPushButton *btn = new QPushButton(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open"), tool);
+        btn->setObjectName("menuButton");
+        QKxButtonAssist *btnAssist = new QKxButtonAssist(":/woterm/resource/skin/arrowdown.png", false, btn);
+        QObject::connect(btnAssist, SIGNAL(pressed(QToolButton*)), this, SLOT(onButtonAssistClicked(QToolButton*)));
+        btnAssist->appendSeperator();
+        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onOpenRemoteSession()));
+        tool->addWidget(btn);
+    }else{
+        tool->addAction(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open"), this, SLOT(onOpenRemoteSession()));
+    }
     tool->addAction(QIcon(":/woterm/resource/skin/layout.png"), tr("List"), this, SLOT(onLayout()));
 }
 

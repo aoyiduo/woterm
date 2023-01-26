@@ -170,9 +170,15 @@ QWoSerialInput::QWoSerialInput(QWoTermWidget *term, QWidget *parent)
     int ms = QWoSetting::value("serialPort/splitTimeout", 300).toInt();
     ui->msInput->setText(QString("%1").arg(ms));
     ui->msInput->setValidator(new QIntValidator(1, 1000, ui->msInput));
-    bool checked = QWoSetting::value("serialPort/splitChecked", true).toBool();
-    ui->splitOutput->setChecked(checked);
-    QObject::connect(ui->splitOutput, SIGNAL(clicked()), this, SLOT(onSplitOutputButtonClicked()));
+    bool checked = QWoSetting::value("serialPort/timeoutSplitChecked", true).toBool();
+    ui->msSplit->setChecked(checked);
+    bool checked2 = QWoSetting::value("serialPort/CharSplitChecked", true).toBool();
+    ui->msSplit->setChecked(checked);
+    ui->charSplit->setChecked(checked2);
+    QString txt = QWoSetting::value("serialPort/splitChar", "{").toString();
+    ui->specialChar->setText(txt);
+    QObject::connect(ui->msSplit, SIGNAL(clicked()), this, SLOT(onTimeoutSplitOutputButtonClicked()));
+    QObject::connect(ui->charSplit, SIGNAL(clicked()), this, SLOT(onCharSplitOutputButtonClicked()));
 }
 
 QWoSerialInput::~QWoSerialInput()
@@ -331,21 +337,66 @@ void QWoSerialInput::onComxError()
 void QWoSerialInput::onOutputTimeout()
 {
     qint64 elapse = 1;
-    if(ui->splitOutput->isChecked()) {
+    QByteArray special;
+    bool timeSplit = ui->msSplit->isChecked();
+    bool charSplit = ui->charSplit->isChecked();
+    if(timeSplit) {
         elapse = ui->msInput->text().toInt();
     }
+    if(charSplit) {
+        special = ui->specialChar->text().toLatin1();
+    }
     qint64 now = QDateTime::currentMSecsSinceEpoch();
+    qint64 bufLength = 0;
     for(auto it = m_output.begin(); it != m_output.end();){
         QString who = it.key();
-        TimeOutput to = it.value();
-        if(now - to.tmLast > elapse) {
-            it = m_output.erase(it);
+        TimeOutput& to = it.value();
+        if(to.buf.length() > 512*1024) {
             QList<QByteArray> lines = formatText(to.buf);
             parse("<", who.toUtf8(), lines);
+
+            it = m_output.erase(it);
+        }else if(timeSplit) {
+            if(now - to.tmLast > elapse) {
+                QList<QByteArray> lines = formatText(to.buf);
+                parse("<", who.toUtf8(), lines);
+
+                it = m_output.erase(it);
+            }else{
+                bufLength += to.buf.length();
+
+                it++;
+            }
+        }else if(charSplit && !special.isEmpty()) {
+            QByteArrayList lines;
+            int idx = to.buf.indexOf(special, 0);
+            while(idx > 0){
+                QByteArray tmp = to.buf.left(idx+special.length());
+                lines.append(tmp);
+                to.buf = to.buf.remove(0, tmp.length());
+                idx = to.buf.indexOf(special, 0);
+            }
+            for(int i = 0; i < lines.length(); i++) {
+                QByteArray buf = lines.at(i);
+                QList<QByteArray> lines = formatText(buf);
+                parse("<", who.toUtf8(), lines);
+            }
+            if(to.buf.isEmpty()){
+
+                it = m_output.erase(it);
+            }else{
+                bufLength += to.buf.length();
+
+                it++;
+            }
         }else{
-            it++;
+            QList<QByteArray> lines = formatText(to.buf);
+            parse("<", who.toUtf8(), lines);
+
+            it = m_output.erase(it);
         }
     }
+    ui->bufLength->setText(QString::number(bufLength));
 }
 
 void QWoSerialInput::onServerTcpNewConnection()
@@ -566,10 +617,24 @@ void QWoSerialInput::onEditTextChanged()
     ui->edit->setTextCursor(tc2);
 }
 
-void QWoSerialInput::onSplitOutputButtonClicked()
+void QWoSerialInput::onTimeoutSplitOutputButtonClicked()
 {
     QWoSetting::setValue("serialPort/splitTimeout", ui->msInput->text());
-    QWoSetting::setValue("serialPort/splitChecked", ui->splitOutput->isChecked());
+    QWoSetting::setValue("serialPort/timeoutSplitChecked", ui->msSplit->isChecked());
+    if(ui->msSplit->isChecked()) {
+        ui->charSplit->setChecked(false);
+        QWoSetting::setValue("serialPort/CharSplitChecked", false);
+    }
+}
+
+void QWoSerialInput::onCharSplitOutputButtonClicked()
+{
+    QWoSetting::setValue("serialPort/splitChar", ui->specialChar->text());
+    QWoSetting::setValue("serialPort/CharSplitChecked", ui->charSplit->isChecked());
+    if(ui->charSplit->isChecked()) {
+        ui->msSplit->setChecked(false);
+        QWoSetting::setValue("serialPort/timeoutSplitChecked", false);
+    }
 }
 
 bool QWoSerialInput::handleTcpListen(bool start)
@@ -884,22 +949,43 @@ void QWoSerialInput::parse(const QByteArray& arrow, const QByteArray &_who, cons
     if(_lines.isEmpty()) {
         return;
     }
-    QByteArray who=arrow+_who;
-    int nSpace = NAME_SECTION_LENGTH - who.length();
-    if(nSpace > 0) {
-        who = who.append(nSpace, arrow.at(0));
-    }else{
-        who.resize(NAME_SECTION_LENGTH);
+    bool hexMode = ui->hexOutput->isChecked();
+    bool hasSource = ui->dataSource->isChecked();
+    bool hasSplit = ui->msSplit->isChecked() || ui->charSplit->isChecked();
+    QByteArray who;
+    if(hasSource) {
+        who=arrow+_who;
+        int nSpace = NAME_SECTION_LENGTH - who.length();
+        if(nSpace > 0) {
+            who = who.append(nSpace, arrow.at(0));
+        }else{
+            who.resize(NAME_SECTION_LENGTH);
+        }
+        who[NAME_SECTION_LENGTH-1] = '|';
     }
-    who[NAME_SECTION_LENGTH-1] = '|';
     QList<QByteArray> lines = _lines;
-    QByteArray result="\r\n";
-    result += who + lines.takeFirst();
+    QByteArray result;
+    if(hasSource || hexMode) {
+        result += "\r\n" + who + lines.takeFirst();
+    }else if(hasSplit) {
+        result += "\r\n" + lines.takeFirst();
+    }else{
+        result += lines.takeFirst();
+    }
+
     for(int i = 0; i < lines.length(); i++) {
-        QByteArray line(NAME_SECTION_LENGTH, QChar::Space);
-        line[NAME_SECTION_LENGTH-1] = '|';
+        QByteArray line;
+        if(hasSource){
+            QByteArray head(NAME_SECTION_LENGTH, QChar::Space);
+            head[NAME_SECTION_LENGTH-1] = '|';
+            line += head;
+        }
         line += lines.at(i);
-        result += "\r\n" + line;
+        if(hexMode) {
+            result += "\r\n" + line;
+        }else{
+            result += line;
+        }
     }
     QKxTermItem *term = m_term->termItem();
     term->scrollToEnd();
@@ -965,14 +1051,25 @@ int QWoSerialInput::hexModeCharCount() const
 {
     QKxTermItem *term = m_term->termItem();
     QSize sz = term->termSize();
-    return (sz.width() - NAME_SECTION_LENGTH - HEX_TEXT_DISTANCE) / 4;
+    int total = sz.width();
+    if(ui->dataSource->isChecked()) {
+        total -= NAME_SECTION_LENGTH;
+    }
+    if(ui->hexOutput->isChecked()) {
+        total -= HEX_TEXT_DISTANCE;
+    }
+    return total / 4;
 }
 
 int QWoSerialInput::textModelCharCount() const
 {
     QKxTermItem *term = m_term->termItem();
     QSize sz = term->termSize();
-    return sz.width() - NAME_SECTION_LENGTH - HEX_TEXT_DISTANCE;
+    int total = sz.width();
+    if(ui->dataSource->isChecked()) {
+        total -= NAME_SECTION_LENGTH;
+    }
+    return total;
 }
 
 bool QWoSerialInput::isHexString(const QByteArray &hex)

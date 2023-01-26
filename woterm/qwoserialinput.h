@@ -65,7 +65,8 @@ private slots:
     void onInputAsHexClicked();
     void onOutputAsHexClicked();
     void onEditTextChanged();
-    void onSplitOutputButtonClicked();
+    void onTimeoutSplitOutputButtonClicked();
+    void onCharSplitOutputButtonClicked();
 private:
     bool handleTcpListen(bool start);
     void refleshTcpClients();
