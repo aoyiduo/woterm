@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -15,8 +15,13 @@
 #include "qwosetting.h"
 #include "qwoutils.h"
 #include "qkxcipher.h"
+#include "qkxmessagebox.h"
 
 #include <QDateTime>
+#include <QDebug>
+#include <QFile>
+#include <QDir>
+#include <QUrl>
 
 QWoDBSftpDownSync::QWoDBSftpDownSync(QObject *parent)
     : QObject(parent)
@@ -27,6 +32,16 @@ QWoDBSftpDownSync::QWoDBSftpDownSync(QObject *parent)
 QWoDBSftpDownSync::~QWoDBSftpDownSync()
 {
 
+}
+
+QString QWoDBSftpDownSync::downloadPath() const
+{
+    return m_pathTemp;
+}
+
+void QWoDBSftpDownSync::setDownloadPath(const QString &path)
+{
+    m_pathTemp = path;
 }
 
 void QWoDBSftpDownSync::listAll()
@@ -53,6 +68,109 @@ void QWoDBSftpDownSync::fetch(const QString &fileName)
         reconnect();
     }
     download(fileName);
+}
+
+QVariant QWoDBSftpDownSync::qmlDecryptFile(const QString &fileNameSrc, const QString &fileNameDst, const QString &cryptType, const QString &cryptKey)
+{
+    QString errMsg;
+    if(!decryptFile(fileNameSrc, fileNameDst, cryptType, cryptKey, errMsg)) {
+        return errMsg;
+    }
+    return true;
+}
+
+QVariant QWoDBSftpDownSync::qmlAbsolutePath(const QString &fileName)
+{
+    QString path = m_pathTemp + "/" + fileName;
+    if(QFile::exists(path)) {
+        return QUrl::fromLocalFile(path);
+    }
+    return false;
+}
+
+bool QWoDBSftpDownSync::decrypt(const QByteArray& in, const QByteArray &type, const QByteArray &key, QByteArray &out)
+{
+    if(type == "AES-CBC-256") {
+        QByteArray pass = QKxCipher::makeBytes(key, 32);
+        QByteArray ivec = QKxCipher::makeBytes(key, 16);
+        if(!QKxCipher::aesCbcEncrypt(in, out, pass, ivec, false)) {
+            return false;
+        }
+    }else if(type == "AES-CTR-256") {
+        QByteArray pass = QKxCipher::makeBytes(key, 32);
+        QByteArray ivec = QKxCipher::makeBytes(key, 16);
+        if(!QKxCipher::aesCtrEncrypt(in, out, pass, ivec, false)) {
+            return false;
+        }
+    }else if(type == "AES-GCM-256") {
+        QByteArray pass = QKxCipher::makeBytes(key, 32);
+        QByteArray ivec = QKxCipher::makeBytes(key, 16);
+        if(!QKxCipher::aesGcmEncrypt(in, out, pass, ivec, false)) {
+            return false;
+        }
+    }else if(type == "DES-CBC") {
+        QByteArray pass = QKxCipher::makeBytes(key, 24);
+        QByteArray ivec = QKxCipher::makeBytes(key, 8);
+        if(!QKxCipher::tripleDesCbcEncrypt(in, out, pass, ivec, false)) {
+            return false;
+        }
+    }else if(type == "DES-ECB") {
+        QByteArray pass = QKxCipher::makeBytes(key, 24);
+        if(!QKxCipher::tripleDesEcbEncrypt(in, out, pass, false)) {
+            return false;
+        }
+    }else if(type == "DES-OFB64") {
+        QByteArray pass = QKxCipher::makeBytes(key, 24);
+        QByteArray ivec = QKxCipher::makeBytes(key, 8);
+        if(!QKxCipher::tripleDesOfb64Encrypt(in, out, pass, ivec, false)) {
+            return false;
+        }
+    }else if(type == "RC4") {
+        QByteArray pass = key;
+        if(!QKxCipher::rc4Encrypt(in, out, pass, false)) {
+            return false;
+        }
+    }else if(type == "Blowfish") {
+        QByteArray pass = key;
+        QByteArray ivec = QKxCipher::makeBytes(key, 8);
+        if(!QKxCipher::blowfishEcbEncrypt(in, out, pass, ivec, false)) {
+            return false;
+        }
+    }
+    // strncmp(header, "SQLite format 3\000", 16)
+    QByteArray header = out.left(16);
+    if(!header.startsWith("SQLite format 3")) {
+        return false;
+    }
+    return true;
+}
+
+bool QWoDBSftpDownSync::decryptFile(const QString &fileNameSrc, const QString &fileNameDst, const QString &cryptType, const QString &cryptKey, QString &errMsg)
+{
+    QString path = m_pathTemp + "/" + fileNameSrc;
+    QFile lf(path);
+    if(!lf.open(QIODevice::ReadOnly)) {
+        errMsg = tr("Failed to open file:%1").arg(fileNameSrc);
+        return false;
+    }
+    QByteArray all = lf.readAll();
+    lf.close();
+    QByteArray out;
+    if(!decrypt(all, cryptType.toUtf8(), cryptKey.toUtf8(), out)) {
+        errMsg = tr("Failed to decrypt the backup file:%1.").arg(fileNameSrc);
+        return false;
+    }
+    qDebug() << "ready to do more";
+    QString fileDecrypt = m_pathTemp + "/" + fileNameDst;
+    QFile::remove(fileDecrypt);
+    QFile df(fileDecrypt);
+    if(!df.open(QIODevice::WriteOnly)) {
+        errMsg = tr("Failed to write decrypt result to file:%1").arg(fileDecrypt);
+        return false;
+    }
+    df.write(out);
+    df.close();
+    return true;
 }
 
 void QWoDBSftpDownSync::onConnectionStart()

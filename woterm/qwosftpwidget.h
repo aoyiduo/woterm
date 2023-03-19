@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -89,7 +89,8 @@ protected slots:
     void onLocalMenuEnterDirectory();
     void onLocalMenuTryEnterDirectory();
     void onLocalMenuUpload();
-    void onLocalResetModel();
+    void onLocalResetModel();    
+    void onLocalPathReturnPressed();
 
     void onRemoteItemDoubleClicked(const QModelIndex& item);
     void onRemoteContextMenuRequested(const QPoint& pos);
@@ -105,6 +106,8 @@ protected slots:
     void onRemoteMenuDownload();
     void onRemoteMenuUpload();
     void onRemoteResetModel();
+    void onRemotePathReturnPressed();
+
     void onNewSessionMultiplex();
     void onAdjustPosition();
 
@@ -128,11 +131,17 @@ protected:
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     void resizeEvent(QResizeEvent *ev);
     bool eventFilter(QObject *obj, QEvent *ev);
+    void handleLocalDragEnterEvent(QDropEvent *de);
+    void handleLocalDropEvent(QDropEvent *de);
+    void handleRemoteDragEnterEvent(QDropEvent *de);
+    void handleRemoteDropEvent(QDropEvent *de);
 
 private:
     Q_INVOKABLE void reconnect();
     QList<FileInfo> remoteSelections();
     QList<QFileInfo> localSelections();
+    void runUploadTask(const QList<QFileInfo>& lsf);
+    Q_INVOKABLE void runUploadTask(const QStringList& lsfi);
 private:
     friend class QWoSftpWidgetImpl;
     Ui::QWoSftpWidget *ui;

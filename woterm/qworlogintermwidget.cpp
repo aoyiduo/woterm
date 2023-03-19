@@ -19,7 +19,7 @@
 #include "qwotermmask.h"
 #include "qwopasswordinput.h"
 #include "qwohostsimplelist.h"
-#include "qmodem.h"
+#include "qwomodem.h"
 #include "qwomainwindow.h"
 #include "qwoevent.h"
 #include "qwosessionproperty.h"

@@ -79,7 +79,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset resource="qwoterm.qrc">
+            <iconset resource="woterm.qrc">
              <normaloff>:/woterm/resource/skin/dirs.png</normaloff>:/woterm/resource/skin/dirs.png</iconset>
            </property>
           </widget>
@@ -144,7 +144,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="qwoterm.qrc">
+        <iconset resource="woterm.qrc">
          <normaloff>:/woterm/resource/skin/dirs.png</normaloff>:/woterm/resource/skin/dirs.png</iconset>
        </property>
       </widget>
@@ -184,7 +184,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="qwoterm.qrc">
+        <iconset resource="woterm.qrc">
          <normaloff>:/woterm/resource/skin/download.png</normaloff>:/woterm/resource/skin/download.png</iconset>
        </property>
        <property name="iconSize">
@@ -319,7 +319,7 @@
  </widget>
  <resources>
   <include location="../kxftp/qkxftp.qrc"/>
-  <include location="qwoterm.qrc"/>
+  <include location="woterm.qrc"/>
  </resources>
  <connections/>
 </ui>

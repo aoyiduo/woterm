@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -33,6 +33,9 @@ public:
     bool exists(const QString &name);
     void resetAllProperty(QString v);
     void modifyOrAppend(const HostInfo& hi);
+
+    Q_INVOKABLE bool qmlRemove(const QString& name);
+    Q_INVOKABLE QVariantMap qmlGet(int row);
 private slots:
     void onDataReset();
 private:
@@ -54,6 +57,8 @@ private:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
     Qt::DropActions supportedDropActions() const override;
+
+    QHash<int, QByteArray> roleNames() const override;
 
 private:
     Q_DISABLE_COPY(QWoHostListModel)

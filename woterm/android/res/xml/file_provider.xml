@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path name="external_files" path="."/>
+    <external-path name="path1" path="/data/dir1/"/>
+    <external-path name="path2" path="/"/>
+    <external-files-path name="path3" path="/data/dir2"/>
+    <external-cache-path name="path4" path="/data/dir3"/>
+    <external-path name="path5" path="/data"/>
+    <external-path name="path6" path="/ff"/>
+</paths>

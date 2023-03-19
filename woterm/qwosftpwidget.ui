@@ -66,44 +66,56 @@
         </property>
         <item>
          <widget class="QToolButton" name="btnLocalHome">
+          <property name="toolTip">
+           <string>Return to Home Directory</string>
+          </property>
           <property name="text">
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/home.png</normaloff>:/woterm/resource/skin/home.png</iconset>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QToolButton" name="btnLocalBack">
+          <property name="toolTip">
+           <string>Return to the parent directory</string>
+          </property>
           <property name="text">
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/back.png</normaloff>:/woterm/resource/skin/back.png</iconset>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QToolButton" name="btnLocalForward">
+          <property name="toolTip">
+           <string>Enter the selected directory</string>
+          </property>
           <property name="text">
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/forward.png</normaloff>:/woterm/resource/skin/forward.png</iconset>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QToolButton" name="btnLocalReload">
+          <property name="toolTip">
+           <string>Refresh the current directory</string>
+          </property>
           <property name="text">
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/reload.png</normaloff>:/woterm/resource/skin/reload.png</iconset>
           </property>
          </widget>
@@ -111,7 +123,10 @@
         <item>
          <widget class="QLineEdit" name="localPath">
           <property name="readOnly">
-           <bool>true</bool>
+           <bool>false</bool>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -121,7 +136,7 @@
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/dirs.png</normaloff>:/woterm/resource/skin/dirs.png</iconset>
           </property>
          </widget>
@@ -188,7 +203,7 @@
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/transfer3.png</normaloff>:/woterm/resource/skin/transfer3.png</iconset>
           </property>
          </widget>
@@ -202,7 +217,7 @@
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/home.png</normaloff>:/woterm/resource/skin/home.png</iconset>
           </property>
          </widget>
@@ -224,7 +239,7 @@
         <item>
          <widget class="QToolButton" name="btnRemoteForward">
           <property name="toolTip">
-           <string>Enter the current directory</string>
+           <string>Enter the selected directory</string>
           </property>
           <property name="text">
            <string/>
@@ -244,7 +259,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/reload.png</normaloff>:/woterm/resource/skin/reload.png</iconset>
           </property>
          </widget>
@@ -252,7 +267,7 @@
         <item>
          <widget class="QLineEdit" name="remotePath">
           <property name="readOnly">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -262,7 +277,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/select.png</normaloff>:/woterm/resource/skin/select.png</iconset>
           </property>
          </widget>
@@ -292,7 +307,7 @@
  </widget>
  <resources>
   <include location="../kxftp/qkxftp.qrc"/>
-  <include location="qwoterm.qrc"/>
+  <include location="woterm.qrc"/>
  </resources>
  <connections/>
 </ui>

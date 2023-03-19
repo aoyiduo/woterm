@@ -121,7 +121,7 @@ bool QWoSftpLocalModel::setData(const QModelIndex &index, const QVariant &value,
 
 Qt::ItemFlags QWoSftpLocalModel::flags(const QModelIndex &index) const
 {
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled;
 }
 
 bool QWoSftpLocalModel::insertRows(int row, int count, const QModelIndex &parent)

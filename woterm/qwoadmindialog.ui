@@ -57,7 +57,7 @@
            <string>save</string>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/save.png</normaloff>:/woterm/resource/skin/save.png</iconset>
           </property>
           <property name="iconSize">
@@ -140,7 +140,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="qwoterm.qrc"/>
+  <include location="woterm.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -19,7 +19,7 @@
 #include "qwotermmask.h"
 #include "qwopasswordinput.h"
 #include "qwohostsimplelist.h"
-#include "qmodem.h"
+#include "qwomodem.h"
 #include "qwomainwindow.h"
 #include "qwoevent.h"
 #include "qwosessionproperty.h"
@@ -45,11 +45,11 @@ QWoTelnetTermWidget::QWoTelnetTermWidget(const QString& target, int gid, QWidget
     , m_stateConnected(ESC_Ready)
 {
     QObject::connect(m_term, SIGNAL(termSizeChanged(int,int)), this, SLOT(onTermSizeChanged(int,int)));
-    QObject::connect(m_term, SIGNAL(sendData(const QByteArray&)), this, SLOT(onSendData(const QByteArray&)));
-    QObject::connect(m_term, SIGNAL(titleChanged(const QString&)), this, SLOT(onTitleChanged(const QString&)));
+    QObject::connect(m_term, SIGNAL(sendData(QByteArray)), this, SLOT(onSendData(QByteArray)));
+    QObject::connect(m_term, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChanged(QString)));
     m_modem = QWoModemFactory::instance()->create(true);
-    QObject::connect(m_modem, SIGNAL(dataArrived(const QByteArray&)), this, SLOT(onZmodemDataArrived(const QByteArray&)));
-    QObject::connect(m_modem, SIGNAL(statusArrived(const QByteArray&)), this, SLOT(onZmodemStatusArrived(const QByteArray&)));
+    QObject::connect(m_modem, SIGNAL(dataArrived(QByteArray)), this, SLOT(onZmodemDataArrived(QByteArray)));
+    QObject::connect(m_modem, SIGNAL(statusArrived(QByteArray)), this, SLOT(onZmodemStatusArrived(QByteArray)));
     QObject::connect(m_modem, SIGNAL(finished()), this, SLOT(onZmodemFinished()));
 
     QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);

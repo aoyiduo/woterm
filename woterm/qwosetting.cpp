@@ -21,13 +21,11 @@
 
 #include "qwoutils.h"
 
-#define WOTERM_DATA_PATH ("WOTERM_DATA_PATH")
 
-QSettings *qSettings()
+QWoSetting::QWoSetting(QObject *parent)
+    : QKxSetting(parent)
 {
-    static QString path = QDir::cleanPath(QWoSetting::applicationDataPath()+"/woterm.ini");
-    static QSettings setting(path, QSettings::IniFormat);
-    return &setting;
+
 }
 
 QString QWoSetting::ftpTaskPath()
@@ -151,6 +149,21 @@ QString QWoSetting::fontBackupPath()
     return path;
 }
 
+QString QWoSetting::downloadPath()
+{
+    QString path;
+    path = QWoSetting::value("sftp/downloadPath", "").toString();
+    if(!QFile::exists(path)) {
+        return "";
+    }
+    return path;
+}
+
+void QWoSetting::setDownloadPath(const QString &path)
+{
+    QWoSetting::setValue("sftp/downloadPath", path);
+}
+
 QString QWoSetting::lastJsLoadPath()
 {
     QString path;
@@ -188,19 +201,33 @@ QString QWoSetting::languageFile()
 
 QMap<QString, QString> QWoSetting::allLanguages()
 {
-    QMap<QString, QString> langs;
-    QDir dir(":/woterm/language");
-    QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files, QDir::Name);
-    for(int i = 0;i < fileNames.length(); i++) {
-        QString path = dir.filePath(fileNames.at(i));
-        QString type = QWoSetting::languageName(path);
-        if(!type.isEmpty()){
-            langs.insert(type, path);
-        }else{
-            QKxMessageBox::warning(nullptr, "warning", QString("The language file has no name:%1").arg(path));
+    static QMap<QString, QString> langs;
+    if(langs.isEmpty()) {
+        QDir dir(":/woterm/language");
+        QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files, QDir::Name);
+        for(int i = 0;i < fileNames.length(); i++) {
+            QString path = dir.filePath(fileNames.at(i));
+            QString type = QWoSetting::languageName(path);
+            if(!type.isEmpty()){
+                langs.insert(type, path);
+            }else{
+                QKxMessageBox::warning(nullptr, "warning", QString("The language file has no name:%1").arg(path));
+            }
         }
     }
     return langs;
+}
+
+QStringList QWoSetting::allLanguageNames()
+{
+    QMap<QString, QString> langs = allLanguages();
+    return langs.keys();
+}
+
+QString QWoSetting::languagePath(const QString &name)
+{
+    QMap<QString, QString> langs = allLanguages();
+    return langs.value(name);
 }
 
 QString QWoSetting::languageName(const QString &path)

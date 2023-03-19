@@ -25,6 +25,7 @@ class QWoShower;
 class QWoSessionList;
 class QWoCommandHistoryForm;
 class QToolButton;
+class QWoRecentHistory;
 
 namespace Ui {
 class QWoMainWindow;
@@ -55,6 +56,8 @@ private slots:
     void onShouldAppExit();
     void onButtonAssistClicked(QToolButton *btn);
 
+    void onRecentMenuAboutToShow();
+
 private slots:
     void onActionNewTriggered();
     void onActionOpenRemoteTriggered();
@@ -78,7 +81,7 @@ private slots:
     void onActionSshKeyManageTriggered();
     void onActionAdminTriggered();
     void onActionUltimateTriggered();
-    void onActionRegisterTriggered();
+    void onActionRegisterTriggered();    
 
 private:
     void initMenuBar();
@@ -94,4 +97,5 @@ private:
     QPointer<QWoSessionList> m_sessions;
     QPointer<QDockWidget> m_sessionDock;
     QPointer<QWoShower> m_shower;
+    QPointer<QWoRecentHistory> m_recent;
 };

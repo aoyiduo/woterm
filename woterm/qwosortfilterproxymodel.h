@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -16,9 +16,13 @@
 
 class QWoSortFilterProxyModel : public QSortFilterProxyModel
 {
+    Q_OBJECT
 public:
     explicit QWoSortFilterProxyModel(int maxColumnCount, QObject *parent = nullptr);
-
+public:
+    Q_INVOKABLE void search(const QString& key);
+    Q_INVOKABLE void qmlSearch(const QString& key);
+    Q_INVOKABLE void qmlRemove(const QString& name);
 private:
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 private:

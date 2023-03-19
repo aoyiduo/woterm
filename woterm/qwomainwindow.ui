@@ -14,7 +14,7 @@
    <string>QWoMainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="qwoterm.qrc">
+   <iconset resource="woterm.qrc">
     <normaloff>:/woterm/resource/skin/woterm4.png</normaloff>:/woterm/resource/skin/woterm4.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget"/>
@@ -48,14 +48,22 @@
      <addaction name="actionOpenLocal"/>
      <addaction name="actionOpenSerialport"/>
     </widget>
+    <widget class="QMenu" name="menuRecent">
+     <property name="title">
+      <string>Recent history</string>
+     </property>
+     <addaction name="actionClear"/>
+    </widget>
     <addaction name="actionSessionNew"/>
     <addaction name="menuOpen"/>
     <addaction name="actionOpenRemote2"/>
+    <addaction name="menuRecent"/>
     <addaction name="separator"/>
     <addaction name="actionRestore"/>
     <addaction name="actionBackup"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -119,7 +127,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">
    <property name="icon">
-    <iconset resource="qwoterm.qrc">
+    <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/stop2.png</normaloff>:/woterm/resource/skin/stop2.png</iconset>
    </property>
    <property name="text">
@@ -133,7 +141,7 @@
   </action>
   <action name="actionSessionList">
    <property name="icon">
-    <iconset resource="qwoterm.qrc">
+    <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/layout.png</normaloff>:/woterm/resource/skin/layout.png</iconset>
    </property>
    <property name="text">
@@ -142,7 +150,7 @@
   </action>
   <action name="actionSessionNew">
    <property name="icon">
-    <iconset resource="qwoterm.qrc">
+    <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/add2.png</normaloff>:/woterm/resource/skin/add2.png</iconset>
    </property>
    <property name="text">
@@ -151,7 +159,7 @@
   </action>
   <action name="actionIdentityManage">
    <property name="icon">
-    <iconset resource="qwoterm.qrc">
+    <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/keyset.png</normaloff>:/woterm/resource/skin/keyset.png</iconset>
    </property>
    <property name="text">
@@ -160,7 +168,7 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset resource="qwoterm.qrc">
+    <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/about.png</normaloff>:/woterm/resource/skin/about.png</iconset>
    </property>
    <property name="text">
@@ -169,7 +177,7 @@
   </action>
   <action name="actionDocument">
    <property name="icon">
-    <iconset resource="qwoterm.qrc">
+    <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/help.png</normaloff>:/woterm/resource/skin/help.png</iconset>
    </property>
    <property name="text">
@@ -188,7 +196,7 @@
   </action>
   <action name="actionRestore">
    <property name="icon">
-    <iconset resource="qwoterm.qrc">
+    <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/import.png</normaloff>:/woterm/resource/skin/import.png</iconset>
    </property>
    <property name="text">
@@ -197,7 +205,7 @@
   </action>
   <action name="actionAdministrator">
    <property name="icon">
-    <iconset resource="qwoterm.qrc">
+    <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/password .png</normaloff>:/woterm/resource/skin/password .png</iconset>
    </property>
    <property name="text">
@@ -211,7 +219,7 @@
   </action>
   <action name="actionOpenRemote">
    <property name="icon">
-    <iconset resource="qwoterm.qrc">
+    <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/nodes.png</normaloff>:/woterm/resource/skin/nodes.png</iconset>
    </property>
    <property name="text">
@@ -220,7 +228,7 @@
   </action>
   <action name="actionOpenLocal">
    <property name="icon">
-    <iconset resource="qwoterm.qrc">
+    <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/console.png</normaloff>:/woterm/resource/skin/console.png</iconset>
    </property>
    <property name="text">
@@ -229,7 +237,7 @@
   </action>
   <action name="actionOpenSerialport">
    <property name="icon">
-    <iconset resource="qwoterm.qrc">
+    <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/serialport.png</normaloff>:/woterm/resource/skin/serialport.png</iconset>
    </property>
    <property name="text">
@@ -266,10 +274,15 @@
     <string>Register...</string>
    </property>
   </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear all</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="qwoterm.qrc"/>
+  <include location="woterm.qrc"/>
  </resources>
  <connections/>
 </ui>

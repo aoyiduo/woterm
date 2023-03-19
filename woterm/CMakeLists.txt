@@ -9,21 +9,25 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#set(CMAKE_EXE_LINKER_FLAGS /NODEFAULTLIB:"LIBCMT.lib;LIBCMT.lib")
+#set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:"LIBCMT.lib;LIBCMT.lib")
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-find_package(Qt5 COMPONENTS Core Gui Widgets SerialPort LinguistTools REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 QuickWidgets SerialPort LinguistTools REQUIRED)
+if(ANDROID)
+    find_package(Qt5 COMPONENTS AndroidExtras REQUIRED)
+endif()
 
 message(STATUS "root This is BINARY dir " ${PROJECT_BINARY_DIR})
 message(STATUS "root This is SOURCE dir " ${PROJECT_SOURCE_DIR})
 
 set(SOURCE_FILES
+    qkxbuttonassist.cpp
+    #window object
     main.cpp
     qwoapplication.cpp
-    qkxbuttonassist.cpp
     qwomenubutton.cpp
     qwoaboutdialog.cpp
     qwoadmindialog.cpp
@@ -107,18 +111,48 @@ set(SOURCE_FILES
     qwodbpowerrestoredialog.cpp
     qwogroupinputdialog.cpp
     qwofontlistmodel.cpp
+    qworecenthistory.cpp
     qwotelnet.cpp
     qwoutils.cpp
     qwowidget.cpp
     qwolineedit.cpp
     qwossh.cpp
     qwopty.cpp
-    qmodem.cpp
+    qwomodem.cpp
+
+    #mobile object.
+    qmoquickassist.cpp
+    qmoapplication.cpp
+    qmomainwindow.cpp
+    qmorecenthistorymodel.cpp
+    qmotermwidget.cpp
+    qmoptytermwidget.cpp
+    qmosshtermwidget.cpp
+    qmoshowwidget.cpp
+    qmotermkeyboard.cpp
+    qmotermwidgetimpl.cpp
+    qmosshtermwidgetimpl.cpp
+    qmoptytermwidgetimpl.cpp
+    qmomenu.cpp
+    qmomenulistmodel.cpp
+    qmokeyboard.cpp
+    qmoredpoint.cpp
+    qmomessageboxassist.cpp
+    qmodbsftpdetailassist.cpp
+    qmodirassist.cpp
+    qmosftpremotemodel.cpp
+    qmosftpassist.cpp
+    qmosftpwidgetimpl.cpp
+    qmosftptransferassist.cpp
+    qmosftpqueuemodel.cpp
+    qmoaboutassist.cpp
+    qmoandroidassist.cpp
 )
 
 set(HEADER_FILES
-    qwoapplication.h
     qkxbuttonassist.h
+    # window object
+    qwoapplication.h
     qwomenubutton.h
     qwoaboutdialog.h
     qwoadmindialog.h
@@ -203,18 +237,48 @@ set(HEADER_FILES
     qwodbpowerrestoredialog.h
     qwogroupinputdialog.h
     qwofontlistmodel.h
+    qworecenthistory.h
     qwotelnet.h
     qwoutils.h
     qwowidget.h
     qwolineedit.h
     qwossh.h
     qwopty.h
-    qmodem.h
+    qwomodem.h
     version.h
+
+    #mobile object.
+    qmoquickassist.h
+    qmoapplication.h
+    qmomainwindow.h
+    qmorecenthistorymodel.h
+    qmotermwidget.h
+    qmoptytermwidget.h
+    qmosshtermwidget.h
+    qmoshowwidget.h
+    qmotermkeyboard.h
+    qmotermwidgetimpl.h
+    qmosshtermwidgetimpl.h
+    qmoptytermwidgetimpl.h
+    qmomenu.h
+    qmomenulistmodel.h
+    qmokeyboard.h
+    qmoredpoint.h
+    qmomessageboxassist.h
+    qmodbsftpdetailassist.h
+    qmodirassist.h
+    qmosftpremotemodel.h
+    qmosftpassist.h
+    qmosftpwidgetimpl.h
+    qmosftptransferassist.h
+    qmosftpqueuemodel.h
+    qmoaboutassist.h
+    qmoandroidassist.h
 )
 
 set(OTHER_FILES
-    qwoterm.qrc
+    woterm.qrc
+    # window object
     qwoaboutdialog.ui
     qwomenubutton.ui
     qwoadmindialog.ui
@@ -250,6 +314,21 @@ set(OTHER_FILES
     qwodbpowerrestoredialog.ui
     qwodbsftpdownlistdialog.ui
     qwogroupinputdialog.ui
+
+    #mobile object
+    qmomainwindow.ui
+    qmomenu.ui
+    qmokeyboard.ui
+)
+
+set(ANDROID_FILES
+    android/AndroidManifest.xml
+    android/build.gradle
+    android/res/xml/file_provider.xml
+    android/res/values/libs.xml
+    android/res/values/splashscreentheme.xml
+    android/res/drawable/splashscreen.xml
+    android/src/com/aoyiduo/woterm/MainActivity.java
 )
 
 include_directories(${KXVER_ROOT_DIR}
@@ -290,6 +369,7 @@ if(WIN32)
     message("window system.")
     link_libraries(ws2_32)
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO" )
         link_libraries(winpty ptyqtd SQLiteCppd sqlite3d sshd qsshd rdpd zmodemd libtelnetd)
     else()
         link_libraries(winpty ptyqt SQLiteCpp sqlite3 ssh qssh rdp zmodem libtelnet)
@@ -318,6 +398,13 @@ if(WIN32)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/versioninfo.rc.in versioninfo.rc @ONLY)
     add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES} ${HEADER_FILES} ${OTHER_FILES} ${QM_FILES})
     target_sources(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc")
+
+    add_custom_command(TARGET ${PROJECT_NAME}
+        PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "begin to find rc.exe path"
+        COMMAND where rc.exe
+        COMMAND ${CMAKE_COMMAND} -E echo "finish to find rc.exe path"
+    )
 elseif(APPLE)
     message("apple system.")
     link_libraries(ptyqt SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet)
@@ -328,7 +415,7 @@ elseif(APPLE)
     link_libraries(openssl_crypto)
 
     # NOTE: Don't include the path in MACOSX_BUNDLE_ICON_FILE -- this is
-    # the property added to Info.plist    
+    # the property added to Info.plist
 
     # And this part tells CMake where to find and install the file itself
     set(PROGRAM_VERSION "1.0" CACHE STRINGS "you can modify this value by command : cmake -DPROGRAM_VERSION=\"xx\"")
@@ -347,18 +434,33 @@ elseif(APPLE)
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resource/template.plist.in
         LINK_FLAGS "-sectcreate __CGPreLoginApp __cgpreloginapp /dev/null"
     )
+    target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
+elseif(ANDROID)
+    message("android system.")
+    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android" CACHE INTERNAL "")
+
+    link_libraries(dl ptyqt SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet SQLiteCpp)
+    add_library(openssl_crypto SHARED IMPORTED)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION ${OPENSSL_ROOT_DIR}/lib/libcrypto.so)
+    link_libraries(openssl_crypto)
+
+    add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES} ${OTHER_FILES} ${LangSrcs} ${ANDROID_FILES})
+    target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
+    target_include_directories(${PROJECT_NAME} PRIVATE ${Qt5AndroidExtras_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} Qt5::AndroidExtras)
 else()
     message("linux system.")
-    link_libraries(dl ptyqt SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet SQLiteCpp)
-    add_library(openssl_crypto STATIC IMPORTED)
+    link_libraries(ptyqt SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet SQLiteCpp)
+    add_library(openssl_crypto SHARED IMPORTED)
     set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/lib/libcrypto.so.1.1)
+        ${OPENSSL_ROOT_DIR}/lib/libcrypto.so)
     link_libraries(openssl_crypto)
 
     add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${OTHER_FILES} ${LangSrcs})
+    target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::SerialPort)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::SerialPort Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets)
 
 

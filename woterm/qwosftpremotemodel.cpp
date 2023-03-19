@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -179,10 +179,7 @@ bool QWoSftpRemoteModel::setData(const QModelIndex &index, const QVariant &value
 
 Qt::ItemFlags QWoSftpRemoteModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid()){
-        return QAbstractListModel::flags(index) | Qt::ItemIsDropEnabled;
-    }
-    return QAbstractListModel::flags(index) | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled;
 }
 
 bool QWoSftpRemoteModel::insertRows(int row, int count, const QModelIndex &parent)

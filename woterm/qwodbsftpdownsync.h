@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -22,12 +22,18 @@ class QWoSshFtp;
 class QWoDBSftpDownSync : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString downloadPath READ downloadPath WRITE setDownloadPath)
 public:
     explicit QWoDBSftpDownSync(QObject *parent = nullptr);
     ~QWoDBSftpDownSync();
-    void listAll();
-    void fetchLatest();
-    void fetch(const QString& fileName);
+    QString downloadPath() const;
+    void setDownloadPath(const QString& path);
+
+    Q_INVOKABLE void listAll();
+    Q_INVOKABLE void fetchLatest();
+    Q_INVOKABLE void fetch(const QString& fileName);
+    Q_INVOKABLE QVariant qmlDecryptFile(const QString &fileNameSrc, const QString &fileNameDst, const QString& cryptType, const QString& cryptKey);
+    Q_INVOKABLE QVariant qmlAbsolutePath(const QString& fileName);
 signals:
     void infoArrived(int action, int err, const QString& errDesc);
     void listArrived(const QStringList& fileNames);
@@ -48,6 +54,8 @@ private:
     void removeTempFile();
     void runAction(int action, const QString& tip);
     void finishAction(int err, const QString& errDesc);
+    bool decryptFile(const QString &fileNameSrc, const QString &fileNameDst, const QString& cryptType, const QString& cryptKey, QString& errMsg);
+    bool decrypt(const QByteArray& in, const QByteArray &type, const QByteArray &key, QByteArray &out);
 private:
     QPointer<QWoSshFtp> m_sftp;
     QString m_pathUpload, m_pathTemp, m_nameCrypt;

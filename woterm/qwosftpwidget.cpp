@@ -29,6 +29,7 @@
 #include "qwosftpremotemodel.h"
 #include "qwosftplocalmodel.h"
 #include "qkxmessagebox.h"
+#include "qkxbuttonassist.h"
 
 #include <QResizeEvent>
 #include <QSortFilterProxyModel>
@@ -40,6 +41,8 @@
 #include <QBoxLayout>
 #include <QInputDialog>
 #include <QDesktopServices>
+#include <QMimeData>
+#include <QDropEvent>
 
 #define SYNC_FOLLOW_FLAG    ("syncFollow")
 
@@ -85,7 +88,12 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
         ui->localFrame->setFrameShape(QFrame::NoFrame);
 
         m_local = new QTreeView(ui->localFrame);
+        m_local->setDragDropMode(QAbstractItemView::DropOnly);
+        m_local->setAcceptDrops(true);
+        m_local->setObjectName("localTreeView");
         m_local->viewport()->installEventFilter(this);
+        m_local->viewport()->setObjectName("localViewPort");
+        m_local->installEventFilter(this);
         m_local->setSelectionBehavior(QAbstractItemView::SelectRows);
         m_local->setSelectionMode(m_isUltimate ?  QAbstractItemView::MultiSelection : QAbstractItemView::SingleSelection);
         m_local->setIconSize(QSize(20, 20));
@@ -116,6 +124,9 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
                 model->setHome();
             }
         }
+        QKxButtonAssist *my = new QKxButtonAssist(":/woterm/resource/skin/keyenter.png", ui->localPath);
+        QObject::connect(ui->localPath, SIGNAL(returnPressed()), this, SLOT(onLocalPathReturnPressed()));
+        QObject::connect(my, SIGNAL(clicked(int)), this, SLOT(onLocalPathReturnPressed()));
     }
 
     m_remoteModel = new QWoSftpRemoteModel(this);
@@ -128,13 +139,18 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
     layout->setSpacing(0);
     layout->setMargin(0);
     m_remote = new QTreeView(ui->remoteFrame);
+    m_remote->setDragDropMode(QAbstractItemView::DropOnly);
+    m_remote->setAcceptDrops(true);
     m_remote->viewport()->installEventFilter(this);
+    m_remote->installEventFilter(this);
+    m_remote->setObjectName("remoteTreeView");
+    m_remote->viewport()->setObjectName("remoteViewPort");
     m_remote->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_remote->setSelectionMode(m_isUltimate ? QAbstractItemView::MultiSelection : QAbstractItemView::SingleSelection);
     m_remote->setIconSize(QSize(24, 24));
     m_remote->setContextMenuPolicy(Qt::CustomContextMenu);
     layout->addWidget(m_remote);
-    m_remote->installEventFilter(this);
+
     m_remote->setModel(m_proxyModel);
     m_loading = new QWoLoadingWidget(QColor(qRgb(18,150,219)), m_remote);
 
@@ -154,6 +170,12 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
         QObject::connect(ui->btnFollow, SIGNAL(clicked()), this, SLOT(onRemoteFollowButtonClicked()));
     }else{
         ui->btnFollow->setVisible(false);
+    }
+
+    {
+        QKxButtonAssist *my = new QKxButtonAssist(":/woterm/resource/skin/keyenter.png", ui->remotePath);
+        QObject::connect(ui->remotePath, SIGNAL(returnPressed()), this, SLOT(onRemotePathReturnPressed()));
+        QObject::connect(my, SIGNAL(clicked(int)), this, SLOT(onRemotePathReturnPressed()));
     }
 
     QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);
@@ -307,7 +329,21 @@ void QWoSftpWidget::resizeEvent(QResizeEvent *ev)
 bool QWoSftpWidget::eventFilter(QObject *obj, QEvent *ev)
 {
     QEvent::Type t = ev->type();
-    if(m_local && obj == m_local->viewport()) {
+    //qDebug() << "eventFilter" << t << obj->objectName();
+    if(obj == m_local) {
+        if(t == QEvent::DragEnter) {
+            handleLocalDragEnterEvent((QDropEvent*)ev);
+            if(ev->isAccepted()) {
+                return true;
+            }
+        }else if(t == QEvent::Drop) {
+            QDropEvent *de = (QDropEvent*)ev;
+            handleLocalDropEvent(de);
+            if(de->isAccepted()) {
+                return true;
+            }
+        }
+    }else if(m_local && obj == m_local->viewport()) {
         if(t == QEvent::MouseButtonPress) {
             QMouseEvent *me = (QMouseEvent*)ev;
             if(me->button() == Qt::LeftButton) {
@@ -315,6 +351,25 @@ bool QWoSftpWidget::eventFilter(QObject *obj, QEvent *ev)
                 if(!idx.isValid()) {
                     m_local->clearSelection();
                 }
+            }
+        }
+    } else if(obj == m_remote) {
+        if(t == QEvent::DragEnter) {
+            handleRemoteDragEnterEvent((QDropEvent*)ev);
+            if(ev->isAccepted()) {
+                return true;
+            }
+        }else if(t == QEvent::Drop) {
+            QDropEvent *de = (QDropEvent*)ev;
+            handleRemoteDropEvent(de);
+            if(de->isAccepted()) {
+                return true;
+            }
+        }else if(t == QEvent::Resize) {
+            QResizeEvent *re = (QResizeEvent*)ev;
+            QSize sz = re->size();
+            if(m_loading) {
+                m_loading->setGeometry(0, 0, sz.width(), sz.height());
             }
         }
     }else if(m_remote && obj == m_remote->viewport()) {
@@ -327,15 +382,7 @@ bool QWoSftpWidget::eventFilter(QObject *obj, QEvent *ev)
                 }
             }
         }
-    }else if(obj == m_remote) {
-        if(t == QEvent::Resize) {
-            QResizeEvent *re = (QResizeEvent*)ev;
-            QSize sz = re->size();
-            if(m_loading) {
-                m_loading->setGeometry(0, 0, sz.width(), sz.height());
-            }
-        }
-    }else if(obj == m_transfer) {
+    } else if(obj == m_transfer) {
         if(t == QEvent::Resize) {
             QResizeEvent *re = (QResizeEvent*)ev;
             QSize sz = re->size();
@@ -355,6 +402,76 @@ bool QWoSftpWidget::eventFilter(QObject *obj, QEvent *ev)
         }
     }
     return QWidget::eventFilter(obj, ev);
+}
+
+void QWoSftpWidget::handleLocalDragEnterEvent(QDropEvent *de)
+{
+    const QMimeData *md = de->mimeData();
+    if(md->hasUrls()) {
+        const QList<QUrl>& urls = md->urls();
+        for(auto it = urls.begin(); it != urls.end(); it++) {
+            const QUrl& url = *it;
+            QString localFile = url.toLocalFile();
+            if(QFile::exists(localFile)) {
+                de->setAccepted(true);
+                return;
+            }
+        }
+    }
+}
+
+void QWoSftpWidget::handleLocalDropEvent(QDropEvent *de)
+{
+    const QMimeData *md = de->mimeData();
+    if(md->hasUrls()) {
+        const QList<QUrl>& urls = md->urls();
+        for(auto it = urls.begin(); it != urls.end(); it++) {
+            const QUrl& url = *it;
+            QString localFile = url.toLocalFile();
+            QFileInfo fi(localFile);
+            if(fi.exists()) {
+                if(fi.isDir()) {
+                    m_localModel->setPath(fi.absoluteFilePath());
+                }else{
+                    m_localModel->setPath(fi.path());
+                }
+                return;
+            }
+        }
+    }
+}
+
+void QWoSftpWidget::handleRemoteDragEnterEvent(QDropEvent *de)
+{
+    const QMimeData *md = de->mimeData();
+    if(md->hasUrls()) {
+        const QList<QUrl>& urls = md->urls();
+        for(auto it = urls.begin(); it != urls.end(); it++) {
+            const QUrl& url = *it;
+            QString localFile = url.toLocalFile();
+            if(QFile::exists(localFile)) {
+                de->setAccepted(true);
+                return;
+            }
+        }
+    }
+}
+
+void QWoSftpWidget::handleRemoteDropEvent(QDropEvent *de)
+{
+    const QMimeData *md = de->mimeData();
+    QStringList tasks;
+    if(md->hasUrls()) {
+        const QList<QUrl>& urls = md->urls();
+        for(auto it = urls.begin(); it != urls.end(); it++) {
+            const QUrl& url = *it;
+            QString fileLocal = url.toLocalFile();
+            tasks.append(fileLocal);
+        }
+    }
+    if(!tasks.isEmpty()) {
+        QMetaObject::invokeMethod(this, "runUploadTask", Qt::QueuedConnection, Q_ARG(QStringList, tasks));
+    }
 }
 
 void QWoSftpWidget::reconnect()
@@ -421,6 +538,57 @@ QList<QFileInfo> QWoSftpWidget::localSelections()
         lsfi.append(fi);
     }
     return lsfi;
+}
+
+void QWoSftpWidget::runUploadTask(const QList<QFileInfo> &lsfi)
+{
+    QStringList same;
+    int typeTransfer = QMessageBox::No;
+    for(int i = 0; i < lsfi.length(); i++) {
+        QFileInfo fi = lsfi.at(i);
+        if(m_remoteModel->exist(fi.fileName())) {
+            if(typeTransfer == QMessageBox::Yes ||
+                    typeTransfer == QMessageBox::No){
+                QMessageBox::StandardButtons buttonType = QMessageBox::Yes|QMessageBox::No;
+                if(m_isUltimate && lsfi.length() > 1) {
+                    buttonType |= QMessageBox::YesToAll|QMessageBox::NoToAll;
+                }
+                typeTransfer = QKxMessageBox::warning(this, tr("FileExist"),
+                                                    tr("has the same name in the target path. override it?"),
+                                                    buttonType);
+                if(!m_isUltimate && typeTransfer != QMessageBox::Yes) {
+                    return;
+                }
+            }
+        }
+        QString path = m_remoteModel->path();
+        QString fileRemote = QDir::cleanPath(path + "/" + fi.fileName());
+        bool isAppend = true;
+        if(typeTransfer == QMessageBox::Yes || typeTransfer == QMessageBox::YesToAll) {
+            isAppend = false;
+        }
+        QString fileLocal = fi.absoluteFilePath();
+        if(!m_transfer->addTask(fileLocal, fileRemote, fi.isDir(), false, isAppend)) {
+            same.append(fileLocal);
+        }
+    }
+    if(!same.isEmpty()) {
+        QString msg = same.join('\n');
+        QKxMessageBox::information(this, tr("Upload information"), tr("the follow files has exist:")+"\n"+msg);
+    }
+}
+
+void QWoSftpWidget::runUploadTask(const QStringList &lsf)
+{
+    if(QKxMessageBox::information(this, tr("Upload task"), tr("Do you want to upload this related file?"), QMessageBox::Yes|QMessageBox::No) != QMessageBox::Yes) {
+        return;
+    }
+    QList<QFileInfo> files;
+    for(int i = 0; i < lsf.length(); i++) {
+        QFileInfo fi(lsf.at(i));
+        files.append(fi);
+    }
+    runUploadTask(files);
 }
 
 void QWoSftpWidget::onRemoteContextMenuRequested(const QPoint& pos)
@@ -680,46 +848,38 @@ void QWoSftpWidget::onLocalMenuUpload()
         return;
     }
     QList<QFileInfo> lsfi = localSelections();
-    QStringList same;
-    int typeTransfer = QMessageBox::No;
-    for(int i = 0; i < lsfi.length(); i++) {
-        QFileInfo fi = lsfi.at(i);
-        if(m_remoteModel->exist(fi.fileName())) {
-            if(typeTransfer == QMessageBox::Yes ||
-                    typeTransfer == QMessageBox::No){
-                QMessageBox::StandardButtons buttonType = QMessageBox::Yes|QMessageBox::No;
-                if(m_isUltimate && lsfi.length() > 1) {
-                    buttonType |= QMessageBox::YesToAll|QMessageBox::NoToAll;
-                }
-                typeTransfer = QKxMessageBox::warning(this, tr("FileExist"),
-                                                    tr("has the same name in the target path. override it?"),
-                                                    buttonType);
-                if(!m_isUltimate && typeTransfer != QMessageBox::Yes) {
-                    return;
-                }
-            }
-        }
-        QString path = m_remoteModel->path();
-        QString fileRemote = QDir::cleanPath(path + "/" + fi.fileName());
-        bool isAppend = true;
-        if(typeTransfer == QMessageBox::Yes || typeTransfer == QMessageBox::YesToAll) {
-            isAppend = false;
-        }
-        QString fileLocal = fi.absoluteFilePath();
-        if(!m_transfer->addTask(fileLocal, fileRemote, fi.isDir(), false, isAppend)) {
-            same.append(fileLocal);
-        }
-    }
-    if(!same.isEmpty()) {
-        QString msg = same.join('\n');
-        QKxMessageBox::information(this, tr("Upload information"), tr("the follow files has exist:")+"\n"+msg);
-    }
+    runUploadTask(lsfi);
 }
 
 void QWoSftpWidget::onLocalResetModel()
 {
     for(int i = 0; i < 3;i++) {
         m_local->resizeColumnToContents(i);
+    }
+}
+
+void QWoSftpWidget::onLocalPathReturnPressed()
+{
+    QString path = ui->localPath->text();
+    QString pathHit = m_localModel->path();
+    if(path == pathHit) {
+        return;
+    }
+    if(path.isEmpty()) {
+        m_localModel->setHome();
+    }else{
+        QFileInfo fi(ui->localPath->text());
+        if(!fi.exists()) {
+            QKxMessageBox::information(this, tr("Input error"), tr("The directory entered does not exist."));
+            return;
+        }
+        if(fi.isDir()) {
+            QString path = fi.absoluteFilePath();
+            m_localModel->setPath(path);
+        }else{
+            QString path = fi.path();
+            m_localModel->setPath(path);
+        }
     }
 }
 
@@ -910,6 +1070,23 @@ void QWoSftpWidget::onRemoteResetModel()
     }
 }
 
+void QWoSftpWidget::onRemotePathReturnPressed()
+{
+    QString path = ui->remotePath->text();
+    QString pathHit = m_remoteModel->path();
+    if(path == pathHit) {
+        return;
+    }
+    if(path.isEmpty()) {
+        openDir("/");
+    }else if(m_sftp) {
+        QVariantMap dm;
+        dm.insert("path", path);
+        dm.insert("customEnter", true);
+        m_sftp->fileInfo(path, dm);
+    }
+}
+
 void QWoSftpWidget::onAdjustPosition()
 {
     if(m_passInput) {
@@ -1096,6 +1273,34 @@ void QWoSftpWidget::onCommandFinish(int t, const QVariantMap& userData)
 {
     m_loading->hide();
     QString reason = userData.value("reason").toString();
+    if(t == MT_FTP_FILE_INFO) {
+        bool customEnter = userData.value("customEnter").toBool();
+        if(customEnter) {
+            QVariantMap dm = userData.value("fileInfo").toMap();
+            if(dm.isEmpty()) {
+                static bool showBox = false;
+                if(showBox) {
+                    return;
+                }
+                showBox = true;
+                QKxMessageBox::information(this, tr("File information"), tr("The remote path does not exist or does not have permission to access it?"));
+                showBox = false;
+                return;
+            }
+            if(!m_sftp) {
+                return;
+            }
+            QString path = dm.value("absPath").toString();
+            QString name = dm.value("name").toString();
+            QString type = dm.value("type").toString();
+            if(type.isEmpty() || type.at(0) != "d") {
+                m_sftp->openDir(path);
+            }else{
+                m_sftp->openDir(path + "/" + name);
+            }
+            return;
+        }
+    }
     if(reason == "fatal") {
         release();
     }else if(reason == "error") {

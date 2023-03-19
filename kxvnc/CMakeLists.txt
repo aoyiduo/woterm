@@ -162,6 +162,35 @@ elseif(APPLE)
        "${COREFOUNDATION_LIBRARY}"
        "${CORESERVICES_LIBRARY}"
      )
+elseif(ANDROID)
+    message("other")
+    set(ZLIB_LIBRARY  libz.a)
+    link_libraries(libz.a)
+
+    add_library(portaudio_main SHARED IMPORTED)
+    set_target_properties(portaudio_main PROPERTIES IMPORTED_LOCATION
+        ${LIBPORTAUDIO_ROOT_DIR}/lib/libportaudio.so)
+    link_libraries(portaudio_main)
+
+    add_library(yuv_main SHARED IMPORTED)
+    set_target_properties(yuv_main PROPERTIES IMPORTED_LOCATION
+        ${LIBYUV_ROOT_DIR}/lib/libyuv.so)
+    link_libraries(yuv_main)
+
+    add_library(opus_main SHARED IMPORTED)
+    set_target_properties(opus_main PROPERTIES IMPORTED_LOCATION
+        ${LIBOPUS_ROOT_DIR}/lib/libopus.so)
+    link_libraries(opus_main)
+
+    add_library(openh264_main STATIC IMPORTED)
+    set_target_properties(openh264_main PROPERTIES IMPORTED_LOCATION
+        ${LIBOPENH264_ROOT_DIR}/lib/libopenh264.so)
+    link_libraries(openh264_main)
+
+    add_library(jpeg_main SHARED IMPORTED)
+    set_target_properties(jpeg_main PROPERTIES IMPORTED_LOCATION
+        ${LIBJPEG_ROOT_DIR}/lib/libturbojpeg.so)
+    link_libraries(jpeg_main)
 else()
     message("other")
     set(ZLIB_LIBRARY  libz.a)

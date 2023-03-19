@@ -11,18 +11,25 @@
 
 #pragma once
 
+#include <QObject>
 #include <QVariant>
 #include <QString>
 
 
+class QQmlEngine;
 class QWidget;
 class QLayout;
 struct addrinfo;
 
 
-class QWoUtils
+class QWoUtils : public QObject
 {
+    Q_OBJECT
 public:
+    explicit QWoUtils(QObject* parent = nullptr);
+    ~QWoUtils();
+
+    static void injectJS(QQmlEngine *engine, QStringList files);
     static void setLayoutVisible(QLayout* layout, bool visible);
     static QString qVariantToBase64(const QVariant& v);
     static QVariant qBase64ToVariant(const QString& v);
@@ -79,4 +86,5 @@ public:
 
     static QString findShellPath();
 
+    Q_INVOKABLE static QString qmlCleanPath(const QString& path);
 };

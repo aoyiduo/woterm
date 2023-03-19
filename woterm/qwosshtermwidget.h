@@ -18,7 +18,7 @@
 
 class QWoSshTermWidgetImpl;
 class QWoSshShell;
-class QModem;
+class QWoModem;
 class QShortCut;
 class QMessageBox;
 
@@ -89,7 +89,7 @@ private:
     QPointer<QWoSshShell> m_cmd;
     QPointer<QWoPasswordInput> m_passInput;
     QPointer<QMessageBox> m_dlgConfirm;
-    QPointer<QModem> m_modem;
+    QPointer<QWoModem> m_modem;
     bool m_savePassword;
     QPointer<QShortCut> m_shortCutCopy;
     QPointer<QShortCut> m_shortCutPaste;

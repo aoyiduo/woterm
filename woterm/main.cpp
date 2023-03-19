@@ -20,6 +20,10 @@
 #include <QSharedPointer>
 #include <QPointer>
 #include <QWeakPointer>
+#include <QQuickStyle>
+#include <QQmlContext>
+#include <QQmlApplicationEngine>
+#include <QQuickWindow>
 
 #include "qkxcipher.h"
 
@@ -34,6 +38,9 @@
 #include "qwossh.h"
 #include "qkxutils.h"
 #include "qkxmessagebox.h"
+
+#include "qmoapplication.h"
+#include "qmomainwindow.h"
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -62,10 +69,15 @@ void test()
 
 }
 
-int main(int argc, char *argv[])
+
+int main_pc(int argc, char *argv[])
 {
     //qInstallMessageHandler(myMessageOutput);
+    QGuiApplication::setApplicationName("woterm");
+    QGuiApplication::setOrganizationName("aoyiduo");
+    QGuiApplication::setOrganizationDomain("aoyiduo.com");
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_DontUseNativeMenuBar);
 #ifdef Q_OS_WIN
     static QWoApplication app(argc, argv);
 #else
@@ -75,14 +87,11 @@ int main(int argc, char *argv[])
     QStringList styles = QStyleFactory::keys();
     qDebug() << "embeded style list: " << styles;
     QApplication::setStyle("fusion");
-    QFile f(":/woterm/resource/qss/default.qss");
+    QFile f(":/woterm/resource/qss/desk_default.qss");
     f.open(QFile::ReadOnly);
     QByteArray qss = f.readAll();
     f.close();
-    app.setStyleSheet(qss);
-    app.setAttribute(Qt::AA_DontUseNativeMenuBar);
-
-    QApplication::setWindowIcon(QIcon(":/woterm/resource/skin/woterm4.png"));
+    app.setStyleSheet(qss);    
 
     QTranslator translator;
     QString lang = QWoSetting::languageFile();
@@ -94,9 +103,54 @@ int main(int argc, char *argv[])
     QKxUtils::setCustomFontPath(fontPath);
     QKxUtils::availableFontFamilies();
 
-    QWoMainWindow *pmw = QWoMainWindow::instance();
-    pmw->show();
-    QTimer::singleShot(0, pmw, SLOT(onAppStart()));
-    int code = app.exec();
-    return code;
+    return app.exec();
+}
+
+int main_qml(int argc, char *argv[])
+{
+    //qInstallMessageHandler(myMessageOutput);
+#if defined (Q_OS_ANDROID) || defined (Q_OS_IOS)
+    QGuiApplication::setApplicationName("woterm");
+#else
+    // prevent overwriting existing local configurations
+    QGuiApplication::setApplicationName("moterm");
+#endif
+    QGuiApplication::setOrganizationName("aoyiduo");
+    QGuiApplication::setOrganizationDomain("aoyiduo.com");
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#ifdef Q_OS_WIN
+    static QMoApplication app(argc, argv);
+#else
+    QMoApplication app(argc, argv);
+#endif
+    test();
+
+    QTranslator translator;
+    QString lang = QWoSetting::languageFile();
+    if(!lang.isEmpty() && translator.load(lang)){
+        app.installTranslator(&translator);
+    }
+
+    QString fontPath = QWoSetting::fontBackupPath();
+    QKxUtils::setCustomFontPath(fontPath);
+    QKxUtils::availableFontFamilies();
+
+    QQuickStyle::setStyle("Material");
+    QQuickStyle::setFallbackStyle("Material");
+
+    QFile f(":/woterm/resource/qss/mobile_default.qss");
+    f.open(QFile::ReadOnly);
+    QByteArray qss = f.readAll();
+    f.close();
+    app.setStyleSheet(qss);
+    return app.exec();
+}
+
+int main(int argc, char *argv[])
+{
+#if defined (Q_OS_ANDROID) || defined(QML_MODE)
+    return main_qml(argc, argv);
+#else
+    return main_pc(argc, argv);
+#endif
 }

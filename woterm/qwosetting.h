@@ -19,7 +19,9 @@
 
 class QWoSetting : public QKxSetting
 {
+    Q_OBJECT
 public:
+    explicit QWoSetting(QObject *parent = nullptr);
     static QString ftpTaskPath();
     static QString identityFilePath();
     static QString historyFilePath();
@@ -32,10 +34,12 @@ public:
     static QString sshServerFilePath();
     static QString lastJsLoadPath();
     static void setLastJsLoadPath(const QString& path);
-    static QString languageFile();
     static QMap<QString, QString> allLanguages();
-    static QString languageName(const QString& path);
-    static void setLanguageFile(const QString& path);
+    Q_INVOKABLE static QString languageFile();
+    Q_INVOKABLE static QStringList allLanguageNames();
+    Q_INVOKABLE static QString languagePath(const QString& name);
+    Q_INVOKABLE static QString languageName(const QString& path);
+    Q_INVOKABLE static void setLanguageFile(const QString& path);
 
     static QString sshServerDbPath();
     static QString sftpTaskDbPath();
@@ -43,8 +47,10 @@ public:
     static QString tempPath();
     static QString fontBackupPath();
 
-    static QString lastBackupPath();
-    static void setLastBackupPath(const QString& path);
+    Q_INVOKABLE static QString downloadPath();
+    Q_INVOKABLE static void setDownloadPath(const QString& path);
+    Q_INVOKABLE static QString lastBackupPath();
+    Q_INVOKABLE static void setLastBackupPath(const QString& path);
 
     /* upgrade */
     static bool shouldPopupUpgradeUltimate();

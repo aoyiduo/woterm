@@ -1,0 +1,97 @@
+﻿QMainWindow,QMessageBox,QInputDialog,QDialog {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgb(223, 242, 255), stop:1 rgb(85, 204, 255));
+}
+
+QMoShowerWidget,QMoPtyTermWidgetImpl,QMoSshTermWidgetImpl,QMoSftpWidgetImpl {
+    background-color: rgb(151, 222, 255);
+}
+
+QFrame#menuArea {
+    background-color: rgb(151, 222, 255);
+    border-radius: 5px;
+    border-style: solid;
+    border-color: rgb(255,255,255);
+    border-width: 1px;
+    padding: 3px;    
+    max-width: 150px;
+}
+
+
+QPushButton{
+  border-radius: 3px;
+  border: 1px solid darkgray;
+  padding: 5px;
+  color: black;
+}
+
+QPushButton:hover{
+    border: 1px solid rgba(212,35,122,255);
+    color: rgba(212,35,122,255);
+}
+
+QToolButton{
+  border-radius: 3px;
+  border: 1px solid darkgray;
+  padding: 1px;
+  color: black;
+}
+
+QToolButton:hover{
+    border: 1px solid rgba(212,35,122,255);
+    color: rgba(212,35,122,255);
+}
+
+QToolButton:pressed{
+    border: 1px solid gray;
+    color: gray;
+}
+
+QListView {
+    border-radius: 3px;
+    background: rgba(255,255,255,78);
+    border: 0;
+    padding:0;
+    show-decoration-selected: 1;
+}
+
+QListView::item {
+    background: rgba(255,255,255,0);
+    border-left: 0;
+    border-right: 0;
+    padding-left: 20px;
+    border-bottom: 1px solid rgba(255,255,255,200);
+}
+
+
+QListView::item::selected {
+    background: rgb(85, 204, 255);
+}
+
+/*
+QListView::item:alternate
+{
+    background: #EEEEEE;
+}
+
+QListView::item:selected
+{
+    border: 1px solid #6afea9;
+}
+
+QListView::item:selected:!active
+{
+    background: qlineargradient(x1: 0, y1:0, x2: 0, y2:1, stop: 0 #ABAFE5, stop: 1 #8588B2);
+}
+
+QListView::item:selected:active
+{
+    background: qlineargradient(x1: 0, y1:0, x2: 0, y2:1, stop: 0 #6a6ea9, stop: 1 #888dd9);
+}
+
+QListView::item:selected:hover
+{
+    background: qlineargradient(x1: 0, y1:0, x2: 0, y2:1, stop: 0 #FAFBFE, stop: 1 #DCDEF1);
+}
+*/
+
+

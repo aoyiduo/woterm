@@ -14,7 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="qwoterm.qrc">
+   <iconset resource="woterm.qrc">
     <normaloff>:/woterm/resource/skin/nodes.png</normaloff>:/woterm/resource/skin/nodes.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -40,7 +40,7 @@
         <string>Open</string>
        </property>
        <property name="icon">
-        <iconset resource="qwoterm.qrc">
+        <iconset resource="woterm.qrc">
          <normaloff>:/woterm/resource/skin/select.png</normaloff>:/woterm/resource/skin/select.png</iconset>
        </property>
        <property name="iconSize">
@@ -57,7 +57,7 @@
         <string>New</string>
        </property>
        <property name="icon">
-        <iconset resource="qwoterm.qrc">
+        <iconset resource="woterm.qrc">
          <normaloff>:/woterm/resource/skin/add.png</normaloff>:/woterm/resource/skin/add.png</iconset>
        </property>
        <property name="iconSize">
@@ -74,7 +74,7 @@
         <string>Modify</string>
        </property>
        <property name="icon">
-        <iconset resource="qwoterm.qrc">
+        <iconset resource="woterm.qrc">
          <normaloff>:/woterm/resource/skin/linkcfg.png</normaloff>:/woterm/resource/skin/linkcfg.png</iconset>
        </property>
        <property name="iconSize">
@@ -91,7 +91,7 @@
         <string>Delete</string>
        </property>
        <property name="icon">
-        <iconset resource="qwoterm.qrc">
+        <iconset resource="woterm.qrc">
          <normaloff>:/woterm/resource/skin/delete.png</normaloff>:/woterm/resource/skin/delete.png</iconset>
        </property>
        <property name="iconSize">
@@ -139,7 +139,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="qwoterm.qrc"/>
+  <include location="woterm.qrc"/>
  </resources>
  <connections/>
 </ui>

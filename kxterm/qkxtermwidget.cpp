@@ -119,6 +119,19 @@ QKxTermWidget::QKxTermWidget(QWidget* parent)
     m_keyFind = QKeySequence(Qt::CTRL + Qt::Key_F);
 }
 
+QKxTermWidget::~QKxTermWidget()
+{
+    if(m_vscroll) {
+        delete m_vscroll;
+    }
+    if(m_find) {
+        delete m_find;
+    }
+    if(m_term) {
+        delete m_term;
+    }
+}
+
 QKxTermItem *QKxTermWidget::termItem()
 {
     return m_term;

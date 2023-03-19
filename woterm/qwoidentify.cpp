@@ -27,6 +27,12 @@
 
 #include <libssh/libssh.h>
 
+QWoIdentify::QWoIdentify(QObject *parent)
+    : QObject(parent)
+{
+
+}
+
 bool QWoIdentify::infomationByPrivateKey(const QString &file, IdentifyInfo *pinfo)
 {
     QFile f(file);
@@ -273,4 +279,44 @@ QMap<QString, IdentifyInfo> QWoIdentify::loadFromFile()
         all.insert(info.fingureprint, info);
     }
     return all;
+}
+
+QStringList QWoIdentify::qmlFileNames()
+{
+    QMap<QString, IdentifyInfo> identities = loadFromSqlite();
+    return identities.keys();
+}
+
+QVariantList QWoIdentify::qmlLoadFromSqlite()
+{
+    QVariantList lsv;
+    QMap<QString, IdentifyInfo> identities = loadFromSqlite();
+    for(auto it = identities.begin(); it != identities.end(); it++) {
+        const IdentifyInfo& info = *it;
+        QVariantMap dm;
+        dm.insert("name", info.name);
+        dm.insert("figureprint", info.fingureprint);
+        dm.insert("prvKey", QString(info.prvKey));
+        dm.insert("pubKey", QString(info.pubKey));
+        dm.insert("type", info.type);
+        lsv.append(dm);
+    }
+    return lsv;
+}
+
+QVariant QWoIdentify::qmlImport(const QString &file, const QString& nameSave)
+{
+    IdentifyInfo info;
+    if(!QWoIdentify::import(file, &info)) {
+        return tr("the identify's file is bad");
+    }
+    QFile f(file);
+    f.open(QFile::ReadOnly);
+    QByteArray buf = f.readAll();
+    QByteArray data = QWoUtils::fromWotermStream(buf);
+    f.close();
+    if(QWoIdentify::create(nameSave, info.prvKey)) {
+        return true;
+    }
+    return tr("The name already exists. Please enter a new name.");
 }

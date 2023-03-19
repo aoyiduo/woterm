@@ -174,7 +174,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="qwoterm.qrc">
+          <iconset resource="woterm.qrc">
            <normaloff>:/woterm/resource/skin/pattern2.png</normaloff>:/woterm/resource/skin/pattern2.png</iconset>
          </property>
         </widget>
@@ -199,7 +199,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="qwoterm.qrc">
+          <iconset resource="woterm.qrc">
            <normaloff>:/woterm/resource/skin/linkcfg.png</normaloff>:/woterm/resource/skin/linkcfg.png</iconset>
          </property>
         </widget>
@@ -349,7 +349,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="qwoterm.qrc">
+        <iconset resource="woterm.qrc">
          <normaloff>:/woterm/resource/skin/add2.png</normaloff>:/woterm/resource/skin/add2.png</iconset>
        </property>
       </widget>
@@ -440,7 +440,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="qwoterm.qrc"/>
+  <include location="woterm.qrc"/>
  </resources>
  <connections/>
 </ui>

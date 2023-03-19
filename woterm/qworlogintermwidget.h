@@ -17,7 +17,7 @@
 
 class QWoRLoginTermWidgetImpl;
 class QWoRLogin;
-class QModem;
+class QWoModem;
 
 class QWoRLoginTermWidget : public QWoTermWidget
 {
@@ -74,7 +74,7 @@ private:
     QPointer<QAction> m_paste;
     QPointer<QAction> m_output;
     QPointer<QAction> m_stop;
-    QPointer<QModem> m_modem;
+    QPointer<QWoModem> m_modem;
     bool m_savePassword;
     int m_loginCount;
 };

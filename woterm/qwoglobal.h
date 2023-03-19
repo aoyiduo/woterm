@@ -44,6 +44,22 @@ enum EHostType{
 #define ROLE_GROUP_STATE        (Qt::UserRole+7)
 #define ROLE_TASKINFO           (Qt::UserRole+8)
 #define ROLE_CUSTOM_FONT        (Qt::UserRole+9)
+#define ROLE_ICON_URL           (Qt::UserRole+10)
+#define ROLE_SHORT_STRING       (Qt::UserRole+11)
+#define ROLE_FULL_STRING        (Qt::UserRole+12)
+#define ROLE_GROUP_NAME         (Qt::UserRole+13)
+#define ROLE_TYPE               (Qt::UserRole+14)
+#define ROLE_FILENAME           (Qt::UserRole+15)
+#define ROLE_ISDIR              (Qt::UserRole+16)
+#define ROLE_FILESIZE           (Qt::UserRole+17)
+#define ROLE_ISROOT             (Qt::UserRole+18)
+#define ROLE_FILEPATH           (Qt::UserRole+19)
+#define ROLE_FILEURL            (Qt::UserRole+20)
+#define ROLE_SELECTED           (Qt::UserRole+21)
+#define ROLE_PATH_LOCAL         (Qt::UserRole+22)
+#define ROLE_PATH_REMOTE        (Qt::UserRole+23)
+#define ROLE_MENUID             (Qt::UserRole+24)
+
 
 struct GroupInfo {
     QString name;
@@ -79,15 +95,15 @@ struct HostInfo{
         return name < hi.name;
     }
 
-    inline bool isValid() {
+    inline bool isValid() const {
         return !name.isEmpty();
     }
 
-    inline bool hasProxyJump() {
+    inline bool hasProxyJump() const {
         return !proxyJump.isEmpty();
     }
 
-    inline bool hasIdentify() {
+    inline bool hasIdentify() const {
         return !identityFile.isEmpty();
     }
 };
@@ -122,7 +138,7 @@ typedef struct{
 #define FI_ReadOther 0x0004
 #define FI_WriteOther 0x0002
 #define FI_ExeOther 0x0001
-typedef struct {
+struct FileInfo {
     QString longName;
     QString name;
     QString type;
@@ -132,6 +148,14 @@ typedef struct {
     QString date;
     QString label;
     QString permission;
+
+    // add for multiple selection.
+    bool selected; // temp record select or not.
+
+    FileInfo() {
+        selected = false;
+    }
+
     bool isDir() const {
         return type == 'd';
     }
@@ -141,7 +165,7 @@ typedef struct {
     bool isLink() const {
         return type == 'l';
     }
-} FileInfo;
+};
 
 enum ETState {
     ETS_None = 1,
@@ -151,7 +175,6 @@ enum ETState {
 };
 struct TaskInfo {
     int taskId;
-    QString name;
     QString local;
     QString remote;
     int textWidth;
@@ -182,7 +205,6 @@ struct TaskInfo {
         taskId = 0;
         tryCount = 0;
         fileCount = 0;
-        name.clear();
         local.clear();
         remote.clear();
     }

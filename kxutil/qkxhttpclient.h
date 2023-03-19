@@ -17,6 +17,7 @@
 #include <QObject>
 #include <QPointer>
 
+class QFile;
 class QNetworkAccessManager;
 class QNetworkReply;
 class KXUTIL_EXPORT QKxHttpClient : public QObject
@@ -27,8 +28,12 @@ public:
     virtual ~QKxHttpClient();
     bool get(const QString& url);
     bool post(const QString& url, const QByteArray& data);
+    bool fileGet(const QString& url, const QString& fileSave);
+    bool filePost(const QString& url, const QByteArray& data, const QString& fileSave);
+    QString fileSavePath() const;
 signals:
     void result(int code, const QByteArray& body);
+    void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
     void finished();
 private slots:
     void onReadyRead();
@@ -39,6 +44,8 @@ private:
     QPointer<QNetworkAccessManager> m_manager;
     QPointer<QNetworkReply> m_reply;
     QByteArray m_data;
+    QString m_fileSave;
+    QPointer<QFile> m_file;
 };
 
 #endif // QKXHTTPCLIENT_H

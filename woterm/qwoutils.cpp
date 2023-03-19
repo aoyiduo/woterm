@@ -24,6 +24,7 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QStandardPaths>
+#include <QQmlEngine>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,6 +55,33 @@
 #endif
 
 static ulong LOCAL_IP = inet_addr("127.0.0.1");
+
+QWoUtils::QWoUtils(QObject *parent)
+    : QObject(parent)
+{
+
+}
+
+QWoUtils::~QWoUtils()
+{
+
+}
+
+void QWoUtils::injectJS(QQmlEngine *engine, QStringList files)
+{
+    for(auto it = files.begin(); it != files.end(); it++) {
+        QString fileName = *it;
+        QFile jsFile(fileName);
+        if(jsFile.open(QIODevice::ReadOnly)) {
+            QString content = jsFile.readAll();
+            jsFile.close();
+            QJSValue ret = engine->evaluate(content, fileName);
+            if(ret.isError()) {
+                qDebug() << ret.toString();
+            }
+        }
+    }
+}
 
 void QWoUtils::setLayoutVisible(QLayout *layout, bool visible)
 {
@@ -728,5 +756,10 @@ QString QWoUtils::findShellPath()
         }
     }
     return "";
+}
+
+QString QWoUtils::qmlCleanPath(const QString &path)
+{
+    return QDir::cleanPath(path);
 }
 

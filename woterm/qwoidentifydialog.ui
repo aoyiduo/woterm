@@ -14,7 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="qwoterm.qrc">
+   <iconset resource="woterm.qrc">
     <normaloff>:/woterm/resource/skin/keyset.png</normaloff>:/woterm/resource/skin/keyset.png</iconset>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
@@ -103,7 +103,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="qwoterm.qrc"/>
+  <include location="woterm.qrc"/>
  </resources>
  <connections>
   <connection>

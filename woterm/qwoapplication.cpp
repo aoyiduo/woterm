@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -12,6 +12,7 @@
 #include "qwoapplication.h"
 #include "qwosetting.h"
 #include "qkxprocesslaunch.h"
+#include "qwomainwindow.h"
 
 #include <QStyleFactory>
 #include <QDebug>
@@ -21,25 +22,13 @@
 #include <QTranslator>
 #include <QLibraryInfo>
 #include <QLibrary>
+#include <QTimer>
 
 
 QWoApplication::QWoApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
-
-    setAttribute(Qt::AA_DontUseNativeMenuBar);
     setWindowIcon(QIcon(":/woterm/resource/skin/woterm4.png"));
-
-    QStringList styles = QStyleFactory::keys();
-    qDebug() << "embeded style list: " << styles;
-    setStyle("fusion");
-
-    QFile f(":/woterm/resource/qss/default.qss");
-    f.open(QFile::ReadOnly);
-    QByteArray qss = f.readAll();
-    f.close();
-    setStyleSheet(qss);
-
 
     QString path = applicationDirPath();
     addLibraryPath(path);
@@ -50,4 +39,22 @@ QWoApplication::QWoApplication(int &argc, char **argv)
 
     QStringList libpaths = libraryPaths();
     qDebug() << libpaths;
+    QMetaObject::invokeMethod(this, "init", Qt::QueuedConnection);
+}
+
+QWoApplication *QWoApplication::instance()
+{
+    return qobject_cast<QWoApplication*>(QCoreApplication::instance());
+}
+
+QWoMainWindow *QWoApplication::mainWindow()
+{
+    return QWoApplication::instance()->m_main;
+}
+
+void QWoApplication::init()
+{
+    m_main = new QWoMainWindow();
+    m_main->show();
+    QMetaObject::invokeMethod(m_main, "onAppStart", Qt::QueuedConnection);
 }

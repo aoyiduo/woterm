@@ -36,6 +36,7 @@ set(SOURCE_FILES
     qkxkeepwakeup.cpp
     qkxprocesslaunch.cpp
     qkxmessagebox.cpp
+    qkxkeymapping.cpp
 )
 
 set(HEADER_FILES
@@ -57,6 +58,7 @@ set(HEADER_FILES
     qkxkeepwakeup.h
     qkxprocesslaunch.h
     qkxmessagebox.h
+    qkxkeymapping.h
 )
 
 if(WIN32)
@@ -143,7 +145,7 @@ else()
 
     add_library(openssl_crypto STATIC IMPORTED)
     set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/lib/libcrypto.so.1.1)
+        ${OPENSSL_ROOT_DIR}/lib/libcrypto.so)
     link_libraries(openssl_crypto)
 endif()
 

@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -16,11 +16,13 @@
 #include <QVariant>
 #include <QMap>
 
-class KXUTIL_EXPORT QKxSetting
+class KXUTIL_EXPORT QKxSetting : public QObject
 {
+    Q_OBJECT
 public:
-    static void setValue(const QString& key, const QVariant& v);
-    static QVariant value(const QString& key, const QVariant& defval=QVariant());
+    explicit QKxSetting(QObject *parent = nullptr);
+    Q_INVOKABLE static void setValue(const QString& key, const QVariant& v);
+    Q_INVOKABLE static QVariant value(const QString& key, const QVariant& defval=QVariant());
     static void remove(const QString& key);
     static void sync();
 

@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -16,6 +16,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QHash>
+#include <QUrl>
 
 class QBuffer;
 class QTimer;
@@ -24,11 +25,13 @@ class QWoSshConf : public QObject
 {
     Q_OBJECT
 public:
+    explicit QWoSshConf(const QString& dbFile, QObject *parent = nullptr);
     static QWoSshConf* instance();
     static bool databaseValid(const QString& dbFile);
     /* groud name */
     QList<GroupInfo> groupList() const;
     QStringList groupNameList() const;
+    Q_INVOKABLE QStringList qmlGroupNameList() const;
     QStringList tableList() const;
 
     bool renameGroup(const QString& nameNew, const QString& nameOld);
@@ -36,27 +39,34 @@ public:
     bool removeGroup(const QString& name);
 
 
+    Q_INVOKABLE bool restoreByUrl(const QUrl& url);
     bool restore(const QString& dbFile);
     bool backup(const QString& dbFile);
     bool refresh();
     bool exportToFile(const QString& path);
     bool removeServer(const QString& name);
+    Q_INVOKABLE bool qmlRemoveServer(const QString& name);
+    Q_INVOKABLE void qmlClear();
     bool removeServerByGroup(const QString& name);
     bool renameServerGroup(const QString& nameNew, const QString& nameOld);
     bool modify(const HostInfo& hi);
     bool append(const HostInfo& hi);
     bool modifyOrAppend(const HostInfo& hi);
+    Q_INVOKABLE bool qmlModifyOrAppend(const QVariant& v);
     HostInfo find(const QString&name) const;
+    Q_INVOKABLE QVariant qmlFind(const QString& name) const;
+    Q_INVOKABLE QVariant qmlDefault() const;
     bool find(const QString &name, HostInfo* pinfo) const;
 
 
     void resetAllProperty(const QString& v);
-    bool exists(const QString& name) const;
+    Q_INVOKABLE bool exists(const QString& name) const;
     void updatePassword(const QString& name, const QString& password);
 
     QList<HostInfo> hostList(EHostType type = All) const;
     QStringList hostNameList(EHostType type = All) const;
     QList<HostInfo> proxyJumpers(const QString& name, int max=2) const;
+    Q_INVOKABLE QStringList qmlProxyJumpers() const;
 
 signals:
     void dataReset();
@@ -64,8 +74,6 @@ private slots:
     void onAboutToQuit();
     void onResetLater();
 
-protected:
-    explicit QWoSshConf(const QString& dbFile, QObject *parent = nullptr);
 private:
     Q_INVOKABLE void init();
     QByteArray toStream();

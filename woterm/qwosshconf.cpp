@@ -26,6 +26,9 @@
 #include <QDebug>
 #include <QTimer>
 
+
+Q_GLOBAL_STATIC_WITH_ARGS(QWoSshConf, gSshConf, (QWoSetting::sshServerDbPath()))
+
 /*
  *  #
  *  #    <---memo--->
@@ -200,15 +203,12 @@ void QWoSshConf::init()
 
 QWoSshConf *QWoSshConf::instance()
 {
-    static QWoSshConf sc(QWoSetting::sshServerDbPath());
-    return &sc;
+    //static QWoSshConf sc(QWoSetting::sshServerDbPath());
+    return gSshConf;
 }
 
 bool QWoSshConf::restore(const QString &dbBackup)
 {
-    if(dbBackup.isEmpty()) {
-        return false;
-    }
     if(!databaseValid(dbBackup)) {
         return false;
     }
@@ -732,6 +732,11 @@ QStringList QWoSshConf::groupNameList() const
     return names;
 }
 
+QStringList QWoSshConf::qmlGroupNameList() const
+{
+    return groupNameList();
+}
+
 QStringList QWoSshConf::tableList() const
 {
     return {"servers","groups","identities"};
@@ -786,6 +791,14 @@ bool QWoSshConf::removeGroup(const QString &name)
         }
     }
     return true;
+}
+
+bool QWoSshConf::restoreByUrl(const QUrl &url)
+{
+    QString tmp = url.toLocalFile();
+    QFileInfo fi(tmp);
+    QString path = fi.absoluteFilePath();
+    return restore(path);
 }
 
 bool QWoSshConf::_renameGroup(const QString &nameNew, const QString &nameOld)
@@ -960,6 +973,19 @@ bool QWoSshConf::removeServer(const QString &name)
     return false;
 }
 
+bool QWoSshConf::qmlRemoveServer(const QString &name)
+{
+    return removeServer(name);
+}
+
+void QWoSshConf::qmlClear()
+{
+    QList<QString> names = m_hosts.keys();
+    for(auto it = names.begin(); it != names.end(); it++) {
+        removeServer(*it);
+    }
+}
+
 bool QWoSshConf::removeServerByGroup(const QString &name)
 {
     try{
@@ -1021,6 +1047,32 @@ bool QWoSshConf::modifyOrAppend(const HostInfo &hi)
     m_hosts.insert(hi.name, hi);
     resetLater();
     return save(hi);
+}
+
+bool QWoSshConf::qmlModifyOrAppend(const QVariant &v)
+{
+    HostInfo hi;
+    QVariantMap dm = v.toMap();
+    hi.host = dm.value("host").toString();
+    hi.memo = dm.value("memo").toString();
+    hi.name = dm.value("name").toString();
+    hi.password = dm.value("password").toString();
+    hi.identityFile = dm.value("identify").toString();
+    hi.port = dm.value("port").toInt();
+    hi.user = dm.value("user").toString();
+    hi.script = dm.value("script").toString();
+    hi.proxyJump = dm.value("proxyJump").toString();
+    QString type = dm.value("type").toString();
+    if(type == "SshWithSftp") {
+        hi.type = SshWithSftp;
+    }else if(type == "SftpOnly") {
+        hi.type = SftpOnly;
+    }else if(type == "Telnet") {
+        hi.type = Telnet;
+    }else{
+        hi.type = RLogin;
+    }
+    return modifyOrAppend(hi);
 }
 
 void QWoSshConf::resetAllProperty(const QString &v)
@@ -1119,6 +1171,11 @@ QList<HostInfo> QWoSshConf::proxyJumpers(const QString& name, int max) const
     return his;
 }
 
+QStringList QWoSshConf::qmlProxyJumpers() const
+{
+    return hostNameList(SshWithSftp);
+}
+
 void QWoSshConf::onAboutToQuit()
 {
     backup(m_dbFile + ".bak");
@@ -1133,6 +1190,58 @@ void QWoSshConf::onResetLater()
 
 HostInfo QWoSshConf::find(const QString &name) const {
     return m_hosts.value(name);
+}
+
+QVariant QWoSshConf::qmlFind(const QString &name) const
+{
+    HostInfo hi = find(name);
+    if(!hi.isValid()) {
+        return QVariant();
+    }
+    QVariantMap dm;
+    dm.insert("name", hi.name);
+    dm.insert("host", hi.host);
+    dm.insert("port", QString("%1").arg(hi.port));
+    dm.insert("memo", hi.memo);
+    dm.insert("user", hi.user);
+    dm.insert("password", hi.password);
+    dm.insert("identify", hi.identityFile);
+    dm.insert("script", hi.script);
+    dm.insert("proxyJump", hi.proxyJump);
+    dm.insert("group", hi.group);
+    dm.insert("script", hi.script);
+    if(hi.type == SshWithSftp) {
+        dm.insert("type", "SshWithSftp");
+    }else if(hi.type == SftpOnly) {
+        dm.insert("type", "SftpOnly");
+    }else if(hi.type == Telnet) {
+        dm.insert("type", "Telnet");
+    }else if(hi.type == RLogin) {
+        dm.insert("type", "RLogin");
+    }else if(hi.type == SerialPort) {
+        dm.insert("type", "SerialPort");
+    }else if(hi.type == Mstsc) {
+        dm.insert("type", "Mstsc");
+    }else if(hi.type == Vnc) {
+        dm.insert("type", "Vnc");
+    }
+    return QVariant(dm);
+}
+
+QVariant QWoSshConf::qmlDefault() const
+{
+    QVariantMap dm;
+    dm.insert("name", "");
+    dm.insert("host", "");
+    dm.insert("port", QString("22"));
+    dm.insert("memo", "");
+    dm.insert("user", "root");
+    dm.insert("password", "");
+    dm.insert("identify", "");
+    dm.insert("script", "");
+    dm.insert("proxyJump", "");
+    dm.insert("type", "SshWithSftp");
+    return QVariant(dm);
 }
 
 bool QWoSshConf::find(const QString &name, HostInfo *pinfo) const

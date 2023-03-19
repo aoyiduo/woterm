@@ -19,11 +19,13 @@
 #include "qkxkeytranslator.h"
 #include "qkxcolorschema.h"
 #include "qkxechoinput.h"
+#include "qkxtouchpoint.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
 #include <QGuiApplication>
+
 #include <QClipboard>
 #include <QPainter>
 #include <QTimer>
@@ -35,6 +37,7 @@
 #include <QDrag>
 #include <QMimeData>
 #include <QFontDatabase>
+#include <QInputMethod>
 
 #define REPAINT_TIMEOUT1 (20)
 #define REPAINT_TIMEOUT2 (40)
@@ -62,6 +65,7 @@ QKxTermItem::QKxTermItem(QWidget* parent)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setFocusPolicy(Qt::StrongFocus);
     setAttribute(Qt::WA_InputMethodEnabled, true);
+    setAttribute(Qt::WA_AcceptTouchEvents, true);
     setObjectName(QString("QKxTermItem:%1").arg(idx++));
     setInputEnable(true);
 
@@ -484,6 +488,16 @@ void QKxTermItem::waitInput()
     wait();
 }
 
+void QKxTermItem::simulateKeyPress(QKeyEvent *ev)
+{
+    keyPressEvent(ev);
+}
+
+void QKxTermItem::simulateKeyRelease(QKeyEvent *ev)
+{
+    keyReleaseEvent(ev);
+}
+
 void QKxTermItem::bindShortCut(QKxTermItem::ShortCutKey sck, QKeySequence key)
 {
     switch(sck)
@@ -715,6 +729,16 @@ void QKxTermItem::resetTitlePosition(bool bycursor)
         y = sz.height()-sh.height();
     }
     m_title->setGeometry(sz.width() - sh.width() - 1, y, sh.width(), sh.height());
+}
+
+void QKxTermItem::resetTouchPointPosition()
+{
+    if(m_touchPoint) {
+        int tw = m_touchPoint->raduis() * 2;
+        QSize sz = size();
+        QRect rt(sz.width() - tw, (sz.height() - tw) / 2, tw, tw);
+        m_touchPoint->setGeometry(rt);
+    }
 }
 
 QPoint QKxTermItem::widgetPointToTermViewPosition(const QPoint &pt)
@@ -1050,6 +1074,7 @@ void QKxTermItem::resizeEvent(QResizeEvent *ev)
     //qDebug() << objectName() << "geometryChanged" << newGeometry << oldGeometry;
     m_flagPaints |= PF_FullScreen;
     resetTitlePosition(false);
+    resetTouchPointPosition();
 }
 
 void QKxTermItem::keyPressEvent(QKeyEvent *ev)
@@ -1366,7 +1391,7 @@ void QKxTermItem::inputMethodEvent(QInputMethodEvent *ev)
     update(rgn.boundingRect());
 }
 
-QVariant QKxTermItem::inputMethodQuery(Qt::InputMethodQuery query, QVariant v) const
+QVariant QKxTermItem::inputMethodQuery(Qt::InputMethodQuery query, const QVariant& v) const
 {
     //qDebug() << "inputMethodQuery" << query << v;
     if(m_view && inputEnable()) {
@@ -1393,13 +1418,60 @@ QVariant QKxTermItem::inputMethodQuery(Qt::InputMethodQuery query, QVariant v) c
 void QKxTermItem::showInputMethod(bool show)
 {
     QInputMethod *im = QGuiApplication::inputMethod();
-    if(im){
+    if(im && !im->isVisible()){
         im->setVisible(show);
+    }
+}
+
+void QKxTermItem::showTouchPoint(bool show, bool async)
+{
+    if(async == true) {
+        QMetaObject::invokeMethod(this, "showTouchPoint", Qt::QueuedConnection, Q_ARG(bool, show), Q_ARG(bool, false));
+        return;
+    }
+    if(show) {
+        if(m_touchPoint == nullptr) {
+            m_touchPoint = new QKxTouchPoint(this);
+            QObject::connect(m_touchPoint, SIGNAL(clicked()), this, SIGNAL(touchPointClicked()));
+        }
+        resetTouchPointPosition();
+        m_touchPoint->show();
+    }else if(m_touchPoint) {
+        m_touchPoint->hide();
     }
 }
 
 bool QKxTermItem::event(QEvent *e)
 {
+    QEvent::Type type = e->type();
+    switch (type) {
+    case QEvent::TouchBegin:
+        touchBeginEvent(reinterpret_cast<QTouchEvent*>(e));
+        if(e->isAccepted()) {
+            return true;
+        }
+        break;
+    case QEvent::TouchUpdate:
+        touchUpdateEvent(reinterpret_cast<QTouchEvent*>(e));
+        if(e->isAccepted()) {
+            return true;
+        }
+        break;
+    case QEvent::TouchEnd:
+        touchEndEvent(reinterpret_cast<QTouchEvent*>(e));
+        if(e->isAccepted()) {
+            return true;
+        }
+        break;
+    case QEvent::TouchCancel:
+        touchCancelEvent(reinterpret_cast<QTouchEvent*>(e));
+        if(e->isAccepted()) {
+            return true;
+        }
+        break;
+    default:
+        break;
+    }
     return QWidget::event(e);
 }
 
@@ -1434,6 +1506,65 @@ void QKxTermItem::dropEvent(QDropEvent *event)
 {
     event->setAccepted(event->source() == this);
     event->setDropAction(Qt::LinkAction);
+}
+
+void QKxTermItem::touchBeginEvent(QTouchEvent *e)
+{
+    qDebug() << "touchBeginEvent" << (e->target() != nullptr ? e->target()->objectName() : "nullptr") << e->touchPoints();
+    e->setAccepted(true);
+    m_lineDragStart = m_scrollValue;
+}
+
+void QKxTermItem::touchUpdateEvent(QTouchEvent *e)
+{
+    qDebug() << "touchUpdateEvent" << (e->target() != nullptr ? e->target()->objectName() : "nullptr") << e->touchPoints();
+    const QList<QTouchEvent::TouchPoint>& tps = e->touchPoints();
+    if(tps.isEmpty()) {
+        return;
+    }
+    QTouchEvent::TouchPoint tp = tps.first();
+    QPointF delta = tp.lastPos() - tp.pos();
+    qDebug() << "touchUpdateEvent" << delta;
+    QPointF offset = tp.lastPos() - tp.startPos();
+    {
+        int lineToScroll = offset.y() / m_fontHeight;
+        int vmax = m_view->historyLineCount();
+        if(vmax) {
+            int value = m_lineDragStart;
+            value -= lineToScroll;
+            if(value < 0) {
+                value = 0;
+            }else if(value > vmax) {
+                value = vmax;
+            }
+            updateScrollValue(value);
+        }
+    }
+
+    {
+        int lineToScroll = delta.y() / m_fontHeight;
+        int vmax = m_view->historyLineCount();
+        if(vmax) {
+            int value = m_scrollValue;
+            value -= lineToScroll;
+            if(value < 0) {
+                value = 0;
+            }else if(value > vmax) {
+                value = vmax;
+            }
+            updateScrollValue(value);
+        }
+    }
+}
+
+void QKxTermItem::touchEndEvent(QTouchEvent *e)
+{
+    qDebug() << "touchEndEvent" << (e->target() != nullptr ? e->target()->objectName() : "nullptr") << e->touchPoints();
+}
+
+void QKxTermItem::touchCancelEvent(QTouchEvent *e)
+{
+    qDebug() << "touchCancelEvent" << (e->target() != nullptr ? e->target()->objectName() : "nullptr") << e->touchPoints();
 }
 
 void QKxTermItem::updateView(QKxTermItem::PaintFlag flags)
@@ -1813,7 +1944,7 @@ void QKxTermItem::handleSendData(const QByteArray &buf)
 
 void QKxTermItem::scroll(int yoffset)
 {
-    int lineToScroll = yoffset / 5;
+    int lineToScroll = yoffset / m_fontHeight;
     int vmax = m_view->historyLineCount();
     if(vmax) {
         int value = m_scrollValue;

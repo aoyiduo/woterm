@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -85,6 +85,67 @@ void QWoHostListModel::modifyOrAppend(const HostInfo &hi)
     }
 }
 
+bool QWoHostListModel::qmlRemove(const QString &name)
+{
+    return QWoSshConf::instance()->removeServer(name);
+}
+
+QVariantMap QWoHostListModel::qmlGet(int row)
+{
+    if(row >= m_hosts.length() || row < 0) {
+        return QVariantMap();
+    }
+    const HostInfo& hi = m_hosts.at(row);
+    if(!hi.isValid()) {
+        return QVariantMap();
+    }
+    QVariantMap dm;
+    dm.insert("name", hi.name);
+    dm.insert("host", hi.host);
+    dm.insert("port", QString("%1").arg(hi.port));
+    dm.insert("memo", hi.memo);
+    dm.insert("user", hi.user);
+    dm.insert("password", hi.password);
+    dm.insert("identify", hi.identityFile);
+    dm.insert("script", hi.script);
+    dm.insert("proxyJump", hi.proxyJump);
+    if(hi.type == SshWithSftp) {
+        dm.insert("type", "SshWithSftp");
+        dm.insert("icon", "qrc:/woterm/resource/skin/ssh2.png");
+        dm.insert("tip", QString("%1:%2 - %3 - %4").arg(hi.host).arg(hi.port).arg(hi.user).arg(hi.group));
+    }else if(hi.type == SftpOnly) {
+        dm.insert("type", "SftpOnly");
+        dm.insert("icon", "qrc:/woterm/resource/skin/sftp.png");
+        dm.insert("tip", QString("%1:%2 - %3 - %4").arg(hi.host).arg(hi.port).arg(hi.user).arg(hi.group));
+    }else if(hi.type == Telnet) {
+        dm.insert("type", "Telnet");
+        dm.insert("icon", "qrc:/woterm/resource/skin/telnet.png");
+        dm.insert("tip", QString("%1:%2 - %3 - %4").arg(hi.host).arg(hi.port).arg(hi.user).arg(hi.group));
+    }else if(hi.type == RLogin) {
+        dm.insert("type", "RLogin");
+        dm.insert("icon", "qrc:/woterm/resource/skin/rlogin.png");
+        dm.insert("tip", QString("%1:%2 - %3 - %4").arg(hi.host).arg(hi.port).arg(hi.user).arg(hi.group));
+    }else if(hi.type == SerialPort) {
+        dm.insert("type", "RLogin");
+        dm.insert("icon", "qrc:/woterm/resource/skin/serialport.png");
+        dm.insert("tip", QString("Should be remove"));
+    }else if(hi.type == Mstsc) {
+        dm.insert("type", "RLogin");
+        dm.insert("icon", "qrc:/woterm/resource/skin/mstsc2.png");
+        dm.insert("tip", QString("%1:%2 - %3 - %4").arg(hi.host).arg(hi.port).arg(hi.user).arg(hi.group));
+    }else if(hi.type == Vnc) {
+        dm.insert("type", "RLogin");
+        dm.insert("icon", "qrc:/woterm/resource/skin/vnc2.png");
+        dm.insert("tip", QString("%1:%2 - %3").arg(hi.host).arg(hi.port).arg(hi.group));
+    }else{
+        dm.insert("type", "Unknow");
+        dm.insert("icon", "qrc:/woterm/resource/skin/vnc2.png");
+        dm.insert("tip", QString("Unknow"));
+    }
+
+    return dm;
+}
+
 void QWoHostListModel::onDataReset()
 {
     refreshList();
@@ -138,6 +199,43 @@ QVariant QWoHostListModel::data(const QModelIndex &index, int role) const
     }
     const HostInfo& hi = m_hosts.at(index.row());
 
+    if(role == ROLE_ICON_URL) {
+        if(index.column() != 0) {
+            return QVariant();
+        }
+        switch (hi.type) {
+        case SshWithSftp:
+            return "qrc:/woterm/resource/skin/ssh2.png";
+        case SftpOnly:
+            return "qrc:/woterm/resource/skin/sftp.png";
+        case Telnet:
+            return "qrc:/woterm/resource/skin/telnet.png";
+        case RLogin:
+            return "qrc:/woterm/resource/skin/rlogin.png";
+        case Mstsc:
+            return "qrc:/woterm/resource/skin/mstsc2.png";
+        case Vnc:
+            return "qrc:/woterm/resource/skin/vnc2.png";
+        case SerialPort:
+            return "qrc:/woterm/resource/skin/serialport.png";
+        }
+        return QVariant();
+    }
+    if(role == ROLE_SHORT_STRING) {
+        if(index.column() != 0) {
+            return QVariant();
+        }
+        switch (hi.type) {
+        case Vnc:
+            return QString("%1:%2 - %3").arg(hi.host).arg(hi.port).arg(hi.group);
+        case SerialPort:
+            return tr("Should be remove");
+        }
+        return QString("%1:%2 - %3 - %4").arg(hi.host).arg(hi.port).arg(hi.user).arg(hi.group);
+    }
+    if(role == ROLE_GROUP_NAME) {
+        return hi.group;
+    }
     if(role == Qt::DecorationRole) {
         if(index.column() != 0) {
             return QVariant();
@@ -179,6 +277,26 @@ QVariant QWoHostListModel::data(const QModelIndex &index, int role) const
         QVariant v;
         v.setValue(hi);
         return v;
+    }
+
+    if(role == ROLE_TYPE) {
+        switch (hi.type) {
+        case SftpOnly:
+            return QVariant("SftpOnly");
+        case SshWithSftp:
+            return QVariant("SshWithSftp");
+        case Telnet:
+            return QVariant("Telnet");
+        case RLogin:
+            return QVariant("RLogin");
+        case Mstsc:
+            return QVariant("Mstsc");
+        case Vnc:
+            return QVariant("Vnc");
+        case SerialPort:
+            return QVariant("SerialPort");
+        }
+        return QVariant("Unknow");
     }
     if(role == ROLE_REFILTER) {
         QVariant v;
@@ -332,4 +450,15 @@ int QWoHostListModel::columnCount(const QModelIndex &parent) const
 Qt::DropActions QWoHostListModel::supportedDropActions() const
 {
     return QAbstractListModel::supportedDropActions();
+}
+
+QHash<int, QByteArray> QWoHostListModel::roleNames() const
+{
+     QHash<int,QByteArray> roles = QAbstractListModel::roleNames();
+     roles.insert(Qt::DisplayRole, "name");
+     roles.insert(ROLE_ICON_URL, "iconUrl");
+     roles.insert(ROLE_SHORT_STRING, "shortString");
+     roles.insert(ROLE_GROUP_NAME, "groupName");
+     roles.insert(ROLE_TYPE, "type");
+     return roles;
 }

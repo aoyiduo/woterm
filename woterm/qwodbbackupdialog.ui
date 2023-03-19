@@ -86,7 +86,7 @@
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/dirs.png</normaloff>:/woterm/resource/skin/dirs.png</iconset>
           </property>
          </widget>
@@ -194,7 +194,7 @@
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset resource="qwoterm.qrc">
+           <iconset resource="woterm.qrc">
             <normaloff>:/woterm/resource/skin/sftp.png</normaloff>:/woterm/resource/skin/sftp.png</iconset>
           </property>
          </widget>
@@ -284,7 +284,7 @@
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="qwoterm.qrc">:/woterm/resource/skin/about.png</pixmap>
+           <pixmap resource="woterm.qrc">:/woterm/resource/skin/about.png</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -369,7 +369,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="qwoterm.qrc"/>
+  <include location="woterm.qrc"/>
  </resources>
  <connections/>
 </ui>

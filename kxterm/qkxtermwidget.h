@@ -17,7 +17,7 @@
 #include <QPointer>
 
 class QKxTermItem;
-class QScrollBar;
+class QAbstractSlider;
 class QKxSearch;
 
 class QTERM_EXPORT QKxTermWidget : public QWidget
@@ -25,6 +25,7 @@ class QTERM_EXPORT QKxTermWidget : public QWidget
     Q_OBJECT
 public:
     explicit QKxTermWidget(QWidget *parent = nullptr);
+    ~QKxTermWidget();
     QKxTermItem *termItem();
     QWidget *findBar();
     void setFindBarVisible(bool on);
@@ -41,10 +42,11 @@ protected:
 private slots:
     void onTermScrollValueChanged(int lines, int position);
     void onScrollValueChanged(int position);
+
 protected:
     QPointer<QKxTermItem> m_term;
     QPointer<QKxSearch> m_find;
-    QPointer<QScrollBar> m_vscroll;
+    QPointer<QAbstractSlider> m_vscroll;
     QKeySequence m_keyFind;
 };
 

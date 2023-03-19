@@ -728,7 +728,6 @@ bool QWoSftpTransferWidget::addTask(const QString &pathLocal, const QString &pat
         ti.isDown = isDown;
         ti.local = pathLocal;
         ti.remote = pathRemote;
-        ti.name = m_target;
         ti.state = ETS_Ready;
         ti.taskId = localTaskId();
         if(m_taskRun.isValid()) {
@@ -751,7 +750,6 @@ bool QWoSftpTransferWidget::addTask(const QString &pathLocal, const QString &pat
         ti.isDown = isDown;
         ti.local = pathLocal;
         ti.remote = pathRemote;
-        ti.name = m_target;
         ti.state = ETS_Ready;
         ti.taskId = localTaskId();
         runTask(ti);

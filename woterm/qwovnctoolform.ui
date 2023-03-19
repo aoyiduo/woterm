@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>353</width>
+    <width>415</width>
     <height>42</height>
    </rect>
   </property>
@@ -35,7 +35,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/nail.png</normaloff>:/woterm/resource/skin/nail.png</iconset>
      </property>
      <property name="iconSize">
@@ -52,7 +52,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/fullscreen.png</normaloff>:/woterm/resource/skin/fullscreen.png</iconset>
      </property>
      <property name="iconSize">
@@ -69,7 +69,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/exitfull.png</normaloff>:/woterm/resource/skin/exitfull.png</iconset>
      </property>
      <property name="iconSize">
@@ -86,7 +86,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/minize2.png</normaloff>:/woterm/resource/skin/minize2.png</iconset>
      </property>
      <property name="iconSize">
@@ -103,7 +103,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/scroll.png</normaloff>:/woterm/resource/skin/scroll.png</iconset>
      </property>
      <property name="iconSize">
@@ -120,7 +120,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/signal.png</normaloff>:/woterm/resource/skin/signal.png</iconset>
      </property>
      <property name="iconSize">
@@ -137,7 +137,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/audio_on.png</normaloff>:/woterm/resource/skin/audio_on.png</iconset>
      </property>
      <property name="iconSize">
@@ -154,7 +154,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/audio_off.png</normaloff>:/woterm/resource/skin/audio_off.png</iconset>
      </property>
      <property name="iconSize">
@@ -171,7 +171,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/ftp.png</normaloff>:/woterm/resource/skin/ftp.png</iconset>
      </property>
      <property name="iconSize">
@@ -188,7 +188,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/lock2.png</normaloff>:/woterm/resource/skin/lock2.png</iconset>
      </property>
      <property name="iconSize">
@@ -205,7 +205,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/wallpaper.png</normaloff>:/woterm/resource/skin/wallpaper.png</iconset>
      </property>
      <property name="iconSize">
@@ -222,7 +222,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/screen.png</normaloff>:/woterm/resource/skin/screen.png</iconset>
      </property>
      <property name="iconSize">
@@ -239,7 +239,7 @@
       <string>...</string>
      </property>
      <property name="icon">
-      <iconset resource="qwoterm.qrc">
+      <iconset resource="woterm.qrc">
        <normaloff>:/woterm/resource/skin/stop2.png</normaloff>:/woterm/resource/skin/stop2.png</iconset>
      </property>
      <property name="iconSize">
@@ -253,7 +253,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="qwoterm.qrc"/>
+  <include location="woterm.qrc"/>
  </resources>
  <connections/>
 </ui>

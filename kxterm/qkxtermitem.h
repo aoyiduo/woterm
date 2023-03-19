@@ -17,6 +17,7 @@
 #include <QWidget>
 #include <QPointer>
 #include <QCursor>
+#include <QTouchEvent>
 
 class QVteImpl;
 class QKxView;
@@ -25,6 +26,7 @@ class QKxKeyTranslator;
 class QKxColorSchema;
 class QTimer;
 class QLabel;
+class QKxTouchPoint;
 
 class QKxEchoInput;
 class QTERM_EXPORT QKxTermItem : public QWidget
@@ -164,6 +166,10 @@ public:
     bool trapCommand(const QString& cmd, QString& content, int &code, int timeout=3000);
     void waitInput();
 
+    // simulate
+    void simulateKeyPress(QKeyEvent *ev);
+    void simulateKeyRelease(QKeyEvent *ev);
+
     // shortcut
     void bindShortCut(ShortCutKey sck, QKeySequence key);
     QKeySequence defaultShortCutKey(ShortCutKey sck);
@@ -185,6 +191,7 @@ signals:
     void backgroundChanged(const QColor &clr);
     void titleChanged(const QString& title);
     void activePathArrived(const QString& path);
+    void touchPointClicked();
 
 public slots:
     void onScreenChanged();
@@ -214,6 +221,8 @@ public:
     Q_INVOKABLE void findAll(bool match, bool regular);
     Q_INVOKABLE void clearSelection();    
     Q_INVOKABLE void showInputMethod(bool show);
+    Q_INVOKABLE void showTouchPoint(bool show, bool async = true);
+    Q_INVOKABLE QVariant inputMethodQuery(Qt::InputMethodQuery query, const QVariant& v) const;
 protected:
     virtual void paint(QPainter *p);
     virtual void paintEvent(QPaintEvent *ev);
@@ -230,7 +239,7 @@ protected:
     virtual bool focusNextPrevChild(bool next);
 
     virtual void inputMethodEvent(QInputMethodEvent *ev);
-    virtual QVariant inputMethodQuery(Qt::InputMethodQuery query) const;    
+    virtual QVariant inputMethodQuery(Qt::InputMethodQuery query) const;
     virtual bool event(QEvent *e);
     virtual bool eventFilter(QObject *watched, QEvent *ev);
 
@@ -238,8 +247,13 @@ protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void dropEvent(QDropEvent *event);
+
+    // touchevent
+    virtual void touchBeginEvent(QTouchEvent *e);
+    virtual void touchUpdateEvent(QTouchEvent *e);
+    virtual void touchEndEvent(QTouchEvent *e);
+    virtual void touchCancelEvent(QTouchEvent *e);
 private:
-    QVariant inputMethodQuery(Qt::InputMethodQuery query, QVariant argument) const;
     void updateView(PaintFlag flag = PF_Normal);
     void updateScrollValue(int v);
     void updateFontInfo();    
@@ -256,6 +270,7 @@ private:
     int lastExitCode();
     void initTitle();
     void resetTitlePosition(bool byCursor = false);
+    void resetTouchPointPosition();
     QPoint widgetPointToTermViewPosition(const QPoint& pt);
 private:
     QPointer<QLabel> m_title;
@@ -333,6 +348,9 @@ private:
     bool m_dragEnabled;
     bool m_dragActived;
     QPoint m_ptDraged;
+
+    QPointer<QKxTouchPoint> m_touchPoint;
+    int m_lineDragStart;
 };
 
 #endif // QTERM_H

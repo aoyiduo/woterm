@@ -14,7 +14,7 @@
    <string>Setting</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="qwoterm.qrc">
+   <iconset resource="woterm.qrc">
     <normaloff>:/woterm/resource/skin/setting.png</normaloff>:/woterm/resource/skin/setting.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -41,7 +41,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="qwoterm.qrc"/>
+  <include location="woterm.qrc"/>
  </resources>
  <connections/>
 </ui>

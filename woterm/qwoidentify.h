@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -20,7 +20,9 @@
 
 class QWoIdentify : public QObject
 {
+    Q_OBJECT
 public:
+    explicit QWoIdentify(QObject *parent = nullptr);
     static bool infomationByPrivateKey(const QString&file, IdentifyInfo *pinfo);
     static bool infomationByPrivateKey(const QByteArray& rsa, IdentifyInfo *pinfo);
     static bool isPublicKey(const QString &fileName);
@@ -30,9 +32,12 @@ public:
     static bool create(const QString& name, const QByteArray& prvKey);
     static bool infomation(const QByteArray& name, IdentifyInfo *pinfo);
     static bool rename(const QString& nameOld, const QString& nameNew);
-    static bool remove(const QString& name);
+    Q_INVOKABLE static bool remove(const QString& name);
     static QMap<QString, IdentifyInfo> loadFromSqlite();
     static QMap<QString, IdentifyInfo> loadFromFile();
+    Q_INVOKABLE static QStringList qmlFileNames();
+    Q_INVOKABLE static QVariantList qmlLoadFromSqlite();
+    Q_INVOKABLE static QVariant qmlImport(const QString& file, const QString& nameSave);
 };
 
 #endif // QWOIDENTIFYINFOMATION_H

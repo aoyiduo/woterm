@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -12,16 +12,22 @@
 #ifndef QWOAPPLICATION_H
 #define QWOAPPLICATION_H
 
+#include <QPointer>
 #include <QApplication>
 
+class QWoMainWindow;
 class QWoApplication : public QApplication
 {
     Q_OBJECT
 public:
     explicit QWoApplication(int &argc, char **argv);
-
+    static QWoApplication *instance();
+    static QWoMainWindow *mainWindow();
 signals:
-
+private:
+    Q_INVOKABLE void init();
+private:
+    QPointer<QWoMainWindow> m_main;
 };
 
 #endif // QWOAPPLICATION_H

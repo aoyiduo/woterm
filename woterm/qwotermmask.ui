@@ -48,7 +48,7 @@
         <string>Reconect</string>
        </property>
        <property name="icon">
-        <iconset resource="qwoterm.qrc">
+        <iconset resource="woterm.qrc">
          <normaloff>:/woterm/resource/skin/reload.png</normaloff>:/woterm/resource/skin/reload.png</iconset>
        </property>
        <property name="iconSize">
@@ -81,7 +81,7 @@
         <string>Close</string>
        </property>
        <property name="icon">
-        <iconset resource="qwoterm.qrc">
+        <iconset resource="woterm.qrc">
          <normaloff>:/woterm/resource/skin/tabclose.png</normaloff>:/woterm/resource/skin/tabclose.png</iconset>
        </property>
        <property name="iconSize">
@@ -123,7 +123,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="qwoterm.qrc"/>
+  <include location="woterm.qrc"/>
  </resources>
  <connections/>
 </ui>

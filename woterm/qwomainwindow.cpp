@@ -9,6 +9,7 @@
 *
 *******************************************************************************************/
 
+#include "qwoapplication.h"
 #include "qwomainwindow.h"
 #include "qwosetting.h"
 #include "qwoshower.h"
@@ -39,6 +40,7 @@
 #include "qkxprocesslaunch.h"
 #include "qkxmessagebox.h"
 #include "qwomenubutton.h"
+#include "qworecenthistory.h"
 #include "qkxbuttonassist.h"
 #include "qkxappregisterdialog.h"
 #include "qkxver.h"
@@ -76,6 +78,9 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     initMenuBar();
     initToolBar();
     initStatusBar();
+
+    m_recent = new QWoRecentHistory(this);
+    QObject::connect(m_recent, SIGNAL(readyToConnect(const QString&, int)), this, SLOT(onSessionReadyToConnect(const QString&, int)));
 
     m_sessionDock = new QDockWidget(tr("Session Manager"), this);
     m_sessionDock->setObjectName("Session Manager");
@@ -121,8 +126,7 @@ QWoMainWindow::~QWoMainWindow()
 
 QWoMainWindow *QWoMainWindow::instance()
 {
-    static QPointer<QWoMainWindow> main = new QWoMainWindow();
-    return main;
+    return QWoApplication::mainWindow();
 }
 
 QWoShower *QWoMainWindow::shower()
@@ -142,6 +146,7 @@ void QWoMainWindow::closeEvent(QCloseEvent *event)
 
     QMainWindow::closeEvent(event);
 }
+
 
 void QWoMainWindow::onNewSession()
 {
@@ -181,9 +186,10 @@ void QWoMainWindow::onEditConfig()
 
 void QWoMainWindow::onSessionReadyToConnect(const QString &target, int type)
 {
+    m_recent->update(target, type);
     switch (type) {
     case EOT_SSH:
-        m_shower->openSsh(target);
+        m_shower->openSsh(target);        
         break;
     case EOT_SFTP:
         m_shower->openSftp(target);
@@ -329,6 +335,15 @@ void QWoMainWindow::onButtonAssistClicked(QToolButton *btn)
     menu.addAction(QIcon(":/woterm/resource/skin/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
     menu.addAction(QIcon(":/woterm/resource/skin/serialport.png"), tr("Open serialport session"), this, SLOT(onOpenSerialPort()));
     menu.exec(pt);
+}
+
+void QWoMainWindow::onRecentMenuAboutToShow()
+{
+    QMenu *menu = qobject_cast<QMenu*>(sender());
+    menu->clear();
+    menu->addAction(tr("Clear all"), m_recent, SLOT(onClearAll()));
+    menu->addSeparator();
+    m_recent->buildMenu(menu);
 }
 
 void QWoMainWindow::onActionNewTriggered()
@@ -516,6 +531,7 @@ void QWoMainWindow::onActionRegisterTriggered()
 void QWoMainWindow::initMenuBar()
 {
     ui->menuBar->setNativeMenuBar(false);
+    QObject::connect(ui->menuRecent, SIGNAL(aboutToShow()), this, SLOT(onRecentMenuAboutToShow()));
     QObject::connect(ui->actionSessionNew, SIGNAL(triggered()), this, SLOT(onActionNewTriggered()));
     QObject::connect(ui->actionOpenRemote, SIGNAL(triggered()), this, SLOT(onActionOpenRemoteTriggered()));
     QObject::connect(ui->actionOpenRemote2, SIGNAL(triggered()), this, SLOT(onActionOpenRemoteTriggered()));
@@ -553,6 +569,15 @@ void QWoMainWindow::initToolBar()
 {
     QToolBar *tool = ui->mainToolBar;
     tool->setWindowTitle(tr("Toolbar"));
+    {
+        QPushButton *btn = new QPushButton(QIcon(":/woterm/resource/skin/history.png"), tr("History"), tool);
+        btn->setObjectName("menuButton");
+        QMenu *menu = new QMenu(btn);
+        QObject::connect(menu, SIGNAL(aboutToShow()), this, SLOT(onRecentMenuAboutToShow()));
+        btn->setMenu(menu);
+        tool->addWidget(btn);
+    }
+    tool->addSeparator();
     tool->addAction(QIcon(":/woterm/resource/skin/add2.png"), tr("New"), this, SLOT(onNewSession()));
 
     if(QKxVer::isUltimate()){

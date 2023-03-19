@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -26,6 +26,12 @@
 #define APPLICATION_DATA_PATH ("APP_DATA_PATH")
 
 Q_GLOBAL_STATIC_WITH_ARGS(QSettings, gSettings, (QKxSetting::applicationConfigPath(), QSettings::IniFormat))
+
+QKxSetting::QKxSetting(QObject *parent)
+    : QObject(parent)
+{
+
+}
 
 void QKxSetting::setValue(const QString &key, const QVariant &v)
 {
@@ -267,6 +273,8 @@ QString QKxSetting::applicationDataPath()
         }
         QProcess::execute(QString("chmod -R a+rw %1").arg(userDataPath));
         qputenv(APPLICATION_DATA_PATH, userDataPath.toUtf8());
+
+        qDebug() << "userDataPath:" << userDataPath;
     }
     return userDataPath;
 }
