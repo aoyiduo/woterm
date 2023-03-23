@@ -1,6 +1,6 @@
 ﻿/*******************************************************************************************
 *
-* Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
+* Copyright (C) 2023 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
 * Contact: http://www.aoyiduo.com
 *
@@ -9,17 +9,17 @@
 *
 *******************************************************************************************/
 
-#pragma once
+#ifndef QMOTELNETTERMWIDGET_H
+#define QMOTELNETTERMWIDGET_H
 
-#include "qwotermwidget.h"
+#include "qmotermwidget.h"
 
-#include <QPointer>
-
-class QWoTelnetTermWidgetImpl;
 class QWoTelnet;
 class QWoModem;
 class QMessageBox;
-class QWoTelnetTermWidget : public QWoTermWidget
+class QMenu;
+
+class QMoTelnetTermWidget : public QMoTermWidget
 {
     Q_OBJECT
     enum EStateConnect {
@@ -30,8 +30,8 @@ class QWoTelnetTermWidget : public QWoTermWidget
     };
 
 public:
-    explicit QWoTelnetTermWidget(const QString& target, int gid, QWidget *parent=nullptr);
-    virtual ~QWoTelnetTermWidget();
+    explicit QMoTelnetTermWidget(const QString& target, QWidget *parent=nullptr);
+    virtual ~QMoTelnetTermWidget();
 private slots:
     void onFinishArrived(int code);
     void onDataArrived(const QByteArray& buf);
@@ -43,11 +43,7 @@ private slots:
     void onPasteFromClipboard();
     void onForceToReconnect();
     void onSessionReconnect();
-    void onVerticalSplitView();
-    void onHorizontalSplitView();
-    void onVerticalInviteView();
-    void onHorizontalInviteView();
-    void onCloseThisSession();    
+    void onCloseThisSession();
     void onForceToCloseThisSession();
     void onShowFindBar();
     void onDuplicateInNewWindow();
@@ -67,7 +63,6 @@ private:
 private:
     virtual void resizeEvent(QResizeEvent *ev);
     virtual void contextMenuEvent(QContextMenuEvent *ev);
-    virtual QList<QString> collectUnsafeCloseMessage();
 private:
     QPointer<QWoTelnet> m_telnet;
     QPointer<QMessageBox> m_dlgConfirm;
@@ -80,4 +75,7 @@ private:
     bool m_savePassword;
     int m_loginCount;
     EStateConnect m_stateConnected;
+
 };
+
+#endif // QMOTELNETTERMWIDGET_H

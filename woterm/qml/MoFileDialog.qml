@@ -284,7 +284,7 @@ Popup {
                 wrapMode: Label.WrapAnywhere
             }
             Label{
-                text: nameFilters
+                text: nameFilters.join(",")
             }
         }
         Rectangle{

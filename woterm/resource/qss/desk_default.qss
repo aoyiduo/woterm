@@ -150,7 +150,11 @@ QMenu {
 }
 
 QMenu::item {
-    padding: 3px 25px 3px 20px;
+    padding-top: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 3px;
+    min-width: 100px;
     border: 1px solid transparent; /* reserve space for selection border */
 }
 

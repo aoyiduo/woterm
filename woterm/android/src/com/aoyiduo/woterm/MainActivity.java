@@ -14,6 +14,8 @@ import androidx.core.content.FileProvider;
 import android.os.Environment;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.provider.Settings;
+import android.widget.Toast;
 
 public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity
 {
@@ -41,10 +43,20 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity
         m_notificationManager.notify(1, m_builder.build());
     }
 
-    public static int install(String path) {
-        if (QtNative.activity() == null){
-            return -1;
+    public static boolean canRequestPackageInstalls() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return m_context.getPackageManager().canRequestPackageInstalls();
         }
+        return true;
+    }
+
+    public static Intent requestPackageInstall() {
+        Uri packageURI = Uri.parse("package:" + AppUtils.getPackageName(m_context));
+        Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
+        return intent;
+    }
+
+    public static int install(String path) {
         File apk = new File(path);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -57,14 +69,14 @@ public class MainActivity extends org.qtproject.qt5.android.bindings.QtActivity
             //
             //String fileProvider = m_context.getPackageName() + ".fileProvider";
             //Uri uri = FileProvider.getUriForFile(m_context, fileProvider, apk);
-            String fileProvider = QtNative.activity().getApplicationContext().getPackageName() + ".fileProvider";
-            Uri uri = FileProvider.getUriForFile(QtNative.activity(), fileProvider, apk);
+            String fileProvider = m_context.getApplicationContext().getPackageName() + ".fileProvider";
+            Uri uri = FileProvider.getUriForFile(m_context, fileProvider, apk);
             intent.setDataAndType(uri, "application/vnd.android.package-archive");
         } else {
             intent.setDataAndType(Uri.fromFile(apk), "application/vnd.android.package-archive");
         }
         try {
-            QtNative.activity().startActivity(intent);
+            m_context.startActivity(intent);
             return 0;
         } catch(Exception e) {
             e.printStackTrace();

@@ -1,6 +1,6 @@
 ﻿/*******************************************************************************************
 *
-* Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
+* Copyright (C) 2023 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
 * Contact: http://www.aoyiduo.com
 *
@@ -9,25 +9,19 @@
 *
 *******************************************************************************************/
 
-#include "qwotelnettermwidget.h"
+#include "qmotelnettermwidget.h"
+
 #include "qwosetting.h"
 #include "qwosshconf.h"
 #include "qwoutils.h"
 #include "qwoglobal.h"
-#include "qwotermwidgetimpl.h"
 #include "qwotelnet.h"
-#include "qwotermmask.h"
-#include "qwopasswordinput.h"
-#include "qwohostsimplelist.h"
-#include "qwomodem.h"
-#include "qwomainwindow.h"
-#include "qwoevent.h"
-#include "qwosessionproperty.h"
-#include "qwofloatwindow.h"
 
 #include "qkxtermwidget.h"
 #include "qkxtermitem.h"
 #include "qkxmessagebox.h"
+
+#include "qwomodem.h"
 
 
 #include <QTimer>
@@ -39,8 +33,8 @@
 #include <QDebug>
 #include <QResizeEvent>
 
-QWoTelnetTermWidget::QWoTelnetTermWidget(const QString& target, int gid, QWidget *parent)
-    : QWoTermWidget(target, gid, ETTRemoteTarget, parent)
+QMoTelnetTermWidget::QMoTelnetTermWidget(const QString& target,  QWidget *parent)
+    : QMoTermWidget(target, ETTRemoteTarget, parent)
     , m_savePassword(false)
     , m_stateConnected(ESC_Ready)
 {
@@ -55,13 +49,13 @@ QWoTelnetTermWidget::QWoTelnetTermWidget(const QString& target, int gid, QWidget
     QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);
 }
 
-QWoTelnetTermWidget::~QWoTelnetTermWidget()
+QMoTelnetTermWidget::~QMoTelnetTermWidget()
 {
     QWoTelnetFactory::instance()->release(m_telnet);
     QWoModemFactory::instance()->release(m_modem);
 }
 
-void QWoTelnetTermWidget::onFinishArrived(int code)
+void QMoTelnetTermWidget::onFinishArrived(int code)
 {
     //qDebug() << "exitcode" << code;
     m_stateConnected = ESC_Disconnected;
@@ -70,7 +64,7 @@ void QWoTelnetTermWidget::onFinishArrived(int code)
     m_term->parseError("\r\npress any key to popup selection dialog.");
 }
 
-void QWoTelnetTermWidget::onDataArrived(const QByteArray &buf)
+void QMoTelnetTermWidget::onDataArrived(const QByteArray &buf)
 {
     static QRegExp rgxUser(".* login: $");
     static QRegExp rgxPwd(".*Password: $");
@@ -111,28 +105,29 @@ void QWoTelnetTermWidget::onDataArrived(const QByteArray &buf)
     }
 }
 
-void QWoTelnetTermWidget::onErrorArrived(const QByteArray &buf)
+void QMoTelnetTermWidget::onErrorArrived(const QByteArray &buf)
 {
     QKxTermItem *qterm = termItem();
     qterm->parseError(buf);
 }
 
-void QWoTelnetTermWidget::onPasswordArrived(const QString &host, const QByteArray &pass)
+void QMoTelnetTermWidget::onPasswordArrived(const QString &host, const QByteArray &pass)
 {
     if(m_savePassword){
         QWoSshConf::instance()->updatePassword(host, pass);
     }
 }
 
-void QWoTelnetTermWidget::onTermSizeChanged(int lines, int columns)
+void QMoTelnetTermWidget::onTermSizeChanged(int lines, int columns)
 {
     if(m_telnet) {
         m_telnet->updateSize(columns, lines);
     }
 }
 
-void QWoTelnetTermWidget::onSendData(const QByteArray &buf)
+void QMoTelnetTermWidget::onSendData(const QByteArray &buf)
 {
+    qDebug() << "onSendData" << buf;
     if(m_stateConnected == ESC_Disconnected) {
         if(m_dlgConfirm == nullptr) {
             m_dlgConfirm = new QMessageBox(QMessageBox::Question, tr("Reconnection confirmation"), tr("Continue to connect to the server?"), QMessageBox::Yes|QMessageBox::No, this);
@@ -157,93 +152,56 @@ void QWoTelnetTermWidget::onSendData(const QByteArray &buf)
     }
 }
 
-void QWoTelnetTermWidget::onCopyToClipboard()
+void QMoTelnetTermWidget::onCopyToClipboard()
 {
     termItem()->tryToCopy();
 }
 
-void QWoTelnetTermWidget::onPasteFromClipboard()
+void QMoTelnetTermWidget::onPasteFromClipboard()
 {
     termItem()->tryToPaste();
 }
 
-void QWoTelnetTermWidget::onForceToReconnect()
+void QMoTelnetTermWidget::onForceToReconnect()
 {
     reconnect();
 }
 
-void QWoTelnetTermWidget::onSessionReconnect()
-{    
+void QMoTelnetTermWidget::onSessionReconnect()
+{
     reconnect();
 }
 
-void QWoTelnetTermWidget::onVerticalSplitView()
+
+void QMoTelnetTermWidget::onCloseThisSession()
 {
-    splitWidget(m_target, m_gid, true);
+
 }
 
-void QWoTelnetTermWidget::onHorizontalSplitView()
+void QMoTelnetTermWidget::onForceToCloseThisSession()
 {
-    splitWidget(m_target, m_gid, false);
+
 }
 
-void QWoTelnetTermWidget::onVerticalInviteView()
-{
-    QWoHostSimpleList dlg(Telnet, this);
-    dlg.setWindowTitle(tr("session list"));
-    dlg.exec();
-    HostInfo hi;
-    if(dlg.result(&hi)) {
-        splitWidget(hi.name, QWoUtils::gid(), true);
-    }
-}
-
-void QWoTelnetTermWidget::onHorizontalInviteView()
-{
-    QWoHostSimpleList dlg(Telnet, this);
-    dlg.setWindowTitle(tr("session list"));
-    dlg.exec();
-    HostInfo hi;
-    if(dlg.result(&hi)) {
-        splitWidget(hi.name, QWoUtils::gid(), false);
-    }
-}
-
-void QWoTelnetTermWidget::onCloseThisSession()
-{
-    closeAndDelete();
-}
-
-void QWoTelnetTermWidget::onForceToCloseThisSession()
-{
-    closeAndDelete();
-}
-
-void QWoTelnetTermWidget::onShowFindBar()
+void QMoTelnetTermWidget::onShowFindBar()
 {
     setFindBarVisible(true);
 }
 
-void QWoTelnetTermWidget::onDuplicateInNewWindow()
+void QMoTelnetTermWidget::onDuplicateInNewWindow()
 {
     QWoUtils::openself("telnet", m_target, false);
 }
 
-void QWoTelnetTermWidget::onModifyThisSession()
+void QMoTelnetTermWidget::onModifyThisSession()
 {
     if(!QWoSshConf::instance()->exists(m_target)){
         QKxMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete ago"));
         return;
     }
-    QWoSessionProperty dlg(this);
-    dlg.setSession(m_target);
-    int ret = dlg.exec();
-    if(ret == QWoSessionProperty::Save) {
-        initCustom();
-    }
 }
 
-void QWoTelnetTermWidget::onZmodemSend(bool local)
+void QMoTelnetTermWidget::onZmodemSend(bool local)
 {
     if(local) {
         if(!checkProgram("rz")) {
@@ -267,7 +225,7 @@ void QWoTelnetTermWidget::onZmodemSend(bool local)
     m_modem->ZSendFiles(files);
 }
 
-void QWoTelnetTermWidget::onZmodemRecv(bool local)
+void QMoTelnetTermWidget::onZmodemRecv(bool local)
 {
     QString path = QWoSetting::value("zmodem/lastPath").toString();
     QString filePath = QFileDialog::getExistingDirectory(this, tr("Open Directory"), path,  QFileDialog::ShowDirsOnly);
@@ -281,12 +239,12 @@ void QWoTelnetTermWidget::onZmodemRecv(bool local)
     m_modem->ZReceive(filePath);
 }
 
-void QWoTelnetTermWidget::onZmodemAbort()
+void QMoTelnetTermWidget::onZmodemAbort()
 {
     m_modem->stop();
 }
 
-void QWoTelnetTermWidget::onZmodemDataArrived(const QByteArray &buf)
+void QMoTelnetTermWidget::onZmodemDataArrived(const QByteArray &buf)
 {
     if(m_modem->isRunning()) {
         //qDebug() << "onZmodemDataArrived" << objectName() << buf;
@@ -294,26 +252,26 @@ void QWoTelnetTermWidget::onZmodemDataArrived(const QByteArray &buf)
     }
 }
 
-void QWoTelnetTermWidget::onZmodemStatusArrived(const QByteArray &buf)
+void QMoTelnetTermWidget::onZmodemStatusArrived(const QByteArray &buf)
 {
     if(m_modem->isRunning()) {
         m_term->parse(buf);
     }
 }
 
-void QWoTelnetTermWidget::onZmodemFinished()
+void QMoTelnetTermWidget::onZmodemFinished()
 {
     //qDebug() << "onZmodemFinished" << objectName();
     m_telnet->write("\r");
     m_term->parse("\033[?25h");
 }
 
-void QWoTelnetTermWidget::onTitleChanged(const QString &title)
+void QMoTelnetTermWidget::onTitleChanged(const QString &title)
 {
     m_loginCount = 100;
 }
 
-int QWoTelnetTermWidget::isZmodemCommand(const QByteArray &data)
+int QMoTelnetTermWidget::isZmodemCommand(const QByteArray &data)
 {
     bool isApp = m_term->appMode();
     if(isApp || data.length() < 6) {
@@ -338,7 +296,7 @@ int QWoTelnetTermWidget::isZmodemCommand(const QByteArray &data)
     return -1;
 }
 
-bool QWoTelnetTermWidget::checkProgram(const QByteArray &name)
+bool QMoTelnetTermWidget::checkProgram(const QByteArray &name)
 {
     if(m_modem->isRunning()) {
         return false;
@@ -354,7 +312,7 @@ bool QWoTelnetTermWidget::checkProgram(const QByteArray &name)
     return code == 0;
 }
 
-void QWoTelnetTermWidget::reconnect()
+void QMoTelnetTermWidget::reconnect()
 {
     showLoading(true);
     m_loginCount = 0;
@@ -365,85 +323,21 @@ void QWoTelnetTermWidget::reconnect()
     m_telnet = QWoTelnetFactory::instance()->create();
     m_telnet->start(m_target);
     QObject::connect(m_telnet, SIGNAL(finishArrived(int)), this, SLOT(onFinishArrived(int)));
-    QObject::connect(m_telnet, SIGNAL(dataArrived(const QByteArray&)), this, SLOT(onDataArrived(const QByteArray&)));
-    QObject::connect(m_telnet, SIGNAL(errorArrived(const QByteArray&)), this, SLOT(onErrorArrived(const QByteArray&)));
+    QObject::connect(m_telnet, SIGNAL(dataArrived(QByteArray)), this, SLOT(onDataArrived(QByteArray)));
+    QObject::connect(m_telnet, SIGNAL(errorArrived(QByteArray)), this, SLOT(onErrorArrived(QByteArray)));
     QSize sz = m_term->termSize();
     m_telnet->updateSize(sz.width(), sz.height());
     m_stateConnected = ESC_Connecting;
 }
 
-void QWoTelnetTermWidget::resizeEvent(QResizeEvent *ev)
+void QMoTelnetTermWidget::resizeEvent(QResizeEvent *ev)
 {
-    QWoTermWidget::resizeEvent(ev);
+    QMoTermWidget::resizeEvent(ev);
     QSize sz = ev->size();
     //qDebug() << "resizeEvent" << objectName() << sz << ev->oldSize();
 }
 
-void QWoTelnetTermWidget::contextMenuEvent(QContextMenuEvent *ev)
+void QMoTelnetTermWidget::contextMenuEvent(QContextMenuEvent *ev)
 {
-    if(m_rkeyPaste) {
-        if(m_term->isOverSelection(ev->pos())) {
-            QString txtSel = m_term->selectedText();
-            m_term->directSendData(txtSel.toUtf8());
-            return;
-        }
-    }
-    if(m_menu == nullptr) {
-        m_menu = new QMenu(this);
-        m_copy = m_menu->addAction(tr("Copy"));
-        QObject::connect(m_copy, SIGNAL(triggered()), this, SLOT(onCopyToClipboard()));
-        m_paste = m_menu->addAction(tr("Paste"));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/reload.png"), tr("Force Reconnect"), this, SLOT(onForceToReconnect()));
-        QObject::connect(m_paste, SIGNAL(triggered()), this, SLOT(onPasteFromClipboard()));
-        QAction *vsplit = m_menu->addAction(QIcon(":/woterm/resource/skin/vsplit.png"), tr("Split Vertical"));
-        QObject::connect(vsplit, SIGNAL(triggered()), this, SLOT(onVerticalSplitView()));
-        QAction *hsplit = m_menu->addAction(QIcon(":/woterm/resource/skin/hsplit.png"), tr("Split Horizontal"));
-        QObject::connect(hsplit, SIGNAL(triggered()), this, SLOT(onHorizontalSplitView()));
 
-        //QAction *vinvite = m_menu->addAction(QIcon(":/woterm/resource/skin/vaddsplit.png"), tr("Add To Vertical"));
-        //QObject::connect(vinvite, SIGNAL(triggered()), this, SLOT(onVerticalInviteView()));
-        //QAction *hinvite = m_menu->addAction(QIcon(":/woterm/resource/skin/haddsplit.png"), tr("Add To Horizontal"));
-        //QObject::connect(hinvite, SIGNAL(triggered()), this, SLOT(onHorizontalInviteView()));
-        QAction *close = m_menu->addAction(tr("Close Session"));
-        QObject::connect(close, SIGNAL(triggered()), this, SLOT(onCloseThisSession()));
-        QWoFloatWindow *wfloat = qobject_cast<QWoFloatWindow*>(topLevelWidget());
-        if(wfloat == nullptr) {
-            m_menu->addAction(tr("Float This Tab"), this, SLOT(onFloatThisTab()));
-        }
-
-        m_menu->addAction(QIcon(":/woterm/resource/skin/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
-        //m_menu->addAction(QIcon(":/woterm/resource/skin/history.png"), tr("History"), this, SLOT(onSessionCommandHistory()));
-        m_menu->addAction(tr("Duplicate in new window"), this, SLOT(onDuplicateInNewWindow()));
-        m_menu->addAction(tr("Clean history"), this, SLOT(onCleanHistory()));
-        m_output = m_menu->addAction(tr("Output history to file"), this, SLOT(onOutputHistoryToFile()));
-        m_stop = m_menu->addAction(tr("Stop history to file"), this, SLOT(onStopOutputHistoryFile()));
-        m_menu->addSeparator();
-        m_menu->addAction(QIcon(":/woterm/resource/skin/upload.png"), tr("Zmodem upload"), this, SLOT(onZmodemSend()));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/download.png"), tr("Zmodem receive"), this, SLOT(onZmodemRecv()));
-        m_menu->addAction(tr("Zmodem abort"), this, SLOT(onZmodemAbort()), QKeySequence(Qt::CTRL +  Qt::Key_C));
-
-    }
-    QKxTermItem *term = termItem();
-    QString selTxt = term->selectedText();
-    //qDebug() << "selectText" << selTxt;
-    m_copy->setDisabled(selTxt.isEmpty());
-    m_output->setVisible(m_historyFile.isEmpty());
-    m_stop->setVisible(!m_historyFile.isEmpty());
-
-    QClipboard *clip = QGuiApplication::clipboard();
-    QString clipTxt = clip->text();
-    m_paste->setDisabled(clipTxt.isEmpty());
-    m_menu->exec(QCursor::pos());
-    m_menu->deleteLater();
-}
-
-QList<QString> QWoTelnetTermWidget::collectUnsafeCloseMessage()
-{
-    QList<QString> all;
-    if(m_modem->isRunning()) {
-        QString msg = tr("Files are transfering...");
-        all.append(msg);
-    }
-    return all;
 }

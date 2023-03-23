@@ -20,6 +20,8 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QDir>
+#include <QFile>
+#include <QStandardPaths>
 
 #ifdef Q_OS_ANDROID
 #include <QtAndroid>
@@ -30,15 +32,34 @@ QMoAboutAssist::QMoAboutAssist(QObject *parent)
     : QObject(parent)
 {
     // version check.
-    QDir dir(QDir::tempPath());
+    QString path = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+    if(path.isEmpty()) {
+        path = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+        if(path.isEmpty()) {
+            path = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+        }
+    }
+    QDir dir(path);
     if(!dir.exists(UPGRADE_FILE_SAVE_PATH)) {
         dir.mkdir(UPGRADE_FILE_SAVE_PATH);
     }
     if(dir.exists(UPGRADE_FILE_SAVE_PATH)) {
-        m_pathSave = QString("%1/%2").arg(QDir::tempPath()).arg(UPGRADE_FILE_SAVE_PATH);
+        m_pathSave = QString("%1/%2").arg(path).arg(UPGRADE_FILE_SAVE_PATH);
     }else{
-        m_pathSave = QDir::tempPath();
-    }    
+        m_pathSave = path;
+    }
+    {
+        // clean old apk package.
+        QDir dir(m_pathSave);
+        QStringList filters;
+        filters << "*.apk";
+        QFileInfoList apks = dir.entryInfoList(filters);
+        for(auto it = apks.begin(); it != apks.end(); it++) {
+            QFileInfo fi = *it;
+            QString absPath = fi.absoluteFilePath();
+            QFile::remove(absPath);
+        }
+    }
     QMetaObject::invokeMethod(this, "init", Qt::QueuedConnection);
 }
 

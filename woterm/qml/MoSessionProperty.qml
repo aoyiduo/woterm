@@ -40,15 +40,6 @@ Page {
 
     Component.onCompleted: {
         var hi = thiz.hostInfo
-        name.text = hi.name
-        host.text = hi.host
-        port.text = hi.port
-        loginName.text = hi.user
-        password.text = hi.password
-        identifyFile.text = hi.identify
-        memo.text = hi.memo
-        script.text = hi.script
-        proxyJump.text = hi.proxyJump
         var ta = {
             SshWithSftp: 0,
             SftpOnly: 1,
@@ -58,7 +49,17 @@ Page {
             Vnc: 5
         }
         type.currentIndex = ta[hi.type]
-        loginType.currentIndex = password.text === "" ? 0 : 1
+        type.resetLayout()
+        loginType.currentIndex = hi.password === "" ? 1 : 0
+        password.text = hi.password
+        name.text = hi.name
+        host.text = hi.host
+        port.text = hi.port
+        loginName.text = hi.user
+        identifyFile.text = hi.identify
+        memo.text = hi.memo
+        script.text = hi.script
+        proxyJump.text = hi.proxyJump
     }
 
     header: MoToolBar {
@@ -104,6 +105,10 @@ Page {
                     }
 
                     onCurrentTextChanged: {
+                        resetLayout();
+                    }
+
+                    function resetLayout() {
                         if(currentText == "SshWithSftp") {
                             loLoginType.visible = true
                             loProxyJump.visible = true
@@ -378,6 +383,7 @@ Page {
                 ComboBox {
                     id: group
                     Layout.fillWidth: true
+
                     model: ListModel {
                         id: proxyModel
                     }
@@ -388,6 +394,8 @@ Page {
                     Component.onCompleted: {
                         var all = gSshConf.qmlGroupNameList();
                         var groupName = thiz.hostInfo.group
+                        console.log("groupName:"+groupName)
+                        group.popup.modal = true
                         for(var id in all){
                             var name = all[id];
                             proxyModel.append({name: name})
@@ -426,7 +434,8 @@ Page {
                             identify: loginType.currentText === qsTr("Password") ? "" : identifyFile.text,
                             memo: memo.text,
                             script: script.text,
-                            proxyJump: proxyJump.text
+                            proxyJump: proxyJump.text,
+                            group: group.currentText,
                         }
                         if(proxyJump.text === name.text && type.currentText === "SshWithSftp") {
                             msgBox.text = qsTr("The name is the same with proxyJump")

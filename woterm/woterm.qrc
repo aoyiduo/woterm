@@ -190,6 +190,7 @@
         <file>resource/skin/sad3.png</file>
         <file>qml/MoAboutView.qml</file>
         <file>qml/MoLanguageView.qml</file>
+        <file>qml/MoSystemInformation.qml</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

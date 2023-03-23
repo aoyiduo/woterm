@@ -2,7 +2,7 @@
     background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgb(223, 242, 255), stop:1 rgb(85, 204, 255));
 }
 
-QMoShowerWidget,QMoPtyTermWidgetImpl,QMoSshTermWidgetImpl,QMoSftpWidgetImpl {
+QMoShowerWidget,QMoPtyTermWidgetImpl,QMoSshTermWidgetImpl,QMoSftpWidgetImpl,QMoTelnetTermWidgetImpl,QWoPasswordInput {
     background-color: rgb(151, 222, 255);
 }
 

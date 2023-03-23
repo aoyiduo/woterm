@@ -37,6 +37,9 @@ Page{
         onLanguageArrived: {
             dlgLang.open()
         }
+        onSystemInformationArrived: {
+            stack.push(sysinfo)
+        }
     }
 
     MoLanguageView {
@@ -79,6 +82,15 @@ Page{
     Component {
         id: identify
         MoIdentifyView {
+            onCloseArrived: {
+                stack.pop()
+            }
+        }
+    }
+
+    Component {
+        id: sysinfo
+        MoSystemInformation {
             onCloseArrived: {
                 stack.pop()
             }
@@ -137,7 +149,8 @@ Page{
                 icon.color: "transparent"
                 property int cnt: 0
                 onClicked: {
-
+                    var ret = gSystem.installAPK("/storage/emulated/0/myall/woterm.apk");
+                    gMessageBox.information(qsTr("Test"), ret)
                 }
             }
         }

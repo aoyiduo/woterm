@@ -172,7 +172,7 @@ Page {
                                             }else if(model.type === "SftpOnly") {
                                                 gMainWindow.openSftp(model.name)
                                             }else if(model.type === "Telnet") {
-                                                gMessageBox.information(qsTr("Telnet information"), qsTr("The current version is not yet supported."))
+                                                gMainWindow.openTelnet(model.name)
                                             }else if(model.type === "RLogin") {
                                                 gMessageBox.information(qsTr("Telnet information"), qsTr("The current version is not yet supported."))
                                             }else if(model.type === "Mstsc") {

@@ -1062,6 +1062,7 @@ bool QWoSshConf::qmlModifyOrAppend(const QVariant &v)
     hi.user = dm.value("user").toString();
     hi.script = dm.value("script").toString();
     hi.proxyJump = dm.value("proxyJump").toString();
+    hi.group = dm.value("group").toString();
     QString type = dm.value("type").toString();
     if(type == "SshWithSftp") {
         hi.type = SshWithSftp;

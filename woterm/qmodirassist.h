@@ -62,6 +62,13 @@ public:
     QMoDirAssist::Filters filter() const;
     void setFilter(QMoDirAssist::Filters filters);
 
+    Q_INVOKABLE QString downloadLocation() const;
+    Q_INVOKABLE QString picturesLocation() const;
+    Q_INVOKABLE QString appConfigLocation() const;
+    Q_INVOKABLE QString appDataLocation() const;
+    Q_INVOKABLE QString homeLocation() const;
+    Q_INVOKABLE QString tempLocation() const;
+
     Q_INVOKABLE QString homePath() const;
     Q_INVOKABLE QVariantList entryInfoList(const QString& path = QString()) const;
     Q_INVOKABLE QString absoluteFilePath(const QString& path) const;

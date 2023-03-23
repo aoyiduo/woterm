@@ -18,7 +18,7 @@
 #include <QDateTime>
 #include <QDataStream>
 
-#define MAX_COUNT   (5)
+#define MAX_COUNT   (10)
 
 QMoRecentHistoryModel::QMoRecentHistoryModel(QObject *parent)
     : QAbstractListModel(parent)

@@ -48,7 +48,7 @@ QMoApplication::QMoApplication(int &argc, char **argv)
     QString libPath = QDir::cleanPath(path + "/../lib");
     if(QFile::exists(libPath)) {
         addLibraryPath(libPath);
-    }
+    }   
 
     QStringList libpaths = libraryPaths();
     qDebug() << libpaths;

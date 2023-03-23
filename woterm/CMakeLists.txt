@@ -130,7 +130,9 @@ set(SOURCE_FILES
     qmosshtermwidget.cpp
     qmoshowwidget.cpp
     qmotermkeyboard.cpp
+    qmotelnettermwidget.cpp
     qmotermwidgetimpl.cpp
+    qmotelnettermwidgetimpl.cpp
     qmosshtermwidgetimpl.cpp
     qmoptytermwidgetimpl.cpp
     qmomenu.cpp
@@ -257,7 +259,9 @@ set(HEADER_FILES
     qmosshtermwidget.h
     qmoshowwidget.h
     qmotermkeyboard.h
+    qmotelnettermwidget.h
     qmotermwidgetimpl.h
+    qmotelnettermwidgetimpl.h
     qmosshtermwidgetimpl.h
     qmoptytermwidgetimpl.h
     qmomenu.h
@@ -329,6 +333,7 @@ set(ANDROID_FILES
     android/res/values/splashscreentheme.xml
     android/res/drawable/splashscreen.xml
     android/src/com/aoyiduo/woterm/MainActivity.java
+    android/src/com/aoyiduo/woterm/AppUtils.java
 )
 
 include_directories(${KXVER_ROOT_DIR}

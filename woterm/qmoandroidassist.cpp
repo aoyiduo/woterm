@@ -54,6 +54,16 @@ int QMoAndroidAssist::installAPK(const QString &fileApk)
     if(!QFile::exists(fileApk)) {
         return -1;
     }
+#if 0
+    // not any use..
+    jboolean ok = QAndroidJniObject::callStaticMethod<jboolean>("com/aoyiduo/woterm/MainActivity", "canRequestPackageInstalls", "()Z");
+    if(!ok) {
+        QAndroidJniObject jintent = QAndroidJniObject::callStaticObjectMethod("com/aoyiduo/woterm/MainActivity", "requestPackageInstall", "()Landroid/content/Intent;");
+        QAndroidIntent intent(jintent.object());
+        QAndroidJniObject activity = QtAndroid::androidActivity();
+        activity.callMethod<void>("startActivity", "(Landroid/content/Intent;)V", intent.handle().object());
+    }
+#endif
     QAndroidJniObject path = QAndroidJniObject::fromString(fileApk);
     jint ret = QAndroidJniObject::callStaticMethod<jint>("com/aoyiduo/woterm/MainActivity", "install", "(Ljava/lang/String;)I", path.object<jstring>());
     switch (ret) {

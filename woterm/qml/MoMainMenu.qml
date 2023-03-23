@@ -12,6 +12,7 @@ Drawer {
 
     signal aboutArrived();
     signal languageArrived();
+    signal systemInformationArrived();
 
     Column {
         anchors.fill: parent
@@ -38,6 +39,23 @@ Drawer {
             onClicked: {
                 quick.openUrl("http://www.woterm.com")
                 thiz.close()
+            }
+        }
+        ItemDelegate {
+            text: qsTr("Exit application")
+            width: parent.width
+            onClicked: {
+                thiz.close()
+                Qt.quit()
+            }
+        }
+        ItemDelegate {
+            text: qsTr("System information")
+            width: parent.width
+            visible: quick.debugVersion
+            onClicked: {
+                thiz.close()
+                thiz.systemInformationArrived()
             }
         }
     }

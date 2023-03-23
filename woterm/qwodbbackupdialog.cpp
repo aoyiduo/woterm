@@ -91,7 +91,7 @@ void QWoDbBackupDialog::onAdjustLayout()
 void QWoDbBackupDialog::onSftpDetailButtonClicked()
 {
     QWoDbSftpDetailDialog dlg(this);
-    if(dlg.exec() != (QDialog::Accepted + 1)) {
+    if(dlg.exec() == (QDialog::Accepted + 1)) {
         resetSftpUrl();
     }
 }

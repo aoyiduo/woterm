@@ -26,6 +26,7 @@
 #include "qwoutils.h"
 #include "qmoptytermwidgetimpl.h"
 #include "qmosshtermwidgetimpl.h"
+#include "qmotelnettermwidgetimpl.h"
 #include "qmosftpwidgetimpl.h"
 #include "qmomessageboxassist.h"
 #include "qmodbsftpdetailassist.h"
@@ -153,6 +154,16 @@ bool QMoMainWindow::openSftp(const QString &target)
 
 bool QMoMainWindow::openTelnet(const QString &target)
 {
+    if(m_show) {
+        m_show->setVisible(false);
+        m_show->deleteLater();
+    }
+    if(m_show == nullptr) {
+        m_show = new QMoTelnetTermWidgetImpl(target, this);
+    }
+    QRect rt = rect();
+    m_show->setGeometry(rt);
+    m_show->show();
     m_recentAccess->update(target, EOT_TELNET);
     return false;
 }
@@ -195,7 +206,7 @@ bool QMoMainWindow::openSerialPort()
 
 void QMoMainWindow::onWindowCloseArrived()
 {
-    QCoreApplication::quit();
+    close();
 }
 
 void QMoMainWindow::onInitLater()

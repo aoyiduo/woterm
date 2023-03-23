@@ -13,6 +13,7 @@
 
 #include <QUrl>
 #include <QDebug>
+#include <QStandardPaths>
 
 
 QMoDirAssist::QMoDirAssist(QObject *parent)
@@ -47,6 +48,36 @@ QMoDirAssist::Filters QMoDirAssist::filter() const
 void QMoDirAssist::setFilter(QMoDirAssist::Filters filters)
 {
     m_filters = filters;
+}
+
+QString QMoDirAssist::downloadLocation() const
+{
+    return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+}
+
+QString QMoDirAssist::picturesLocation() const
+{
+    return QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+}
+
+QString QMoDirAssist::appConfigLocation() const
+{
+    return QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+}
+
+QString QMoDirAssist::appDataLocation() const
+{
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+}
+
+QString QMoDirAssist::homeLocation() const
+{
+    return QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+}
+
+QString QMoDirAssist::tempLocation() const
+{
+    return QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 }
 
 QString QMoDirAssist::homePath() const

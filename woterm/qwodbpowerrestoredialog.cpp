@@ -299,7 +299,7 @@ void QWoDBPowerRestoreDialog::onAdjustLayout()
 void QWoDBPowerRestoreDialog::onSftpDetailButtonClicked()
 {
     QWoDbSftpDetailDialog dlg(this);
-    if(dlg.exec() != (QDialog::Accepted + 1)) {
+    if(dlg.exec() == (QDialog::Accepted + 1)) {
         resetSftpUrl();
     }
 }

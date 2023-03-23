@@ -48,6 +48,8 @@ Popup {
         }
 
         onInstallArrived: {
+            //var ret = gSystem.installAPK("/storage/emulated/0/myall/woterm.apk");
+            //var ret = gSystem.installAPK("/storage/emulated/0/Download/baidu/searchbox/downloads/woterm-android-armv7-v9.26.4-202303191629.apk");
             var ret = gSystem.installAPK(path)
             upgradeMsg.text = "result:"+ret
         }
@@ -141,7 +143,7 @@ Popup {
                 }
                 Button {
                     text: qsTr("Upgrade version")
-                    enabled: about.latestVersion !== about.currentVersion
+                    enabled: about.latestVersion !== about.currentVersion || quick.debugVersion
                     onClicked: {
                         about.upgradeVersion()
                         upgradeArea.visible = true
