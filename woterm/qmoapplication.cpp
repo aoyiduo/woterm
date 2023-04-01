@@ -33,6 +33,7 @@
 #include <QQmlEngine>
 #include <QJSEngine>
 #include <QClipboard>
+#include <QDateTime>
 
 #ifdef Q_OS_ANDROID
 #include <QtAndroid>
@@ -42,6 +43,7 @@ QMoApplication::QMoApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
     setWindowIcon(QIcon(":/woterm/resource/skin/woterm4.png"));
+    m_timeStart = QDateTime::currentSecsSinceEpoch();
 
     QString path = applicationDirPath();
     addLibraryPath(path);
@@ -69,6 +71,13 @@ QMoApplication *QMoApplication::instance()
 QMoMainWindow *QMoApplication::mainWindow()
 {
     return QMoApplication::instance()->m_main;
+}
+
+qint64 QMoApplication::elapse()
+{
+    qint64 tmStart = QMoApplication::instance()->m_timeStart;
+    qint64 tmNow = QDateTime::currentSecsSinceEpoch();
+    return tmNow - tmStart;
 }
 
 void QMoApplication::qmlCopyText(const QString &txt)

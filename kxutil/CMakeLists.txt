@@ -37,6 +37,7 @@ set(SOURCE_FILES
     qkxprocesslaunch.cpp
     qkxmessagebox.cpp
     qkxkeymapping.cpp
+    qkxtouchpoint.cpp
 )
 
 set(HEADER_FILES
@@ -59,6 +60,7 @@ set(HEADER_FILES
     qkxprocesslaunch.h
     qkxmessagebox.h
     qkxkeymapping.h
+    qkxtouchpoint.h
 )
 
 if(WIN32)

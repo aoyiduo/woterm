@@ -29,6 +29,7 @@ QWoApplication::QWoApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
     setWindowIcon(QIcon(":/woterm/resource/skin/woterm4.png"));
+    m_timeStart = QDateTime::currentSecsSinceEpoch();
 
     QString path = applicationDirPath();
     addLibraryPath(path);
@@ -50,6 +51,13 @@ QWoApplication *QWoApplication::instance()
 QWoMainWindow *QWoApplication::mainWindow()
 {
     return QWoApplication::instance()->m_main;
+}
+
+qint64 QWoApplication::elapse()
+{
+    qint64 tmStart = QWoApplication::instance()->m_timeStart;
+    qint64 tmNow = QDateTime::currentSecsSinceEpoch();
+    return tmNow - tmStart;
 }
 
 void QWoApplication::init()

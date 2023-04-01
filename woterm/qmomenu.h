@@ -35,6 +35,8 @@ public:
 public:
     explicit QMoMenu(QWidget *parent = nullptr);
     ~QMoMenu();
+    void addItem(int mid, const QString& text, const QString& icon=QString());
+    void removeItem(int mid);
 signals:
     void clicked(int id);
 private slots:
@@ -43,6 +45,7 @@ private:
     virtual void showEvent(QShowEvent* e);
 private:
     Ui::QMoMenu *ui;
+
     QPointer<QMoMenuListModel> m_model;
 };
 

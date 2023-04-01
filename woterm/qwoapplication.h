@@ -23,11 +23,14 @@ public:
     explicit QWoApplication(int &argc, char **argv);
     static QWoApplication *instance();
     static QWoMainWindow *mainWindow();
+    static qint64 elapse();
+
 signals:
 private:
     Q_INVOKABLE void init();
 private:
     QPointer<QWoMainWindow> m_main;
+    qint64 m_timeStart;
 };
 
 #endif // QWOAPPLICATION_H

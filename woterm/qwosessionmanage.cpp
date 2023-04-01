@@ -347,6 +347,30 @@ void QWoSessionManage::onNewReady()
     refreshList();
 }
 
+void QWoSessionManage::onCopyReady()
+{
+    QModelIndex idx = m_tree->currentIndex();
+    if(!idx.isValid()) {
+        return;
+    }
+    HostInfo hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
+    hi.name.append(".Copy");
+    if(!QWoSshConf::instance()->exists(hi.name)) {
+        QWoSshConf::instance()->append(hi);
+        return;
+    }
+
+    for(int i = 2; i < 100; i++) {
+        QString name = QString("%1%2").arg(hi.name).arg(i);
+        if(QWoSshConf::instance()->exists(name)) {
+            continue;
+        }
+        hi.name = name;
+        QWoSshConf::instance()->append(hi);
+        return;
+    }
+}
+
 void QWoSessionManage::onImportReady()
 {
 #if 0
@@ -549,6 +573,7 @@ bool QWoSessionManage::handleTreeViewContextMenu(QContextMenuEvent *ev)
         QModelIndex idx = idxs.at(0);
         HostInfo hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
         menu.addAction(QIcon(":/woterm/resource/skin/add.png"), tr("Add"), this, SLOT(onNewReady()));
+        menu.addAction(QIcon(":/woterm/resource/skin/ftp.png"), tr("Copy"), this, SLOT(onCopyReady()));
         if(hi.type == SshWithSftp) {
             menu.addAction(QIcon(":/woterm/resource/skin/ssh2.png"), tr("SshConnect"), this, SLOT(onSshConnectReady()));
         }
@@ -573,6 +598,7 @@ bool QWoSessionManage::handleTreeViewContextMenu(QContextMenuEvent *ev)
         menu.addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Edit"), this, SLOT(onModifyReady()));
         menu.addAction(tr("Delete"), this, SLOT(onDeleteReady()));
     }else{
+        menu.addAction(QIcon(":/woterm/resource/skin/ftp.png"), tr("Copy"), this, SLOT(onCopyReady()));
         menu.addAction(tr("Delete"), this, SLOT(onDeleteReady()));
     }
     menu.exec(ev->globalPos());

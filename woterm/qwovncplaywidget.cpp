@@ -15,6 +15,7 @@
 #include "qwopasswordinput.h"
 
 #include "qwovncftpwidget.h"
+#include "qwoshower.h"
 
 #include <QScrollArea>
 #include <QResizeEvent>
@@ -30,6 +31,7 @@ QWoVncPlayWidget::QWoVncPlayWidget(const QString &target, QWidget *parent)
     m_area->setContentsMargins(0, 0, 0, 0);
 
     m_player = new QWoVncWidget(target, m_area);
+    QObject::connect(m_player, SIGNAL(forceToClose()), this, SLOT(onForceToClose()));
     m_area->setWidget(m_player);
     m_player->resize(1024, 768);
 
@@ -133,6 +135,11 @@ void QWoVncPlayWidget::onDeleteLater()
 void QWoVncPlayWidget::onToolSizeChanged(const QSize &sz)
 {
 
+}
+
+void QWoVncPlayWidget::onForceToClose()
+{
+    QWoShower::forceToCloseTopLevelWidget(this);
 }
 
 void QWoVncPlayWidget::resizeEvent(QResizeEvent *e)

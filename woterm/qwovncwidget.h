@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -30,7 +30,7 @@ public:
     Q_INVOKABLE void reconnect();
 signals:
     void aboutToClose(QCloseEvent* event);
-private:
+    void forceToClose();
 private:
     void closeEvent(QCloseEvent *event);
 private slots:
@@ -39,9 +39,9 @@ private slots:
     void onLockScreen();
     void onNetScreenRatioRequest();
     void onNextScreenModeRequest();
+    void onForceToCloseSession();
 
     void onSessionReconnect();
-    void onForceToCloseThisSession();
     void onFinished();
     void onConnectionStart();
     void onConnectionFinished(bool ok);
@@ -55,6 +55,7 @@ private:
     bool eventFilter(QObject *w, QEvent *e);
 private:
     const QString m_target;
+    QPointer<QWidget> m_parent;
     QPointer<QWoLoadingWidget> m_loading;
     QPointer<QWoTermMask> m_mask;
     QPointer<QWoPasswordInput> m_passInput;

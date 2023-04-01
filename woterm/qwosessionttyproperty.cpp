@@ -231,6 +231,8 @@ void QWoSessionTTYProperty::setCustom(const QVariantMap &mdata)
             int fontSize = mdata.value("fontSize", DEFAULT_FONT_SIZE).toInt();
             ui->fontSize->setValue(fontSize);
             ui->fontChooser->setCurrentText(fontName);
+            m_term->setTerminalFont(fontName, fontSize);
+            refleshFontPreview();
         }
         if(mdata.contains("cursorType")) {
             QString cursorType = mdata.value("cursorType", "block").toString();
@@ -454,6 +456,8 @@ void QWoSessionTTYProperty::initDefault()
     int fontSize = mdata.value("fontSize", DEFAULT_FONT_SIZE).toInt();
     ui->fontSize->setValue(fontSize);
     ui->fontChooser->setCurrentText(fontName);
+    m_term->setTerminalFont(fontName, fontSize);
+    refleshFontPreview();
 
     QString cursorType = mdata.value("cursorType", "block").toString();
     if(cursorType == "block") {
@@ -510,13 +514,18 @@ void QWoSessionTTYProperty::setFixPreviewString()
 
 void QWoSessionTTYProperty::refleshFontPreview()
 {
-    QFont ft = m_term->font();
     QString family = ui->fontChooser->currentText();
     int pt = ui->fontSize->value();
     int pointSize = QKxUtils::suggestFontSize(family, pt);
-    ft.setFamily(family);
-    ft.setPointSizeF(pointSize);
-    m_term->setFont(ft);
+    QFontInfo fi = m_term->setTerminalFont(family, pointSize);
+    if(family != fi.family() || pt != pointSize) {
+        QString txt = QString("%1: %2(%3,%4),%5(%6,%7)").arg(tr("Input does not match actual")).arg(tr("input")).arg(family).arg(pt).arg(tr("output")).arg(fi.family()).arg(fi.pointSize());
+        qDebug() << txt;
+        ui->fontInfo->setVisible(true);
+        ui->fontInfo->setText(txt);
+    }else{
+        ui->fontInfo->setVisible(false);
+    }
 }
 
 bool QWoSessionTTYProperty::importFont(const QStringList& allFamilies, const QString &fileName)

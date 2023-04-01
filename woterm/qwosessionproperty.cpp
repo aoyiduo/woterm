@@ -18,7 +18,6 @@
 #include "qwolineedit.h"
 #include "qwoidentifydialog.h"
 #include "qwohostsimplelist.h"
-#include "qwosessionmoreproperty.h"
 #include "qwosessionrdpproperty.h"
 #include "qwosessionvncproperty.h"
 #include "qwosessionttyproperty.h"

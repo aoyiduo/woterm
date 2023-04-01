@@ -2,7 +2,7 @@
     background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgb(223, 242, 255), stop:1 rgb(85, 204, 255));
 }
 
-QMoShowerWidget,QMoPtyTermWidgetImpl,QMoSshTermWidgetImpl,QMoSftpWidgetImpl,QMoTelnetTermWidgetImpl,QWoPasswordInput {
+QMoShowerWidget,QMoPtyTermWidgetImpl,QMoSshTermWidgetImpl,QMoSftpWidgetImpl,QMoTelnetTermWidgetImpl,QMoVNCWidgetImpl,QWoPasswordInput,QMoKeyboard {
     background-color: rgb(151, 222, 255);
 }
 
@@ -44,6 +44,57 @@ QToolButton:hover{
 QToolButton:pressed{
     border: 1px solid gray;
     color: gray;
+}
+
+QScrollBar:vertical {
+    border: 1px solid #999999;
+    background:white;
+    width:10px;
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar::handle:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(32, 47, 130), stop: 0.5 rgb(32, 47, 130), stop:1 rgb(32, 47, 130));
+    min-height: 20px;
+    border-radius: 3px;
+}
+QScrollBar::add-line:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(32, 47, 130), stop: 0.5 rgb(32, 47, 130),  stop:1 rgb(32, 47, 130));
+    height: 0px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0  rgb(32, 47, 130), stop: 0.5 rgb(32, 47, 130),  stop:1 rgb(32, 47, 130));
+    height: 0 px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+QScrollBar:horizontal {
+    border: 1px solid #999999;
+    background:white;
+    height:10px;
+    margin: 0px 0px 0px 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(32, 47, 130), stop: 0.5 rgb(32, 47, 130), stop:1 rgb(32, 47, 130));
+    min-width: 20px;
+    border-radius: 3px;
+}
+
+QScrollBar::add-line:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(32, 47, 130), stop: 0.5 rgb(32, 47, 130),  stop:1 rgb(32, 47, 130));
+    width: 0px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0  rgb(32, 47, 130), stop: 0.5 rgb(32, 47, 130),  stop:1 rgb(32, 47, 130));
+    width: 0 px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
 }
 
 QListView {

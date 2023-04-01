@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -15,8 +15,6 @@
 #include "qwoloadingwidget.h"
 #include "qwotermmask.h"
 #include "qwopasswordinput.h"
-#include "qwoshower.h"
-
 #include "qwoutils.h"
 #include "qwosetting.h"
 
@@ -32,17 +30,14 @@
 QWoVncWidget::QWoVncWidget(const QString &target, QWidget *parent)
     : QKxVncWidget(parent)
     , m_target(target)
+    , m_parent(parent)
 {
-    m_passInput = new QWoPasswordInput(parent);
-    QObject::connect(m_passInput, SIGNAL(result(const QString&,bool)), this, SLOT(onPasswordInputResult(const QString&,bool)));
     parent->installEventFilter(this);
-    m_passInput->hide();
-
     m_isPasswdOk = true;
     m_savePassword = false;
     m_loading = new QWoLoadingWidget(QColor("#1296DB"), parent);
     m_mask = new QWoTermMask(parent);
-    QObject::connect(m_mask, SIGNAL(aboutToClose(QCloseEvent*)), this, SLOT(onForceToCloseThisSession()));
+    QObject::connect(m_mask, SIGNAL(aboutToClose(QCloseEvent*)), this, SLOT(onForceToCloseSession()), Qt::QueuedConnection);
     QObject::connect(m_mask, SIGNAL(reconnect()), this, SLOT(onSessionReconnect()));
 
     QObject::connect(this, SIGNAL(finished()), this, SLOT(onFinished()));
@@ -60,6 +55,9 @@ QWoVncWidget::QWoVncWidget(const QString &target, QWidget *parent)
 
 QWoVncWidget::~QWoVncWidget()
 {
+    if(m_parent) {
+        m_parent->removeEventFilter(this);
+    }
 }
 
 void QWoVncWidget::reconnect()
@@ -191,14 +189,24 @@ void QWoVncWidget::onNextScreenModeRequest()
     setNextScreen();
 }
 
+void QWoVncWidget::onForceToCloseSession()
+{
+    if(m_loading) {
+        delete m_loading;
+    }
+    if(m_mask) {
+        delete m_mask;
+    }
+    if(m_passInput) {
+        delete m_passInput;
+    }
+
+    emit forceToClose();
+}
+
 void QWoVncWidget::onSessionReconnect()
 {
     QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);
-}
-
-void QWoVncWidget::onForceToCloseThisSession()
-{
-    QWoShower::forceToCloseTopLevelWidget(this);
 }
 
 void QWoVncWidget::onFinished()
@@ -238,7 +246,9 @@ void QWoVncWidget::onPasswordResult(const QByteArray &passwd, bool ok)
 
 void QWoVncWidget::onPasswordInputResult(const QString &pass, bool isSave)
 {
-    m_passInput->hide();
+    if(m_passInput) {
+        m_passInput->close();
+    }
 
     m_isPasswdOk = true;
     m_savePassword = isSave;
@@ -256,7 +266,7 @@ void QWoVncWidget::onAdjustPosition()
             sz = m_passInput->size();
         }
         QRect rt(0, 0, sz.width(), sz.height());
-        rt.moveCenter(QPoint(width() / 2, height() / 2));
+        rt.moveCenter(QPoint(m_parent->width() / 2, m_parent->height() / 2));
         m_passInput->setGeometry(rt);
     }
 }
@@ -301,8 +311,10 @@ QVariantMap QWoVncWidget::config(const QString &prop)
 
 void QWoVncWidget::showPasswordInput(const QString &title, const QString &prompt, bool echo)
 {
-    QWidget *parent = m_passInput->parentWidget();
-    QSize sz = parent->size();
+    if(m_passInput == nullptr) {
+        m_passInput = new QWoPasswordInput(m_parent);
+        QObject::connect(m_passInput, SIGNAL(result(QString,bool)), this, SLOT(onPasswordInputResult(QString,bool)));
+    }
 
     QMetaObject::invokeMethod(m_mask, "hide", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_loading, "hide", Qt::QueuedConnection);

@@ -80,9 +80,10 @@ public:
 public:
     explicit QKxTermItem(QWidget *parent = nullptr);
 
-    QFont font() const;
-    void setFont(const QFont& ft);
+    QFont terminalFont() const;
+    QFontInfo setTerminalFont(const QString& family, int fontSize);
     static QFont createFont(const QString& familiy, int fontSize=12);
+
     QString textCodec() const;
     void setTextCodec(const QString& c);
 
@@ -96,6 +97,7 @@ public:
     void setDragCopyAndPaste(bool on);
 
     bool isOverSelection(const QPoint& pt);
+
 
     int fontSize() const;
     void setFontSize(int sz);
@@ -190,8 +192,7 @@ signals:
     void scrollValueChanged(int lines, int position);
     void backgroundChanged(const QColor &clr);
     void titleChanged(const QString& title);
-    void activePathArrived(const QString& path);
-    void touchPointClicked();
+    void activePathArrived(const QString& path);    
 
 public slots:
     void onScreenChanged();
@@ -220,8 +221,7 @@ public:
     Q_INVOKABLE bool findNext(bool match, bool regular);
     Q_INVOKABLE void findAll(bool match, bool regular);
     Q_INVOKABLE void clearSelection();    
-    Q_INVOKABLE void showInputMethod(bool show);
-    Q_INVOKABLE void showTouchPoint(bool show, bool async = true);
+    Q_INVOKABLE void showInputMethod(bool show);    
     Q_INVOKABLE QVariant inputMethodQuery(Qt::InputMethodQuery query, const QVariant& v) const;
 protected:
     virtual void paint(QPainter *p);
@@ -272,6 +272,9 @@ private:
     void resetTitlePosition(bool byCursor = false);
     void resetTouchPointPosition();
     QPoint widgetPointToTermViewPosition(const QPoint& pt);
+protected:
+    QFont font() const;
+    void setFont(const QFont& ft);
 private:
     QPointer<QLabel> m_title;
     QPointer<QVteImpl> m_vte;
@@ -349,7 +352,7 @@ private:
     bool m_dragActived;
     QPoint m_ptDraged;
 
-    QPointer<QKxTouchPoint> m_touchPoint;
+
     int m_lineDragStart;
 };
 

@@ -30,14 +30,25 @@ QMoMenu::QMoMenu(QWidget *parent) :
     ui->menuArea->setMinimumWidth(sz.width() / 2);
     m_model = new QMoMenuListModel(this);
     ui->menuList->setModel(m_model);
-    m_model->append(MID_Back, tr("Back"), QIcon(":/woterm/resource/skin/back.png"));
-    m_model->append(MID_Cancel, tr("Cancel"), QIcon(":/woterm/resource/skin/close.png"));
+    m_model->update(MID_Back, tr("Back"), QIcon(":/woterm/resource/skin/back.png"));
+    m_model->update(MID_Cancel, tr("Cancel"), QIcon(":/woterm/resource/skin/close.png"));
     QObject::connect(ui->menuList, SIGNAL(clicked(QModelIndex)), this, SLOT(onCurrentItemClicked(QModelIndex)));
 }
 
 QMoMenu::~QMoMenu()
 {
     delete ui;
+}
+
+void QMoMenu::addItem(int mid, const QString &text, const QString &icon)
+{
+    Q_ASSERT(mid >= MID_User);
+    m_model->update(mid, text, QIcon(icon));
+}
+
+void QMoMenu::removeItem(int mid)
+{
+    m_model->remove(mid);
 }
 
 void QMoMenu::onCurrentItemClicked(const QModelIndex &idx)

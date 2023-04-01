@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -43,7 +43,7 @@ public:
     void setLockScreen();
     void setQualityLevel(int lv);
     bool isWoVNCServer() const;
-    bool isAudioPlay() const;
+    bool isAudioPlay() const;    
     QKxVNC::EPixelFormat getPixelFormat() const;
     QVector<QKxVNC::EEncodingType> encodings();
     bool supportMessage(QKxVNC::EMessageType emt) const;

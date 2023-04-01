@@ -24,6 +24,7 @@ public:
     explicit QMoApplication(int &argc, char **argv);
     static QMoApplication *instance();
     static QMoMainWindow *mainWindow();
+    static qint64 elapse();
 
     Q_INVOKABLE static void qmlCopyText(const QString& txt);
 signals:
@@ -32,6 +33,7 @@ private:
     Q_INVOKABLE void init();
 private:    
     QPointer<QMoMainWindow> m_main;
+    qint64 m_timeStart;
 };
 
 #endif // QMOAPPLICATION_H

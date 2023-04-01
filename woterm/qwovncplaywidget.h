@@ -38,6 +38,7 @@ private slots:
     void onFtpClicked();
     void onDeleteLater();
     void onToolSizeChanged(const QSize& sz);
+    void onForceToClose();
 private:
     void resizeEvent(QResizeEvent *e);
     void updateToolbarPosition();

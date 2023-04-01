@@ -55,6 +55,7 @@ private slots:
     void onDeleteReady();
     void onModifyReady();
     void onNewReady();
+    void onCopyReady();
     void onImportReady();
     void onTreeViewOpenInSamePage();
     void onTreeViewOpenInDifferentPage();

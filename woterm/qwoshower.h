@@ -55,7 +55,7 @@ public:
     Q_INVOKABLE bool restoreSession(QWoShowerWidget *impl);
     Q_INVOKABLE void floatSession(QWoShowerWidget *impl, bool full);
 
-    static void forceToCloseTopLevelWidget(QWidget *child);
+    Q_INVOKABLE static void forceToCloseTopLevelWidget(QWidget *child);
 
     int tabCount();
 signals:

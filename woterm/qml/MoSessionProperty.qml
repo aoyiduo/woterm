@@ -50,7 +50,7 @@ Page {
         }
         type.currentIndex = ta[hi.type]
         type.resetLayout()
-        loginType.currentIndex = hi.password === "" ? 1 : 0
+        loginType.currentIndex = hi.identify !== "" ? 1 : 0
         password.text = hi.password
         name.text = hi.name
         host.text = hi.host
@@ -170,7 +170,7 @@ Page {
                             loScript.visible = false
                             loPassword.visible = true
                             loIdentify.visible = false
-                            loLoginName.visible = false
+                            loLoginName.visible = false                            
                             if(hostName === "" && isDefaultPort()) {
                                 port.text = "5091"
                             }

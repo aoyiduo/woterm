@@ -36,6 +36,7 @@
 #include "qmosftpassist.h"
 #include "qmoquickassist.h"
 #include "qmoandroidassist.h"
+#include "qmovncwidgetimpl.h"
 
 #include "qwoidentify.h"
 
@@ -149,7 +150,7 @@ bool QMoMainWindow::openSftp(const QString &target)
     m_show->setGeometry(rt);
     m_show->show();
     m_recentAccess->update(target, EOT_SFTP);
-    return false;
+    return true;
 }
 
 bool QMoMainWindow::openTelnet(const QString &target)
@@ -165,7 +166,7 @@ bool QMoMainWindow::openTelnet(const QString &target)
     m_show->setGeometry(rt);
     m_show->show();
     m_recentAccess->update(target, EOT_TELNET);
-    return false;
+    return true;
 }
 
 bool QMoMainWindow::openRLogin(const QString &target)
@@ -182,8 +183,18 @@ bool QMoMainWindow::openMstsc(const QString &target)
 
 bool QMoMainWindow::openVnc(const QString &target)
 {
+    if(m_show) {
+        m_show->setVisible(false);
+        m_show->deleteLater();
+    }
+    if(m_show == nullptr) {
+        m_show = new QMoVncWidgetImpl(target, this);
+    }
+    QRect rt = rect();
+    m_show->setGeometry(rt);
+    m_show->show();
     m_recentAccess->update(target, EOT_VNC);
-    return false;
+    return true;
 }
 
 bool QMoMainWindow::openRecent(const QString &target, int type)
@@ -195,6 +206,8 @@ bool QMoMainWindow::openRecent(const QString &target, int type)
         return openSftp(target);
     case EOT_TELNET:
         return openTelnet(target);
+    case EOT_VNC:
+        return openVnc(target);
     }
     return false;
 }
@@ -266,5 +279,13 @@ void QMoMainWindow::closeEvent(QCloseEvent *ev)
     }
 
     QWidget::closeEvent(ev);
+}
+
+void QMoMainWindow::resizeEvent(QResizeEvent *ev)
+{
+    QWidget::resizeEvent(ev);
+    if(m_show) {
+        m_show->resize(ev->size());
+    }
 }
 

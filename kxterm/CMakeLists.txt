@@ -26,7 +26,6 @@ set(SOURCE_FILES
     qvteimpl.cpp
     wcwidth.cpp
     qkxechoinput.cpp
-    qkxtouchpoint.cpp
 )
 
 set(HAEDER_FILES
@@ -44,7 +43,6 @@ set(HAEDER_FILES
     qvteimpl.h
     wcwidth.h
     qkxechoinput.h
-    qkxtouchpoint.h
     qkxterm_share.h
 )
 

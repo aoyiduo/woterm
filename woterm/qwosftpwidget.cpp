@@ -413,10 +413,13 @@ void QWoSftpWidget::handleLocalDragEnterEvent(QDropEvent *de)
             const QUrl& url = *it;
             QString localFile = url.toLocalFile();
             if(QFile::exists(localFile)) {
+                de->setDropAction(Qt::MoveAction);
                 de->setAccepted(true);
                 return;
             }
         }
+    }else{
+        de->ignore();
     }
 }
 
@@ -438,6 +441,8 @@ void QWoSftpWidget::handleLocalDropEvent(QDropEvent *de)
                 return;
             }
         }
+    }else{
+        de->ignore();
     }
 }
 
@@ -450,10 +455,13 @@ void QWoSftpWidget::handleRemoteDragEnterEvent(QDropEvent *de)
             const QUrl& url = *it;
             QString localFile = url.toLocalFile();
             if(QFile::exists(localFile)) {
+                de->setDropAction(Qt::MoveAction);
                 de->setAccepted(true);
                 return;
             }
         }
+    }else{
+        de->ignore();
     }
 }
 

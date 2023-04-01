@@ -28,8 +28,11 @@ QMoKeyboard::QMoKeyboard(QWidget *parent)
     , m_letters("QWERTYUIOPASDFGHJKLZXCVBNM")
     , m_digitals("1234567890")
     , m_symbols("~`!@#$%^&*()_-+={}[]|\\:;\"'<>,.?/")
+    , m_shiftSymbols("~!@#$%^&*()_+{}|:\\\"<>?")
+    , m_vncPatch(false)
 {
     ui->setupUi(this);
+    setAttribute(Qt::WA_StyledBackground);
 
     m_pageIdx = 0;
     m_btns1.append(ui->btnKeyQ);
@@ -118,6 +121,11 @@ QMoKeyboard::~QMoKeyboard()
     delete ui;
 }
 
+void QMoKeyboard::setVNCPatch(bool on)
+{
+    m_vncPatch = on;
+}
+
 void QMoKeyboard::onCharButtonClicked()
 {
     QPushButton *btn = qobject_cast<QPushButton*>(sender());
@@ -129,8 +137,20 @@ void QMoKeyboard::onCharButtonClicked()
         //qDebug() << "onCharButtonClicked" << str;
         QChar c = str.at(0);
         Qt::Key key = toKey(c);
-        emit keyEvent(buildKeyEvent(true, c, key));
-        emit keyEvent(buildKeyEvent(false, c, key));
+        if(m_vncPatch && m_shiftSymbols.indexOf(c) >= 0) {
+            // fix for vnc.
+            if(!isShiftON()) {
+                emit keyEvent(buildKeyEvent(true, 0, Qt::Key_Shift));
+            }
+            emit keyEvent(buildKeyEvent(true, c, key));
+            emit keyEvent(buildKeyEvent(false, c, key));
+            if(!isShiftON()) {
+                emit keyEvent(buildKeyEvent(false, 0, Qt::Key_Shift));
+            }
+        }else{
+            emit keyEvent(buildKeyEvent(true, c, key));
+            emit keyEvent(buildKeyEvent(false, c, key));
+        }
     }
 }
 
@@ -312,6 +332,7 @@ void QMoKeyboard::setAltON(bool yes)
         m_altOn->move(RED_POINT_POINT);
     }
     m_altOn->setVisible(yes);
+    emit keyEvent(buildKeyEvent(yes, 0, Qt::Key_Alt));
 }
 
 bool QMoKeyboard::isCtrlON() const
@@ -328,6 +349,7 @@ void QMoKeyboard::setCtrlON(bool yes)
         m_ctrlOn->move(RED_POINT_POINT);
     }
     m_ctrlOn->setVisible(yes);
+    emit keyEvent(buildKeyEvent(yes, 0, Qt::Key_Control));
 }
 
 bool QMoKeyboard::isShiftON() const
@@ -344,6 +366,7 @@ void QMoKeyboard::setShiftON(bool yes)
         m_shiftOn->move(RED_POINT_POINT);
     }
     m_shiftOn->setVisible(yes);
+    emit keyEvent(buildKeyEvent(yes, 0, Qt::Key_Shift));
 }
 
 QKeyEvent *QMoKeyboard::buildKeyEvent(bool pressed, QChar c, Qt::Key key)
@@ -360,6 +383,8 @@ QKeyEvent *QMoKeyboard::buildKeyEvent(bool pressed, QChar c, Qt::Key key)
     }
     if(modifiers == Qt::ShiftModifier) {
         c = c.isLower() ? c.toUpper() : c.toLower();
+    }else if((modifiers & Qt::ControlModifier) || (modifiers & Qt::AltModifier)) {
+        c = c.toUpper();
     }
     return buildKeyEvent(pressed, c, key, modifiers);
 }
@@ -434,4 +459,20 @@ void QMoKeyboard::keyPressEvent(QKeyEvent *ev)
 void QMoKeyboard::keyReleaseEvent(QKeyEvent *ev)
 {
 
+}
+
+void QMoKeyboard::mouseMoveEvent(QMouseEvent *event)
+{
+    if (event->buttons() & Qt::LeftButton) {
+        move(event->globalPos() - m_dragPosition);
+        event->accept();
+    }
+}
+
+void QMoKeyboard::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
 }

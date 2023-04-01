@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -33,10 +33,6 @@ QKxVncWidget::QKxVncWidget(QWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
     setInputMethodHints((Qt::InputMethodHints)(Qt::ImhNoAutoUppercase|Qt::ImhNoPredictiveText));
-
-    //QTimer *timer = new QTimer(this);
-    //QObject::connect(timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
-    //timer->start(30);
 
     QImage tmp = QImage(5, 5, QImage::Format_ARGB32_Premultiplied);
     tmp.fill(qRgba(0, 0, 0, 0));
@@ -353,6 +349,9 @@ void QKxVncWidget::paintEvent(QPaintEvent *ev)
     p.setClipRegion(ev->region());
     p.setRenderHint(QPainter::SmoothPixmapTransform);
     QRect drawRt = rect();
+    //p.translate(drawRt.center());
+    //p.rotate(90);
+    //p.translate(-drawRt.center());
     if(m_vnc) {
         QImage img = m_vnc->capture();
         if(img.isNull()) {
@@ -364,6 +363,7 @@ void QKxVncWidget::paintEvent(QPaintEvent *ev)
     }else{
         p.fillRect(drawRt, Qt::black);
     }
+
 }
 
 void QKxVncWidget::mousePressEvent(QMouseEvent *event)

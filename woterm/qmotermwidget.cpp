@@ -16,6 +16,7 @@
 #include "qwoutils.h"
 #include "qwosshconf.h"
 #include "qkxmessagebox.h"
+#include "qkxtouchpoint.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -48,10 +49,8 @@ QMoTermWidget::QMoTermWidget(const QString& target, ETermType ttype, QWidget *pa
     setFocus();
 
     m_loading = new QWoLoadingWidget(QColor("#1296DB"), this);
-
+    showTouchPoint(true, true);
     m_term->showTermName(false);
-    m_term->showTouchPoint(true);
-    QObject::connect(m_term, SIGNAL(touchPointClicked()), this, SLOT(onTouchPointClicked()));
 
     QString val = QWoSetting::value("property/shortcut").toString();
     QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
@@ -117,6 +116,7 @@ void QMoTermWidget::resizeEvent(QResizeEvent *event)
 {    
     QKxTermWidget::resizeEvent(event);
     m_loading->setGeometry(0, 0, width(), height());
+    QMetaObject::invokeMethod(this, "resetTouchPointPosition", Qt::QueuedConnection);
 }
 
 void QMoTermWidget::initDefault()
@@ -179,11 +179,6 @@ void QMoTermWidget::onStopOutputHistoryFile()
     m_term->stopHistoryFile();
 }
 
-void QMoTermWidget::onTouchPointClicked()
-{
-    qDebug() << "onTouchPointClicked";
-}
-
 void QMoTermWidget::resetProperty(QVariantMap mdata)
 {
     if(mdata.isEmpty()) {
@@ -199,9 +194,10 @@ void QMoTermWidget::resetProperty(QVariantMap mdata)
     m_term->setTextCodec(codec);
 
     QString fontName = mdata.value("fontName", DEFAULT_FONT_FAMILY).toString();
-    int fontSize = mdata.value("fontSize", DEFAULT_FONT_SIZE).toInt();
-    QFont ft = QKxTermItem::createFont(fontName, fontSize);
-    m_term->setFont(ft);
+    int fontSize = mdata.value("fontSize", DEFAULT_FONT_SIZE).toInt();    
+
+    m_term->setTerminalFont(fontName, fontSize);
+
     QString cursorType = mdata.value("cursorType", "block").toString();
     if(cursorType.isEmpty() || cursorType == "block") {
         m_term->setCursorType(QKxTermItem::CT_Block);
@@ -215,4 +211,33 @@ void QMoTermWidget::resetProperty(QVariantMap mdata)
     bool dragPaste = mdata.value("dragPaste", false).toBool();
     m_term->setDragCopyAndPaste(dragPaste);
     m_rkeyPaste = mdata.value("rkeyPaste", false).toBool();
+}
+
+void QMoTermWidget::showTouchPoint(bool show, bool async)
+{
+    if(async == true) {
+        QMetaObject::invokeMethod(this, "showTouchPoint", Qt::QueuedConnection, Q_ARG(bool, show), Q_ARG(bool, false));
+        return;
+    }
+    if(show) {
+        if(m_touchPoint == nullptr) {
+            m_touchPoint = new QKxTouchPoint(m_term);
+            QObject::connect(m_touchPoint, SIGNAL(clicked()), this, SIGNAL(touchPointClicked()));
+        }
+        QMetaObject::invokeMethod(this, "resetTouchPointPosition", Qt::QueuedConnection);
+        m_touchPoint->raise();
+        m_touchPoint->show();
+    }else if(m_touchPoint) {
+        m_touchPoint->hide();
+    }
+}
+
+void QMoTermWidget::resetTouchPointPosition()
+{
+    if(m_touchPoint) {
+        int tw = m_touchPoint->raduis() * 2;
+        QSize sz = m_term->size();
+        QRect rt(sz.width() - tw, (sz.height() - tw) / 2, tw, tw);
+        m_touchPoint->setGeometry(rt);
+    }
 }

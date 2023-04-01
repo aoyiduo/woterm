@@ -237,8 +237,7 @@ void QWoTermWidget::resetProperty(QVariantMap mdata)
 
     QString fontName = mdata.value("fontName", DEFAULT_FONT_FAMILY).toString();
     int fontSize = mdata.value("fontSize", DEFAULT_FONT_SIZE).toInt();
-    QFont ft = QKxTermItem::createFont(fontName, fontSize);
-    m_term->setFont(ft);
+    m_term->setTerminalFont(fontName, fontSize);
     QString cursorType = mdata.value("cursorType", "block").toString();
     if(cursorType.isEmpty() || cursorType == "block") {
         m_term->setCursorType(QKxTermItem::CT_Block);

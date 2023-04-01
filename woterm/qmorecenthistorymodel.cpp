@@ -50,6 +50,23 @@ void QMoRecentHistoryModel::update(const QString &name, int type)
     emit lengthChanged();
 }
 
+void QMoRecentHistoryModel::remove(const QString &name)
+{
+    beginResetModel();
+    for(auto it = m_recents.begin(); it != m_recents.end(); ) {
+        const RecentHistoryData& rhd = *it;
+        if(rhd.name == name) {
+            it = m_recents.erase(it);
+        }else{
+            it++;
+        }
+    }
+    endResetModel();
+    save();
+
+    emit lengthChanged();
+}
+
 void QMoRecentHistoryModel::clear()
 {
     beginResetModel();
@@ -154,14 +171,24 @@ void QMoRecentHistoryModel::init()
     QDataStream ds(buf);
     int cnt;
     ds >> cnt;
+    QWoSshConf::instance()->refresh();
+    QStringList nameDels;
     beginResetModel();
     for(int i = 0; i < cnt; i++) {
         RecentHistoryData rhd;
         int type;
         ds >> rhd.name >> rhd.timeLast >> type;
         rhd.type = type;
-        m_recents.append(rhd);
+        if(QWoSshConf::instance()->exists(rhd.name)) {
+            m_recents.append(rhd);
+        }else{
+            nameDels.append(rhd.name);
+        }
     }
     endResetModel();
     emit lengthChanged();
+
+    for(int i = 0; i < nameDels.length(); i++) {
+        remove(nameDels.at(i));
+    }
 }

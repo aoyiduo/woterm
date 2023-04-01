@@ -365,6 +365,30 @@ void QWoSessionList::onListViewItemAdd()
     refreshList();
 }
 
+void QWoSessionList::onListViewItemCopy()
+{
+    QModelIndex idx = m_tree->currentIndex();
+    if(!idx.isValid()) {
+        return;
+    }
+    HostInfo hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
+    hi.name.append(".Copy");
+    if(!QWoSshConf::instance()->exists(hi.name)) {
+        QWoSshConf::instance()->append(hi);
+        return;
+    }
+
+    for(int i = 2; i < 100; i++) {
+        QString name = QString("%1%2").arg(hi.name).arg(i);
+        if(QWoSshConf::instance()->exists(name)) {
+            continue;
+        }
+        hi.name = name;
+        QWoSshConf::instance()->append(hi);
+        return;
+    }
+}
+
 void QWoSessionList::onListViewItemDelete()
 {
     QMessageBox::StandardButton btn = QKxMessageBox::warning(this, "delete", "delete all the selective items?", QMessageBox::Ok|QMessageBox::No);
@@ -422,6 +446,7 @@ bool QWoSessionList::handleListViewContextMenu(QContextMenuEvent *ev)
         HostInfo hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
         menu.addAction(QIcon(":/woterm/resource/skin/reload.png"), tr("ReloadAll"), this, SLOT(onListViewItemReload()));
         menu.addAction(QIcon(":/woterm/resource/skin/add.png"), tr("Add"), this, SLOT(onListViewItemAdd()));
+        menu.addAction(QIcon(":/woterm/resource/skin/ftp.png"), tr("Copy"), this, SLOT(onListViewItemCopy()));
         if(hi.type == SshWithSftp) {
             menu.addAction(QIcon(":/woterm/resource/skin/ssh2.png"), tr("SshConnect"), this, SLOT(onListViewItemOpenSsh()));
         }
@@ -446,6 +471,7 @@ bool QWoSessionList::handleListViewContextMenu(QContextMenuEvent *ev)
         menu.addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Edit"), this, SLOT(onListViewItemModify()));
         menu.addAction(tr("Delete"), this, SLOT(onListViewItemDelete()));
     }else{
+        menu.addAction(QIcon(":/woterm/resource/skin/ftp.png"), tr("Copy"), this, SLOT(onListViewItemCopy()));
         menu.addAction(tr("Delete"), this, SLOT(onListViewItemDelete()));
     }
     if(QKxVer::isUltimate()) {

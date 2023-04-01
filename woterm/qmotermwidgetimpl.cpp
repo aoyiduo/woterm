@@ -50,8 +50,7 @@ void QMoTermWidgetImpl::init()
     layout->addWidget(keyboard);
     QObject::connect(keyboard, SIGNAL(keyEvent(QKeyEvent*)), this, SLOT(onSimulateKeyEvent(QKeyEvent*)));
 
-    QKxTermItem *item = term->termItem();
-    QObject::connect(item, SIGNAL(touchPointClicked()), this, SLOT(onShowMenu()));
+    QObject::connect(term, SIGNAL(touchPointClicked()), this, SLOT(onShowMenu()));
 
     m_term = term;
     m_keyboard = keyboard;

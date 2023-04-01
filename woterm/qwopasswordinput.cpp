@@ -35,6 +35,7 @@ QWoPasswordInput::QWoPasswordInput(QWidget *parent)
     ft.setBold(true);
     ui->title->setFont(ft);
     ui->title->setAlignment(Qt::AlignHCenter);
+    adjustSize();
 }
 
 QWoPasswordInput::~QWoPasswordInput()

@@ -907,6 +907,11 @@ bool QWoSshConf::backup(const QString &dbBackup)
 
 bool QWoSshConf::refresh()
 {
+    static qint64 tmActive = QDateTime::currentSecsSinceEpoch();
+    qint64 now =  QDateTime::currentSecsSinceEpoch();
+    if((now - tmActive) < 3 && !m_hosts.isEmpty()) {
+        return true;
+    }
     init();
     m_hosts = loadServerFromSqlite(m_dbFile);
     m_groups = loadGroupFromSqlite(m_dbFile);
@@ -1070,7 +1075,9 @@ bool QWoSshConf::qmlModifyOrAppend(const QVariant &v)
         hi.type = SftpOnly;
     }else if(type == "Telnet") {
         hi.type = Telnet;
-    }else{
+    }else if(type == "Vnc") {
+        hi.type = Vnc;
+    }else {
         hi.type = RLogin;
     }
     return modifyOrAppend(hi);

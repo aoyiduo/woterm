@@ -12,6 +12,8 @@
 #ifndef QKXTOUCHPOINT_H
 #define QKXTOUCHPOINT_H
 
+#include "qkxutil_share.h"
+
 #include <QWidget>
 #include <QPointer>
 #include <QTouchEvent>
@@ -19,7 +21,8 @@
 class QMouseEvent;
 class QPaintEvent;
 class QTimer;
-class QKxTouchPoint : public QWidget
+
+class KXUTIL_EXPORT QKxTouchPoint : public QWidget
 {
     Q_OBJECT
 public:

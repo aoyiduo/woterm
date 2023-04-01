@@ -24,8 +24,8 @@ class QMoMenuListModel : public QAbstractListModel
     Q_OBJECT
 public:
     explicit QMoMenuListModel(QObject *parent = nullptr);
-
-    void append(int id, const QString& name, const QIcon& ico = QIcon());
+    void update(int mid, const QString& name, const QIcon& ico = QIcon());
+    void remove(int mid);
     int itemCount() const;
     int itemsHeight() const;
 protected:

@@ -19,7 +19,6 @@
 #include "qkxkeytranslator.h"
 #include "qkxcolorschema.h"
 #include "qkxechoinput.h"
-#include "qkxtouchpoint.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -125,6 +124,18 @@ QKxTermItem::QKxTermItem(QWidget* parent)
     QTimer::singleShot(100, this, SLOT(onSetActive()));
 }
 
+QFont QKxTermItem::terminalFont() const
+{
+    return m_font;
+}
+
+QFontInfo QKxTermItem::setTerminalFont(const QString &family, int fontSize)
+{
+    QFont ft = createFont(family, fontSize);
+    setFont(ft);
+    return QFontInfo(ft);
+}
+
 QFont QKxTermItem::font() const
 {
     return m_font;
@@ -133,9 +144,7 @@ QFont QKxTermItem::font() const
 void QKxTermItem::setFont(const QFont &ft)
 {
     if(ft != m_font) {
-        int pt = QKxUtils::suggestFontSize(ft.family(), ft.pointSize());
         m_font = ft;
-        m_font.setPointSize(pt);
         updateFontInfo();
         updateTermSize();
         updateView(PF_FullScreen);
@@ -143,19 +152,52 @@ void QKxTermItem::setFont(const QFont &ft)
     }
 }
 
-QFont QKxTermItem::createFont(const QString &family, int fontSize)
+QFont QKxTermItem::createFont(const QString &family, int ftSize)
 {
-    QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    static QStringList monos;
+    static QMap<QString, bool> once;
+    if(monos.isEmpty()) {
+        QFontDatabase fdb;
+        QStringList list = fdb.families(QFontDatabase::Latin);
+        for (int i = 0; i < list.size(); ++i) {
+            const QString& name = list.at(i);
+            if(!name.toLower().contains("mono")) {
+                continue;
+            }
+            // fix pitch = fix width.
+            if(!fdb.isFixedPitch(name)) {
+                continue;
+            }
+            monos.append(name);
+        }
+    }
+    if(!monos.isEmpty()) {
+        if(!once.contains(family)) {
+            QFont::removeSubstitutions(family);
+            once.insert(family, true);
+            // Avoid being referenced to other strange non equal width fonts when the target font does not exist.
+            // so we proactively provide a set of selected fixed pitch fonts
+            QFont::insertSubstitutions(family, monos);
+        }
+    }
+    ftSize = QKxUtils::suggestFontSize(family, ftSize);
+    QFont font(family, ftSize);
+    //QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     int strategy = QFont::PreferAntialias|QFont::ForceIntegerMetrics;
     font.setFamily(family);
-    font.setPointSize(fontSize);
+    font.setPointSize(ftSize);
     // don't not open the follow code.
     //font.setWeight(QFont::Normal);
     //font.setStyle(QFont::StyleNormal);
     font.setFixedPitch(true);
+    /*
+     * When kerning is enabled, glyph metrics do not add up anymore, even for Latin text.
+     * In other words, the assumption that width('a') + width('b') is equal to width("ab") is not necessarily true.
+     */
     font.setKerning(false); // must be false.
     font.setStyleName(QString()); // must be empty. or will effect different weight.
     font.setStyleHint(QFont::TypeWriter, QFont::StyleStrategy(strategy));
+    font.setHintingPreference(QFont::PreferFullHinting);
     return font;
 }
 
@@ -213,8 +255,7 @@ int QKxTermItem::fontSize() const
 
 void QKxTermItem::setFontSize(int sz)
 {
-    QFont ft = m_font;
-    ft.setPointSize(sz);
+    QFont ft = createFont(m_font.family(), sz);
     setFont(ft);
 }
 
@@ -731,16 +772,6 @@ void QKxTermItem::resetTitlePosition(bool bycursor)
     m_title->setGeometry(sz.width() - sh.width() - 1, y, sh.width(), sh.height());
 }
 
-void QKxTermItem::resetTouchPointPosition()
-{
-    if(m_touchPoint) {
-        int tw = m_touchPoint->raduis() * 2;
-        QSize sz = size();
-        QRect rt(sz.width() - tw, (sz.height() - tw) / 2, tw, tw);
-        m_touchPoint->setGeometry(rt);
-    }
-}
-
 QPoint QKxTermItem::widgetPointToTermViewPosition(const QPoint &pt)
 {
     int x = pt.x() / m_fontWidth;
@@ -1074,7 +1105,6 @@ void QKxTermItem::resizeEvent(QResizeEvent *ev)
     //qDebug() << objectName() << "geometryChanged" << newGeometry << oldGeometry;
     m_flagPaints |= PF_FullScreen;
     resetTitlePosition(false);
-    resetTouchPointPosition();
 }
 
 void QKxTermItem::keyPressEvent(QKeyEvent *ev)
@@ -1420,24 +1450,6 @@ void QKxTermItem::showInputMethod(bool show)
     QInputMethod *im = QGuiApplication::inputMethod();
     if(im && !im->isVisible()){
         im->setVisible(show);
-    }
-}
-
-void QKxTermItem::showTouchPoint(bool show, bool async)
-{
-    if(async == true) {
-        QMetaObject::invokeMethod(this, "showTouchPoint", Qt::QueuedConnection, Q_ARG(bool, show), Q_ARG(bool, false));
-        return;
-    }
-    if(show) {
-        if(m_touchPoint == nullptr) {
-            m_touchPoint = new QKxTouchPoint(this);
-            QObject::connect(m_touchPoint, SIGNAL(clicked()), this, SIGNAL(touchPointClicked()));
-        }
-        resetTouchPointPosition();
-        m_touchPoint->show();
-    }else if(m_touchPoint) {
-        m_touchPoint->hide();
     }
 }
 

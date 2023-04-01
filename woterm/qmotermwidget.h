@@ -16,6 +16,7 @@
 #include <QPointer>
 
 class QWoLoadingWidget;
+class QKxTouchPoint;
 class QMoTermWidget : public QKxTermWidget
 {
     Q_OBJECT
@@ -32,6 +33,7 @@ public:
     void reloadProperty();
 signals:
     void aboutToClose(QCloseEvent* event);
+    void touchPointClicked();
 
 protected:
     virtual void showEvent(QShowEvent *event);
@@ -46,16 +48,17 @@ protected slots:
     void onCleanHistory();
     void onOutputHistoryToFile();
     void onStopOutputHistoryFile();
-    void onTouchPointClicked();
 private:
     void resetProperty(QVariantMap data);
+    Q_INVOKABLE void showTouchPoint(bool show, bool async);
+    Q_INVOKABLE void resetTouchPointPosition();
 protected:
     QString m_target;
     ETermType m_ttype;
     QPointer<QWoLoadingWidget> m_loading;
     bool m_rkeyPaste;
     QString m_historyFile;
-
+    QPointer<QKxTouchPoint> m_touchPoint;
 };
 
 #endif // QMOTERMWIDGET_H

@@ -55,6 +55,7 @@ private slots:
     void onVersionCheck(int code, const QByteArray &body);
 private:
     virtual void closeEvent(QCloseEvent* ev);
+    virtual void resizeEvent(QResizeEvent* ev);
 private:
     Ui::QMoMainWindow *ui;
     QPointer<QQmlContext> m_qmlContext;

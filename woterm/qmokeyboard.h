@@ -32,6 +32,7 @@ public:
     explicit QMoKeyboard(QWidget *parent = nullptr);
     ~QMoKeyboard();
 
+    void setVNCPatch(bool on);
 signals:
     void keyEvent(QKeyEvent *ev);
 private slots:
@@ -78,13 +79,18 @@ private:
 private:
     virtual void keyPressEvent(QKeyEvent *ev);
     virtual void keyReleaseEvent(QKeyEvent *ev);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
 private:
     Ui::QMoKeyboard *ui;
 
     QPointer<QMoRedPoint> m_capsOn, m_altOn, m_ctrlOn, m_shiftOn;
     QList<QPointer<QPushButton>> m_btns1, m_btns23;
     int m_pageIdx;
-    QString m_letters, m_digitals, m_symbols;
+    QString m_letters, m_digitals, m_symbols,m_shiftSymbols;
+
+    QPoint m_dragPosition;
+    bool m_vncPatch;
 };
 
 #endif // QMOKEYBOARD_H

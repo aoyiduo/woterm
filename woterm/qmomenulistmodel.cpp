@@ -22,7 +22,12 @@ QMoMenuListModel::QMoMenuListModel(QObject *parent)
     QObject::connect(m_timer, SIGNAL(timeout()), this, SLOT(onLaterReset()));
 }
 
-void QMoMenuListModel::append(int id, const QString &name, const QIcon &ico)
+void QMoMenuListModel::remove(int mid)
+{
+
+}
+
+void QMoMenuListModel::update(int id, const QString &name, const QIcon &ico)
 {
     auto it = std::find_if(m_items.begin(), m_items.end(), [=](const MenuData& md){
        return md.id == id;

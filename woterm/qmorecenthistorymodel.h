@@ -22,6 +22,7 @@ class QMoRecentHistoryModel : public QAbstractListModel
 public:
     explicit QMoRecentHistoryModel(QObject *parent = nullptr);
     Q_INVOKABLE void update(const QString& name, int type);
+    Q_INVOKABLE void remove(const QString& name);
     Q_INVOKABLE void clear();
     int length() const;
 signals:

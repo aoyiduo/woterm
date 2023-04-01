@@ -166,7 +166,7 @@ Page {
                                             sourceSize.height: 32
                                             source: "qrc:/woterm/resource/skin/connect.png"
                                         }
-                                        onClicked: {
+                                        onClicked: {                                            
                                             if(model.type === "SshWithSftp") {
                                                 sshftp.popup()
                                             }else if(model.type === "SftpOnly") {
@@ -178,7 +178,7 @@ Page {
                                             }else if(model.type === "Mstsc") {
                                                 gMessageBox.information(qsTr("Telnet information"), qsTr("The current version is not yet supported."))
                                             }else if(model.type === "Vnc") {
-                                                gMessageBox.information(qsTr("Telnet information"), qsTr("The current version is not yet supported."))
+                                                gMainWindow.openVnc(model.name)
                                             }
                                         }
 

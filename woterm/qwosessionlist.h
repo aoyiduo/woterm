@@ -56,6 +56,7 @@ private slots:
     void onListViewItemReload();
     void onListViewItemModify();
     void onListViewItemAdd();
+    void onListViewItemCopy();
     void onListViewItemDelete();
     void onListViewGroupLayout();
 private:

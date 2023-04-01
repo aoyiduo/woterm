@@ -56,7 +56,6 @@ set(SOURCE_FILES
     qwosessionrdpproperty.cpp
     qwosessionvncproperty.cpp
     qwosessionttyproperty.cpp
-    qwosessionmoreproperty.cpp
     qwosetting.cpp
     qwosettingdialog.cpp
     qwoshower.cpp
@@ -149,6 +148,8 @@ set(SOURCE_FILES
     qmosftpqueuemodel.cpp
     qmoaboutassist.cpp
     qmoandroidassist.cpp
+    qmovncwidgetimpl.cpp
+    qmovncwidget.cpp
 )
 
 set(HEADER_FILES
@@ -184,7 +185,6 @@ set(HEADER_FILES
     qwosessionrdpproperty.h
     qwosessionvncproperty.h
     qwosessionttyproperty.h
-    qwosessionmoreproperty.h
     qwosetting.h
     qwosettingdialog.h
     qwoshower.h
@@ -278,6 +278,8 @@ set(HEADER_FILES
     qmosftpqueuemodel.h
     qmoaboutassist.h
     qmoandroidassist.h
+    qmovncwidgetimpl.h
+    qmovncwidget.h
 )
 
 set(OTHER_FILES
@@ -304,7 +306,6 @@ set(OTHER_FILES
     qwosessionrdpproperty.ui
     qwosessionvncproperty.ui
     qwosessionttyproperty.ui
-    qwosessionmoreproperty.ui
     qwosettingdialog.ui
     qwotermmask.ui
     qwoserialinput.ui

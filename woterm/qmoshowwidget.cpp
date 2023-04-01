@@ -17,7 +17,7 @@ QMoShowWidget::QMoShowWidget(const QString &target, QWidget *parent)
     , m_target(target)
 {
     setAttribute(Qt::WA_StyledBackground);
-    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_DeleteOnClose);    
 
     // do not why it could not same on android device
     // so just to try to fix it again later about 1 second.

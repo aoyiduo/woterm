@@ -191,6 +191,7 @@
         <file>qml/MoAboutView.qml</file>
         <file>qml/MoLanguageView.qml</file>
         <file>qml/MoSystemInformation.qml</file>
+        <file>resource/skin/keyboard.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

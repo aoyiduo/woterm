@@ -21,6 +21,7 @@ class QWoRecentHistory : public QObject
 public:
     explicit QWoRecentHistory(QObject *parent = nullptr);
     void update(const QString& name, int type);
+    void remove(const QString& name);
     void buildMenu(QMenu *menu);
 
 signals:

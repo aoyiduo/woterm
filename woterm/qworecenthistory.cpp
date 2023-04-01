@@ -48,6 +48,19 @@ void QWoRecentHistory::update(const QString &name, int type)
     save();
 }
 
+void QWoRecentHistory::remove(const QString &name)
+{
+    for(auto it = m_recents.begin(); it != m_recents.end(); ) {
+        const RecentHistoryData& rhd = *it;
+        if(rhd.name == name) {
+            it = m_recents.erase(it);
+        }else{
+            it++;
+        }
+    }
+    save();
+}
+
 void QWoRecentHistory::buildMenu(QMenu *menu)
 {
     auto iconFile=[=](int t){
@@ -111,11 +124,21 @@ void QWoRecentHistory::init()
     QDataStream ds(buf);
     int cnt;
     ds >> cnt;
+    QWoSshConf::instance()->refresh();
+    QStringList nameDels;
     for(int i = 0; i < cnt; i++) {
         RecentHistoryData rhd;
         int type;
         ds >> rhd.name >> rhd.timeLast >> type;
+        QWoSshConf::instance()->refresh();
         rhd.type = type;
-        m_recents.append(rhd);
+        if(QWoSshConf::instance()->exists(rhd.name)) {
+            m_recents.append(rhd);
+        }else{
+            nameDels.append(rhd.name);
+        }
+    }
+    for(int i = 0; i < nameDels.length(); i++) {
+        remove(nameDels.at(i));
     }
 }
