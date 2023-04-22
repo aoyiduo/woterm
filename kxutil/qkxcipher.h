@@ -23,6 +23,8 @@ public:
     static QByteArray pkcs7Padding(const QByteArray &in, int alignSize);
     static QByteArray pkcs7UnPadding(const QByteArray &in);
     static QByteArray makeBytes(const QByteArray& pass, int cnt);
+    static QByteArray alignBytes(const QByteArray& in, int alignSize);
+    static bool isAlign(const QByteArray& in, int alignSize);
     // aes
     // key.size() == 16 || key.size() == 24 || key.size() == 32
     static bool aesEcbEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, bool enc);
@@ -34,9 +36,8 @@ public:
     static bool aesCtrEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, const QByteArray& ivec, bool enc);
     static bool aesGcmEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, const QByteArray& ivec, bool enc);
     static bool aesXtsEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, const QByteArray& ivec, bool enc);
-#ifdef OPENSSL_1_1_1
+
     static bool aesOcbEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, const QByteArray& ivec, bool enc);
-#endif
     // des
     static bool tripleDesEcbEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, bool enc);
     static bool tripleDesCbcEncrypt(const QByteArray& in, QByteArray& out, const QByteArray &key, const QByteArray& ivec, bool enc);

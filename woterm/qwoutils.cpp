@@ -31,6 +31,7 @@
 #include <string.h>
 #include <QProcess>
 #include <QInputDialog>
+#include <QDateTime>
 
 #include <openssl/aes.h>
 
@@ -39,7 +40,7 @@
 #include <ws2tcpip.h>
 #include <fcntl.h>
 #define myclosesocket  closesocket
-
+typedef int socket_t;
 #else
 #include <netdb.h>
 #include <sys/socket.h>
@@ -51,6 +52,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <errno.h>
+typedef int socket_t;
 #define myclosesocket(x)    close(x)
 #endif
 
@@ -376,6 +378,19 @@ QByteArray QWoUtils::filePermissionToText(int type, int flag)
     return buf;
 }
 
+QString QWoUtils::getDefaultGateway()
+{
+    char hostname[256] = {0};
+    if(gethostname(hostname, sizeof(hostname)) == 0) {
+        struct hostent *phost = gethostbyname(hostname);
+        uchar *ip = (uchar*)phost->h_addr;
+        char myip[128] = {0};
+        sprintf(myip, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+        qDebug() << myip;
+    }
+    return "";
+}
+
 int QWoUtils::getAddrInfos(const char *host, int port, addrinfo **ai)
 {
     const char *service = nullptr;
@@ -583,6 +598,52 @@ bool QWoUtils::isRootUser()
     return uid == 0;
 }
 
+bool QWoUtils::hasUnprivilegedPortPermission()
+{
+#ifdef Q_OS_WIN
+    return true;
+#else
+    /*
+     * Rlogin only: bind to a "privileged" port (between 512 and
+     * 1023, inclusive).
+     *
+     * sysctl -w net.ipv4.ip_unprivileged_port_start=80.
+     * socket
+     */
+    int bindPermissionError = 0;
+    int bindError = 0;
+    int connError = 0;
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    qint64 seed = QDateTime::currentSecsSinceEpoch();
+    qDebug() << "make random seed" << seed;
+    qsrand(seed);
+    int rid = qAbs(qrand()) % 512;
+    rid = rid + 511;
+    socket_t fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+    for (int i = rid; i >= rid - 2; i--) {
+        addr.sin_port = htons(i);
+        int err = ::bind(fd, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+        if(err != 0) {
+            if(QWoUtils::socketError() == EACCES) {
+                bindPermissionError++;
+            }else{
+                bindError++;
+            }
+            continue;
+        }
+        break;
+    }
+    myclosesocket(fd);
+    if(bindPermissionError > 0) {
+        return false;
+    }
+    return true;
+#endif
+}
+
 QString QWoUtils::loginUser()
 {
     QProcess proc;
@@ -616,13 +677,18 @@ bool QWoUtils::openself(const QString& type, const QString& target, bool pkexec)
     envs.append(QString("WOTERM_DATA_PATH=\"%1\"").arg(conf));
     envs.append(QString("PATH=%1").arg(expath));
     envs.append(QString("LD_LIBRARY_PATH=%1").arg(ldpath));
-    QString program;
+    QString cmd;
     if(pkexec) {
-        program = QString("pkexec env %1 %2").arg(envs.join(QChar::Space)).arg(args.join(QChar::Space));
+        cmd = QString("pkexec env %1 %2").arg(envs.join(QChar::Space)).arg(args.join(QChar::Space));
     }else{
-        program = args.join(QChar::Space);
+        cmd = args.join(QChar::Space);
     }
-    return QProcess::startDetached(program);
+    return QProcess::execute(cmd) == 0;
+}
+
+bool QWoUtils::runAsRoot(const QString &cmd)
+{
+    return QProcess::execute("pkexec env "+ cmd) == 0;
 }
 
 int QWoUtils::parseVersion(const QString &ver)

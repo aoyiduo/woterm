@@ -25,6 +25,12 @@ message(STATUS "root This is SOURCE dir " ${PROJECT_SOURCE_DIR})
 
 set(SOURCE_FILES
     qkxbuttonassist.cpp
+    qkxfilterbox.cpp
+    qkxfilterlineedit.cpp
+    qkxfilterlistview.cpp
+    qkxlicensedialog.cpp
+    qkxmessagebox.cpp
+    qkxtouchpoint.cpp
     #window object
     main.cpp
     qwoapplication.cpp
@@ -108,6 +114,7 @@ set(SOURCE_FILES
     qwodbsftpdetaildialog.cpp
     qwodbrestoredialog.cpp
     qwodbpowerrestoredialog.cpp
+    qwobindportpermissiondialog.cpp
     qwogroupinputdialog.cpp
     qwofontlistmodel.cpp
     qworecenthistory.cpp
@@ -150,10 +157,18 @@ set(SOURCE_FILES
     qmoandroidassist.cpp
     qmovncwidgetimpl.cpp
     qmovncwidget.cpp
+    qmorlogintermwidget.cpp
+    qmorlogintermwidgetimpl.cpp    
 )
 
 set(HEADER_FILES
     qkxbuttonassist.h
+    qkxfilterbox.h
+    qkxfilterlineedit.h
+    qkxfilterlistview.h
+    qkxlicensedialog.h
+    qkxtouchpoint.h
+    qkxmessagebox.h
     # window object
     qwoapplication.h
     qwomenubutton.h
@@ -237,6 +252,7 @@ set(HEADER_FILES
     qwodbsftpdetaildialog.h
     qwodbrestoredialog.h
     qwodbpowerrestoredialog.h
+    qwobindportpermissiondialog.h
     qwogroupinputdialog.h
     qwofontlistmodel.h
     qworecenthistory.h
@@ -280,11 +296,16 @@ set(HEADER_FILES
     qmoandroidassist.h
     qmovncwidgetimpl.h
     qmovncwidget.h
+    qmorlogintermwidget.h
+    qmorlogintermwidgetimpl.h
+
 )
 
 set(OTHER_FILES
     woterm.qrc
     # window object
+    qkxfilterlistview.ui
+    qkxlicensedialog.ui
     qwoaboutdialog.ui
     qwomenubutton.ui
     qwoadmindialog.ui
@@ -317,6 +338,7 @@ set(OTHER_FILES
     qwodbsftpdetaildialog.ui
     qwodbrestoredialog.ui
     qwodbpowerrestoredialog.ui
+    qwobindportpermissiondialog.ui
     qwodbsftpdownlistdialog.ui
     qwogroupinputdialog.ui
 
@@ -416,8 +438,7 @@ elseif(APPLE)
     link_libraries(ptyqt SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet)
 
     add_library(openssl_crypto STATIC IMPORTED)
-    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/lib/libcrypto.a)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION ${OPENSSL_ROOT_DIR}/lib/libcrypto.dylib)
     link_libraries(openssl_crypto)
 
     # NOTE: Don't include the path in MACOSX_BUNDLE_ICON_FILE -- this is
@@ -458,8 +479,7 @@ else()
     message("linux system.")
     link_libraries(ptyqt SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet SQLiteCpp)
     add_library(openssl_crypto SHARED IMPORTED)
-    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/lib/libcrypto.so)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION ${OPENSSL_ROOT_DIR}/lib/libcrypto.so)
     link_libraries(openssl_crypto)
 
     add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${OTHER_FILES} ${LangSrcs})

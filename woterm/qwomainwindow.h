@@ -81,7 +81,10 @@ private slots:
     void onActionSshKeyManageTriggered();
     void onActionAdminTriggered();
     void onActionUltimateTriggered();
-    void onActionRegisterTriggered();    
+    void onActionRegisterTriggered();
+
+    void onFilterArrivedArrived(const QString& name, int type);
+    void onFilterCreateArrived(const QString& name);
 
 private:
     void initMenuBar();

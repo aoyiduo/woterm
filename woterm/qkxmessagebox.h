@@ -12,11 +12,10 @@
 #ifndef QKXMESSAGEBOX_H
 #define QKXMESSAGEBOX_H
 
-#include "qkxutil_share.h"
 
 #include <QMessageBox>
 
-class KXUTIL_EXPORT QKxMessageBox : public QMessageBox
+class QKxMessageBox : public QMessageBox
 {
     Q_OBJECT
 public:

@@ -42,7 +42,8 @@
 #include "qwomenubutton.h"
 #include "qworecenthistory.h"
 #include "qkxbuttonassist.h"
-#include "qkxappregisterdialog.h"
+#include "qkxfilterlineedit.h"
+#include "qkxlicensedialog.h"
 #include "qkxver.h"
 #include "version.h"
 
@@ -80,7 +81,7 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     initStatusBar();
 
     m_recent = new QWoRecentHistory(this);
-    QObject::connect(m_recent, SIGNAL(readyToConnect(const QString&, int)), this, SLOT(onSessionReadyToConnect(const QString&, int)));
+    QObject::connect(m_recent, SIGNAL(readyToConnect(QString,int)), this, SLOT(onSessionReadyToConnect(QString,int)));
 
     m_sessionDock = new QDockWidget(tr("Session Manager"), this);
     m_sessionDock->setObjectName("Session Manager");
@@ -114,8 +115,12 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     layout->addWidget(m_tab);
     layout->addWidget(m_shower);
 
-    QObject::connect(m_sessions, SIGNAL(readyToConnect(const QString&, int)), this, SLOT(onSessionReadyToConnect(const QString&, int)));
+    QObject::connect(m_sessions, SIGNAL(readyToConnect(QString,int)), this, SLOT(onSessionReadyToConnect(QString,int)));
 
+    //ui->actionAbout->setCheckable(true);
+    //ui->actionAbout->setChecked(true);
+    ui->actionRegister->setVisible(false);
+    ui->actionUltimate->setVisible(false);
     restoreLastState();
 }
 
@@ -151,16 +156,21 @@ void QWoMainWindow::closeEvent(QCloseEvent *event)
 void QWoMainWindow::onNewSession()
 {
     QWoSessionProperty dlg(this);
-    QObject::connect(&dlg, SIGNAL(readyToConnect(const QString&, int)), this, SLOT(onSessionReadyToConnect(const QString&,int)));
-    dlg.exec();
-    QWoHostListModel::instance()->refreshList();
+    QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), this, SLOT(onSessionReadyToConnect(QString,int)));
+    int retVal = dlg.exec();
+    if(retVal == QWoSessionProperty::Save || retVal == QWoSessionProperty::Connect) {
+        QWoHostListModel::instance()->refreshList();
+    }
 }
 
 void QWoMainWindow::onOpenRemoteSession()
 {
     QWoSessionManage dlg(this);
-    QObject::connect(&dlg, SIGNAL(readyToConnect(const QString&,int)), this, SLOT(onSessionReadyToConnect(const QString&,int)));
-    dlg.exec();
+    QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), this, SLOT(onSessionReadyToConnect(QString,int)));
+    int retVal = dlg.exec();
+    if(retVal == QWoSessionProperty::Save || retVal == QWoSessionProperty::Connect) {
+        QWoHostListModel::instance()->refreshList();
+    }
 }
 
 void QWoMainWindow::onOpenLocalSession()
@@ -524,8 +534,27 @@ void QWoMainWindow::onActionUltimateTriggered()
 
 void QWoMainWindow::onActionRegisterTriggered()
 {
-    QKxAppRegisterDialog dlg(this);
+    QKxLicenseDialog dlg(this);
     dlg.exec();
+}
+
+void QWoMainWindow::onFilterArrivedArrived(const QString &name, int type)
+{
+    onSessionReadyToConnect(name, type);
+}
+
+void QWoMainWindow::onFilterCreateArrived(const QString &name)
+{
+    QWoSessionProperty dlg(this);
+    dlg.setName(name);
+    if(name.contains(':')) {
+        dlg.setHostPort(name);
+    }
+    QObject::connect(&dlg, SIGNAL(readyToConnect(QString, int)), this, SLOT(onSessionReadyToConnect(QString,int)));
+    int retVal = dlg.exec();
+    if(retVal == QWoSessionProperty::Save || retVal == QWoSessionProperty::Connect) {
+        QWoHostListModel::instance()->refreshList();
+    }
 }
 
 void QWoMainWindow::initMenuBar()
@@ -551,7 +580,6 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionWetsite, SIGNAL(triggered()), this, SLOT(onActionWebsiteTriggered()));
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onActionAboutTriggered()));
     QObject::connect(ui->actionRegister, SIGNAL(triggered()), this, SLOT(onActionRegisterTriggered()));
-    ui->actionRegister->setVisible(false);
     if(QKxVer::isUltimate()) {
         QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));
         ui->actionUltimate->setVisible(false);        
@@ -563,6 +591,7 @@ void QWoMainWindow::initMenuBar()
         ui->menuOpen->deleteLater();
         ui->actionOpenRemote2->setVisible(true);
     }
+
 }
 
 void QWoMainWindow::initToolBar()
@@ -592,6 +621,16 @@ void QWoMainWindow::initToolBar()
         tool->addAction(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open"), this, SLOT(onOpenRemoteSession()));
     }
     tool->addAction(QIcon(":/woterm/resource/skin/layout.png"), tr("List"), this, SLOT(onLayout()));
+    tool->addSeparator();
+    if(QKxVer::isUltimate()){
+        QLineEdit *input = new QKxFilterLineEdit(tool);        
+        input->setMaximumWidth(250);
+        input->setPlaceholderText(tr("Enter keyword to search"));
+        input->setObjectName(tr("filterBox"));
+        tool->addWidget(input);
+        QObject::connect(input, SIGNAL(createArrived(QString)), this, SLOT(onFilterCreateArrived(QString)));
+        QObject::connect(input, SIGNAL(targetArrived(QString,int)), this, SLOT(onFilterArrivedArrived(QString,int)));
+    }
 }
 
 void QWoMainWindow::initStatusBar()

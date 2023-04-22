@@ -26,6 +26,7 @@
 #include "qwosshconf.h"
 #include "qwofloatwindow.h"
 #include "qkxmessagebox.h"
+#include "qwobindportpermissiondialog.h"
 #include "qkxver.h"
 
 #include <QTabBar>
@@ -76,6 +77,9 @@ QWoShower::~QWoShower()
 
 bool QWoShower::openLocalShell()
 {
+    if(!QKxVer::isUltimate()) {
+        return false;
+    }
     int gid = QWoUtils::gid();
     QString target = tr("Local shell");
     QWoPtyTermWidgetImpl *impl = new QWoPtyTermWidgetImpl(target, gid, m_tab, this);
@@ -123,6 +127,9 @@ bool QWoShower::openSftp(const QString &target, int gid)
 
 bool QWoShower::openTelnet(const QString &target)
 {
+    if(!QKxVer::isUltimate()) {
+        return false;
+    }
     QWoTelnetTermWidgetImpl *impl = new QWoTelnetTermWidgetImpl(target, QWoUtils::gid(), m_tab, this);
     createTab(impl, m_telico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
@@ -134,7 +141,10 @@ bool QWoShower::openTelnet(const QString &target)
 
 bool QWoShower::openRLogin(const QString &target)
 {
-    if(QWoUtils::isRootUser()) {
+    if(!QKxVer::isUltimate()) {
+        return false;
+    }
+    if(QWoUtils::hasUnprivilegedPortPermission()) {
         QWoRLoginTermWidgetImpl *impl = new QWoRLoginTermWidgetImpl(target, QWoUtils::gid(), m_tab, this);
         createTab(impl, m_rloico, target);
         impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
@@ -142,17 +152,19 @@ bool QWoShower::openRLogin(const QString &target)
         impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/rlogin.png");
         emit floatChanged(impl, false);
         return true;
+    }    
+    QWoBindPortPermissionDialog dlg(target, this);
+    if(dlg.exec() == (QDialog::Accepted+1)) {
+        return openRLogin(target);
     }
-    QMessageBox::StandardButton btn = QKxMessageBox::warning(this, "Info", "RLogin must be run with root permission, try to run to now?", QMessageBox::Ok|QMessageBox::No);
-    if(btn == QMessageBox::No) {
-        return false;
-    }
-    QWoUtils::openself("rlogin", target, true);
-    return true;
+    return false;
 }
 
 bool QWoShower::openMstsc(const QString &target)
 {
+    if(!QKxVer::isUltimate()) {
+        return false;
+    }
     QWoRdpWidgetImpl *impl = new QWoRdpWidgetImpl(target, m_tab, this);
     createTab(impl, m_mtsico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Mstsc);
@@ -164,6 +176,9 @@ bool QWoShower::openMstsc(const QString &target)
 
 bool QWoShower::openVnc(const QString &target)
 {
+    if(!QKxVer::isUltimate()) {
+        return false;
+    }
     QWoVncWidgetImpl *impl = new QWoVncWidgetImpl(target, m_tab, this);
     createTab(impl, m_vncico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Vnc);
@@ -175,6 +190,9 @@ bool QWoShower::openVnc(const QString &target)
 
 bool QWoShower::openSerialPort()
 {
+    if(!QKxVer::isUltimate()) {
+        return false;
+    }
     QString target = tr("SerialPort");
     QWoSerialWidgetImpl *impl = new QWoSerialWidgetImpl(target, QWoUtils::gid(), m_tab, this);
     createTab(impl, m_serico, target);

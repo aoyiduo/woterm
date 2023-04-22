@@ -27,7 +27,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -167,6 +167,12 @@
    </property>
   </action>
   <action name="actionAbout">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="woterm.qrc">
      <normaloff>:/woterm/resource/skin/about.png</normaloff>:/woterm/resource/skin/about.png</iconset>

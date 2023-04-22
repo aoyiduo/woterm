@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -62,14 +62,14 @@ void QWoDBSftpUploadSync::upload(const QString &type, const QString &key)
     }else if(type == "AES-CTR-256") {
         QByteArray pass = QKxCipher::makeBytes(key.toUtf8(), 32);
         QByteArray ivec = QKxCipher::makeBytes(key.toUtf8(), 16);
-        if(!QKxCipher::aesCtrEncrypt(all, out, pass, ivec, true)) {
+        if(!QKxCipher::aesCtrEncrypt(QKxCipher::alignBytes(all, 16), out, pass, ivec, true)) {
             finishAction(-3, tr("Failed to encrypt the backup file:%1.").arg(fileClone));
             return;
         }
     }else if(type == "AES-GCM-256") {
         QByteArray pass = QKxCipher::makeBytes(key.toUtf8(), 32);
         QByteArray ivec = QKxCipher::makeBytes(key.toUtf8(), 16);
-        if(!QKxCipher::aesGcmEncrypt(all, out, pass, ivec, true)) {
+        if(!QKxCipher::aesGcmEncrypt(QKxCipher::alignBytes(all, 16), out, pass, ivec, true)) {
             finishAction(-3, tr("Failed to encrypt the backup file:%1.").arg(fileClone));
             return;
         }
@@ -102,7 +102,7 @@ void QWoDBSftpUploadSync::upload(const QString &type, const QString &key)
     }else if(type == "Blowfish") {
         QByteArray pass = key.toUtf8();
         QByteArray ivec = QKxCipher::makeBytes(key.toUtf8(), 8);
-        if(!QKxCipher::blowfishEcbEncrypt(all, out, pass, ivec, true)) {
+        if(!QKxCipher::blowfishEcbEncrypt(QKxCipher::alignBytes(all, 8), out, pass, ivec, true)) {
             finishAction(-3, tr("Failed to encrypt the backup file:%1.").arg(fileClone));
             return;
         }

@@ -16,9 +16,8 @@ endif()
 
 add_definitions(-DKXUTIL_LIBRARY)
 
-find_package(Qt5 COMPONENTS Core Network Gui Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Core Network REQUIRED)
 find_package(Qt5Core CONFIG REQUIRED Private)
-find_package(Qt5Gui CONFIG REQUIRED Private)
 
 set(SOURCE_FILES
     rc4.cpp
@@ -34,10 +33,7 @@ set(SOURCE_FILES
     qkxmacaddress.cpp
     qkxlengthbodypacket.cpp
     qkxkeepwakeup.cpp
-    qkxprocesslaunch.cpp
-    qkxmessagebox.cpp
-    qkxkeymapping.cpp
-    qkxtouchpoint.cpp
+    qkxprocesslaunch.cpp    
 )
 
 set(HEADER_FILES
@@ -58,9 +54,6 @@ set(HEADER_FILES
     qkxlengthbodypacket.h
     qkxkeepwakeup.h
     qkxprocesslaunch.h
-    qkxmessagebox.h
-    qkxkeymapping.h
-    qkxtouchpoint.h
 )
 
 if(WIN32)
@@ -119,40 +112,34 @@ if(WIN32)
     link_libraries(ws2_32)
 
     add_library(libz_main STATIC IMPORTED)
-    set_target_properties(libz_main PROPERTIES IMPORTED_LOCATION
-        ${ZLIB_ROOT_DIR}/lib/zlibstatic.lib)
+    set_target_properties(libz_main PROPERTIES IMPORTED_LOCATION ${ZLIB_ROOT_DIR}/lib/zlibstatic.lib)
     link_libraries(libz_main)
 
     add_library(openssl_crypto STATIC IMPORTED)
-    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/lib/libcrypto.lib)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION  ${OPENSSL_ROOT_DIR}/lib/libcrypto.lib)
     link_libraries(openssl_crypto)
 elseif(APPLE)
     message("APPLE Here")
     add_library(libz_main STATIC IMPORTED)
-    set_target_properties(libz_main PROPERTIES IMPORTED_LOCATION
-        ${ZLIB_ROOT_DIR}/lib/libz.a)
+    set_target_properties(libz_main PROPERTIES IMPORTED_LOCATION  ${ZLIB_ROOT_DIR}/lib/libz.a)
     link_libraries(libz_main)
 
     add_library(openssl_crypto STATIC IMPORTED)
-    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/lib/libcrypto.a)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION  ${OPENSSL_ROOT_DIR}/lib/libcrypto.dylib)
     link_libraries(openssl_crypto)
 else()
     message("other")
     add_library(libz_main STATIC IMPORTED)
-    set_target_properties(libz_main PROPERTIES IMPORTED_LOCATION
-        ${ZLIB_ROOT_DIR}/lib/libz.a)
+    set_target_properties(libz_main PROPERTIES IMPORTED_LOCATION ${ZLIB_ROOT_DIR}/lib/libz.a)
     link_libraries(libz_main)
 
     add_library(openssl_crypto STATIC IMPORTED)
-    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
-        ${OPENSSL_ROOT_DIR}/lib/libcrypto.so)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION ${OPENSSL_ROOT_DIR}/lib/libcrypto.so)
     link_libraries(openssl_crypto)
 endif()
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::CorePrivate Qt5::GuiPrivate Qt5::Network Qt5::Gui Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::CorePrivate Qt5::Network)
 
 

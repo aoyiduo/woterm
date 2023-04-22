@@ -42,37 +42,71 @@
 #include "qmoapplication.h"
 #include "qmomainwindow.h"
 
-void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+static QFile g_fileLog;
+static QMutex g_mutexFileLog;
+
+#ifdef Q_OS_WIN
+#define WITH_SID        (false)
+#else
+#define WITH_SID        (true)
+#endif
+
+static void MyMessageHandler(QtMsgType type, const QMessageLogContext & context, const QString & text)
 {
-  QByteArray localMsg = msg.toLocal8Bit();
-  switch (type) {
-  case QtDebugMsg:
-      qDebug() << "Debug: %s (%s:%u, %s)\n" << localMsg.constData() << context.file << context.line << context.function;
-      break;
-  case QtInfoMsg:
-      qDebug() << "Info: %s (%s:%u, %s)\n" << localMsg.constData() << context.file << context.line << context.function;
-      break;
-  case QtWarningMsg:
-      qDebug() << "Warning: %s (%s:%u, %s)\n" << localMsg.constData() << context.file << context.line << context.function;
-      break;
-  case QtCriticalMsg:
-      qDebug() << "Critical: %s (%s:%u, %s)\n" << localMsg.constData() << context.file << context.line << context.function;
-      break;
-  case QtFatalMsg:
-      qDebug() << "Fatal: %s (%s:%u, %s)\n" << localMsg.constData() << context.file << context.line << context.function;
-      break;
-  }
+    const QDateTime datetime = QDateTime::currentDateTime();
+    const char * typeText = NULL;
+    switch (type)
+    {
+    case QtDebugMsg:
+    case QtInfoMsg:
+        typeText = "Info";
+        break;
+    case QtWarningMsg:
+        typeText = "Warning";
+        break;
+    case QtCriticalMsg:
+        typeText = "Critical";
+        break;
+    case QtFatalMsg:
+        typeText = "Fatal";
+        break;
+    }
+    const QString finalText = QString("%1 %2 %3\n").arg(datetime.toString("yyyyMMdd/hh:mm:ss.zzz")).arg(typeText).arg(text);
+    if (g_fileLog.isOpen())
+    {
+        QMutexLocker locker(&g_mutexFileLog);
+        if (g_fileLog.size() == 0)
+            g_fileLog.write("\xef\xbb\xbf");
+        g_fileLog.write(finalText.toUtf8());
+        g_fileLog.flush();
+    }
+}
+
+void setDebugMessageToFile(const QString& name, bool tryDelete = false)
+{
+#ifdef QT_DEBUG
+    return;
+#endif
+    QString path = QWoSetting::applicationDataPath();
+    QString fullFile = path + "/" + name;
+    qputenv("APP_LOG_PATH", fullFile.toUtf8());
+    QFileInfo fi(fullFile);
+    int fs = fi.size();
+    if(fs > 1024 * 1024 || tryDelete) {
+        QFile::remove(fullFile);
+    }
+    qInstallMessageHandler(MyMessageHandler);
+    g_fileLog.setFileName(fullFile);
+    g_fileLog.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
 }
 
 void test()
 {
-
 }
 
 
 int main_pc(int argc, char *argv[])
 {
-    //qInstallMessageHandler(myMessageOutput);
     QGuiApplication::setApplicationName("woterm");
     QGuiApplication::setOrganizationName("aoyiduo");
     QGuiApplication::setOrganizationDomain("aoyiduo.com");
@@ -83,14 +117,30 @@ int main_pc(int argc, char *argv[])
 #else
     QWoApplication app(argc, argv);
 #endif
+
+    setDebugMessageToFile("trace.log", true);
     test();
     QStringList styles = QStyleFactory::keys();
     qDebug() << "embeded style list: " << styles;
     QApplication::setStyle("fusion");
+
     QFile f(":/woterm/resource/qss/desk_default.qss");
     f.open(QFile::ReadOnly);
     QByteArray qss = f.readAll();
     f.close();
+#if defined(Q_OS_WIN)
+    qss = qss.replace("{{menu-item-padding-left}}","3");
+    qss = qss.replace("{{menu-item-padding-right}}","3");
+#elif defined(Q_OS_MAC)
+    qss = qss.replace("{{menu-item-padding-left}}","3");
+    qss = qss.replace("{{menu-item-padding-right}}","3");
+#elif defined(Q_OS_UNIX)
+    qss = qss.replace("{{menu-item-padding-left}}","24");
+    qss = qss.replace("{{menu-item-padding-right}}","28");
+#elif defined(Q_OS_ANDROID)
+    qss = qss.replace("{{menu-item-padding-left}}","3");
+    qss = qss.replace("{{menu-item-padding-right}}","3");
+#endif
     app.setStyleSheet(qss);    
 
     QTranslator translator;
@@ -123,6 +173,7 @@ int main_qml(int argc, char *argv[])
 #else
     QMoApplication app(argc, argv);
 #endif
+    setDebugMessageToFile("trace.log", true);
     test();
 
     QTranslator translator;

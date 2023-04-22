@@ -1,0 +1,112 @@
+﻿/*******************************************************************************************
+*
+* Copyright (C) 2023 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
+*
+* Contact: http://www.aoyiduo.com
+*
+*   this file is used under the terms of the GPLv3[GNU GENERAL PUBLIC LICENSE v3]
+* more information follow the website: https://www.gnu.org/licenses/gpl-3.0.en.html
+*
+*******************************************************************************************/
+
+#include "qkxfilterlineedit.h"
+
+#include "qwoglobal.h"
+
+#include "qkxfilterlistview.h"
+#include "qkxbuttonassist.h"
+
+#include <QKeyEvent>
+#include <QListView>
+#include <QDebug>
+#include <QDateTime>
+
+QKxFilterLineEdit::QKxFilterLineEdit(QWidget *parent)
+    : QLineEdit(parent)
+{
+    m_listView = new QKxFilterListView(this, topLevelWidget());
+    QObject::connect(m_listView, SIGNAL(itemClicked(QString,int)), this, SLOT(onListViewItemClicked(QString,int)));
+    QKxButtonAssist *assist = new QKxButtonAssist(":/woterm/resource/skin/add2.png", this);
+    assist->append(":/woterm/resource/skin/connect.png", true);
+    QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
+    QObject::connect(this, SIGNAL(returnPressed()), this, SLOT(onAssistReturnPressed()));
+}
+
+QKxFilterLineEdit::~QKxFilterLineEdit()
+{
+
+}
+
+void QKxFilterLineEdit::onListViewItemClicked(const QString &name, int type)
+{
+    m_listView->enableFilter(false);
+    setText(name);
+    QMetaObject::invokeMethod(m_listView, "enableFilter", Qt::QueuedConnection, Q_ARG(bool, true));
+    emit targetArrived(name, type);
+}
+
+void QKxFilterLineEdit::onAssistButtonClicked(int idx)
+{
+    if(idx == 0) {
+        // add
+        emit createArrived(text());
+    }else {
+        // connect
+        if(!m_listView->isVisible()) {
+            return;
+        }
+        onAssistReturnPressed();
+    }
+}
+
+void QKxFilterLineEdit::onAssistReturnPressed()
+{
+    if(!m_listView->isVisible()) {
+        emit createArrived(text());
+        return;
+    }
+    QModelIndex idx = m_listView->listView()->currentIndex();
+    if(!idx.isValid()) {
+        emit createArrived(text());
+        return;
+    }
+    const HostInfo& hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
+    if(hi.type == SshWithSftp) {
+        onListViewItemClicked(hi.name, EOT_SSH);
+    }else if(hi.type == SftpOnly) {
+        onListViewItemClicked(hi.name, EOT_SFTP);
+    }else if(hi.type == Telnet) {
+        onListViewItemClicked(hi.name, EOT_TELNET);
+    }else if(hi.type == RLogin) {
+        onListViewItemClicked(hi.name, EOT_RLOGIN);
+    }else if(hi.type == Mstsc) {
+        onListViewItemClicked(hi.name, EOT_MSTSC);
+    }else if(hi.type == Vnc) {
+        onListViewItemClicked(hi.name, EOT_VNC);
+    }
+}
+
+void QKxFilterLineEdit::keyPressEvent(QKeyEvent *ev)
+{
+    QLineEdit::keyPressEvent(ev);
+    int key = ev->key();
+
+    QListView *view = m_listView->listView();
+    QModelIndex idx = view->currentIndex();
+    int row = idx.row();
+    if(key == Qt::Key_Up) {
+        idx = idx.sibling(row-1, 0);
+        if(!idx.isValid()) {
+            return;
+        }
+        view->setCurrentIndex(idx);
+    }else if(key == Qt::Key_Down) {
+        idx = idx.sibling(row+1, 0);
+        if(!idx.isValid()) {
+            return;
+        }
+        view->setCurrentIndex(idx);
+    }else if(key == Qt::Key_Escape) {
+        m_listView->hide();
+    }
+}

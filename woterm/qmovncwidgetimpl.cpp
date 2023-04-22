@@ -64,11 +64,15 @@ void QMoVncWidgetImpl::onTouchPointClicked()
 {
     if(m_menu == nullptr) {
         m_menu = new QMoMenu(this);
-        m_menu->addItem(MID_KEYBOARD, tr("Keyboard"), ":/woterm/resource/skin/keyboard.png");
-        m_menu->addItem(MID_MANUAL, tr("Manual"), ":/woterm/resource/skin/help.png");
-        m_menu->setFixedSize(size());
         QObject::connect(m_menu, SIGNAL(clicked(int)), this, SLOT(onMenuItemClickedArrived(int)));
     }
+    if(m_keyboard && m_keyboard->isVisible()) {
+        m_menu->addItem(MID_KEYBOARD, tr("Close keyboard"), ":/woterm/resource/skin/keyboard.png");
+    }else{
+        m_menu->addItem(MID_KEYBOARD, tr("Open keyboard"), ":/woterm/resource/skin/keyboard.png");
+    }
+    m_menu->addItem(MID_MANUAL, tr("Manual"), ":/woterm/resource/skin/help.png");
+    m_menu->setFixedSize(size());
     m_menu->show();
 }
 
@@ -80,11 +84,12 @@ void QMoVncWidgetImpl::onMenuItemClickedArrived(int mid)
         if(m_keyboard == nullptr) {
             m_keyboard = new QMoKeyboard(this);
             m_keyboard->setVNCPatch(true);
+            m_keyboard->setDragEnabled(true);
             QObject::connect(m_keyboard, SIGNAL(keyEvent(QKeyEvent*)), this, SLOT(onKeyboardKeyEvent(QKeyEvent*)));
         }
         m_keyboard->setMaximumSize(size());
         m_keyboard->adjustSize();
-        m_keyboard->show();
+        m_keyboard->setVisible(!m_keyboard->isVisible());
     }else if(mid == MID_MANUAL) {
         QStringList helps;
         helps.append(tr("Drag the screen with two fingers"));

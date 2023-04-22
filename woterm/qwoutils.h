@@ -44,6 +44,7 @@ public:
     static int createDesktopShortcut(bool everyone, const QString& name, const QString& desc, const QString& iconPath);
     static void removeDesktopShortcut(bool everyone);
     static QByteArray filePermissionToText(int type, int flag);
+    static QString getDefaultGateway();
 
 
     /*socket*/
@@ -65,9 +66,11 @@ public:
     static int gid();
 
     static bool isRootUser();
+    static bool hasUnprivilegedPortPermission();
     static QString loginUser();
 
     static bool openself(const QString& type, const QString& target, bool pkexec=false);
+    static bool runAsRoot(const QString& cmd);
 
     static int parseVersion(const QString& ver);
 

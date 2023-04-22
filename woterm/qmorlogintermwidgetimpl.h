@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "qwotermwidgetimpl.h"
+#include "qmotermwidgetimpl.h"
 
 #include <QPointer>
 
@@ -20,12 +20,12 @@ class QMenu;
 class QTabBar;
 class QWoCommandLineInput;
 
-class QWoRLoginTermWidgetImpl : public QWoTermWidgetImpl
+class QMoRLoginTermWidgetImpl : public QMoTermWidgetImpl
 {
     Q_OBJECT
 public:
-    explicit QWoRLoginTermWidgetImpl(const QString& target, int gid, QTabBar *tab, QWidget *parent=nullptr);
-    virtual ~QWoRLoginTermWidgetImpl();
+    explicit QMoRLoginTermWidgetImpl(const QString& target, QWidget *parent=nullptr);
+    virtual ~QMoRLoginTermWidgetImpl();
 protected:
-    virtual QWoTermWidget *createTermWidget(const QString& target, int gid, QWidget *parent);
+    virtual QMoTermWidget *createTermWidget(const QString& target, QWidget *parent);
 };

@@ -34,6 +34,8 @@ public:
     explicit QWoSessionProperty(QWidget *parent = 0);
     ~QWoSessionProperty();
     bool setSession(const QString& name);
+    void setName(const QString& name);
+    void setHostPort(const QString& hp);
 
 signals:
     void readyToConnect(const QString& host, int type);

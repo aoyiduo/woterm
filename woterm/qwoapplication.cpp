@@ -13,6 +13,7 @@
 #include "qwosetting.h"
 #include "qkxprocesslaunch.h"
 #include "qwomainwindow.h"
+#include "qkxmessagebox.h"
 
 #include <QStyleFactory>
 #include <QDebug>

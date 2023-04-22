@@ -30,6 +30,7 @@ QMoKeyboard::QMoKeyboard(QWidget *parent)
     , m_symbols("~`!@#$%^&*()_-+={}[]|\\:;\"'<>,.?/")
     , m_shiftSymbols("~!@#$%^&*()_+{}|:\\\"<>?")
     , m_vncPatch(false)
+    , m_dragEnabled(false)
 {
     ui->setupUi(this);
     setAttribute(Qt::WA_StyledBackground);
@@ -124,6 +125,16 @@ QMoKeyboard::~QMoKeyboard()
 void QMoKeyboard::setVNCPatch(bool on)
 {
     m_vncPatch = on;
+}
+
+bool QMoKeyboard::dragEnabled()
+{
+    return m_dragEnabled;
+}
+
+void QMoKeyboard::setDragEnabled(bool on)
+{
+    m_dragEnabled = on;
 }
 
 void QMoKeyboard::onCharButtonClicked()
@@ -463,7 +474,7 @@ void QMoKeyboard::keyReleaseEvent(QKeyEvent *ev)
 
 void QMoKeyboard::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::LeftButton) {
+    if (m_dragEnabled && event->buttons() & Qt::LeftButton) {
         move(event->globalPos() - m_dragPosition);
         event->accept();
     }
@@ -471,7 +482,7 @@ void QMoKeyboard::mouseMoveEvent(QMouseEvent *event)
 
 void QMoKeyboard::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
+    if (m_dragEnabled && event->button() == Qt::LeftButton) {
         m_dragPosition = event->globalPos() - frameGeometry().topLeft();
         event->accept();
     }

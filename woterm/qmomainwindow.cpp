@@ -27,6 +27,7 @@
 #include "qmoptytermwidgetimpl.h"
 #include "qmosshtermwidgetimpl.h"
 #include "qmotelnettermwidgetimpl.h"
+#include "qmorlogintermwidgetimpl.h"
 #include "qmosftpwidgetimpl.h"
 #include "qmomessageboxassist.h"
 #include "qmodbsftpdetailassist.h"
@@ -171,6 +172,20 @@ bool QMoMainWindow::openTelnet(const QString &target)
 
 bool QMoMainWindow::openRLogin(const QString &target)
 {
+    if(!QWoUtils::hasUnprivilegedPortPermission()) {
+        QKxMessageBox::information(this, tr("Permission error"), tr("Rlogin client need root permission to bind port which below 1023."));
+        return false;
+    }
+    if(m_show) {
+        m_show->setVisible(false);
+        m_show->deleteLater();
+    }
+    if(m_show == nullptr) {
+        m_show = new QMoRLoginTermWidgetImpl(target, this);
+    }
+    QRect rt = rect();
+    m_show->setGeometry(rt);
+    m_show->show();
     m_recentAccess->update(target, EOT_RLOGIN);
     return false;
 }
@@ -208,6 +223,8 @@ bool QMoMainWindow::openRecent(const QString &target, int type)
         return openTelnet(target);
     case EOT_VNC:
         return openVnc(target);
+    case EOT_RLOGIN:
+        return openRLogin(target);
     }
     return false;
 }

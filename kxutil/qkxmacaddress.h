@@ -28,6 +28,7 @@ public:
     explicit QKxMACAddress(QObject *parent = nullptr);
     void start(const QString& host, quint16 port);
     void restart();
+    static QMap<QString, QString> getCandidate();
 signals:
     void macArrived(const QString& mac);
     void errorArrived(const QString& err);
@@ -40,7 +41,6 @@ public slots:
 private:
     Q_INVOKABLE void init();
 private:
-    QMap<QString, QString> getCandidate();
     void clean();
     void sendError(const QString& err);
     void sendResult(const QString& mac);

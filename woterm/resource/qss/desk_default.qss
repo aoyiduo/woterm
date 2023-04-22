@@ -2,6 +2,10 @@
     background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgb(223, 242, 255), stop:1 rgb(85, 204, 255));
 }
 
+QKxFilterListView {
+    background-color: rgb(223, 242, 255);
+}
+
 QPlainTextEdit {
     background-color: rgba(100,190,233,50);
     border: 1px;
@@ -151,8 +155,8 @@ QMenu {
 
 QMenu::item {
     padding-top: 3px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: {{menu-item-padding-left}}px;
+    padding-right: {{menu-item-padding-right}}px;
     padding-bottom: 3px;
     min-width: 100px;
     border: 1px solid transparent; /* reserve space for selection border */
@@ -168,26 +172,14 @@ QMenu::item:selected {
     background: rgb(85, 204, 255);
 }
 
-
-/*
 QMenu::icon {
-    position: absolute;
-    top: 3px;
-    right: 3px;
-    bottom: 2px;
-    left: 10px;
+    padding: 0,0,0,0px;
 }
 
 QMenu::icon:checked {
-    background: black;
-    border: 5px inset black;
-    position: absolute;
-    top: 3px;
-    right: 3px;
-    bottom: 2px;
-    left: 10px;
+    border: 1px inset rgb(212,35,122);
+    padding: 0,0,0,0px;
 }
-*/
 
 QMenu::separator {
     height: 2px;
@@ -196,12 +188,39 @@ QMenu::separator {
     margin-right: 5px;
 }
 
+QMenu::indicator {
+    width: 15px;
+    height: 15px;
+}
+
+QMenu::indicator:exclusive:checked
+{
+    border-color: #3CA9FE;
+    background: #3CA9FE;
+    color: #ffffff;
+}
+
+QMenu::indicator:exclusive:checked:selected
+{
+    border-color: #3CA9FE;
+    background: #3CA9FE;
+    color: #ffffff;
+}
+
 QPushButton{
   border-radius: 3px;
   border: 1px solid darkgray;
   padding: 5px;
   color: black;
   min-width: 70px;
+}
+
+QPushButton#kxFilterList{
+  background-color: rgb(166,223,251);
+  border-radius: 3px;
+  border: 1px solid white;
+  color: black;
+  max-width: 30px;
 }
 
 QPushButton#transferRemove{

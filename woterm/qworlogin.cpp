@@ -18,6 +18,7 @@
 #include <QDebug>
 #include <QDataStream>
 #include <QFile>
+#include <QDateTime>
 
 #ifdef Q_OS_WIN
 #include <winsock2.h>
@@ -242,7 +243,7 @@ public:
         : QRLoginClient(ti, parent) {
         m_fd = -1;
         m_flagEcho = 1;
-        m_flagExit = 0;
+        m_flagExit = 0;        
     }
     ~QRLoginPtyClient() {
         cleanup();
@@ -306,11 +307,19 @@ private:
         /*
          * Rlogin only: bind to a "privileged" port (between 512 and
          * 1023, inclusive).
+         *
+         * sysctl -w net.ipv4.ip_unprivileged_port_start=80.
+         *
          */
         int bindPermission = 0;
         int bindError = 0;
         int connError = 0;
-        for (int i = 1023; i >= 512; i--) {
+        qint64 seed = QDateTime::currentSecsSinceEpoch();
+        qDebug() << "make random seed" << seed;
+        qsrand(seed);
+        int rid = qAbs(qrand()) % 512;
+        rid = rid + 511;
+        for (int i = rid; i >= rid - 3; i--) {
             char local_port[10];
             struct addrinfo hints = {0};
             struct addrinfo * local_address;
@@ -609,11 +618,11 @@ bool QWoRLogin::init(const QString &host)
     if(!m_pty->init(m_listenSocket, m_listenPort)){
         return false;
     }
-    QObject::connect(m_pty, SIGNAL(dataArrived(const QByteArray&)), this, SIGNAL(dataArrived(const QByteArray&)));
+    QObject::connect(m_pty, SIGNAL(dataArrived(QByteArray)), this, SIGNAL(dataArrived(QByteArray)));
     QObject::connect(m_pty, SIGNAL(finished()), this, SLOT(onFinished()));
-    QObject::connect(m_pty, SIGNAL(errorArrived(const QByteArray&)), this, SIGNAL(errorArrived(const QByteArray&)));
-    QObject::connect(m_pty, SIGNAL(passwordArrived(const QString&,const QByteArray&)), this, SIGNAL(passwordArrived(const QString&,const QByteArray&)));
-    QObject::connect(m_pty, SIGNAL(inputArrived(const QString&,const QString&,bool)), this, SLOT(onInputArrived(const QString&,const QString&,bool)));
+    QObject::connect(m_pty, SIGNAL(errorArrived(QByteArray)), this, SIGNAL(errorArrived(QByteArray)));
+    QObject::connect(m_pty, SIGNAL(passwordArrived(QString,QByteArray)), this, SIGNAL(passwordArrived(QString,QByteArray)));
+    QObject::connect(m_pty, SIGNAL(inputArrived(QString,QString,bool)), this, SLOT(onInputArrived(QString,QString,bool)));
     return true;
 }
 

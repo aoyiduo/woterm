@@ -9,19 +9,27 @@
 *
 *******************************************************************************************/
 
-#ifndef QKXKEYMAPPING_H
-#define QKXKEYMAPPING_H
+#ifndef QKXFILTERBOX_H
+#define QKXFILTERBOX_H
 
-#include "qkxutil_share.h"
+#include <QComboBox>
+#include <QPointer>
 
-#include <QObject>
-
-class KXUTIL_EXPORT QKxKeyMapping : public QObject
+class QWoHostListModel;
+class QSortFilterProxyModel;
+class QLineEdit;
+class QKxFilterBox : public QComboBox
 {
     Q_OBJECT
 public:
-    explicit QKxKeyMapping(QObject *parent = nullptr);
-    static Qt::Key CharToKey(QChar c);
+    explicit QKxFilterBox(QWidget *parent);
+    virtual ~QKxFilterBox();
+private slots:
+    void onEditReturnPressed();
+    void onEditTextChanged(const QString& txt);
+private:
+    QPointer<QSortFilterProxyModel> m_proxyModel;
+    QPointer<QLineEdit> m_input;
 };
 
-#endif // QKXKEYMAPPING_H
+#endif // QKXFILTERBOX_H

@@ -174,7 +174,7 @@ Page {
                                             }else if(model.type === "Telnet") {
                                                 gMainWindow.openTelnet(model.name)
                                             }else if(model.type === "RLogin") {
-                                                gMessageBox.information(qsTr("Telnet information"), qsTr("The current version is not yet supported."))
+                                                gMainWindow.openRLogin(model.name)
                                             }else if(model.type === "Mstsc") {
                                                 gMessageBox.information(qsTr("Telnet information"), qsTr("The current version is not yet supported."))
                                             }else if(model.type === "Vnc") {

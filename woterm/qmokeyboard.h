@@ -33,6 +33,9 @@ public:
     ~QMoKeyboard();
 
     void setVNCPatch(bool on);
+
+    bool dragEnabled();
+    void setDragEnabled(bool on);
 signals:
     void keyEvent(QKeyEvent *ev);
 private slots:
@@ -89,6 +92,7 @@ private:
     int m_pageIdx;
     QString m_letters, m_digitals, m_symbols,m_shiftSymbols;
 
+    bool m_dragEnabled;
     QPoint m_dragPosition;
     bool m_vncPatch;
 };

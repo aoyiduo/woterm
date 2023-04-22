@@ -152,6 +152,39 @@ bool QWoSessionProperty::setSession(const QString &name)
     return true;
 }
 
+void QWoSessionProperty::setName(const QString &name)
+{
+    ui->name->setText(name);
+}
+
+void QWoSessionProperty::setHostPort(const QString &hp)
+{
+    QStringList args = hp.split(':');
+    if(args.length() <= 1) {
+        return;
+    }
+    if(hp.endsWith(":22")) {
+        ui->type->setCurrentText("SshWithSftp");
+    }else if(hp.endsWith(":23")) {
+        ui->type->setCurrentText("Telnet");
+    }else if(hp.endsWith(":513")) {
+        ui->type->setCurrentText("RLogin");
+    }else if(hp.endsWith(":3389")) {
+        ui->type->setCurrentText("Rdp/Mstsc");
+    }else if(hp.contains(":590")) {
+        ui->type->setCurrentText("Vnc");
+    }else{
+        ui->type->setCurrentText("SshWithSftp");
+    }
+    QString szPort = args.last();
+    int port = szPort.toInt();
+    if(port <= 0) {
+        return;
+    }
+    ui->port->setText(QString::number(port));
+    ui->host->setText(args.at(0));
+}
+
 void QWoSessionProperty::init()
 {
     QWoLineEdit::decorator(ui->identify);
