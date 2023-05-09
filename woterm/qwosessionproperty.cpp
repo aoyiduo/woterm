@@ -222,7 +222,7 @@ void QWoSessionProperty::init()
         ui->portTip->setVisible(false);
         QObject::connect(ui->port, SIGNAL(textChanged(QString)), this, SLOT(onPortTextChanged(QString)));
         ui->password->setEchoMode(QLineEdit::Password);
-        if(QKxVer::isUltimate()) {
+        if(QKxVer::instance()->isFullFeather()) {
             QKxButtonAssist *assist = new QKxButtonAssist(":/woterm/resource/skin/eye.png", ui->password);
             QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
         }
@@ -707,6 +707,15 @@ bool QWoSessionProperty::saveConfig()
         if(!m_name.isEmpty() && QWoHostListModel::instance()->exists(hi.name)) {
             QKxMessageBox::warning(this, tr("Info"), tr("The session name had been used, Change to another name."));
             return false;
+        }
+        QKxVer *ver = QKxVer::instance();
+        if(ver->isFreeVersion() || ver->isExpired()) {
+            int cntMax = ver->maxSessionCount();
+            int cntNow = QWoSshConf::instance()->hostCount();
+            if(cntNow >= cntMax) {
+                QKxMessageBox::information(this, tr("Version restrictions"), tr("The session's count has reached the limit."));
+                return false;
+            }
         }
     }
     QString key = hostType2ShowerType(hi.type);

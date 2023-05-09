@@ -242,6 +242,12 @@ void QWoSetting::setLanguageFile(const QString &lang)
     QWoSetting::setValue("language/path", lang);
 }
 
+bool QWoSetting::isChineseLanguageFile()
+{
+    QString fileName = languageFile();
+    return fileName.endsWith("_zh.qm");
+}
+
 QString QWoSetting::lastBackupPath()
 {
     return value("backup/path", "").toString();
@@ -250,6 +256,23 @@ QString QWoSetting::lastBackupPath()
 void QWoSetting::setLastBackupPath(const QString &path)
 {
     setValue("backup/path", path);
+}
+
+bool QWoSetting::shouldReportLicense()
+{
+    QDate dt = value("license/report").toDate();
+    if(!dt.isValid()) {
+        return true;
+    }
+    QDate today = QDate::currentDate();
+    return today >= dt;
+}
+
+void QWoSetting::setIgnoreTodayReportLicense()
+{
+    QDate dt = QDate::currentDate();
+    dt = dt.addDays(1);
+    setValue("license/report", dt);
 }
 
 bool QWoSetting::shouldPopupUpgradeUltimate()

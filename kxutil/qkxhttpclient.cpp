@@ -27,6 +27,9 @@ QKxHttpClient::QKxHttpClient(QObject *parent)
 
 QKxHttpClient::~QKxHttpClient()
 {
+    if(m_manager) {
+        delete m_manager;
+    }
     qDebug() << "deleteLater";
 }
 
@@ -53,12 +56,13 @@ bool QKxHttpClient::get(const QString &_url)
     QObject::connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SIGNAL(downloadProgress(qint64,qint64)));
     QObject::connect(reply, SIGNAL(finished()), this, SLOT(onFinished()));
     m_reply = reply;
+    m_lastError.clear();
     return true;
 }
 
-bool QKxHttpClient::post(const QString &url, const QByteArray &data)
+bool QKxHttpClient::post(const QString &url, const QByteArray &data, const QString& contentType)
 {
-    if(m_reply != nullptr || !m_reply->isFinished()) {
+    if(m_reply != nullptr && !m_reply->isFinished()) {
         return false;
     }
     if(m_file) {
@@ -68,13 +72,17 @@ bool QKxHttpClient::post(const QString &url, const QByteArray &data)
     if(m_reply != nullptr) {
         m_reply->deleteLater();
     }
-    QNetworkReply *reply = m_manager->post(QNetworkRequest(QUrl(url)), data);
+
+    QNetworkRequest req = QNetworkRequest(QUrl(url));
+    req.setHeader(QNetworkRequest::ContentTypeHeader, contentType);
+    QNetworkReply *reply = m_manager->post(req, data);
     QObject::connect(reply, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onError()));
     QObject::connect(reply, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(onSslError()));
     QObject::connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SIGNAL(downloadProgress(qint64,qint64)));
     QObject::connect(reply, SIGNAL(finished()), this, SLOT(onFinished()));
     m_reply = reply;
+    m_lastError.clear();
     return true;
 }
 
@@ -99,6 +107,11 @@ QString QKxHttpClient::fileSavePath() const
     return m_fileSave;
 }
 
+QString QKxHttpClient::lastErrorString() const
+{
+    return m_lastError;
+}
+
 void QKxHttpClient::onReadyRead()
 {
     QByteArray all = m_reply->readAll();
@@ -117,7 +130,9 @@ void QKxHttpClient::onReadyRead()
 void QKxHttpClient::onError()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
-    qInfo() << reply->url() << reply->errorString();
+    m_lastError = reply->errorString();
+    qInfo() << reply->url() << m_lastError;
+
 }
 
 void QKxHttpClient::onSslError()
@@ -130,7 +145,9 @@ void QKxHttpClient::onFinished()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     QVariant code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-    qInfo() << reply->url() << code;
+    if(!code.isValid()) {
+        m_lastError = reply->errorString();
+    }
     if(m_file) {
         m_file->close();
         m_file->deleteLater();

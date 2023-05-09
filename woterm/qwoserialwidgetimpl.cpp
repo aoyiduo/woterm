@@ -95,6 +95,12 @@ void QWoSerialWidgetImpl::handleTabContextMenu(QMenu *menu)
 
 }
 
+bool QWoSerialWidgetImpl::handleCustomProperties()
+{
+    QMetaObject::invokeMethod(m_term, "onModifyThisSession", Qt::QueuedConnection);
+    return true;
+}
+
 void QWoSerialWidgetImpl::updateEnable(bool on)
 {
 

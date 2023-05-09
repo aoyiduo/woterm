@@ -37,6 +37,7 @@
 #include <QMimeData>
 #include <QFontDatabase>
 #include <QInputMethod>
+#include <QDateTime>
 
 #define REPAINT_TIMEOUT1 (20)
 #define REPAINT_TIMEOUT2 (40)
@@ -964,6 +965,12 @@ void QKxTermItem::onBlinkTimeout()
             }
         }
     }
+
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    if(now - m_updateFullLast > 1000) {
+        m_updateFullLast = now;
+        update(QRect(0, 0, int(width()), int(height())));
+    }
 }
 
 void QKxTermItem::onSelectChanged()
@@ -1587,6 +1594,10 @@ void QKxTermItem::updateView(QKxTermItem::PaintFlag flags)
     if(!m_ticker2->isActive()) {
         m_ticker2->setSingleShot(true);
         m_ticker2->start(REPAINT_TIMEOUT2);
+    }
+
+    if(flags & PF_FullScreen) {
+        m_updateFullLast = QDateTime::currentMSecsSinceEpoch();
     }
 }
 

@@ -15,6 +15,7 @@
 #include <QPointer>
 #include <QIcon>
 #include <QList>
+#include <QMap>
 
 class QTabBar;
 class QWoTermWidget;
@@ -27,6 +28,7 @@ class QWoFloatWindow;
 #define TAB_TYPE_NAME ("tabtype")
 #define TAB_TARGET_IMPL ("tabimpl")
 
+class QWoShowerWidget;
 class QWoShower : public QStackedWidget
 {
     Q_OBJECT
@@ -36,6 +38,18 @@ private:
         ETSsh = 0x02,
         ETScript = 0x03
     } ETabType;
+
+    enum ELimitType {
+        ELT_LOCALSHELL = 0,
+        ELT_SCRIPTRUNNER = 1,
+        ELT_SSH = 2,
+        ELT_SFTP = 3,
+        ELT_TELNET = 4,
+        ELT_RLOGIN = 5,
+        ELT_RDP = 6,
+        ELT_VNC = 7,
+        ELT_SERIALPORT = 8
+    };
 public:
     explicit QWoShower(QTabBar *tab, QWidget *parent=nullptr);
     virtual ~QWoShower();
@@ -75,6 +89,7 @@ private:
     void closeSession(int idx);
     void createTab(QWoShowerWidget *widget, const QIcon& icon, const QString& tabName);
     bool tabMouseButtonPress(QMouseEvent *ev);
+    bool tabMouseButtonMove(QMouseEvent *ev);
 
 private slots:
     void onTabCloseRequested(int index);
@@ -83,6 +98,9 @@ private slots:
     void onTabbarDoubleClicked(int index);
     void onCloseThisTabSession();
     void onCloseOtherTabSession();
+    void onNewTheSameSession();
+    void onCopyTabSessionAddress();
+    void onEditThisTabSession();
     void onFloatThisTabSession();
     void onCleanNilFloatWindow();
     void onTabContextMenu(QMouseEvent *ev);
@@ -101,6 +119,10 @@ private:
     QPointer<QTabBar> m_tab;
     QPointer<QMenu> m_tabMenu;
     QFont m_font;
+    int m_implCount;
 
     QList<QPointer<QWoFloatWindow>> m_floats;
+
+    bool m_tabDragAway;
+    QPointer<QWoShowerWidget> m_tabDragWidget;
 };

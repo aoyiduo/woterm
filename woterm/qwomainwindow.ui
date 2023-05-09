@@ -96,8 +96,8 @@
     <addaction name="actionWetsite"/>
     <addaction name="actionDocument"/>
     <addaction name="actionAbout"/>
-    <addaction name="actionUltimate"/>
-    <addaction name="actionRegister"/>
+    <addaction name="actionLicense"/>
+    <addaction name="actionUpgrade"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -218,11 +218,6 @@
     <string>Administrator</string>
    </property>
   </action>
-  <action name="actionUltimate">
-   <property name="text">
-    <string>Upgrade to ultimate version</string>
-   </property>
-  </action>
   <action name="actionOpenRemote">
    <property name="icon">
     <iconset resource="woterm.qrc">
@@ -275,14 +270,19 @@
     <string>Open remote session</string>
    </property>
   </action>
-  <action name="actionRegister">
+  <action name="actionLicense">
    <property name="text">
-    <string>Register...</string>
+    <string>License...</string>
    </property>
   </action>
   <action name="actionClear">
    <property name="text">
     <string>Clear all</string>
+   </property>
+  </action>
+  <action name="actionUpgrade">
+   <property name="text">
+    <string>Upgrade check...</string>
    </property>
   </action>
  </widget>

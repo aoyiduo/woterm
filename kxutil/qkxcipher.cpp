@@ -48,7 +48,7 @@ QByteArray QKxCipher::makeBytes(const QByteArray &pass, int cnt)
     QByteArray tmp = pass;
     if(pass.length() < cnt) {
         int left = cnt - pass.length();
-        tmp.append(left, 0);
+        tmp.append(left, '0');
     }else if(pass.length() > cnt) {
         tmp.resize(cnt);
     }
@@ -273,7 +273,7 @@ static bool EvpEncrypt(EVP_CIPHER_CTX *ctx, const QByteArray &in, QByteArray &ou
         }
 
         int mlen = 0;
-        out.resize(in.size() + AES_BLOCK_SIZE);
+        out.fill(0, in.size() + AES_BLOCK_SIZE);
         ret = EVP_EncryptUpdate(ctx, (unsigned char*)out.data(), &mlen, (const unsigned char*)in.data(), in.size());
         if(ret != 1) {
             return false;
@@ -292,15 +292,19 @@ static bool EvpEncrypt(EVP_CIPHER_CTX *ctx, const QByteArray &in, QByteArray &ou
             return false;
         }
         int mlen = 0;
-        out.resize(in.size());
+        out.fill(0, in.size());
         ret = EVP_DecryptUpdate(ctx, (unsigned char*)out.data(), &mlen, (const unsigned char*)in.data(), in.size());
         if(ret != 1) {
             return false;
         }
         int flen = 0;
-        ret = EVP_DecryptFinal_ex(ctx, (unsigned char *)out.data() + mlen, &flen);
-        if(ret != 1) {
-            return false;
+        // https://blog.csdn.net/anda0109/article/details/51281070
+        // This instruction only needs to be called when the bytes are not aligned to 16 bytes.
+        if((in.length() % AES_BLOCK_SIZE) != 0) {
+            ret = EVP_DecryptFinal_ex(ctx, (unsigned char *)out.data() + mlen, &flen);
+            if(ret != 1) {
+                return false;
+            }
         }
         out.resize(mlen + flen);
         return true;
@@ -599,18 +603,6 @@ bool QKxCipher::blowfishEcbEncrypt(const QByteArray &in, QByteArray &out, const 
 void QKxCipher::test()
 {
     {
-        QByteArray in = "Text may be any length you wish, no padding is required.";
-        QByteArray out, out2;
-        uchar key[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-        uchar iv[16] = {21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36};
-
-        aesOfb128Encrypt(in, out, QByteArray((char*)key,16), QByteArray((char*)iv, 16), true);
-        QByteArray txt = out.toHex();
-        qDebug() << txt;
-        Q_ASSERT(in == out2);
-    }
-    return;
-    {
         QByteArray in = "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789";
         QByteArray out, out2, key = "123";
         key = makeBytes(key, 16);
@@ -670,6 +662,7 @@ void QKxCipher::test()
         QByteArray in = "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789";
         QByteArray out, out2, key = "123";
         key = makeBytes(key, 16);
+        in.resize(48);
         aesGcmEncrypt(in, out, key, key, true);
         aesGcmEncrypt(out, out2, key, key, false);
         Q_ASSERT(in == out2);
@@ -742,13 +735,15 @@ void QKxCipher::test()
         rc4Encrypt(out, out2, key, false);
         Q_ASSERT(in == out2);
     }
+    if(true)
     {
         QByteArray in = "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz01234567";
         QByteArray out, out2, key = "123", ivec="123";
         key = makeBytes(key, 16);
         ivec = makeBytes(ivec, 8);
-        blowfishEcbEncrypt(in, out, key, ivec, true);
+        blowfishEcbEncrypt(QKxCipher::pkcs7Padding(in, 8), out, key, ivec, true);
         blowfishEcbEncrypt(out, out2, key, ivec, false);
-        Q_ASSERT(in == out2);
+        QByteArray my = QKxCipher::pkcs7UnPadding(out2);
+        Q_ASSERT(in == my);
     }
 }

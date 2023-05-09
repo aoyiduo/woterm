@@ -34,6 +34,7 @@ protected:
     virtual void closeEvent(QCloseEvent *event);
     virtual bool handleTabMouseEvent(QMouseEvent* ev);
     virtual void handleTabContextMenu(QMenu *menu);
+    virtual bool handleCustomProperties();
     virtual void updateEnable(bool on);
 private slots:
     void onDestroyReady();

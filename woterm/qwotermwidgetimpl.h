@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -44,6 +44,7 @@ protected:
     virtual void closeEvent(QCloseEvent *event);
     virtual bool handleTabMouseEvent(QMouseEvent* ev);
     virtual void handleTabContextMenu(QMenu *menu);
+    virtual bool handleCustomProperties();
     virtual void updateEnable(bool on);
 protected:
     void addAssistant(QWidget *w, bool first);

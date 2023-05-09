@@ -6,6 +6,10 @@ QKxFilterListView {
     background-color: rgb(223, 242, 255);
 }
 
+QKxFilterLineEdit{
+    min-height: 16px;
+}
+
 QPlainTextEdit {
     background-color: rgba(100,190,233,50);
     border: 1px;

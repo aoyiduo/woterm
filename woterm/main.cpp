@@ -102,6 +102,8 @@ void setDebugMessageToFile(const QString& name, bool tryDelete = false)
 
 void test()
 {
+    QLocale local = QLocale::system();
+    qDebug() << local.bcp47Name() << local.language() << local.name();
 }
 
 

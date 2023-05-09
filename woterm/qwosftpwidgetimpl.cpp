@@ -18,6 +18,7 @@
 #include "qwoevent.h"
 #include "qwocommandlineinput.h"
 #include "qkxmessagebox.h"
+#include "qwosessionproperty.h"
 
 #include <QCloseEvent>
 #include <QApplication>
@@ -71,6 +72,11 @@ bool QWoSftpWidgetImpl::handleTabMouseEvent(QMouseEvent *ev)
 void QWoSftpWidgetImpl::handleTabContextMenu(QMenu *menu)
 {
     menu->addAction(tr("New Session Multiplex"), this, SLOT(onNewSessionMultplex()));
+}
+
+bool QWoSftpWidgetImpl::handleCustomProperties()
+{
+    return QWoShowerWidget::handleCustomProperties();
 }
 
 void QWoSftpWidgetImpl::updateEnable(bool on)

@@ -41,9 +41,11 @@
 #include "qkxmessagebox.h"
 #include "qwomenubutton.h"
 #include "qworecenthistory.h"
+#include "qwolicensedialog.h"
 #include "qkxbuttonassist.h"
 #include "qkxfilterlineedit.h"
-#include "qkxlicensedialog.h"
+#include "qwoversionupgradetipdialog.h"
+#include "qwolicensetrialapplydialog.h"
 #include "qkxver.h"
 #include "version.h"
 
@@ -72,9 +74,36 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     , ui(new Ui::QWoMainWindow)
 {
     ui->setupUi(this);
-    setMinimumSize(QSize(1024, 700));
+    setMinimumSize(QSize(800, 600));
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(QKxVer::isUltimate() ? tr("WoTerm ultimate beta") : tr("WoTerm free"));
+
+    QKxVer *ver = QKxVer::instance();
+    QKxVer::ELicenseType type = ver->licenseType();
+    QString typeVersion;
+    if(type == QKxVer::EFreeVersion) {
+        typeVersion = tr("Free");
+    }else if(type == QKxVer::ETrialVersion) {
+        typeVersion = tr("Trial");
+        if(ver->isExpired()) {
+            typeVersion += tr("[expired]");
+        }
+    } else if(type == QKxVer::ESchoolVersion) {
+        typeVersion = tr("School");
+        if(ver->isExpired()) {
+            typeVersion += tr("[expired]");
+        }
+    } else if(type == QKxVer::EUltimateVersion) {
+        typeVersion = tr("Ultimate");
+        if(ver->isExpired()) {
+            typeVersion += tr("[expired]");
+        }
+    } else {
+        typeVersion = tr("Unknow");
+        if(ver->isExpired()) {
+            typeVersion += tr("[expired]");
+        }
+    }
+    setWindowTitle(tr("WoTerm") + " " + typeVersion);
 
     initMenuBar();
     initToolBar();
@@ -117,10 +146,7 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
 
     QObject::connect(m_sessions, SIGNAL(readyToConnect(QString,int)), this, SLOT(onSessionReadyToConnect(QString,int)));
 
-    //ui->actionAbout->setCheckable(true);
-    //ui->actionAbout->setChecked(true);
-    ui->actionRegister->setVisible(false);
-    ui->actionUltimate->setVisible(false);
+
     restoreLastState();
 }
 
@@ -223,19 +249,7 @@ void QWoMainWindow::onSessionReadyToConnect(const QString &target, int type)
 
 void QWoMainWindow::onAppStart()
 {
-    if(QSslSocket::supportsSsl())
-    {
-        QKxHttpClient *http = new QKxHttpClient(this);
-        QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
-        http->get("http://hm.baidu.com/hm.js?bbffebc017090c1957c90f7deca2582e");
-    }
-    {
-        // version check.
-        QKxHttpClient *http = new QKxHttpClient(this);
-        QObject::connect(http, SIGNAL(result(int,QByteArray)), this, SLOT(onVersionCheck(int,QByteArray)));
-        QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
-        http->get("http://down.woterm.com/.ver");
-    }
+    QWoVersionUpgradeTipDialog::check(this, true);
     {
         //check target
         QStringList argvs = QApplication::arguments();
@@ -288,45 +302,48 @@ void QWoMainWindow::onAppStart()
             QCoreApplication::quit();
         }
     }
-    {
-        if(!QKxVer::isUltimate()) {
-            if(QWoSetting::shouldPopupUpgradeUltimate()) {
-                int ret = QKxMessageBox::question(this, tr("Upgrade to ultimate version"), tr("The current version is free. It is recommended to upgrade to the ultimate version."), QMessageBox::Yes|QMessageBox::No);
-                if(ret == QMessageBox::Yes) {
-                    QDesktopServices::openUrl(QUrl("http://woterm.com"));
-                }
-                QWoSetting::setIgnoreTodayUpgradeUltimate();
+    if(QKxVer::instance()->isFullFeather()) {
+        QKxVer *ver = QKxVer::instance();
+        if(QWoSetting::shouldReportLicense()) {
+            QWoSetting::setIgnoreTodayReportLicense();
+
+            QKxHttpClient *http = new QKxHttpClient(this);
+            QObject::connect(http, SIGNAL(result(int,QByteArray)), this, SLOT(onReportResult(int,QByteArray)));
+            QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
+            QJsonObject obj;
+            obj.insert("mid", ver->machineID());
+            obj.insert("info", ver->reportInformation());
+            QJsonDocument doc;
+            doc.setObject(obj);
+            QByteArray json = doc.toJson(QJsonDocument::Compact);
+            http->post("http://key.woterm.com/report", json, "application/json; charset=utf-8");
+        }
+    }else{
+        if(QWoSetting::shouldPopupUpgradeUltimate()) {
+            QWoSetting::setIgnoreTodayUpgradeUltimate();
+            QMessageBox dlg(QMessageBox::Information, tr("Upgrade to ultimate version"), tr("The current version is free. It is recommended to upgrade to the ultimate version."), QMessageBox::Retry|QMessageBox::Yes|QMessageBox::No, this);
+            {
+                QAbstractButton *btn = dlg.button(QMessageBox::Retry);
+                btn->setText(tr("Evalute ultimate"));
+            }
+            {
+                QAbstractButton *btn = dlg.button(QMessageBox::No);
+                btn->setText(tr("No"));
+            }
+            {
+                QAbstractButton *btn = dlg.button(QMessageBox::Yes);
+                btn->setText(tr("Yes"));
+            }
+            int ret = dlg.exec();
+            if(ret == QMessageBox::Yes) {
+                QMetaObject::invokeMethod(this, "onActionLicenseTriggered", Qt::QueuedConnection);
+            }else if(ret == QMessageBox::Retry) {
+                QMetaObject::invokeMethod(this, "tryToMakeLicenseTrial", Qt::QueuedConnection);
             }
         }
     }
 }
 
-void QWoMainWindow::onVersionCheck(int code, const QByteArray &body)
-{
-    if(body.isEmpty()) {
-        return;
-    }
-    if(code == 200) {
-        qDebug() << code << body;
-        QString verBody = body.trimmed();
-        if(body[0] == 'v') {
-            verBody = verBody.mid(1);
-        }
-        int verLatest = QWoUtils::parseVersion(verBody);
-        int verCurrent = QWoUtils::parseVersion(WOTERM_VERSION);
-        if(verCurrent < verLatest) {
-            bool pop = QWoSetting::shouldPopupUpgradeVersionMessage(verBody);
-            if(!pop) {
-                return;
-            }
-            QWoSetting::setIgnoreTodayUpgradeVersion(verBody);
-            int ret = QKxMessageBox::question(this, tr("Version check"), tr("a new version of %1 is found, do you want to update it?").arg(verBody), QMessageBox::Yes|QMessageBox::No);
-            if(ret == QMessageBox::Yes) {
-                QDesktopServices::openUrl(QUrl("http://woterm.com"));
-            }
-        }
-    }
-}
 
 void QWoMainWindow::onShouldAppExit()
 {
@@ -356,6 +373,11 @@ void QWoMainWindow::onRecentMenuAboutToShow()
     m_recent->buildMenu(menu);
 }
 
+void QWoMainWindow::onReportResult(int code, const QByteArray &body)
+{
+    qDebug() << "onReportResult" << code << body;
+}
+
 void QWoMainWindow::onActionNewTriggered()
 {
     onNewSession();
@@ -378,7 +400,7 @@ void QWoMainWindow::onActionOpenSerialportTriggered()
 
 void QWoMainWindow::onActionBackupTriggered()
 {
-    if(QKxVer::isUltimate()) {
+    if(QKxVer::instance()->isFullFeather()) {
         QWoDbBackupDialog dlg(this);
         dlg.exec();
     }else{
@@ -399,7 +421,7 @@ void QWoMainWindow::onActionBackupTriggered()
 
 void QWoMainWindow::onActionRestoreTriggered()
 {
-    if(QKxVer::isUltimate()) {
+    if(QKxVer::instance()->isFullFeather()) {
         QWoDBPowerRestoreDialog dlg(this);
         dlg.exec();
     }else{
@@ -452,7 +474,7 @@ void QWoMainWindow::onActionSystemOptionsTriggered()
                 QWoSetting::setLanguageFile(lang);
                 if(QKxMessageBox::warning(this, tr("Language"), tr("The language has been changed, restart application to take effect right now."), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
                     QString path = QCoreApplication::instance()->applicationFilePath();
-                    if(::QKxProcessLaunch::startDetached(path)) {
+                    if(QKxProcessLaunch::startDetached(path)) {
                         QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
                     }
                 }
@@ -527,15 +549,15 @@ void QWoMainWindow::onActionAdminTriggered()
     dlg.exec();
 }
 
-void QWoMainWindow::onActionUltimateTriggered()
+void QWoMainWindow::onActionLicenseTriggered()
 {
-    QDesktopServices::openUrl(QUrl("http://woterm.com"));
+    QWoLicenseDialog dlg(this);
+    dlg.exec();
 }
 
-void QWoMainWindow::onActionRegisterTriggered()
+void QWoMainWindow::onActionUpgradeTriggered()
 {
-    QKxLicenseDialog dlg(this);
-    dlg.exec();
+    QWoVersionUpgradeTipDialog::check(this, false);
 }
 
 void QWoMainWindow::onFilterArrivedArrived(const QString &name, int type)
@@ -579,19 +601,19 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionDocument, SIGNAL(triggered()), this, SLOT(onActionHelpTriggered()));
     QObject::connect(ui->actionWetsite, SIGNAL(triggered()), this, SLOT(onActionWebsiteTriggered()));
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onActionAboutTriggered()));
-    QObject::connect(ui->actionRegister, SIGNAL(triggered()), this, SLOT(onActionRegisterTriggered()));
-    if(QKxVer::isUltimate()) {
-        QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));
-        ui->actionUltimate->setVisible(false);        
+    QObject::connect(ui->actionLicense, SIGNAL(triggered()), this, SLOT(onActionLicenseTriggered()));
+    QObject::connect(ui->actionUpgrade, SIGNAL(triggered()), this, SLOT(onActionUpgradeTriggered()));
+
+    if(QKxVer::instance()->isFullFeather()) {
+        QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));      
         ui->menuOpen->setVisible(true);
         ui->actionOpenRemote2->deleteLater();
     }else{
         ui->actionAdministrator->setVisible(false);
-        QObject::connect(ui->actionUltimate, SIGNAL(triggered()), this, SLOT(onActionUltimateTriggered()));
         ui->menuOpen->deleteLater();
         ui->actionOpenRemote2->setVisible(true);
     }
-
+    ui->actionUpgrade->setVisible(false);
 }
 
 void QWoMainWindow::initToolBar()
@@ -609,7 +631,7 @@ void QWoMainWindow::initToolBar()
     tool->addSeparator();
     tool->addAction(QIcon(":/woterm/resource/skin/add2.png"), tr("New"), this, SLOT(onNewSession()));
 
-    if(QKxVer::isUltimate()){
+    if(QKxVer::instance()->isFullFeather()){
         QPushButton *btn = new QPushButton(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open"), tool);
         btn->setObjectName("menuButton");
         QKxButtonAssist *btnAssist = new QKxButtonAssist(":/woterm/resource/skin/arrowdown.png", false, btn);
@@ -622,7 +644,7 @@ void QWoMainWindow::initToolBar()
     }
     tool->addAction(QIcon(":/woterm/resource/skin/layout.png"), tr("List"), this, SLOT(onLayout()));
     tool->addSeparator();
-    if(QKxVer::isUltimate()){
+    if(QKxVer::instance()->isFullFeather()){
         QLineEdit *input = new QKxFilterLineEdit(tool);        
         input->setMaximumWidth(250);
         input->setPlaceholderText(tr("Enter keyword to search"));
@@ -664,7 +686,7 @@ void QWoMainWindow::saveLastState()
 
 bool QWoMainWindow::checkAdminLogin()
 {
-    if(!QKxVer::isUltimate()) {
+    if(!QKxVer::instance()->isFullFeather()) {
         return true;
     }
     QString pass = QWoSetting::adminPassword();
@@ -693,4 +715,10 @@ bool QWoMainWindow::checkAdminLogin()
         QKxMessageBox::information(this, tr("Login failure"), tr("The password is wrong, %1 times left to try.").arg(i));
     }
     return false;
+}
+
+void QWoMainWindow::tryToMakeLicenseTrial()
+{
+    QWoLicenseTrialApplyDialog dlg(this);
+    dlg.exec();
 }

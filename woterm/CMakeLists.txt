@@ -27,10 +27,10 @@ set(SOURCE_FILES
     qkxbuttonassist.cpp
     qkxfilterbox.cpp
     qkxfilterlineedit.cpp
-    qkxfilterlistview.cpp
-    qkxlicensedialog.cpp
+    qkxfilterlistview.cpp    
     qkxmessagebox.cpp
     qkxtouchpoint.cpp
+    qkxloadingbarwidget.cpp
     #window object
     main.cpp
     qwoapplication.cpp
@@ -118,6 +118,10 @@ set(SOURCE_FILES
     qwogroupinputdialog.cpp
     qwofontlistmodel.cpp
     qworecenthistory.cpp
+    qwolicensedialog.cpp
+    qwolicenseactivatedialog.cpp
+    qwoversionupgradetipdialog.cpp
+    qwolicensetrialapplydialog.cpp
     qwotelnet.cpp
     qwoutils.cpp
     qwowidget.cpp
@@ -165,10 +169,10 @@ set(HEADER_FILES
     qkxbuttonassist.h
     qkxfilterbox.h
     qkxfilterlineedit.h
-    qkxfilterlistview.h
-    qkxlicensedialog.h
+    qkxfilterlistview.h    
     qkxtouchpoint.h
     qkxmessagebox.h
+    qkxloadingbarwidget.h
     # window object
     qwoapplication.h
     qwomenubutton.h
@@ -256,6 +260,10 @@ set(HEADER_FILES
     qwogroupinputdialog.h
     qwofontlistmodel.h
     qworecenthistory.h
+    qwolicensedialog.h
+    qwolicenseactivatedialog.h
+    qwoversionupgradetipdialog.h
+    qwolicensetrialapplydialog.h
     qwotelnet.h
     qwoutils.h
     qwowidget.h
@@ -304,8 +312,7 @@ set(HEADER_FILES
 set(OTHER_FILES
     woterm.qrc
     # window object
-    qkxfilterlistview.ui
-    qkxlicensedialog.ui
+    qkxfilterlistview.ui    
     qwoaboutdialog.ui
     qwomenubutton.ui
     qwoadmindialog.ui
@@ -341,6 +348,10 @@ set(OTHER_FILES
     qwobindportpermissiondialog.ui
     qwodbsftpdownlistdialog.ui
     qwogroupinputdialog.ui
+    qwolicensedialog.ui
+    qwolicenseactivatedialog.ui
+    qwoversionupgradetipdialog.ui
+    qwolicensetrialapplydialog.ui
 
     #mobile object
     qmomainwindow.ui

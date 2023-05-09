@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -25,4 +25,5 @@ public:
     ~QWoPtyTermWidgetImpl();
 protected:
     virtual QWoTermWidget *createTermWidget(const QString& target, int gid, QWidget *parent);
+    virtual bool handleCustomProperties();
 };

@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -27,10 +27,11 @@ public:
     explicit QKxHttpClient(QObject *parent = nullptr);
     virtual ~QKxHttpClient();
     bool get(const QString& url);
-    bool post(const QString& url, const QByteArray& data);
+    bool post(const QString& url, const QByteArray& data, const QString& contentType = "application/text");
     bool fileGet(const QString& url, const QString& fileSave);
     bool filePost(const QString& url, const QByteArray& data, const QString& fileSave);
     QString fileSavePath() const;
+    QString lastErrorString() const;
 signals:
     void result(int code, const QByteArray& body);
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
@@ -43,6 +44,7 @@ private slots:
 private:
     QPointer<QNetworkAccessManager> m_manager;
     QPointer<QNetworkReply> m_reply;
+    QString m_lastError;
     QByteArray m_data;
     QString m_fileSave;
     QPointer<QFile> m_file;

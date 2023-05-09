@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -32,7 +32,8 @@ protected:
 protected:
     virtual bool handleTabMouseEvent(QMouseEvent *ev) = 0;
     virtual void handleTabContextMenu(QMenu *menu) = 0;
-    virtual QMap<QString, QString> collectUnsafeCloseMessage() = 0;
+    virtual QMap<QString, QString> collectUnsafeCloseMessage() = 0;    
+    virtual bool handleCustomProperties();
 protected:
     friend class QWoShower;
     int m_id;

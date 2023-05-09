@@ -40,6 +40,7 @@ public:
     Q_INVOKABLE static QString languagePath(const QString& name);
     Q_INVOKABLE static QString languageName(const QString& path);
     Q_INVOKABLE static void setLanguageFile(const QString& path);
+    Q_INVOKABLE static bool isChineseLanguageFile();
 
     static QString sshServerDbPath();
     static QString sftpTaskDbPath();
@@ -53,8 +54,12 @@ public:
     Q_INVOKABLE static void setLastBackupPath(const QString& path);
 
     /* upgrade */
+    static bool shouldReportLicense();
+    static void setIgnoreTodayReportLicense();
+
     static bool shouldPopupUpgradeUltimate();
     static void setIgnoreTodayUpgradeUltimate();
+
     static bool shouldPopupUpgradeVersionMessage(const QString& ver);
     static void setNextUpgradeVersionDate(const QString& ver, const QDate &dt);
     static void setIgnoreTodayUpgradeVersion(const QString& ver);

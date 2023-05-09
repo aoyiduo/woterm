@@ -50,7 +50,7 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
     : QWidget(parent)
     , ui(new Ui::QWoSftpWidget)
     , m_gid(gid)
-    , m_isUltimate(QKxVer::isUltimate())
+    , m_isUltimate(QKxVer::instance()->isFullFeather())
     , m_target(target)
     , m_savePassword(false)
     , m_bexit(false)
@@ -582,7 +582,11 @@ void QWoSftpWidget::runUploadTask(const QList<QFileInfo> &lsfi)
     }
     if(!same.isEmpty()) {
         QString msg = same.join('\n');
-        QKxMessageBox::information(this, tr("Upload information"), tr("the follow files has exist:")+"\n"+msg);
+        if(m_isUltimate) {
+            QKxMessageBox::information(this, tr("Upload information"), tr("the follow files has exist:")+"\n"+msg);
+        }else{
+            QKxMessageBox::information(this, tr("Upload information"), tr("the follow files has exist or version restrictions:")+"\n"+msg);
+        }
     }
 }
 
@@ -1028,7 +1032,11 @@ void QWoSftpWidget::onRemoteMenuDownload()
     }
     if(!same.isEmpty()) {
         QString msg = same.join('\n');
-        QKxMessageBox::information(this, tr("Download information"), tr("the follow files has exist:")+"\n"+msg);
+        if(m_isUltimate) {
+            QKxMessageBox::information(this, tr("Download information"), tr("the follow files has exist:")+"\n"+msg);
+        }else{
+            QKxMessageBox::information(this, tr("Download information"), tr("the follow files has exist or version restrictions:")+"\n"+msg);
+        }
     }
 }
 

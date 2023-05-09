@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -13,7 +13,8 @@
 #include "qwoglobal.h"
 #include "qwoshower.h"
 #include "qwoptytermwidget.h"
-
+#include "qwosetting.h"
+#include "qwosessionttyproperty.h"
 
 QWoPtyTermWidgetImpl::QWoPtyTermWidgetImpl(const QString& target, int gid, QTabBar *tab, QWidget *parent)
     : QWoTermWidgetImpl(target, gid, tab, parent)
@@ -32,4 +33,21 @@ QWoTermWidget *QWoPtyTermWidgetImpl::createTermWidget(const QString &target, int
     w->setTermName(name);
     w->setObjectName(name);
     return w;
+}
+
+bool QWoPtyTermWidgetImpl::handleCustomProperties()
+{
+    QVariantMap prop = QWoSetting::localShell();
+    QWoSessionTTYProperty dlg(QWoSessionTTYProperty::ETTY_LocalShell, this);
+    dlg.setCustom(prop);
+    dlg.exec();
+    QVariantMap result = dlg.result();
+    if(!result.isEmpty()) {
+        QWoSetting::setLocalShell(result);
+        for(int i = 0; i < m_terms.length(); i++) {
+            QWidget *w = m_terms.at(i);
+            QMetaObject::invokeMethod(w, "initCustom", Qt::QueuedConnection);
+        }
+    }
+    return true;
 }

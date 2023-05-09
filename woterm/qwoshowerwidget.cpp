@@ -10,7 +10,9 @@
 *******************************************************************************************/
 
 #include "qwoshowerwidget.h"
-
+#include "qwosessionproperty.h"
+#include "qwosshconf.h"
+#include "qkxmessagebox.h"
 
 QWoShowerWidget::QWoShowerWidget(const QString &target, QWidget *parent)
     : QWoWidget (parent)
@@ -19,4 +21,16 @@ QWoShowerWidget::QWoShowerWidget(const QString &target, QWidget *parent)
 {
     setAttribute(Qt::WA_StyledBackground);
     setAttribute(Qt::WA_DeleteOnClose);
+}
+
+bool QWoShowerWidget::handleCustomProperties()
+{
+    if(!QWoSshConf::instance()->exists(m_target)){
+        QKxMessageBox::warning(this, tr("Error"), tr("can't find the session, maybe it had been delete ago"));
+        return false;
+    }
+    QWoSessionProperty dlg(this);
+    dlg.setSession(m_target);
+    int ret = dlg.exec();
+    return ret == QWoSessionProperty::Save;
 }

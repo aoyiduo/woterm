@@ -33,9 +33,22 @@ QWoAboutDialog::QWoAboutDialog(QWidget *parent) :
     ui->setupUi(this);
 
     ui->verNow->setText(WOTERM_VERSION);
-    ui->authorizeLevel->setText(QKxVer::isUltimate() ? "Ultimate beta" : "Free");
-    ui->dayLeft->setText(QString::number(QKxVer::howDayUltimateLeft()));
-    ui->ultimateLeft->setVisible(QKxVer::isUltimate());
+    QKxVer *ver = QKxVer::instance();
+    QKxVer::ELicenseType type = ver->licenseType();
+    QString typeDesc = tr("Unknow version");
+    if(type == QKxVer::EFreeVersion) {
+        typeDesc = tr("Free version");
+    }else if(type == QKxVer::ETrialVersion) {
+        typeDesc = tr("Trial version");
+    } else if(type == QKxVer::ESchoolVersion) {
+        typeDesc = tr("School version");
+    } else if(type == QKxVer::EUltimateVersion) {
+        typeDesc = tr("Ultimate version");
+    }
+    if(ver->isExpired()) {
+        typeDesc += QString("[%1]").arg(tr("expired"));
+    }
+    ui->authorizeLevel->setText(typeDesc);
     ui->website->setText("<a href=\"http://www.woterm.com\">http://www.woterm.com</a>");
     ui->website->setOpenExternalLinks(true);
     ui->website->setTextInteractionFlags(Qt::TextBrowserInteraction);

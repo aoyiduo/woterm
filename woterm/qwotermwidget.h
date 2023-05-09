@@ -75,7 +75,7 @@ protected:
     virtual QList<QString> collectUnsafeCloseMessage() = 0;
 protected:
     void initDefault();
-    void initCustom();
+    Q_INVOKABLE void initCustom();
 protected slots:
     void onResetTermSize();
     void onCleanHistory();
@@ -83,7 +83,7 @@ protected slots:
     void onStopOutputHistoryFile();
     void onFloatThisTab();
 private:
-    void resetProperty(QVariantMap data);
+    void resetProperty(QVariantMap data, bool force=false);
 
     QWoTermWidgetImpl *findTermImpl();
     void addToTermImpl();

@@ -354,6 +354,7 @@ private:
 
 
     int m_lineDragStart;
+    qint64 m_updateFullLast;
 };
 
 #endif // QTERM_H

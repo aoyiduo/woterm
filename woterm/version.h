@@ -1,4 +1,4 @@
 #pragma once
 
-#define WOTERM_VERSION     ("9.26.7")
+#define WOTERM_VERSION     ("9.27.0")
 #define NOISE

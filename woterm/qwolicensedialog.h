@@ -9,26 +9,33 @@
 *
 *******************************************************************************************/
 
-#ifndef QKXLICENSEDIALOG_H
-#define QKXLICENSEDIALOG_H
+#ifndef QWOLICENSEDIALOG_H
+#define QWOLICENSEDIALOG_H
 
 #include <QDialog>
 
 namespace Ui {
-class QKxLicenseDialog;
+class QWoLicenseDialog;
 }
 
-class QKxLicenseDialog : public QDialog
+class QWoLicenseDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit QKxLicenseDialog(QWidget *parent = nullptr);
-    ~QKxLicenseDialog();
+    explicit QWoLicenseDialog(QWidget *parent = nullptr);
+    ~QWoLicenseDialog();
 private slots:
     void onActivateButtonClicked();
+    void onLicenseRemoveButtonClicked();
+    void onVersionsDifferenceButtonClicked();
+    void onTrialLinkActivated(const QString& link);
+    void onSNAssistButtonClicked(int idx);
+    void onMIDAssistButtonClicked(int idx);
 private:
-    Ui::QKxLicenseDialog *ui;
+    void reset();
+private:
+    Ui::QWoLicenseDialog *ui;
 };
 
-#endif // QKXLICENSEDIALOG_H
+#endif // QWOLICENSEDIALOG_H

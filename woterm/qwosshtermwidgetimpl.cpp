@@ -46,8 +46,8 @@ QWoTermWidget *QWoSshTermWidgetImpl::createTermWidget(const QString &target, int
 
 void QWoSshTermWidgetImpl::handleTabContextMenu(QMenu *menu)
 {
-    menu->addAction(tr("Sftp Assistant"), this, SLOT(onSftpAssistOpen()));
-    menu->addAction(tr("New Session Multiplex"), this, SLOT(onNewSessionMultplex()));
+    menu->addAction(tr("Sftp assistant"), this, SLOT(onSftpAssistOpen()));
+    menu->addAction(tr("New session multiplex"), this, SLOT(onNewSessionMultplex()));
 }
 
 void QWoSshTermWidgetImpl::onSftpAssistOpen()

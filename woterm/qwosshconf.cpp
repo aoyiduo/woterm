@@ -1184,6 +1184,11 @@ QStringList QWoSshConf::qmlProxyJumpers() const
     return hostNameList(SshWithSftp);
 }
 
+int QWoSshConf::hostCount() const
+{
+    return m_hosts.size();
+}
+
 void QWoSshConf::onAboutToQuit()
 {
     backup(m_dbFile + ".bak");

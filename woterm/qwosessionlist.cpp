@@ -81,7 +81,7 @@ QWoSessionList::QWoSessionList(QWidget *parent)
     m_proxyModel = new QWoSortFilterProxyModel(1, this);
     m_proxyModel->setRecursiveFilteringEnabled(true);
 
-    if(QWoSetting::isListModel("docker") || !QKxVer::isUltimate()) {
+    if(QWoSetting::isListModel("docker") || !QKxVer::instance()->isFullFeather()) {
         m_btnModel->setIcon(QIcon(":/woterm/resource/skin/list.png"));
         m_proxyModel->setSourceModel(m_listModel);
         m_model = m_listModel;
@@ -90,7 +90,7 @@ QWoSessionList::QWoSessionList(QWidget *parent)
         m_proxyModel->setSourceModel(m_treeModel);
         m_model = m_treeModel;
     }    
-    m_btnModel->setVisible(QKxVer::isUltimate());
+    m_btnModel->setVisible(QKxVer::instance()->isFullFeather());
     m_tree->setModel(m_proxyModel);
 
     QObject::connect(m_input, SIGNAL(returnPressed()), this, SLOT(onEditReturnPressed()));
@@ -474,7 +474,7 @@ bool QWoSessionList::handleListViewContextMenu(QContextMenuEvent *ev)
         menu.addAction(QIcon(":/woterm/resource/skin/ftp.png"), tr("Copy"), this, SLOT(onListViewItemCopy()));
         menu.addAction(tr("Delete"), this, SLOT(onListViewItemDelete()));
     }
-    if(QKxVer::isUltimate()) {
+    if(QKxVer::instance()->isFullFeather()) {
         if(m_model == m_listModel) {
             menu.addAction(tr("Show tree mode"), this, SLOT(onListViewGroupLayout()));
         }else{

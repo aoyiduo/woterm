@@ -90,7 +90,7 @@ QString QKxSetting::applicationFilePath()
     if(path.isEmpty()) {
         char buffer[1024] = {0};
         ::GetModuleFileNameA(0, buffer, 1023);
-        path = buffer;
+        path = buffer;// application
     }
     path = QDir::cleanPath(path);
     return path;

@@ -47,6 +47,7 @@ QWoTermWidget::QWoTermWidget(const QString& target, int gid, ETermType ttype, QW
     , m_gid(gid)
     , m_bexit(false)
     , m_ttype(ttype)
+    , m_rkeyPaste(false)
 {
     static int idx = 0;
     setObjectName(QString("QWoTermWidget:%1").arg(idx++));
@@ -147,7 +148,7 @@ bool QWoTermWidget::event(QEvent *ev)
 void QWoTermWidget::initDefault()
 {
     QVariantMap mdata = QWoSetting::ttyDefault();
-    resetProperty(mdata);
+    resetProperty(mdata, true);
 }
 
 void QWoTermWidget::initCustom()
@@ -221,9 +222,9 @@ void QWoTermWidget::onFloatThisTab()
     }
 }
 
-void QWoTermWidget::resetProperty(QVariantMap mdata)
+void QWoTermWidget::resetProperty(QVariantMap mdata, bool force)
 {
-    if(mdata.isEmpty()) {
+    if(mdata.isEmpty() && !force) {
         return;
     }
     QString schema = mdata.value("colorSchema", DEFAULT_COLOR_SCHEMA).toString();

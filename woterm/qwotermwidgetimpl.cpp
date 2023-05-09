@@ -19,6 +19,7 @@
 #include "qwocommandlineinput.h"
 #include "qwoutils.h"
 #include "qkxmessagebox.h"
+#include "qwosessionproperty.h"
 
 #include <QCloseEvent>
 #include <QApplication>
@@ -104,7 +105,18 @@ void QWoTermWidgetImpl::handleTabContextMenu(QMenu *menu)
 {
 //    if(m_terms.length() > 1) {
 //        menu->addAction(tr("Command line input..."), this, SLOT(onCommandInputInSamePage()));
-//    }
+    //    }
+}
+
+bool QWoTermWidgetImpl::handleCustomProperties()
+{
+    if(QWoShowerWidget::handleCustomProperties()) {
+        for(int i = 0; i < m_terms.length(); i++) {
+            QWidget *w = m_terms.at(i);
+            QMetaObject::invokeMethod(w, "initCustom", Qt::QueuedConnection);
+        }
+    }
+    return true;
 }
 
 void QWoTermWidgetImpl::updateEnable(bool on)

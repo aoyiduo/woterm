@@ -68,6 +68,8 @@ public:
     QList<HostInfo> proxyJumpers(const QString& name, int max=2) const;
     Q_INVOKABLE QStringList qmlProxyJumpers() const;
 
+    int hostCount() const;
+
 signals:
     void dataReset();
 private slots:

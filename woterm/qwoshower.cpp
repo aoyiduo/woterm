@@ -28,6 +28,7 @@
 #include "qkxmessagebox.h"
 #include "qwobindportpermissiondialog.h"
 #include "qkxver.h"
+#include "qwosessionproperty.h"
 
 #include <QTabBar>
 #include <QResizeEvent>
@@ -42,14 +43,18 @@
 #include <QVBoxLayout>
 #include <QIcon>
 #include <QTimer>
+#include <QClipboard>
 
 #define FLOAT_WINDOW_TITLE      ("FloatTitle")
 #define FLOAT_WINDOW_TOOLBAR    ("FloatToolbar")
 #define FLOAT_WINDOW_ICON       ("FloatIcon")
 
+#define TAB_ITEM_DRAG_AWAY_DISTANCE  (100)
+
 QWoShower::QWoShower(QTabBar *tab, QWidget *parent)
     : QStackedWidget (parent)
     , m_tab(tab)
+    , m_implCount(0)
 {
     m_ptyico = QIcon(":/woterm/resource/skin/console.png");
     m_sshico = QIcon(":/woterm/resource/skin/ssh2.png");
@@ -77,22 +82,29 @@ QWoShower::~QWoShower()
 
 bool QWoShower::openLocalShell()
 {
-    if(!QKxVer::isUltimate()) {
+    if(m_implCount >= QKxVer::instance()->maxTabCount()) {
+        QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
         return false;
     }
     int gid = QWoUtils::gid();
     QString target = tr("Local shell");
     QWoPtyTermWidgetImpl *impl = new QWoPtyTermWidgetImpl(target, gid, m_tab, this);
+    impl->setProperty("ETabLimitType", ELT_LOCALSHELL);
     createTab(impl, m_ptyico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/console.png");
     emit floatChanged(impl, false);
+    m_implCount++;
     return true;
 }
 
 bool QWoShower::openScriptRuner(const QString& script)
 {
+    if(m_implCount >= QKxVer::instance()->maxTabCount()) {
+        QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
+        return false;
+    }
     return true;
 }
 
@@ -101,12 +113,18 @@ bool QWoShower::openSsh(const QString &target, int gid)
     if(gid < 0) {
         gid = QWoUtils::gid();
     }
+    if(m_implCount >= QKxVer::instance()->maxTabCount()) {
+        QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
+        return false;
+    }
     QWoSshTermWidgetImpl *impl = new QWoSshTermWidgetImpl(target, gid, m_tab, this);
+    impl->setProperty("ETabLimitType", ELT_SSH);
     createTab(impl, m_sshico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm-"+target);
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/ssh2.png");
     emit floatChanged(impl, false);
+    m_implCount++;
     return true;
 }
 
@@ -115,44 +133,55 @@ bool QWoShower::openSftp(const QString &target, int gid)
     if(gid < 0) {
         gid = QWoUtils::gid();
     }
-
+    if(m_implCount >= QKxVer::instance()->maxTabCount()) {
+        QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
+        return false;
+    }
     QWoSftpWidgetImpl *impl = new QWoSftpWidgetImpl(target, gid, m_tab, this);
+    impl->setProperty("ETabLimitType", ELT_SFTP);
     createTab(impl, m_ftpico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/sftp.png");
     emit floatChanged(impl, false);
+    m_implCount++;
     return true;
 }
 
 bool QWoShower::openTelnet(const QString &target)
 {
-    if(!QKxVer::isUltimate()) {
+    if(m_implCount >= QKxVer::instance()->maxTabCount()) {
+        QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
         return false;
     }
     QWoTelnetTermWidgetImpl *impl = new QWoTelnetTermWidgetImpl(target, QWoUtils::gid(), m_tab, this);
+    impl->setProperty("ETabLimitType", ELT_TELNET);
     createTab(impl, m_telico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/telnet.png");
     emit floatChanged(impl, false);
+    m_implCount++;
     return true;
 }
 
 bool QWoShower::openRLogin(const QString &target)
 {
-    if(!QKxVer::isUltimate()) {
+    if(m_implCount >= QKxVer::instance()->maxTabCount()) {
+        QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
         return false;
     }
     if(QWoUtils::hasUnprivilegedPortPermission()) {
         QWoRLoginTermWidgetImpl *impl = new QWoRLoginTermWidgetImpl(target, QWoUtils::gid(), m_tab, this);
+        impl->setProperty("ETabLimitType", ELT_RLOGIN);
         createTab(impl, m_rloico, target);
         impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
         impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
         impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/rlogin.png");
         emit floatChanged(impl, false);
+        m_implCount++;
         return true;
-    }    
+    }
     QWoBindPortPermissionDialog dlg(target, this);
     if(dlg.exec() == (QDialog::Accepted+1)) {
         return openRLogin(target);
@@ -162,44 +191,53 @@ bool QWoShower::openRLogin(const QString &target)
 
 bool QWoShower::openMstsc(const QString &target)
 {
-    if(!QKxVer::isUltimate()) {
+    if(m_implCount >= QKxVer::instance()->maxTabCount()) {
+        QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
         return false;
     }
     QWoRdpWidgetImpl *impl = new QWoRdpWidgetImpl(target, m_tab, this);
+    impl->setProperty("ETabLimitType", ELT_RDP);
     createTab(impl, m_mtsico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Mstsc);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/mstsc2.png");
     emit floatChanged(impl, false);
+    m_implCount++;
     return true;
 }
 
 bool QWoShower::openVnc(const QString &target)
 {
-    if(!QKxVer::isUltimate()) {
+    if(m_implCount >= QKxVer::instance()->maxTabCount()) {
+        QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
         return false;
     }
     QWoVncWidgetImpl *impl = new QWoVncWidgetImpl(target, m_tab, this);
+    impl->setProperty("ETabLimitType", ELT_VNC);
     createTab(impl, m_vncico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Vnc);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/vnc2.png");
     emit floatChanged(impl, false);
+    m_implCount++;
     return true;
 }
 
 bool QWoShower::openSerialPort()
 {
-    if(!QKxVer::isUltimate()) {
+    if(m_implCount >= QKxVer::instance()->maxTabCount()) {
+        QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
         return false;
     }
     QString target = tr("SerialPort");
     QWoSerialWidgetImpl *impl = new QWoSerialWidgetImpl(target, QWoUtils::gid(), m_tab, this);
+    impl->setProperty("ETabLimitType", ELT_SERIALPORT);
     createTab(impl, m_serico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/serialport.png");
     emit floatChanged(impl, false);
+    m_implCount++;
     return true;
 }
 
@@ -281,14 +319,14 @@ void QWoShower::paintEvent(QPaintEvent *event)
     QRect rt(0, 0, width(), height());
     p.fillRect(rt, QColor(Qt::black));
     QFont ft = p.font();
-    ft.setPixelSize(190);
+    ft.setPixelSize(100);
     ft.setBold(true);
     p.setFont(ft);
     QPen pen = p.pen();
     pen.setStyle(Qt::DotLine);
     pen.setColor(Qt::lightGray);
     QBrush brush = pen.brush();
-    brush.setStyle(Qt::Dense7Pattern);
+    brush.setStyle(Qt::Dense6Pattern);
     pen.setBrush(brush);
     p.setPen(pen);
     p.drawText(rt, Qt::AlignCenter, "WoTerm");
@@ -296,9 +334,17 @@ void QWoShower::paintEvent(QPaintEvent *event)
 
 bool QWoShower::eventFilter(QObject *obj, QEvent *ev)
 {
-    switch (ev->type()) {
-    case QEvent::MouseButtonPress:
-        return tabMouseButtonPress((QMouseEvent*)ev);
+    QEvent::Type type = ev->type();
+    if(type == QEvent::MouseButtonPress) {
+        QTabBar* tab = qobject_cast<QTabBar*>(obj);
+        if(tab) {
+            return tabMouseButtonPress(reinterpret_cast<QMouseEvent*>(ev));
+        }
+    }else if(type == QEvent::MouseMove) {
+        QTabBar* tab = qobject_cast<QTabBar*>(obj);
+        if(tab) {
+            return tabMouseButtonMove(reinterpret_cast<QMouseEvent*>(ev));
+        }
     }
     return false;
 }
@@ -341,6 +387,8 @@ void QWoShower::createTab(QWoShowerWidget *impl, const QIcon&icon, const QString
 
 bool QWoShower::tabMouseButtonPress(QMouseEvent *ev)
 {
+    m_tabDragAway = false;
+    m_tabDragWidget = nullptr;
     QPoint pt = ev->pos();
     int idx = m_tab->tabAt(pt);
     if(idx < 0) {
@@ -354,13 +402,32 @@ bool QWoShower::tabMouseButtonPress(QMouseEvent *ev)
         QMenu menu(impl);
         m_tabMenu = &menu;
         m_tabMenu->setProperty(TAB_TARGET_IMPL, QVariant::fromValue(impl));
-        menu.addAction(tr("Close This Tab"), this, SLOT(onCloseThisTabSession()));
-        menu.addAction(tr("Close Other Tab"), this, SLOT(onCloseOtherTabSession()));
-        menu.addAction(tr("Float This Tab"), this, SLOT(onFloatThisTabSession()));
+        menu.addAction(tr("Close this tab"), this, SLOT(onCloseThisTabSession()));
+        menu.addAction(tr("Close other tab"), this, SLOT(onCloseOtherTabSession()));
+        menu.addAction(tr("Copy session"), this, SLOT(onNewTheSameSession()));
+        menu.addAction(tr("Copy host address"), this, SLOT(onCopyTabSessionAddress()));
+        menu.addAction(tr("Edit this session"), this, SLOT(onEditThisTabSession()));
+        menu.addAction(tr("Float this tab"), this, SLOT(onFloatThisTabSession()));
         impl->handleTabContextMenu(&menu);
         menu.exec(QCursor::pos());
+    }else if(ev->buttons().testFlag(Qt::LeftButton)){
+        m_tabDragWidget = impl;
     }
+    return false;
+}
 
+bool QWoShower::tabMouseButtonMove(QMouseEvent *ev)
+{
+    QPoint pt = ev->pos();
+    if(ev->buttons().testFlag(Qt::LeftButton)) {
+        if(pt.y() > TAB_ITEM_DRAG_AWAY_DISTANCE) {
+            //qDebug() << "tabMouseButtonMove" << pt;
+            if(m_tabDragWidget) {
+                floatSession(m_tabDragWidget, false);
+                m_tabDragWidget = nullptr;
+            }
+        }
+    }
     return false;
 }
 
@@ -384,10 +451,11 @@ void QWoShower::onTabCurrentChanged(int idx)
 void QWoShower::onTabWidgetDestroy(QObject *it)
 {
     QWidget *target = qobject_cast<QWidget*>(it);
+    m_implCount--;
     for(int i = 0; i < m_tab->count(); i++) {
         QVariant v = m_tab->tabData(i);
         QWidget *impl = v.value<QWidget *>();
-        if(target == impl) {
+        if(target == impl) {            
             removeWidget(target);
             m_tab->removeTab(i);
             break;
@@ -399,7 +467,7 @@ void QWoShower::onTabWidgetDestroy(QObject *it)
 
 void QWoShower::onTabbarDoubleClicked(int index)
 {
-    if(index < 0) {
+    if(index < 0 && QKxVer::instance()->isFullFeather()) {
         openLocalShell();
     }
 }
@@ -438,6 +506,50 @@ void QWoShower::onCloseOtherTabSession()
     }
 }
 
+void QWoShower::onNewTheSameSession()
+{
+    QVariant vimpl = m_tabMenu->property(TAB_TARGET_IMPL);
+    QWoShowerWidget *impl = vimpl.value<QWoShowerWidget*>();
+    QString target = impl->targetName();
+    ELimitType t = static_cast<ELimitType>(impl->property("ETabLimitType").toInt());
+    if(t == ELT_LOCALSHELL) {
+        openLocalShell();
+    }else if(t == ELT_SSH) {
+        openSsh(target);
+    }else if(t == ELT_SFTP) {
+        openSftp(target);
+    }else if(t == ELT_TELNET) {
+        openTelnet(target);
+    }else if(t == ELT_RLOGIN) {
+        openRLogin(target);
+    }else if(t == ELT_RDP) {
+        openMstsc(target);
+    }else if(t == ELT_VNC) {
+        openVnc(target);
+    }else if(t == ELT_SERIALPORT) {
+        openSerialPort();
+    }
+}
+
+void QWoShower::onCopyTabSessionAddress()
+{
+    QVariant vimpl = m_tabMenu->property(TAB_TARGET_IMPL);
+    QWoShowerWidget *impl = vimpl.value<QWoShowerWidget*>();
+    QString target = impl->targetName();
+    const HostInfo& hi = QWoSshConf::instance()->find(target);
+    if(hi.isValid()) {
+        QClipboard *clip = QGuiApplication::clipboard();
+        clip->setText(hi.host);
+    }
+}
+
+void QWoShower::onEditThisTabSession()
+{
+    QVariant vimpl = m_tabMenu->property(TAB_TARGET_IMPL);
+    QWoShowerWidget *impl = vimpl.value<QWoShowerWidget*>();
+    impl->handleCustomProperties();
+}
+
 void QWoShower::onFloatThisTabSession()
 {
     if(m_tabMenu == nullptr) {
@@ -460,14 +572,17 @@ void QWoShower::floatSession(QWoShowerWidget *impl, bool full)
             break;
         }
     }
-
     QString icon = impl->property(FLOAT_WINDOW_ICON).toString();
     QString title = impl->property(FLOAT_WINDOW_TITLE).toString();
     QWoFloatWindow::EToolType typ = impl->property(FLOAT_WINDOW_TOOLBAR).value<QWoFloatWindow::EToolType>();
     QWoFloatWindow *wfloat = new QWoFloatWindow(impl, this, typ);
     wfloat->setWindowTitle(title);
     wfloat->setWindowIcon(QIcon(icon));
-    wfloat->resize(1024, 768);
+    QRect rtImpl = rect();
+    QPoint pt = mapToGlobal(QPoint(0, 0));
+    rtImpl.moveTo(pt);
+    rtImpl.translate(50, 50);
+    wfloat->setGeometry(rtImpl);
     if(full) {
         wfloat->showFullScreen();
     }else{
@@ -517,10 +632,12 @@ void QWoShower::onCleanNilFloatWindow()
 void QWoShower::onTabContextMenu(QMouseEvent *ev)
 {
     if(ev->buttons() & Qt::RightButton) {
-        QMenu menu;
-        menu.addAction(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open remote session"), this, SLOT(onOpenRemoteSession()));
-        menu.addAction(QIcon(":/woterm/resource/skin/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
-        menu.exec(QCursor::pos());
+        if(QKxVer::instance()->isFullFeather()) {
+            QMenu menu;
+            menu.addAction(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open remote session"), this, SLOT(onOpenRemoteSession()));
+            menu.addAction(QIcon(":/woterm/resource/skin/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
+            menu.exec(QCursor::pos());
+        }
     }
 }
 

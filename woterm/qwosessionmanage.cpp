@@ -51,7 +51,7 @@ QWoSessionManage::QWoSessionManage(QWidget *parent)
     m_proxyModel = new QWoSortFilterProxyModel(4, this);
     m_proxyModel->setRecursiveFilteringEnabled(true);
     ui->btnModel->setText(tr("Mode"));
-    if(QWoSetting::isListModel("manage")|| !QKxVer::isUltimate()) {
+    if(QWoSetting::isListModel("manage")|| !QKxVer::instance()->isFullFeather()) {
         ui->btnModel->setIcon(QIcon(":/woterm/resource/skin/list.png"));
         m_proxyModel->setSourceModel(m_listModel);
         m_model = m_listModel;
@@ -85,7 +85,7 @@ QWoSessionManage::QWoSessionManage(QWidget *parent)
     QObject::connect(ui->btnNew, SIGNAL(clicked()), this, SLOT(onNewReady()));
     QObject::connect(m_tree, SIGNAL(itemChanged(const QModelIndex&)), this, SLOT(onTreeItemSelected(const QModelIndex&)));
     QObject::connect(m_tree, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onTreeItemDoubleClicked(const QModelIndex&)));
-    if(QKxVer::isUltimate()) {
+    if(QKxVer::instance()->isFullFeather()) {
         ui->btnModel->setVisible(true);
         QObject::connect(ui->btnModel, SIGNAL(clicked()), this, SLOT(onTreeModelSwitch()));
     }else{

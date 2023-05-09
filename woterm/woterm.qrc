@@ -192,6 +192,7 @@
         <file>qml/MoLanguageView.qml</file>
         <file>qml/MoSystemInformation.qml</file>
         <file>resource/skin/keyboard.png</file>
+        <file>resource/skin/tips.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

@@ -52,11 +52,12 @@ private slots:
     void onEditConfig();    
     void onSessionReadyToConnect(const QString& target, int type);
     void onAppStart();
-    void onVersionCheck(int code, const QByteArray& body);
     void onShouldAppExit();
     void onButtonAssistClicked(QToolButton *btn);
 
     void onRecentMenuAboutToShow();
+
+    void onReportResult(int code, const QByteArray& body);
 
 private slots:
     void onActionNewTriggered();
@@ -80,8 +81,8 @@ private slots:
     void onActionScriptRunTriggered();
     void onActionSshKeyManageTriggered();
     void onActionAdminTriggered();
-    void onActionUltimateTriggered();
-    void onActionRegisterTriggered();
+    void onActionLicenseTriggered();
+    void onActionUpgradeTriggered();
 
     void onFilterArrivedArrived(const QString& name, int type);
     void onFilterCreateArrived(const QString& name);
@@ -94,6 +95,7 @@ private:
     void saveLastState();
 
     bool checkAdminLogin();
+    Q_INVOKABLE void tryToMakeLicenseTrial();
 private:
     Ui::QWoMainWindow *ui;
     QPointer<QTabBar> m_tab;

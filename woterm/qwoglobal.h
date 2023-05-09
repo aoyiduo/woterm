@@ -34,6 +34,7 @@ enum EHostType{
 #define EOT_SERIALPORT  (5)
 #define EOT_MSTSC       (6)
 #define EOT_VNC         (7)
+#define EOT_PTY         (8)
 
 #define ROLE_INDEX              (Qt::UserRole+1)
 #define ROLE_HOSTINFO           (Qt::UserRole+2)

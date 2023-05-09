@@ -768,7 +768,7 @@ QByteArray QWoUtils::aesDecrypt(const QByteArray &all, const QByteArray &pass)
 
 bool QWoUtils::isUltimateVersion(QWidget *parent)
 {
-    if(!QKxVer::isUltimate()) {
+    if(!QKxVer::instance()->isFullFeather()) {
         QKxMessageBox::information(parent, QObject::tr("Ultimate version"), QObject::tr("this is the feature of the ultimate version, please upgrade to latest version."));
         return false;
     }
@@ -783,6 +783,8 @@ QString QWoUtils::getPassword(QWidget *parent, const QString &label)
     input.setWindowTitle(QObject::tr("Password input"));
     input.setLabelText(label);
     input.setTextEchoMode(QLineEdit::Password);
+    input.setOkButtonText(tr("Ok"));
+    input.setCancelButtonText(tr("Cancel"));
     int err = input.exec();
     if(err == 0) {
         return QString();

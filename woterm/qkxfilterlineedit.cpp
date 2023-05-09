@@ -15,6 +15,7 @@
 
 #include "qkxfilterlistview.h"
 #include "qkxbuttonassist.h"
+#include "qwosshconf.h"
 
 #include <QKeyEvent>
 #include <QListView>
@@ -62,7 +63,25 @@ void QKxFilterLineEdit::onAssistButtonClicked(int idx)
 void QKxFilterLineEdit::onAssistReturnPressed()
 {
     if(!m_listView->isVisible()) {
-        emit createArrived(text());
+        QString name = text();
+        if(QWoSshConf::instance()->exists(name)) {
+            const HostInfo& hi = QWoSshConf::instance()->find(name);
+            if(hi.type == SshWithSftp) {
+                emit targetArrived(hi.name, EOT_SSH);
+            }else if(hi.type == SftpOnly) {
+                emit targetArrived(hi.name, EOT_SFTP);
+            }else if(hi.type == Telnet) {
+                emit targetArrived(hi.name, EOT_TELNET);
+            }else if(hi.type == RLogin) {
+                emit targetArrived(hi.name, EOT_RLOGIN);
+            }else if(hi.type == Mstsc) {
+                emit targetArrived(hi.name, EOT_MSTSC);
+            }else if(hi.type == Vnc) {
+                emit targetArrived(hi.name, EOT_VNC);
+            }
+        }else{
+            emit createArrived(text());
+        }
         return;
     }
     QModelIndex idx = m_listView->listView()->currentIndex();
