@@ -291,6 +291,7 @@ void QWoSshTermWidget::onModifyThisSession()
         return;
     }
     QWoSessionProperty dlg(this);
+    QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), QWoMainWindow::instance(), SLOT(onSessionReadyToConnect(QString,int)));
     dlg.setSession(m_target);
     int ret = dlg.exec();
     if(ret == QWoSessionProperty::Save) {
@@ -396,7 +397,7 @@ void QWoSshTermWidget::showPasswordInput(const QString &title, const QString &pr
 {
     if(m_passInput == nullptr) {
         m_passInput = new QWoPasswordInput(this);
-        QObject::connect(m_passInput, SIGNAL(result(const QString&,bool)), this, SLOT(onPasswordInputResult(const QString&,bool)));
+        QObject::connect(m_passInput, SIGNAL(result(QString,bool)), this, SLOT(onPasswordInputResult(QString,bool)));
     }
     if(m_passInput->isVisible()) {
         return;

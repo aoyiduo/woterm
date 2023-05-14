@@ -33,6 +33,7 @@
 #include "qwosessionrdpproperty.h"
 #include "qwosessionvncproperty.h"
 #include "qwosystemoptiondialog.h"
+#include "qwosessiontoolconfiguredialog.h"
 #include "qwosshconf.h"
 #include "qwodbbackupdialog.h"
 #include "qwodbrestoredialog.h"
@@ -463,6 +464,12 @@ void QWoMainWindow::onActionRDPOptionsTriggered()
     dlg.exec();
 }
 
+void QWoMainWindow::onActionToolOptionsTriggered()
+{
+    QWoSessionToolConfigureDialog dlg(this);
+    dlg.exec();
+}
+
 void QWoMainWindow::onActionSystemOptionsTriggered()
 {
     QWoSystemOptionDialog dlg(this);
@@ -596,6 +603,7 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionTTYOptions, SIGNAL(triggered()), this, SLOT(onActionTTYOptionsTriggered()));
     QObject::connect(ui->actionVNCOptions, SIGNAL(triggered()), this, SLOT(onActionVNCOptionsTriggered()));
     QObject::connect(ui->actionRDPOptions, SIGNAL(triggered()), this, SLOT(onActionRDPOptionsTriggered()));
+    QObject::connect(ui->actionToolOptions, SIGNAL(triggered()), this, SLOT(onActionToolOptionsTriggered()));
     QObject::connect(ui->actionSystemOptions, SIGNAL(triggered()), this, SLOT(onActionSystemOptionsTriggered()));
     QObject::connect(ui->actionIdentityManage, SIGNAL(triggered()), this, SLOT(onActionSshKeyManageTriggered()));
     QObject::connect(ui->actionDocument, SIGNAL(triggered()), this, SLOT(onActionHelpTriggered()));

@@ -16,6 +16,7 @@
 
 #include <QPainter>
 #include <QMouseEvent>
+#include <QTimer>
 
 QWoPasswordInput::QWoPasswordInput(QWidget *parent)
     : QWoWidget(parent)
@@ -71,6 +72,22 @@ void QWoPasswordInput::onClose()
     }
     hide();
     emit result(pass, ui->save->isChecked());
+}
+
+void QWoPasswordInput::showEvent(QShowEvent *e)
+{
+    QWoWidget::showEvent(e);
+    if(m_timer == nullptr) {
+        m_timer = new QTimer(this);
+        QObject::connect(m_timer, SIGNAL(timeout()), this, SLOT(raise()));
+    }
+    m_timer->start(100);
+}
+
+void QWoPasswordInput::hideEvent(QHideEvent *event)
+{
+    QWoWidget::hideEvent(event);
+    m_timer->stop();
 }
 
 void QWoPasswordInput::mouseMoveEvent(QMouseEvent *event)

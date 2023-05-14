@@ -13,6 +13,7 @@
 #include "qwosessionproperty.h"
 #include "qwosshconf.h"
 #include "qkxmessagebox.h"
+#include "qwomainwindow.h"
 
 QWoShowerWidget::QWoShowerWidget(const QString &target, QWidget *parent)
     : QWoWidget (parent)
@@ -30,6 +31,7 @@ bool QWoShowerWidget::handleCustomProperties()
         return false;
     }
     QWoSessionProperty dlg(this);
+    QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), QWoMainWindow::instance(), SLOT(onSessionReadyToConnect(QString,int)));
     dlg.setSession(m_target);
     int ret = dlg.exec();
     return ret == QWoSessionProperty::Save;

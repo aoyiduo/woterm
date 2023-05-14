@@ -46,8 +46,13 @@ QWoTermWidget *QWoSshTermWidgetImpl::createTermWidget(const QString &target, int
 
 void QWoSshTermWidgetImpl::handleTabContextMenu(QMenu *menu)
 {
-    menu->addAction(tr("Sftp assistant"), this, SLOT(onSftpAssistOpen()));
-    menu->addAction(tr("New session multiplex"), this, SLOT(onNewSessionMultplex()));
+    if(m_sftp == nullptr) {
+        menu->addAction(tr("Open sftp assistant"), this, SLOT(onSftpAssistOpen()));
+    }else{
+        menu->addAction(tr("Close sftp assistant"), this, SLOT(onSftpAssistOpen()));
+    }
+    menu->addAction(tr("Multiplexing sftp sessions"), this, SLOT(onNewSftpSession()));
+    menu->addAction(tr("Multiplexing ssh sessions"), this, SLOT(onNewSshSession()));
 }
 
 void QWoSshTermWidgetImpl::onSftpAssistOpen()
@@ -56,11 +61,19 @@ void QWoSshTermWidgetImpl::onSftpAssistOpen()
         m_sftp = new QWoSftpWidget(m_target, m_gid, true, this);
         addAssistant(m_sftp, true);
         m_sftp->setMinimumWidth(30);
+        m_sftp->setVisible(true);
+    }else{
+        m_sftp->deleteLater();
     }
-    m_sftp->setVisible(true);
 }
 
-void QWoSshTermWidgetImpl::onNewSessionMultplex()
+void QWoSshTermWidgetImpl::onNewSftpSession()
+{
+    QWoShower *shower = QWoMainWindow::instance()->shower();
+    shower->openSftp(m_target, m_gid);
+}
+
+void QWoSshTermWidgetImpl::onNewSshSession()
 {
     QWoShower *shower = QWoMainWindow::instance()->shower();
     shower->openSsh(m_target, m_gid);

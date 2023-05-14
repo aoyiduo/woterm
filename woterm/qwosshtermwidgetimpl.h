@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -33,7 +33,8 @@ protected:
     virtual void handleTabContextMenu(QMenu *menu);
 private slots:
     void onSftpAssistOpen();
-    void onNewSessionMultplex();
+    void onNewSftpSession();
+    void onNewSshSession();
     void onActivePathArrived(const QString& path);
 private:
     QPointer<QWoSftpWidget> m_sftp;

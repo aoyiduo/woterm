@@ -47,6 +47,7 @@ public:
     static QString sftpTaskLogPath();
     static QString tempPath();
     static QString fontBackupPath();
+    static QString cachePath();
 
     Q_INVOKABLE static QString downloadPath();
     Q_INVOKABLE static void setDownloadPath(const QString& path);

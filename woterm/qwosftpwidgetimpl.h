@@ -38,7 +38,8 @@ protected:
     virtual void updateEnable(bool on);
 private slots:
     void onDestroyReady();
-    void onNewSessionMultplex();
+    void onNewSshSession();
+    void onNewSftpSession();
 private:
     void setTabText(const QString& title);
 private:

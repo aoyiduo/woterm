@@ -39,6 +39,8 @@ set(SOURCE_FILES
     qwoadmindialog.cpp
     qwosystemoptiondialog.cpp
     qwocommandlineinput.cpp
+    qwomessagequeuewidget.cpp
+    qwomessagequeuemodel.cpp
     qwoevent.cpp
     qwohostinfoedit.cpp
     qwohostinfolist.cpp
@@ -49,7 +51,7 @@ set(SOURCE_FILES
     qwoidentifydialog.cpp
     qwoidentify.cpp
     qwoidentifycreatedialog.cpp
-    qwoidentifypublickeydialog.cpp
+    qwoidentifykeycontentdialog.cpp
     qwolinenoise.cpp
     qwolistview.cpp
     qwomainwindow.cpp
@@ -62,6 +64,7 @@ set(SOURCE_FILES
     qwosessionrdpproperty.cpp
     qwosessionvncproperty.cpp
     qwosessionttyproperty.cpp
+    qwosessiontoolconfiguredialog.cpp
     qwosetting.cpp
     qwosettingdialog.cpp
     qwoshower.cpp
@@ -89,6 +92,9 @@ set(SOURCE_FILES
     qwosftpremotemodel.cpp
     qwosftpqueuemodel.cpp
     qwosftptransferwidget.cpp
+    qwosftppermissiondialog.cpp
+    qwosftprenamedialog.cpp
+    qwosftpmovefiledialog.cpp
     qwoserialinput.cpp
     qwoserialwidgetimpl.cpp
     qwordpwidget.cpp
@@ -180,6 +186,8 @@ set(HEADER_FILES
     qwoadmindialog.h
     qwosystemoptiondialog.h
     qwocommandlineinput.h
+    qwomessagequeuewidget.h
+    qwomessagequeuemodel.h
     qwoevent.h
     qwoglobal.h
     qwohostinfoedit.h
@@ -191,7 +199,7 @@ set(HEADER_FILES
     qwoidentifydialog.h
     qwoidentify.h
     qwoidentifycreatedialog.h
-    qwoidentifypublickeydialog.h
+    qwoidentifykeycontentdialog.h
     qwolinenoise.h
     qwolistview.h
     qwomainwindow.h
@@ -204,6 +212,7 @@ set(HEADER_FILES
     qwosessionrdpproperty.h
     qwosessionvncproperty.h
     qwosessionttyproperty.h
+    qwosessiontoolconfiguredialog.h
     qwosetting.h
     qwosettingdialog.h
     qwoshower.h
@@ -231,6 +240,9 @@ set(HEADER_FILES
     qwosftpremotemodel.h
     qwosftpqueuemodel.h
     qwosftptransferwidget.h
+    qwosftppermissiondialog.h
+    qwosftprenamedialog.h
+    qwosftpmovefiledialog.h
     qwoserialinput.h
     qwoserialwidgetimpl.h
     qwordpwidget.h
@@ -318,12 +330,13 @@ set(OTHER_FILES
     qwoadmindialog.ui
     qwosystemoptiondialog.ui
     qwocommandlineinput.ui
+    qwomessagequeuewidget.ui
     qwohostinfo.ui
     qwohostinfolist.ui
     qwohostlist.ui
     qwoidentifydialog.ui
     qwoidentifycreatedialog.ui
-    qwoidentifypublickeydialog.ui
+    qwoidentifykeycontentdialog.ui
     qwomainwindow.ui
     qwobasetoolform.ui
     qwopasswordinput.ui
@@ -334,11 +347,15 @@ set(OTHER_FILES
     qwosessionrdpproperty.ui
     qwosessionvncproperty.ui
     qwosessionttyproperty.ui
+    qwosessiontoolconfiguredialog.ui
     qwosettingdialog.ui
     qwotermmask.ui
     qwoserialinput.ui
     qwosftpwidget.ui
     qwosftptransferwidget.ui
+    qwosftppermissiondialog.ui
+    qwosftprenamedialog.ui
+    qwosftpmovefiledialog.ui
     qwovnctoolform.ui
     qwovncftpwidget.ui
     qwodbbackupdialog.ui

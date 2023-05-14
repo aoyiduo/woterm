@@ -28,8 +28,11 @@
 #include "qwomainwindow.h"
 #include "qwosftpremotemodel.h"
 #include "qwosftplocalmodel.h"
+#include "qwosftppermissiondialog.h"
+#include "qwosftprenamedialog.h"
 #include "qkxmessagebox.h"
 #include "qkxbuttonassist.h"
+#include "qwosftpmovefiledialog.h"
 
 #include <QResizeEvent>
 #include <QSortFilterProxyModel>
@@ -43,6 +46,8 @@
 #include <QDesktopServices>
 #include <QMimeData>
 #include <QDropEvent>
+#include <QPushButton>
+#include <QProcess>
 
 #define SYNC_FOLLOW_FLAG    ("syncFollow")
 
@@ -87,7 +92,7 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
         ui->localFrame->setLayout(layout);
         ui->localFrame->setFrameShape(QFrame::NoFrame);
 
-        m_local = new QTreeView(ui->localFrame);
+        m_local = new QWoTreeView(ui->localFrame);
         m_local->setDragDropMode(QAbstractItemView::DropOnly);
         m_local->setAcceptDrops(true);
         m_local->setObjectName("localTreeView");
@@ -138,7 +143,7 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
     ui->remoteFrame->setFrameShape(QFrame::NoFrame);
     layout->setSpacing(0);
     layout->setMargin(0);
-    m_remote = new QTreeView(ui->remoteFrame);
+    m_remote = new QWoTreeView(ui->remoteFrame);
     m_remote->setDragDropMode(QAbstractItemView::DropOnly);
     m_remote->setAcceptDrops(true);
     m_remote->viewport()->installEventFilter(this);
@@ -252,7 +257,7 @@ int QWoSftpWidget::textWidth(const QString &txt, const QFont &ft)
 bool QWoSftpWidget::canTransfer()
 {
     if(!m_transfer->canAddTask()) {
-        QKxMessageBox::information(this, tr("Reject request"), tr("Please wait until the current task is completed."));
+        QKxMessageBox::message(this, tr("Reject request"), tr("Please wait until the current task is completed."), false);
         return false;
     }
     return true;
@@ -482,6 +487,58 @@ void QWoSftpWidget::handleRemoteDropEvent(QDropEvent *de)
     }
 }
 
+void QWoSftpWidget::handleEdit(const QString &fileSave, const QString &fileRemote)
+{
+    QVariantMap dm = QWoSetting::value("sftpTool/textEditor").toMap();
+    if(dm.isEmpty()) {
+        QKxMessageBox::information(this, tr("Editor error"), tr("Please configure the text editing tool in the tool options dialog box first."));
+        return;
+    }
+
+    QFileInfo fi(fileSave);
+    if(!fi.exists()) {
+        QKxMessageBox::information(this, tr("File error"), tr("The temp file has been lost."));
+        return;
+    }
+
+    QString path = dm.value("path").toString();
+    QString params = dm.value("arguments").toString();
+    params.replace("{file}", fileSave);
+
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QProcess *editor = new QProcess(this);
+    QObject::connect(editor, SIGNAL(finished(int)), this, SLOT(onEditorDestroy()));
+    QObject::connect(editor, SIGNAL(finished(int)), editor, SLOT(deleteLater()));
+    QObject::connect(editor, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(onEditorDestroy()));
+    QObject::connect(editor, SIGNAL(errorOccurred(QProcess::ProcessError)), editor, SLOT(deleteLater()));
+    editor->setProperty("fileSave", fileSave);
+    editor->setProperty("fileRemote", fileRemote);
+    editor->setProperty("lastModified", fi.lastModified());
+    editor->setProcessEnvironment(env);
+    editor->start(path + " " + params);
+    m_editors.append(editor);
+}
+
+void QWoSftpWidget::handleEditCommit(const QString &fileSave, const QString &fileRemote, const qint64& dt)
+{
+    QFileInfo fi(fileSave);
+    if(!fi.exists()) {
+        return;
+    }
+    QDateTime lastModified = QDateTime::fromMSecsSinceEpoch(dt);
+    if(fi.lastModified() == lastModified) {
+        return;
+    }
+    int retval = QKxMessageBox::information(this, tr("Modify information"), tr("The content has been modified. Do you need to submit it to the server?"), QMessageBox::Yes|QMessageBox::No);
+    if(retval == QMessageBox::Yes && m_sftp) {
+        QVariantMap user;
+        user.insert("command", "editFile");
+        user.insert("local", fileSave);
+        user.insert("remote", fileRemote);
+        m_sftp->upload(fileSave, fileRemote, QWoSshFtp::TP_Override, user);
+    }
+}
+
 void QWoSftpWidget::reconnect()
 {
     if(m_passInput) {
@@ -583,9 +640,9 @@ void QWoSftpWidget::runUploadTask(const QList<QFileInfo> &lsfi)
     if(!same.isEmpty()) {
         QString msg = same.join('\n');
         if(m_isUltimate) {
-            QKxMessageBox::information(this, tr("Upload information"), tr("the follow files has exist:")+"\n"+msg);
+            QKxMessageBox::message(this, tr("Upload information"), tr("the follow files has exist:")+"\n"+msg, false);
         }else{
-            QKxMessageBox::information(this, tr("Upload information"), tr("the follow files has exist or version restrictions:")+"\n"+msg);
+            QKxMessageBox::message(this, tr("Upload information"), tr("the follow files has exist or version restrictions:")+"\n"+msg, false);
         }
     }
 }
@@ -625,6 +682,12 @@ void QWoSftpWidget::onRemoteContextMenuRequested(const QPoint& pos)
         menu.addAction(QIcon(":/woterm/resource/skin/home.png"), tr("Home Directory"), this, SLOT(onRemoteMenuGoHomeDirectory()));
         menu.addAction(QIcon(":/woterm/resource/skin/mkdir.png"), tr("Create Directory"), this, SLOT(onRemoteMenuCreateDirectory()));
         menu.addAction(QIcon(":/woterm/resource/skin/rmfile.png"), tr("Remove selections"), this, SLOT(onRemoteMenuRemoveSelection()));
+        menu.addAction(QIcon(":/woterm/resource/skin/permission.png"), tr("Modify the permission"), this, SLOT(onRemoteModifyItemPermission()));
+        if(lsfi.length() == 1) {
+            menu.addAction(tr("Rename"), this, SLOT(onRemoteMenuRename()));
+            menu.addAction(tr("Edit file content"), this, SLOT(onRemoteMenuEditFileContent()));
+        }
+        menu.addAction(tr("Move to other directory"), this, SLOT(onRemoteMenuMoveToOtherDirectory()));
         if(fi.isDir()) {
             menu.addAction(QIcon(":/woterm/resource/skin/enter.png"), tr("Enter"), this, SLOT(onRemoteMenuEnterDirectory()));
             if(m_isUltimate) {
@@ -678,7 +741,7 @@ void QWoSftpWidget::onFinishArrived(int code)
 
 void QWoSftpWidget::onErrorArrived(const QString &err, const QVariantMap& userData)
 {
-    QKxMessageBox::warning(this, tr("Error"), err, QMessageBox::Ok);
+    QKxMessageBox::warning(this, tr("Error"), err);
 }
 
 void QWoSftpWidget::onInputArrived(const QString &title, const QString &prompt, bool visible)
@@ -714,6 +777,20 @@ void QWoSftpWidget::onForceToCloseThisSession()
 void QWoSftpWidget::onLocalItemDoubleClicked(const QModelIndex &idx)
 {
     QFileInfo fi = m_localModel->fileInfo(idx);
+    if(fi.fileName() == "..") {
+        QString path = m_localModel->path();
+        if(path.isEmpty()) {
+            return;
+        }
+        QFileInfo fi(path);
+        if(fi.isRoot()) {
+            m_localModel->setHome();
+        }else{
+            QString path=fi.absolutePath();
+            m_localModel->setPath(path);
+        }
+        return;
+    }
     if(fi.isDir()) {
         QString path = fi.absoluteFilePath();
         m_localModel->setPath(path);
@@ -805,7 +882,7 @@ void QWoSftpWidget::onLocalMenuCreateDirectory()
     }
     QString name = input.textValue();
     if(name.isEmpty()) {
-        QKxMessageBox::information(this, tr("information"), tr("the new directory name should be empty!"));
+        QKxMessageBox::message(this, tr("information"), tr("the new directory name should be empty!"));
         return;
     }
     QString path = ui->localPath->text();
@@ -873,6 +950,9 @@ void QWoSftpWidget::onLocalResetModel()
 void QWoSftpWidget::onLocalPathReturnPressed()
 {
     QString path = ui->localPath->text();
+    if(path.startsWith('~')) {
+        path.replace(0, 1, QDir::homePath());
+    }
     QString pathHit = m_localModel->path();
     if(path == pathHit) {
         return;
@@ -880,9 +960,9 @@ void QWoSftpWidget::onLocalPathReturnPressed()
     if(path.isEmpty()) {
         m_localModel->setHome();
     }else{
-        QFileInfo fi(ui->localPath->text());
+        QFileInfo fi(path);
         if(!fi.exists()) {
-            QKxMessageBox::information(this, tr("Input error"), tr("The directory entered does not exist."));
+            QKxMessageBox::message(this, tr("Input error"), tr("The directory entered does not exist."), false);
             return;
         }
         if(fi.isDir()) {
@@ -907,7 +987,7 @@ void QWoSftpWidget::onRemoteItemDoubleClicked(const QModelIndex &idx)
 
 void QWoSftpWidget::onRemoteMenuReturnTopDirectory()
 {
-    QString path = m_remoteModel->path() + "/..";
+    QString path = QDir::cleanPath(m_remoteModel->path() + "/..");
     openDir(path);
 }
 
@@ -954,6 +1034,40 @@ void QWoSftpWidget::onRemoteMenuRemoveSelection()
     }
 }
 
+void QWoSftpWidget::onRemoteModifyItemPermission()
+{
+    auto lsfi = remoteSelections();
+    if(lsfi.isEmpty()) {
+        return;
+    }
+    const FileInfo& fi = lsfi.first();
+    QString path = m_remoteModel->path();
+    QString filePath = QDir::cleanPath(path+"/"+fi.name);
+    QWoSftpPermissionDialog dlg(filePath, fi.permission, this);
+    if(dlg.exec() == QDialog::Accepted+1) {
+        bool subdirs;
+        int perm = dlg.permssionResult(&subdirs);
+        if(lsfi.length() > 1 && QKxMessageBox::information(this, tr("Permission information"), tr("Have other files also been modified with the same access permissions?"), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
+            for(auto it = lsfi.begin(); it != lsfi.end(); it++) {
+                const FileInfo& fi = *it;
+                QString filePath = QDir::cleanPath(path+"/"+fi.name);
+                QVariantMap user;
+                user.insert("command", "chmod");
+                user.insert("path", filePath);
+                user.insert("permission", perm);
+                m_sftp->chmod(filePath, perm, subdirs && fi.isDir(), user);
+            }
+        }else{
+            QString filePath = QDir::cleanPath(path+"/"+fi.name);
+            QVariantMap user;
+            user.insert("command", "chmod");
+            user.insert("path", filePath);
+            user.insert("permission", perm);
+            m_sftp->chmod(filePath, perm, subdirs && fi.isDir(), user);
+        }
+    }
+}
+
 void QWoSftpWidget::onRemoteMenuEnterDirectory()
 {
     QModelIndex idx = m_remote->currentIndex();
@@ -991,7 +1105,7 @@ void QWoSftpWidget::onRemoteMenuDownload()
     }else{
         pathSave = m_localModel->path();
         if(pathSave.isEmpty()) {
-            QKxMessageBox::information(this, tr("Parameter error"), tr("Please select directory to save it."));
+            QKxMessageBox::message(this, tr("Parameter error"), tr("Please select directory to save it."), false);
             return;
         }
     }
@@ -1033,9 +1147,9 @@ void QWoSftpWidget::onRemoteMenuDownload()
     if(!same.isEmpty()) {
         QString msg = same.join('\n');
         if(m_isUltimate) {
-            QKxMessageBox::information(this, tr("Download information"), tr("the follow files has exist:")+"\n"+msg);
+            QKxMessageBox::message(this, tr("Download information"), tr("the follow files has exist:")+"\n"+msg, false);
         }else{
-            QKxMessageBox::information(this, tr("Download information"), tr("the follow files has exist or version restrictions:")+"\n"+msg);
+            QKxMessageBox::message(this, tr("Download information"), tr("the follow files has exist or version restrictions:")+"\n"+msg, false);
         }
     }
 }
@@ -1103,6 +1217,79 @@ void QWoSftpWidget::onRemotePathReturnPressed()
     }
 }
 
+void QWoSftpWidget::onRemoteMenuRename()
+{
+    QList<FileInfo> lsfi = remoteSelections();
+    if(lsfi.isEmpty()) {
+        return;
+    }
+    if(lsfi.length() > 1) {
+        return;
+    }
+    QString path = m_remoteModel->path();
+    const FileInfo& fi = lsfi.takeFirst();
+    QWoSftpRenameDialog dlg(path, fi.name, this);
+    if(dlg.exec() == QDialog::Accepted+1) {
+        QString pathOld = path + "/" + fi.name;
+        QString pathNew = dlg.pathResult();
+        QVariantMap user;
+        user.insert("command", "rename");
+        user.insert("pathOld", pathOld);
+        user.insert("pathNew", pathNew);
+        m_sftp->rename(pathOld, pathNew, user);
+    }
+}
+
+void QWoSftpWidget::onRemoteMenuMoveToOtherDirectory()
+{
+    QList<FileInfo> lsfi = remoteSelections();
+    if(lsfi.isEmpty()) {
+        return;
+    }
+    QString path = m_remoteModel->path();
+    bool ok = false;
+    QString pathSave = QInputDialog::getText(this, tr("Move file"), tr("Input a existing directory to save the selected file."), QLineEdit::Normal, path, &ok, Qt::Dialog|Qt::WindowCloseButtonHint);
+    if(pathSave.isEmpty() || pathSave == path || ok == false) {
+        return;
+    }
+    for(auto it = lsfi.begin(); it != lsfi.end(); it++) {
+        const FileInfo& fi = *it;
+        QString pathOld = path + "/" + fi.name;
+        QString pathNew = pathSave + "/" + fi.name;
+        QVariantMap user;
+        user.insert("command", "moveFile");
+        user.insert("pathOld", pathOld);
+        user.insert("pathNew", pathNew);
+        m_sftp->rename(pathOld, pathNew, user);
+    }
+}
+
+void QWoSftpWidget::onRemoteMenuEditFileContent()
+{
+    QList<FileInfo> lsfi = remoteSelections();
+    if(lsfi.length() != 1) {
+        return;
+    }
+    QString path = m_remoteModel->path();
+    const FileInfo& fi = lsfi.first();
+    if(fi.size > (1024 * 1024 * 5)) {
+        QKxMessageBox::message(this, tr("File information"), tr("Editing files larger than 5M bytes is not supported."));
+        return;
+    }
+    if(fi.size > (500*1024)) {
+        if(QKxMessageBox::information(this, tr("File information"), tr("The target file exceeds 500K bytes. Do you want to continue editing?"), QMessageBox::Yes|QMessageBox::No) != QMessageBox::Yes) {
+            return;
+        }
+    }    
+    QString filePath = QDir::cleanPath(path + "/" + fi.name);
+    QString fileSave = QWoSetting::cachePath() + "/" + fi.name;
+    QVariantMap user;
+    user.insert("command", "editFile");
+    user.insert("local", fileSave);
+    user.insert("remote", filePath);
+    m_sftp->download(filePath, fileSave, QWoSshFtp::TP_Override, user);
+}
+
 void QWoSftpWidget::onAdjustPosition()
 {
     if(m_passInput) {
@@ -1145,7 +1332,7 @@ void QWoSftpWidget::onRemoteForwardButtonClicked()
 {
     const QModelIndex& idx = m_remote->currentIndex();
     if(!idx.isValid()) {
-        QKxMessageBox::information(this, tr("SFTP"), tr("No items are currently selected."));
+        QKxMessageBox::message(this, tr("SFTP"), tr("No items are currently selected."), false);
         return;
     }
     onRemoteItemDoubleClicked(idx);
@@ -1205,7 +1392,7 @@ void QWoSftpWidget::onLocalForwardButtonClicked()
 {
     const QModelIndex& idx = m_local->currentIndex();
     if(!idx.isValid()) {
-        QKxMessageBox::information(this, tr("SFTP"), tr("No items are currently selected."));
+        QKxMessageBox::message(this, tr("SFTP"), tr("No items are currently selected."), false);
         return;
     }
     QFileInfo fi = m_localModel->fileInfo(idx);
@@ -1231,6 +1418,17 @@ void QWoSftpWidget::onLocalPathChanged(const QString &path)
 {
     ui->localPath->setText(path);
     QWoSetting::setValue("sftp/lastPathLocal", path);
+}
+
+void QWoSftpWidget::onEditorDestroy()
+{
+    QProcess *editor = qobject_cast<QProcess*>(sender());
+    if(m_editors.removeAll(editor) > 0) {
+        QString fileSave = editor->property("fileSave").toString();
+        QString fileRemote = editor->property("fileRemote").toString();
+        QDateTime dt = editor->property("lastModified").toDateTime();
+        QMetaObject::invokeMethod(this, "handleEditCommit", Qt::QueuedConnection, Q_ARG(QString, fileSave), Q_ARG(QString, fileRemote), Q_ARG(qint64, dt.toMSecsSinceEpoch()));
+    }
 }
 
 void QWoSftpWidget::onTransferCommandStart(int type, const QVariantMap& userData)
@@ -1289,9 +1487,27 @@ void QWoSftpWidget::onCommandFinish(int t, const QVariantMap& userData)
 {
     m_loading->hide();
     QString reason = userData.value("reason").toString();
-    if(t == MT_FTP_FILE_INFO) {
+    if(t == MT_FTP_CHMOD) {
+        onRemoteMenuReloadDirectory();
+    }else if(t == MT_FTP_RENAME) {
+        onRemoteMenuReloadDirectory();
+    }else if(t == MT_FTP_DOWNLOAD) {
+        QString command = userData.value("command").toString();
+        if(command == "editFile" && reason == "ok") {
+            QString fileSave = userData.value("local").toString();
+            QString fileRemote = userData.value("remote").toString();
+            QMetaObject::invokeMethod(this, "handleEdit", Qt::QueuedConnection, Q_ARG(QString,fileSave), Q_ARG(QString,fileRemote));
+        }
+    }else if(t == MT_FTP_UPLOAD) {
+        QString command = userData.value("command").toString();
+        if(command == "editFile" && reason == "ok") {
+            QString fileSave = userData.value("local").toString();
+            QString fileRemote = userData.value("remote").toString();
+            QKxMessageBox::message(this, tr("File information"), tr("The modified file[%1] has been successfully submitted.").arg(fileRemote));
+        }
+    }else if(t == MT_FTP_FILE_INFO) {
         bool customEnter = userData.value("customEnter").toBool();
-        if(customEnter) {
+        if(customEnter) {            
             QVariantMap dm = userData.value("fileInfo").toMap();
             if(dm.isEmpty()) {
                 static bool showBox = false;
@@ -1299,7 +1515,8 @@ void QWoSftpWidget::onCommandFinish(int t, const QVariantMap& userData)
                     return;
                 }
                 showBox = true;
-                QKxMessageBox::information(this, tr("File information"), tr("The remote path does not exist or does not have permission to access it?"));
+                QString path = userData.value("path").toString();
+                QKxMessageBox::message(this, tr("File information"), tr("The remote path[%1] does not exist or does not have permission to access it?").arg(path));
                 showBox = false;
                 return;
             }
@@ -1322,7 +1539,24 @@ void QWoSftpWidget::onCommandFinish(int t, const QVariantMap& userData)
     }else if(reason == "error") {
         QString err = userData.value("errorString").toString();
         if(!err.isEmpty()) {
-            QKxMessageBox::warning(this, tr("Error"), err, QMessageBox::Ok);
+            if(t == MT_FTP_CHMOD) {
+                err += "\r\n";
+                err += tr("Chmod");
+                err += "\r\n";
+                QString path = userData.value("path").toString();
+                err += path;
+            }else if(t == MT_FTP_RENAME){
+                err += "\r\n";
+                err += tr("Rename");
+                err += "\r\n";
+                QString pathOld = userData.value("pathOld").toString();
+                QString pathNew = userData.value("pathNew").toString();
+                err += "\r\n";
+                err += pathOld;
+                err += "\r\n";
+                err += pathNew;
+            }
+            QKxMessageBox::message(this, tr("Error"), err);
         }
     }
     if(t == 11 || t == 12 || t == 13) {

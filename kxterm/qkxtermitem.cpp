@@ -1057,7 +1057,6 @@ void QKxTermItem::onGuessActivePathChanged(const QString &path)
 void QKxTermItem::onSetActive()
 {
     raise();
-    activateWindow();
     setFocus();
 }
 

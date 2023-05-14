@@ -145,7 +145,7 @@ struct FileInfo {
     QString type;
     QString owner;
     QString group;
-    QString size;
+    qint64 size;
     QString date;
     QString label;
     QString permission;

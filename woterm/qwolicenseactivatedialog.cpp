@@ -26,6 +26,7 @@
 #include <QGuiApplication>
 #include <QButtonGroup>
 #include <QDateTime>
+#include <QStyle>
 
 QWoLicenseActivateDialog::QWoLicenseActivateDialog(QWidget *parent) :
     QDialog(parent),
@@ -171,6 +172,10 @@ void QWoLicenseActivateDialog::onTypeButtonClicked()
     ui->key->setReadOnly(!key.isEmpty());
     ui->chkKeyModify->setVisible(!key.isEmpty());
     ui->chkKeyModify->setChecked(false);
+
+    QStyle *style = ui->key->style();
+    style->polish(ui->key);
+
     adjustSize();
 }
 
@@ -178,6 +183,8 @@ void QWoLicenseActivateDialog::onKeyModifyButtonClicked()
 {
     QString key = ui->key->text();
     ui->key->setReadOnly(!ui->chkKeyModify->isChecked());
+    QStyle *style = ui->key->style();
+    style->polish(ui->key);
 }
 
 void QWoLicenseActivateDialog::onRetryToRedeemLicense(int code, const QByteArray &body)

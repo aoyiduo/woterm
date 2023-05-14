@@ -43,11 +43,13 @@ private slots:
     void onButtonDeleteClicked();
     void onButtonSelectClicked();
     void onButtonRenameClicked();
-    void onButtonViewClicked();
+    void onButtonPublicViewClicked();
+    void onButtonPrivateViewClicked();
     void onItemDoubleClicked(QTreeWidgetItem*, int);
 
 private:
     void reload();
+    bool isAdministrator();
 private:
     Ui::QWoIdentifyDialog *ui;
     QString m_result;

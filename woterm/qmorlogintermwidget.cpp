@@ -202,6 +202,7 @@ void QMoRLoginTermWidget::onModifyThisSession()
         return;
     }
     QWoSessionProperty dlg(this);
+    QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), QWoMainWindow::instance(), SLOT(onSessionReadyToConnect(QString,int)));
     dlg.setSession(m_target);
     int ret = dlg.exec();
     if(ret == QWoSessionProperty::Save) {

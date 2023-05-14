@@ -228,7 +228,7 @@ void QMoSftpRemoteModel::onDirOpen(const QString &path, const QVariantList &v, c
         fi.type = mdata.value("type").toString();
         fi.owner = mdata.value("owner").toString();
         fi.group = mdata.value("group").toString();
-        fi.size = mdata.value("size").toString();
+        fi.size = mdata.value("size").toLongLong();
         fi.date = mdata.value("date").toString();
         fi.permission = mdata.value("permission").toString();
         m_fileInfos.append(fi);

@@ -179,10 +179,10 @@ void QWoSftpLocalModel::setPath(const QString &path)
     if(path.isEmpty()) {
         setHome();
     }else{
-        QDir d(path);
-        QFileInfoList fis = d.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot, QDir::DirsFirst|QDir::Name);
+        QDir d(QDir::cleanPath(path));
+        QFileInfoList fis = d.entryInfoList(QDir::AllEntries, QDir::DirsFirst|QDir::Name);
         onFileListActive(fis);
-        m_path = path;
+        m_path = QDir::cleanPath(d.absolutePath());
     }
     emit pathChanged(m_path);
 }

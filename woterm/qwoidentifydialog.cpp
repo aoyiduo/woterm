@@ -14,10 +14,11 @@
 #include "qwoutils.h"
 #include "qwosetting.h"
 #include "qworenamedialog.h"
-#include "qwoidentifypublickeydialog.h"
+#include "qwoidentifykeycontentdialog.h"
 #include "qwoidentifycreatedialog.h"
 #include "qwoidentify.h"
 #include "qkxmessagebox.h"
+#include "qkxver.h"
 
 #include <QFileDialog>
 #include <QDebug>
@@ -49,13 +50,20 @@ QWoIdentifyDialog::QWoIdentifyDialog(bool noselect, QWidget *parent) :
     QObject::connect(ui->btnImport, SIGNAL(clicked()), this, SLOT(onButtonImportClicked()));
     QObject::connect(ui->btnRename, SIGNAL(clicked()), this, SLOT(onButtonRenameClicked()));
     QObject::connect(ui->btnSelect, SIGNAL(clicked()), this, SLOT(onButtonSelectClicked()));
-    QObject::connect(ui->btnView, SIGNAL(clicked()), this, SLOT(onButtonViewClicked()));
+    QObject::connect(ui->btnView, SIGNAL(clicked()), this, SLOT(onButtonPublicViewClicked()));
+    QObject::connect(ui->btnPrivate, SIGNAL(clicked()), this, SLOT(onButtonPrivateViewClicked()));
     QObject::connect(ui->identify, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(onItemDoubleClicked(QTreeWidgetItem*, int)));
     QStringList items;
     items.append(tr("name"));
     items.append(tr("type"));
     items.append(tr("fingerprint"));
     ui->identify->setHeaderLabels(items);
+
+
+    if(QKxVer::instance()->isFreeVersion()) {
+        ui->btnPrivate->setVisible(false);
+        ui->btnExport->setVisible(false);
+    }
 
     reload();
 }
@@ -140,6 +148,10 @@ void QWoIdentifyDialog::onButtonImportClicked()
 
 void QWoIdentifyDialog::onButtonExportClicked()
 {
+    if(!isAdministrator()) {
+        return;
+    }
+
     QModelIndex idx = ui->identify->currentIndex();
     if(!idx.isValid()) {
         QKxMessageBox::information(this, tr("info"), tr("no selection"));
@@ -220,7 +232,7 @@ void QWoIdentifyDialog::onButtonRenameClicked()
     reload();
 }
 
-void QWoIdentifyDialog::onButtonViewClicked()
+void QWoIdentifyDialog::onButtonPublicViewClicked()
 {
     QModelIndex idx = ui->identify->currentIndex();
     if(!idx.isValid()) {
@@ -237,7 +249,28 @@ void QWoIdentifyDialog::onButtonViewClicked()
     QString name = idx2.data().toString();
     QString type = idx2.data(ROLE_IDENTIFY_TYPE).toString();
     QString content = type + " " + key + " " + name;
-    QWoIdentifyPublicKeyDialog dlg(content, this);
+    QWoIdentifyKeyContentDialog dlg(true, content, this);
+    dlg.exec();
+}
+
+void QWoIdentifyDialog::onButtonPrivateViewClicked()
+{
+    if(!isAdministrator()) {
+        return;
+    }
+    QModelIndex idx = ui->identify->currentIndex();
+    if(!idx.isValid()) {
+        QKxMessageBox::information(this, tr("info"), tr("no selection"));
+        return;
+    }
+    QAbstractItemModel *model = ui->identify->model();
+    QModelIndex idx2 = model->index(idx.row(), 0);
+    QString key = idx2.data(ROLE_IDENTIFY_PRVKEY).toString();
+    if(key.isEmpty()) {
+        QKxMessageBox::information(this, tr("info"), tr("no selection"));
+        return;
+    }
+    QWoIdentifyKeyContentDialog dlg(false, key, this);
     dlg.exec();
 }
 
@@ -276,4 +309,22 @@ void QWoIdentifyDialog::reload()
         }
         ui->identify->addTopLevelItem(item);
     }
+}
+
+bool QWoIdentifyDialog::isAdministrator()
+{
+    QString pwdAdmin = QWoSetting::adminPassword();
+    if(pwdAdmin.isEmpty()) {
+        QKxMessageBox::information(this, tr("Administrator"), tr("Please create administrator's password first!"));
+        return false;
+    }
+    QString pass = QWoUtils::getPassword(this, tr("Please input the administrator password"));
+    if(pass.isEmpty()) {
+        return false;
+    }
+    if(pass != QWoSetting::adminPassword()) {
+        QKxMessageBox::information(this, tr("Error"), tr("Password error!"));
+        return false;
+    }
+    return true;
 }

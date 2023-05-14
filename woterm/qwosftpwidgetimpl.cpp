@@ -71,7 +71,8 @@ bool QWoSftpWidgetImpl::handleTabMouseEvent(QMouseEvent *ev)
 
 void QWoSftpWidgetImpl::handleTabContextMenu(QMenu *menu)
 {
-    menu->addAction(tr("New Session Multiplex"), this, SLOT(onNewSessionMultplex()));
+    menu->addAction(tr("Multiplexing ssh sessions"), this, SLOT(onNewSshSession()));
+    menu->addAction(tr("Multiplexing sftp sessions"), this, SLOT(onNewSftpSession()));
 }
 
 bool QWoSftpWidgetImpl::handleCustomProperties()
@@ -90,7 +91,13 @@ void QWoSftpWidgetImpl::onDestroyReady()
     deleteLater();
 }
 
-void QWoSftpWidgetImpl::onNewSessionMultplex()
+void QWoSftpWidgetImpl::onNewSshSession()
+{
+    QWoShower *shower = QWoMainWindow::instance()->shower();
+    shower->openSsh(m_target, m_gid);
+}
+
+void QWoSftpWidgetImpl::onNewSftpSession()
 {
     QWoShower *shower = QWoMainWindow::instance()->shower();
     shower->openSftp(m_target, m_gid);

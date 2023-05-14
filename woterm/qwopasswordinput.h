@@ -18,6 +18,7 @@ namespace Ui {
 class QWoPasswordInput;
 }
 
+class QTimer;
 class QWoPasswordInput : public QWoWidget
 {
     Q_OBJECT
@@ -34,11 +35,15 @@ private slots:
     void onPasswordVisible(bool checked);
     void onClose();
 private:
+    virtual void showEvent(QShowEvent *event);
+    virtual void hideEvent(QHideEvent *event);
+private:
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
 private:
     Ui::QWoPasswordInput *ui;
     QPoint m_dragPosition;
+    QPointer<QTimer> m_timer;
 };
 
 #endif // QWOPASSWORDINPUT_H

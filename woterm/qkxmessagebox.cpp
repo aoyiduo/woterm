@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -13,9 +13,13 @@
 
 #include <QAbstractButton>
 #include <QTimer>
+#include <QPushButton>
+#include <QDebug>
+#include <QMap>
+#include <QVector>
 
 QKxMessageBox::QKxMessageBox(QWidget *parent)
-    : QMessageBox(parent)
+    : QKxMessageBox(QMessageBox::Warning, "", "", QMessageBox::Ok, parent, Qt::Dialog|Qt::WindowCloseButtonHint)
 {
 
 }
@@ -29,6 +33,33 @@ QKxMessageBox::QKxMessageBox(Icon icon, const QString &title, const QString &tex
 QKxMessageBox::~QKxMessageBox()
 {
 
+}
+
+void QKxMessageBox::message(const QString &title, const QString &content, bool warning)
+{
+    QMetaObject::invokeMethod(this, "showMessage", Qt::QueuedConnection, Q_ARG(QString, title), Q_ARG(QString, content), Q_ARG(bool, warning));
+}
+
+void QKxMessageBox::message(QWidget *parent, const QString &title, const QString &content, bool warning)
+{
+    static QVector<QPointer<QKxMessageBox>> gboxs;
+    for(auto it = gboxs.begin(); it != gboxs.end();) {
+        QKxMessageBox *w = *it;
+        if(w == nullptr) {
+            it = gboxs.erase(it);
+            continue;
+        }
+        if(w->parentWidget() == parent) {
+            w->message(title, content, warning);
+            return;
+        }
+        it++;
+    }
+
+    QKxMessageBox *box = new QKxMessageBox(parent);
+    gboxs.append(box);
+    box->setAttribute(Qt::WA_DeleteOnClose);
+    box->message(title, content, warning);
 }
 
 QMessageBox::StandardButton QKxMessageBox::critical(QWidget *parent, const QString &title, const QString &text, StandardButtons buttons, StandardButton defaultButton)
@@ -158,9 +189,57 @@ void QKxMessageBox::showEvent(QShowEvent *event)
     //QTimer::singleShot(1, this, SLOT(onAdjustSize()));
 }
 
+void QKxMessageBox::hideEvent(QHideEvent *e)
+{
+    QMessageBox::hideEvent(e);
+    m_queue.clear();
+}
+
 void QKxMessageBox::onAdjustSize()
 {
     QSize sz = minimumSize();
     setMinimumSize(sz.width() + 300, sz.height()+50);
     adjustSize();
+}
+
+void QKxMessageBox::onNextMessage()
+{
+    if(m_queue.isEmpty()) {
+        m_btnNext->setVisible(false);
+        return;
+    }
+    const MessageBoxData& mbd = m_queue.takeFirst();
+    setWindowTitle(mbd.title);
+    setText(mbd.content);
+    setIcon(mbd.isWarning ? QMessageBox::Warning : QMessageBox::Information);
+    m_btnNext->setText(tr("Next[%1]").arg(m_queue.length()));
+    adjustSize();
+    m_btnNext->setVisible(!m_queue.isEmpty());
+}
+
+void QKxMessageBox::showMessage(const QString &title, const QString &content, bool isWarning)
+{
+    if(isVisible()) {
+        MessageBoxData mbd;
+        mbd.content = content;
+        mbd.title = title;
+        mbd.isWarning = isWarning;
+        m_queue.append(mbd);
+        if(m_btnNext == nullptr){
+            m_btnNext = new QPushButton(this);
+            addButton(m_btnNext, QMessageBox::ActionRole);
+            m_btnNext->disconnect(SIGNAL(clicked()));
+            QObject::connect(m_btnNext, SIGNAL(clicked()), this, SLOT(onNextMessage()));
+        }else{
+            m_btnNext->setVisible(true);
+            adjustSize();
+        }
+        m_btnNext->setText(tr("Next[%1]").arg(m_queue.length()));
+        return;
+    }
+    setWindowTitle(title);
+    setText(content);
+    setIcon(isWarning ? QMessageBox::Warning : QMessageBox::Information);
+    adjustSize();
+    exec();
 }

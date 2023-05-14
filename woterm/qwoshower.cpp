@@ -404,7 +404,7 @@ bool QWoShower::tabMouseButtonPress(QMouseEvent *ev)
         m_tabMenu->setProperty(TAB_TARGET_IMPL, QVariant::fromValue(impl));
         menu.addAction(tr("Close this tab"), this, SLOT(onCloseThisTabSession()));
         menu.addAction(tr("Close other tab"), this, SLOT(onCloseOtherTabSession()));
-        menu.addAction(tr("Copy session"), this, SLOT(onNewTheSameSession()));
+        menu.addAction(tr("New same session"), this, SLOT(onNewTheSameSession()));
         menu.addAction(tr("Copy host address"), this, SLOT(onCopyTabSessionAddress()));
         menu.addAction(tr("Edit this session"), this, SLOT(onEditThisTabSession()));
         menu.addAction(tr("Float this tab"), this, SLOT(onFloatThisTabSession()));
@@ -588,7 +588,6 @@ void QWoShower::floatSession(QWoShowerWidget *impl, bool full)
     }else{
         wfloat->show();
         wfloat->raise();
-        wfloat->activateWindow();
     }
     m_floats.append(wfloat);
     emit floatChanged(impl, true);

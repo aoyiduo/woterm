@@ -127,7 +127,7 @@ QVariant QWoSftpRemoteModel::data(const QModelIndex &index, int role) const
             return QSize(w, 24);
         }
         if(column == 4) {
-            int w = fm.width(fi.size) + 10;
+            int w = fm.width(QString::number(fi.size)) + 10;
             return QSize(w, 24);
         }
         if(column == 5) {
@@ -301,7 +301,7 @@ void QWoSftpRemoteModel::onDirOpen(const QString &path, const QList<QVariant> &v
         fi.type = mdata.value("type").toString();
         fi.owner = mdata.value("owner").toString();
         fi.group = mdata.value("group").toString();
-        fi.size = mdata.value("size").toString();
+        fi.size = mdata.value("size").toLongLong();
         fi.date = mdata.value("date").toString();
         fi.permission = mdata.value("permission").toString();
         m_fileInfos.append(fi);

@@ -149,6 +149,14 @@ QString QWoSetting::fontBackupPath()
     return path;
 }
 
+QString QWoSetting::cachePath()
+{
+    QString path = QWoSetting::ensurePath("cache");
+    path = QDir::cleanPath(path);
+    path = QDir::toNativeSeparators(path);
+    return path;
+}
+
 QString QWoSetting::downloadPath()
 {
     QString path;

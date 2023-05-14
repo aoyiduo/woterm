@@ -37,8 +37,8 @@ QWoTermWidget *QWoPtyTermWidgetImpl::createTermWidget(const QString &target, int
 
 bool QWoPtyTermWidgetImpl::handleCustomProperties()
 {
-    QVariantMap prop = QWoSetting::localShell();
     QWoSessionTTYProperty dlg(QWoSessionTTYProperty::ETTY_LocalShell, this);
+    QVariantMap prop = QWoSetting::localShell();
     dlg.setCustom(prop);
     dlg.exec();
     QVariantMap result = dlg.result();

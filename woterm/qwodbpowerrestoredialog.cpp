@@ -105,7 +105,7 @@ bool QDBMergeActionDelegate::_editorEvent(QEvent *ev, QAbstractItemModel *model,
 }
 
 void QDBMergeActionDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &idx) const{
-     QString label = idx.data(Qt::DisplayRole).toString();
+    QString label = idx.data(Qt::DisplayRole).toString();
     if(label.isEmpty()) {
         QStyledItemDelegate::paint(painter, option, idx);
     }else{

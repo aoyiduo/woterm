@@ -192,7 +192,7 @@ class QWoPowerSftp : public QWoSshFtp
     ssh_channel m_channel;
     sftp_session m_sftp;
 
-    enum EAsynOperation { eNone, eUpload, eDownload, eRmDir, eListFile};
+    enum EAsynOperation { eNone, eUpload, eDownload, eRmDir, eListFile, eChmodFile};
     EAsynOperation m_opAsync;
     QList<MsgRequest> m_asyncTasks;
 
@@ -206,6 +206,14 @@ class QWoPowerSftp : public QWoSshFtp
     bool m_abort;
     // for list file next.
     QList<QByteArray> m_listFileNext;
+
+    // for chmod folder next.
+    struct ChmodFolderNext {
+        QByteArray path; // path for folder.
+        int permission;
+    };
+
+    QList<ChmodFolderNext> m_chmodFolderNext;
     // for rmDir
     QList<QVariantMap> m_rmDirNext;
     QString m_errorString;
@@ -247,6 +255,18 @@ public:
         return false;
     }
 
+    bool chmodFolderNext(const QVariantMap& user) {
+        if(m_chmodFolderNext.isEmpty()) {
+            return false;
+        }
+        if(m_conn) {
+            ChmodFolderNext next = m_chmodFolderNext.takeFirst();
+            m_conn->internalChmodFolderNext(this, next.path, next.permission, user);
+            return true;
+        }
+        return false;
+    }
+
     bool rmDirNext(const QVariantMap& user) {
         if(m_rmDirNext.isEmpty()) {
             return false;
@@ -269,6 +289,20 @@ public:
     }
 
 private:
+    inline QByteArray canonicalizePath(const QByteArray& _path) {
+        QByteArray path = _path;
+        if(path.startsWith('~')) {
+            char *tmp = sftp_canonicalize_path(m_sftp, ".");
+            if(tmp == nullptr) {
+                return QByteArray();
+            }
+            path = path.mid(1);
+            path.insert(0, tmp);
+            ssh_string_free_char(tmp);
+        }
+        return path;
+    }
+
     void handleError(const QString& err, const QVariantMap& userData) {
         m_errorString = err;
         emit errorArrived(err, userData);
@@ -418,15 +452,9 @@ private:
     }
 
     int _runListFile(const QByteArray& _path, const QVariantMap& user) {
-        QByteArray path = _path;
-        if(path.startsWith('~')) {
-            char *tmp = sftp_canonicalize_path(m_sftp, ".");
-            if(tmp == nullptr) {
-                return -1;
-            }
-            path = path.mid(1);
-            path.insert(0, tmp);
-            ssh_string_free_char(tmp);
+        QByteArray path = canonicalizePath(_path);
+        if(path.isEmpty()) {
+            return -1;
         }
         sftp_dir dir = sftp_opendir(m_sftp, path);
         if(dir == nullptr) {
@@ -481,16 +509,10 @@ private:
         return code;
     }
 
-    int _runOpenDir(const QByteArray& _paths, const QVariantMap& user) {
-        QByteArray path = _paths;
-        if(path.startsWith('~')) {
-            char *tmp = sftp_canonicalize_path(m_sftp, ".");
-            if(tmp == nullptr) {
-                return -1;
-            }
-            path = path.mid(1);
-            path.insert(0, tmp);
-            ssh_string_free_char(tmp);
+    int _runOpenDir(const QByteArray& _path, const QVariantMap& user) {
+        QByteArray path = canonicalizePath(_path);
+        if(path.isEmpty()) {
+            return -1;
         }
         sftp_dir dir = sftp_opendir(m_sftp, path);
         if(dir == nullptr) {
@@ -624,15 +646,9 @@ private:
     }
 
     int _runFileContent(const QByteArray& _path, qint64 offset, qint64 maxSize, QVariantMap& user) {
-        QByteArray path = _path;
-        if(path.startsWith('~')) {
-            char *tmp = sftp_canonicalize_path(m_sftp, ".");
-            if(tmp == nullptr) {
-                return -1;
-            }
-            path = path.mid(1);
-            path.insert(0, tmp);
-            ssh_string_free_char(tmp);
+        QByteArray path = canonicalizePath(_path);
+        if(path.isEmpty()) {
+            return -1;
         }
         sftp_attributes attr = sftp_stat(m_sftp, path);
         if(attr == nullptr) {
@@ -680,15 +696,9 @@ private:
     }
 
     int _runWriteFileContent(const QByteArray& _path, const QByteArray& content, const QVariantMap& user) {
-        QByteArray path = _path;
-        if(path.startsWith('~')) {
-            char *tmp = sftp_canonicalize_path(m_sftp, ".");
-            if(tmp == nullptr) {
-                return -1;
-            }
-            path = path.mid(1);
-            path.insert(0, tmp);
-            ssh_string_free_char(tmp);
+        QByteArray path = canonicalizePath(_path);
+        if(path.isEmpty()) {
+            return -1;
         }
         int access_type = O_WRONLY | O_CREAT | O_TRUNC;
         sftp_file wf = sftp_open(m_sftp, path, access_type, 0600);
@@ -719,15 +729,9 @@ private:
     }
 
     int _runDownload(const QByteArray& _remote, const QByteArray& local, int policy, const QVariantMap& user) {
-        QByteArray remote = _remote;
-        if(remote.startsWith('~')) {
-            char *tmp = sftp_canonicalize_path(m_sftp, ".");
-            if(tmp == nullptr) {
-                return -1;
-            }
-            remote = remote.mid(1);
-            remote.insert(0, tmp);
-            ssh_string_free_char(tmp);
+        QByteArray remote = canonicalizePath(_remote);
+        if(remote.isEmpty()) {
+            return -1;
         }
         sftp_attributes attr = sftp_stat(m_sftp, remote);
         if(attr == nullptr) {
@@ -824,16 +828,10 @@ private:
         return code;
     }
 
-    int _runUpload(const QByteArray& local, const QByteArray& _remote, int policy, const QVariantMap& user) {
-        QByteArray remote = _remote;
-        if(remote.startsWith('~')) {
-            char *tmp = sftp_canonicalize_path(m_sftp, ".");
-            if(tmp == nullptr) {
-                return -1;
-            }
-            remote = remote.mid(1);
-            remote.insert(0, tmp);
-            ssh_string_free_char(tmp);
+    int _runUpload(const QByteArray& local, const QByteArray& _remote, int policy, const QVariantMap& user) {        
+        QByteArray remote = canonicalizePath(_remote);
+        if(remote.isEmpty()) {
+            return -1;
         }
         int access_type = O_WRONLY | O_CREAT | O_TRUNC;
         qint64 fileOffset = 0;
@@ -921,15 +919,9 @@ private:
     }
 
     int _runFileInfo(const QByteArray& _path, QVariantMap& user) {
-        QByteArray path = _path;
-        if(path.startsWith('~')) {
-            char *tmp = sftp_canonicalize_path(m_sftp, ".");
-            if(tmp == nullptr) {
-                return -1;
-            }
-            path = path.mid(1);
-            path.insert(0, tmp);
-            ssh_string_free_char(tmp);
+        QByteArray path = canonicalizePath(_path);
+        if(path.isEmpty()) {
+            return -1;
         }
         sftp_attributes attr = sftp_stat(m_sftp, path);
         if(attr == nullptr) {
@@ -1048,15 +1040,9 @@ private:
     }
 
     int _runUnlink(const QByteArray& _path, const QVariantMap& user) {
-        QByteArray path = _path;
-        if(path.startsWith('~')) {
-            char *tmp = sftp_canonicalize_path(m_sftp, ".");
-            if(tmp == nullptr) {
-                return -1;
-            }
-            path = path.mid(1);
-            path.insert(0, tmp);
-            ssh_string_free_char(tmp);
+        QByteArray path = canonicalizePath(_path);
+        if(path.isEmpty()) {
+            return -1;
         }
         if(sftp_unlink(m_sftp, path) != SSH_OK) {
             return -2;
@@ -1080,15 +1066,9 @@ private:
     }
 
     int _runRmDir(const QByteArray& _path, bool isDir, const QVariantMap& user) {
-        QByteArray path = _path;
-        if(path.startsWith('~')) {
-            char *tmp = sftp_canonicalize_path(m_sftp, ".");
-            if(tmp == nullptr) {
-                return -1;
-            }
-            path = path.mid(1);
-            path.insert(0, tmp);
-            ssh_string_free_char(tmp);
+        QByteArray path = canonicalizePath(_path);
+        if(path.isEmpty()) {
+            return -1;
         }
         if(!isDir) {
             if(sftp_unlink(m_sftp, path) != SSH_OK) {
@@ -1161,15 +1141,9 @@ private:
     }
 
     int _runMkPath(const QByteArray& _path, int mode, const QVariantMap& user) {
-        QByteArray path = _path;
-        if(path.startsWith('~')) {
-            char *tmp = sftp_canonicalize_path(m_sftp, ".");
-            if(tmp == nullptr) {
-                return -1;
-            }
-            path = path.mid(1);
-            path.insert(0, tmp);
-            ssh_string_free_char(tmp);
+        QByteArray path = canonicalizePath(_path);
+        if(path.isEmpty()) {
+            return -1;
         }
         QByteArrayList names = path.split('/');
         if(names.isEmpty()) {
@@ -1193,6 +1167,130 @@ private:
 
         return 0;
     }
+
+    int runRename(const QByteArray& nameOld, const QByteArray& nameNew, const QVariantMap& user) {
+        m_abort = false;
+        m_userData = user;
+        m_errorString.clear();
+        handleCommandStart(MT_FTP_RENAME, user);
+        int code = _runRename(nameOld, nameNew, user);
+        handleCommandFinish(MT_FTP_RENAME, mkPathResult(code, user));
+        return code;
+    }
+
+    int _runRename(const QByteArray& _nameOld, const QByteArray& _nameNew, const QVariantMap& user) {
+        QByteArray nameOld = canonicalizePath(_nameOld);
+        if(nameOld.isEmpty()) {
+            return -1;
+        }
+        QByteArray nameNew = canonicalizePath(_nameNew);
+        if(nameNew.isEmpty()) {
+            return -1;
+        }
+        int err = sftp_rename(m_sftp, nameOld, nameNew);
+        if(err == SSH_NO_ERROR) {
+            return 0;
+        }
+        return -1;
+    }
+
+    int runSymlink(const QByteArray& target, const QByteArray& dest, const QVariantMap& user) {
+        m_abort = false;
+        m_userData = user;
+        m_errorString.clear();
+        handleCommandStart(MT_FTP_SYMLINK, user);
+        int code = _runSymlink(target, dest, user);
+        handleCommandFinish(MT_FTP_SYMLINK, mkPathResult(code, user));
+        return code;
+    }
+
+    int _runSymlink(const QByteArray& _target, const QByteArray& _dest, const QVariantMap& user) {
+        QByteArray target = canonicalizePath(_target);
+        if(target.isEmpty()) {
+            return -1;
+        }
+        QByteArray dest = canonicalizePath(_dest);
+        if(dest.isEmpty()) {
+            return -1;
+        }
+        int err = sftp_symlink(m_sftp, target, dest);
+        if(err == SSH_NO_ERROR) {
+            return 0;
+        }
+        return -1;
+    }
+
+    int runChmod(const QByteArray& path, int permission, bool subdirs, const QVariantMap& user) {
+        m_abort = false;
+        m_userData = user;
+        m_errorString.clear();
+        handleCommandStart(MT_FTP_CHMOD, user);
+        m_chmodFolderNext.clear();
+        m_opAsync = eChmodFile;
+        int code = _runChmod(path, permission, subdirs, user);
+        if(code <= 0) {
+            m_opAsync = eNone;
+            m_chmodFolderNext.clear();
+            handleCommandFinish(MT_FTP_CHMOD, reasonResult(code, user));
+        }
+        return code;
+    }
+
+    int _runChmod(const QByteArray& _path, int permission, bool subdirs, const QVariantMap& user) {
+        QByteArray path = canonicalizePath(_path);
+        if(path.isEmpty()) {
+            return -1;
+        }
+        int err = sftp_chmod(m_sftp, path, permission);
+        if(!subdirs) {
+            if(err == SSH_NO_ERROR) {
+                return 0;
+            }
+            return -2;
+        }
+        if(err != SSH_NO_ERROR) {
+            return -3;
+        }
+        sftp_dir dir = sftp_opendir(m_sftp, path);
+        if(dir == nullptr) {
+            return -4;
+        }
+        sftp_attributes attr;
+        QByteArrayList files;
+        while ((attr = sftp_readdir(m_sftp, dir)) != nullptr && !m_abort){
+            QByteArray name = attr->name;
+            if(name == "." || name == "..") {
+                continue;
+            }
+            if(attr->type == 2) {
+                ChmodFolderNext next;
+                next.path = path + "/" + name;
+                next.permission = permission;
+                m_chmodFolderNext.append(next);
+            }else{
+                QByteArray filePath = path + "/" + name;
+                files.append(filePath);
+            }
+            sftp_attributes_free(attr);
+        }
+        if (sftp_closedir(dir) != SSH_NO_ERROR) {
+            return -3;
+        }
+        if(m_abort) {
+            return -999;
+        }
+        for(auto it = files.begin(); it != files.end(); it++) {
+            QByteArray file = *it;
+            int err = sftp_chmod(m_sftp, file, permission);
+            if(err == SSH_REQUEST_DENIED || err == SSH_NO_ERROR) {
+                continue;
+            }
+            return -3;
+        }
+
+        return chmodFolderNext(user) ? 1 : 0;
+    }
+
 
     virtual bool handleOpen(void *session){
         sftp_session sftp = sftp_new(ssh_session(session));
@@ -1279,6 +1377,19 @@ private:
                 handleCommandFinish(MT_FTP_LISTFILE, reasonResult(n, user));
             }
             return true;
+        }else if(type == MT_FTP_CHMODNEXT) {
+            QDataStream ds(data);
+            QVariantMap user;
+            QByteArray path;
+            int permission;
+            ds >> path >> permission >> user;
+            int n = _runChmod(path, permission, true, user);
+            if(n <= 0) {
+                m_chmodFolderNext.clear();
+                m_opAsync = eNone;
+                handleCommandFinish(MT_FTP_CHMOD, reasonResult(n, user));
+            }
+            return true;
         }else if(type == MT_FTP_REMOVEFILENEXT) {
             QDataStream ds(data);
             QVariantMap user;
@@ -1334,6 +1445,20 @@ private:
             int mode;
             ds >> path >> mode >> user;
             return runMkPath(path, mode, user);
+        }else if(type == MT_FTP_RENAME) {
+            QDataStream ds(data);
+            QVariantMap user;
+            QByteArray nameOld, nameNew;
+            ds >> nameOld >> nameNew >> user;
+            return runRename(nameOld, nameNew, user);
+        }else if(type == MT_FTP_CHMOD) {
+            QDataStream ds(data);
+            QByteArray path;
+            QVariantMap user;
+            int permission;
+            bool subdirs;
+            ds >> path >> permission >> subdirs >> user;
+            return runChmod(path, permission, subdirs, user);
         }else if(type == MT_FTP_RMDIR) {
             QDataStream ds(data);
             QByteArray path;
@@ -1472,6 +1597,28 @@ public:
         push(MT_FTP_MKPATH, buf, cli);
     }
 
+    void sftpRename(QWoSshChannel *cli, const QString& nameOld, const QString& nameNew, const QVariantMap& user) {
+        QByteArray buf;
+        QDataStream ds(&buf, QIODevice::WriteOnly);
+        ds << nameOld.toUtf8() << nameNew.toUtf8() << user;
+        push(MT_FTP_RENAME, buf, cli);
+    }
+
+    void sftpSymlink(QWoSshChannel *cli, const QString& target, const QString& dest, const QVariantMap& user) {
+        QByteArray buf;
+        QDataStream ds(&buf, QIODevice::WriteOnly);
+        ds << target.toUtf8() << dest.toUtf8() << user;
+        push(MT_FTP_SYMLINK, buf, cli);
+    }
+
+
+    void sftpChmod(QWoSshChannel *cli, const QString& path, int permission, bool subdirs, const QVariantMap& user) {
+        QByteArray buf;
+        QDataStream ds(&buf, QIODevice::WriteOnly);
+        ds << path.toUtf8() << permission << subdirs << user;
+        push(MT_FTP_CHMOD, buf, cli);
+    }
+
     void sftpRmDir(QWoSshChannel *cli, const QString& path, const QVariantMap& user) {
         QByteArray buf;
         QDataStream ds(&buf, QIODevice::WriteOnly);
@@ -1542,6 +1689,12 @@ public:
         push(MT_FTP_LISTFILENEXT, buf, cli);
     }
 
+    void internalChmodFolderNext(QWoSshChannel *cli, const QByteArray& path, int permission, const QVariantMap& user) {
+        QByteArray buf;
+        QDataStream ds(&buf, QIODevice::WriteOnly);
+        ds << path << permission << user;
+        push(MT_FTP_CHMODNEXT, buf, cli);
+    }
     void internalRemoveFileNext(QWoSshChannel *cli, const QByteArray& path, bool isDir, const QVariantMap& user) {
         QByteArray buf;
         QDataStream ds(&buf, QIODevice::WriteOnly);
@@ -1775,6 +1928,27 @@ void QWoSSHConnection::sftpMkPath(QWoSshChannel *cli, const QString &path, int m
     }
 }
 
+void QWoSSHConnection::sftpRename(QWoSshChannel *cli, const QString& nameOld, const QString& nameNew, const QVariantMap& user)
+{
+    if(m_conn) {
+        m_conn->sftpRename(cli, nameOld, nameNew, user);
+    }
+}
+
+void QWoSSHConnection::sftpSymlink(QWoSshChannel *cli, const QString &target, const QString &dest, const QVariantMap &user)
+{
+    if(m_conn) {
+        m_conn->sftpSymlink(cli, target, dest, user);
+    }
+}
+
+void QWoSSHConnection::sftpChmod(QWoSshChannel *cli, const QString &path, int permission, bool subdirs, const QVariantMap &user)
+{
+    if(m_conn) {
+        m_conn->sftpChmod(cli, path, permission, subdirs, user);
+    }
+}
+
 void QWoSSHConnection::sftpRmDir(QWoSshChannel *cli, const QString &path, const QVariantMap& user)
 {
     if(m_conn) {
@@ -1849,6 +2023,13 @@ void QWoSSHConnection::internalListFileNext(QWoSshChannel *cli, const QByteArray
 {
     if(m_conn) {
         m_conn->internalListFileNext(cli, path, user);
+    }
+}
+
+void QWoSSHConnection::internalChmodFolderNext(QWoSshChannel *cli, const QByteArray &path, int permission, const QVariantMap &user)
+{
+    if(m_conn) {
+        m_conn->internalChmodFolderNext(cli, path, permission, user);
     }
 }
 
@@ -2230,6 +2411,28 @@ void QWoSshFtp::mkPath(const QString &path, int mode, const QVariantMap &user)
     QString tmp = QDir::cleanPath(path);
     if(m_conn) {
         m_conn->sftpMkPath(this, tmp, mode, user);
+    }
+}
+
+void QWoSshFtp::rename(QString &nameOld, const QString &nameNew, const QVariantMap &user)
+{
+    if(m_conn) {
+        m_conn->sftpRename(this, nameOld, nameNew, user);
+    }
+}
+
+void QWoSshFtp::symlink(QString &target, const QString &dest, const QVariantMap &user)
+{
+    if(m_conn) {
+        m_conn->sftpSymlink(this, target, dest, user);
+    }
+}
+
+void QWoSshFtp::chmod(const QString &path, int permission, bool subdirs, const QVariantMap &user)
+{
+    QString tmp = QDir::cleanPath(path);
+    if(m_conn) {
+        m_conn->sftpChmod(this, tmp, permission, subdirs, user);
     }
 }
 

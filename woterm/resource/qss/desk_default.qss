@@ -23,6 +23,10 @@ QWoShowerWidget {
     background-color: black;
 }
 
+QWoMessageQueueWidget{
+    background-color: black;
+}
+
 QWoSftpWidget {
     background-color: rgb(74, 181, 232);
 }
@@ -242,6 +246,15 @@ QPushButton#restoreButton{
     padding: 5px;
     color: black;
     min-width: 60px;
+}
+
+QPushButton#sessionSftpButton{
+    border-radius: 2px;
+    border: 1px solid darkgray;
+    padding: 1px;
+    color: black;
+    max-width: 30px;
+    min-width: 10px;
 }
 
 QPushButton:hover#restoreButton{

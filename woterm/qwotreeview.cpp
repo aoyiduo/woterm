@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -42,7 +42,7 @@ void QWoTreeView::keyPressEvent(QKeyEvent *e)
         QItemSelectionModel *model = selectionModel();
         QModelIndex idx = currentIndex();
         if(idx.isValid()){            
-            model->select(currentIndex(), QItemSelectionModel::SelectCurrent|QItemSelectionModel::Rows);
+            model->select(idx, QItemSelectionModel::SelectCurrent|QItemSelectionModel::Rows);
         }
     }else if(e->key() == Qt::Key_Return) {
         emit returnKeyPressed();
@@ -56,19 +56,23 @@ void QWoTreeView::mousePressEvent(QMouseEvent *e)
     QTreeView::mousePressEvent(e);
     QItemSelectionModel *model = selectionModel();
     if(e->button() == Qt::LeftButton){
-        clearSelection();
         QModelIndex idx = indexAt(e->pos());
-        if(idx.isValid()){
-            setCurrentIndex(idx);
-            model->select(idx, QItemSelectionModel::Select);
+        if(e->modifiers().testFlag(Qt::ControlModifier)) {
+            if(idx.isValid()) {
+                model->select(idx, QItemSelectionModel::Toggle|QItemSelectionModel::Rows);
+                // the follow line must add.
+                QTreeView::mouseMoveEvent(e);
+            }
         }else{
-            setCurrentIndex(QModelIndex());
+            model->clearSelection();
+            if(idx.isValid()){
+                model->select(idx, QItemSelectionModel::SelectCurrent|QItemSelectionModel::Rows);
+            }
         }
     }else{
         QModelIndex idx = indexAt(e->pos());
         if(!idx.isValid()) {
-            clearSelection();
-            setCurrentIndex(QModelIndex());
+            model->clearSelection();
             return;
         }
         QModelIndexList idxs = selectedIndexes();
@@ -77,9 +81,9 @@ void QWoTreeView::mousePressEvent(QMouseEvent *e)
                 return;
             }
         }
-        clearSelection();
-        setCurrentIndex(idx);
-        model->select(idx, QItemSelectionModel::Select);
+
+        model->clearSelection();
+        model->select(idx, QItemSelectionModel::SelectCurrent|QItemSelectionModel::Rows);
     }
 }
 

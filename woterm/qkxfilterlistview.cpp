@@ -14,12 +14,120 @@
 #include "qwohostlistmodel.h"
 #include "qwosortfilterproxymodel.h"
 #include "qwoutils.h"
+#include "qwosshconf.h"
 
 #include <QLineEdit>
 #include <QDebug>
 #include <QListView>
 #include <QMouseEvent>
 #include <QDateTime>
+#include <QToolButton>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QApplication>
+#include <QGraphicsColorizeEffect>
+
+
+#define BUTTON_REMOVE_SIZE      (13)
+#define BUTTON_MARGIN           (3)
+
+QSessionButtonActionDelegate::QSessionButtonActionDelegate(QListView *lstView, QWidget *parent)
+    : QStyledItemDelegate(parent)
+    , m_listView(lstView)
+{
+    m_btnSftp = new QToolButton(parent);
+    m_btnSftp->setIcon(QIcon(":/woterm/resource/skin/sftp.png"));
+    m_btnSftp->setIconSize(QSize(BUTTON_REMOVE_SIZE,BUTTON_REMOVE_SIZE));
+
+    QSize sz(BUTTON_REMOVE_SIZE,BUTTON_REMOVE_SIZE);
+    m_btnSftp->resize(sz);
+    m_btnSftp->hide();
+}
+
+bool QSessionButtonActionDelegate::editorEvent(QEvent *ev, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &idx)
+{
+    _editorEvent(ev, model, option, idx);
+    return true;
+}
+
+void QSessionButtonActionDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &idx) const
+{
+    QString label = idx.data(Qt::DisplayRole).toString();
+    QStyledItemDelegate::paint(painter, option, idx);
+
+
+    if (!(option.state & QStyle::State_Selected)){
+        return;
+    }
+
+    const HostInfo& hi = QWoSshConf::instance()->find(label);
+    if(!hi.isValid()) {
+        return;
+    }
+
+    if(hi.type != SshWithSftp) {
+        return;
+    }
+
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    QPalette pal = option.palette;
+    painter->setBrush(Qt::NoBrush);
+    QToolButton *btn = m_btnSftp;
+    QStyleOptionButton button;
+    button.state |= QStyle::State_Enabled;
+    if(m_event == QEvent::MouseButtonPress) {
+        button.state |= QStyle::State_Sunken;
+    }else if(m_event == QEvent::MouseButtonRelease) {
+    }else if(m_event == QEvent::MouseMove) {
+        button.state |= QStyle::State_MouseOver;
+    }
+    *((QEvent::Type*)&m_event) = QEvent::None;
+
+    QRect rt = buttonRect(option);
+    painter->setBrush(QColor(Qt::white));
+    painter->setPen(option.palette.highlight().color());
+    painter->drawRoundRect(rt, 16, 16);
+    button.rect = rt;
+    button.text = btn->text();
+    button.icon = btn->icon();
+    button.iconSize = btn->iconSize();
+    QApplication::style()->drawControl(QStyle::CE_PushButton, &button, painter, btn);
+    painter->restore();
+}
+
+bool QSessionButtonActionDelegate::_editorEvent(QEvent *ev, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &idx)
+{
+    QMouseEvent *me = static_cast<QMouseEvent *> (ev);
+    m_ptMouse = me->pos();
+    QGuiApplication::restoreOverrideCursor();
+    QRect rt = buttonRect(option);
+    QApplication::restoreOverrideCursor();
+    if(!rt.contains(m_ptMouse)) {
+        m_event = QEvent::None;
+        return true;
+    }
+    QEvent::Type t = me->type();
+    if(t == QEvent::MouseMove
+            || t == QEvent::MouseButtonRelease) {
+        m_event = t;
+    }else if(t == QEvent::MouseButtonPress) {
+        m_event = t;
+        emit sftpArrived(idx);
+    }
+    return true;
+}
+
+QRect QSessionButtonActionDelegate::buttonRect(const QStyleOptionViewItem &option) const
+{
+    QRect rt = m_btnSftp->rect();
+    rt.adjust(-3, -3, 3, 3);
+    QRect itemRt = option.rect;
+    rt.moveCenter(itemRt.center());
+    rt.translate((itemRt.right() - rt.width()) / 2, 0);
+    return rt;
+}
+
 
 QKxFilterListView::QKxFilterListView(QLineEdit *input, QWidget *parent)
     : QWidget(parent)
@@ -30,6 +138,9 @@ QKxFilterListView::QKxFilterListView(QLineEdit *input, QWidget *parent)
     setAttribute(Qt::WA_StyledBackground);
     ui->setupUi(this);
     input->installEventFilter(this);
+    QStyledItemDelegate *delegate = new QSessionButtonActionDelegate(ui->listView, ui->listView);
+    QObject::connect(delegate, SIGNAL(sftpArrived(QModelIndex)), this, SLOT(onDelegateSftpArrived(QModelIndex)));
+    ui->listView->setItemDelegate(delegate);
     m_grab = ui->listView->viewport();
     m_grab->installEventFilter(this);
     m_grab->setMouseTracking(true);
@@ -106,6 +217,9 @@ void QKxFilterListView::onEditTextChanged(const QString &txt)
 
 void QKxFilterListView::onListItemClicked(const QModelIndex &index)
 {
+    if(!m_sftpFirstResponse.isEmpty()) {
+        return;
+    }
     const HostInfo& hi = index.data(ROLE_HOSTINFO).value<HostInfo>();
     if(hi.type == SshWithSftp) {
         emit itemClicked(hi.name, EOT_SSH);
@@ -120,6 +234,18 @@ void QKxFilterListView::onListItemClicked(const QModelIndex &index)
     }else if(hi.type == Vnc) {
         emit itemClicked(hi.name, EOT_VNC);
     }
+    hide();
+}
+
+void QKxFilterListView::onDelegateSftpArrived(const QModelIndex &idx)
+{
+    const HostInfo& hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
+    if(!hi.isValid()) {
+        return;
+    }
+    m_sftpFirstResponse = hi.name;
+    emit itemClicked(hi.name, EOT_SFTP);
+    //qDebug() << "onDelegateSftpArrived" << idx.data();
     hide();
 }
 
@@ -218,6 +344,7 @@ int QKxFilterListView::minimizeHeight(int mh)
 
 void QKxFilterListView::handleShowEvent(QShowEvent *ev)
 {
+    m_sftpFirstResponse.clear();
     QWidget::showEvent(ev);
     m_grab->grabMouse();
     //qDebug() << "handleShowEvent" << rect() << QDateTime::currentMSecsSinceEpoch();

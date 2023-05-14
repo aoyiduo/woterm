@@ -369,7 +369,7 @@ void QWoSessionTTYProperty::onButtonSaveClicked()
 
     m_result = mvar;
     if(!m_bCustom) {
-        QWoSetting::setValue("property/ttyDefault", m_result);
+        QWoSetting::setTtyDefault(m_result);
     }
     close();
 }

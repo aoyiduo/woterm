@@ -34,6 +34,10 @@
 #define MT_FTP_MKPATH                   (22)
 #define MT_FTP_READ_FILE_CONTENT        (23)
 #define MT_FTP_WRITE_FILE_CONTENT       (24)
+#define MT_FTP_CHMOD                    (25)
+#define MT_FTP_CHMODNEXT                (26)
+#define MT_FTP_RENAME                   (27)
+#define MT_FTP_SYMLINK                  (28)
 
 struct MsgRequest;
 class QSshClient;
@@ -60,6 +64,9 @@ public:
     void sftpOpenDir(QWoSshChannel *cli, const QStringList& paths, const QVariantMap& user);
     void sftpMkDir(QWoSshChannel *cli, const QString& path, int mode, const QVariantMap& user);
     void sftpMkPath(QWoSshChannel *cli, const QString& path, int mode, const QVariantMap& user);
+    void sftpRename(QWoSshChannel *cli, const QString& nameOld, const QString& nameNew, const QVariantMap& user);
+    void sftpSymlink(QWoSshChannel *cli, const QString& target, const QString& dest, const QVariantMap& user);
+    void sftpChmod(QWoSshChannel *cli, const QString& path, int permission, bool subdirs, const QVariantMap& user);
     void sftpRmDir(QWoSshChannel *cli, const QString& path, const QVariantMap& user);
     void sftpUnlink(QWoSshChannel *cli, const QString &path, const QVariantMap& user);
     void sftpFileContent(QWoSshChannel *cli, const QString& remote, qint64 offset, qint64 maxSize, const QVariantMap& user);
@@ -71,6 +78,7 @@ public:
     void sftpAbort(QWoSshChannel *cli);
     void internalUploadNext(QWoSshChannel *cli, const QVariantMap& user);
     void internalListFileNext(QWoSshChannel *cli, const QByteArray& path, const QVariantMap& user);
+    void internalChmodFolderNext(QWoSshChannel *cli, const QByteArray& path, int permission, const QVariantMap& user);
     void internalRemoveFileNext(QWoSshChannel *cli, const QByteArray& path, bool isDir, const QVariantMap& user);
     void internalAsyncTaskNext(QWoSshChannel *cli, uchar type, const QByteArray& data = QByteArray());
 signals:
@@ -172,6 +180,9 @@ public:
     void openDir(const QString& path="~", const QVariantMap& user=QVariantMap());
     void mkDir(const QString& path, int mode, const QVariantMap& user=QVariantMap());
     void mkPath(const QString& path, int mode, const QVariantMap& user=QVariantMap());
+    void rename(QString& nameOld, const QString& nameNew, const QVariantMap& user=QVariantMap());
+    void symlink(QString& target, const QString& dest, const QVariantMap& user=QVariantMap());
+    void chmod(const QString& path, int permission, bool subdirs, const QVariantMap& user=QVariantMap());
     void rmDir(const QString& path, const QVariantMap& user=QVariantMap());
     void unlink(const QString &path, const QVariantMap& user=QVariantMap());
     void fileInfo(const QString& path, const QVariantMap& user=QVariantMap());

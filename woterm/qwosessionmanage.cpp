@@ -26,6 +26,7 @@
 #include "qwogroupinputdialog.h"
 #include "qkxmessagebox.h"
 #include "qkxver.h"
+#include "qwomainwindow.h"
 
 #include <QFileDialog>
 #include <QMenu>
@@ -330,6 +331,7 @@ void QWoSessionManage::onModifyReady()
         if(!dlg.setSession(hi.name)) {
             return;
         }
+        QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), QWoMainWindow::instance(), SLOT(onSessionReadyToConnect(QString,int)));
         int err = dlg.exec();
         if(err == QWoSessionProperty::Cancel) {
             return;
@@ -341,6 +343,7 @@ void QWoSessionManage::onModifyReady()
 void QWoSessionManage::onNewReady()
 {
     QWoSessionProperty dlg(this);
+    QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), QWoMainWindow::instance(), SLOT(onSessionReadyToConnect(QString,int)));
     if(dlg.exec() == QWoSessionProperty::Cancel) {
         return;
     }

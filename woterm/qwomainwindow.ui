@@ -27,7 +27,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -83,6 +83,7 @@
      <addaction name="actionTTYOptions"/>
      <addaction name="actionVNCOptions"/>
      <addaction name="actionRDPOptions"/>
+     <addaction name="actionToolOptions"/>
     </widget>
     <addaction name="menuGlobal_option"/>
     <addaction name="actionSystemOptions"/>
@@ -283,6 +284,11 @@
   <action name="actionUpgrade">
    <property name="text">
     <string>Upgrade check...</string>
+   </property>
+  </action>
+  <action name="actionToolOptions">
+   <property name="text">
+    <string>Tool options</string>
    </property>
   </action>
  </widget>

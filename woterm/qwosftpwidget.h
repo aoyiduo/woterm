@@ -35,6 +35,10 @@ class QWoSftpTransferWidget;
 class QWoLoadingWidget;
 class QSplitter;
 class QTreeView;
+class QWoMessageQueueWidget;
+class QKxMessageBox;
+class QPushButton;
+class QProcess;
 
 class QWoSftpWidget : public QWidget
 {
@@ -101,12 +105,16 @@ protected slots:
     void onRemoteMenuReloadDirectory();
     void onRemoteMenuCreateDirectory();
     void onRemoteMenuRemoveSelection();
+    void onRemoteModifyItemPermission();
     void onRemoteMenuEnterDirectory();
     void onRemoteMenuTryEnterDirectory();
     void onRemoteMenuDownload();
     void onRemoteMenuUpload();
     void onRemoteResetModel();
     void onRemotePathReturnPressed();
+    void onRemoteMenuRename();
+    void onRemoteMenuMoveToOtherDirectory();
+    void onRemoteMenuEditFileContent();
 
     void onNewSessionMultiplex();
     void onAdjustPosition();
@@ -127,6 +135,8 @@ protected slots:
     void onLocalBrowserButtonClicked();
     void onLocalPathChanged(const QString& path);
 
+    /*editor*/
+    void onEditorDestroy();
 protected:
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     void resizeEvent(QResizeEvent *ev);
@@ -135,7 +145,8 @@ protected:
     void handleLocalDropEvent(QDropEvent *de);
     void handleRemoteDragEnterEvent(QDropEvent *de);
     void handleRemoteDropEvent(QDropEvent *de);
-
+    Q_INVOKABLE void handleEdit(const QString& fileSave, const QString& fileRemote);
+    Q_INVOKABLE void handleEditCommit(const QString& fileSave, const QString& fileRemote, const qint64& dt);
 private:
     Q_INVOKABLE void reconnect();
     QList<FileInfo> remoteSelections();
@@ -157,6 +168,10 @@ private:
     QPointer<QWoLoadingWidget> m_loading;
     QPointer<QTreeView> m_local, m_remote;
     QPointer<QWoSftpTransferWidget> m_transfer;
+    QPointer<QKxMessageBox> m_warning;
+
+    QList<QPointer<QProcess>> m_editors;
+
     QString m_target;
     bool m_savePassword;
     bool m_bexit;

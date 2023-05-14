@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -14,6 +14,7 @@
 
 
 #include <QMessageBox>
+#include <QPointer>
 
 class QKxMessageBox : public QMessageBox
 {
@@ -24,6 +25,8 @@ public:
                 StandardButtons buttons = NoButton, QWidget *parent = nullptr,
                 Qt::WindowFlags flags = Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
     virtual ~QKxMessageBox();
+
+    static void message(QWidget *parent, const QString& title, const QString& content, bool warning = true);
 
     static QMessageBox::StandardButton critical(QWidget *parent, const QString &title, const QString &text,
                                          QMessageBox::StandardButtons buttons = Ok, QMessageBox::StandardButton defaultButton = NoButton);
@@ -39,9 +42,22 @@ private:
     static void prettyButtonText(QMessageBox *dlg, const QString &title, const QString &text, StandardButtons buttons, StandardButton defaultButton);
 private:
     virtual void showEvent(QShowEvent *event);
+    virtual void hideEvent(QHideEvent* e);
 
 private slots:
     void onAdjustSize();
+    void onNextMessage();
+private:
+    void message(const QString& title, const QString& content, bool warning = true);
+    Q_INVOKABLE void showMessage(const QString& title, const QString& content, bool isWarning = true);
+private:
+    struct MessageBoxData {
+        bool isWarning;
+        QString title;
+        QString content;
+    };
+    QPointer<QPushButton> m_btnNext;
+    QList<MessageBoxData> m_queue;
 };
 
 #endif // QKXMESSAGEBOX_H

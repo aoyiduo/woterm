@@ -58,6 +58,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="btnPrivate">
+       <property name="text">
+        <string>PrivateKey</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btnImport">
        <property name="text">
         <string>Import</string>
