@@ -48,13 +48,12 @@ The client code has been completely open source, and the third-party code which 
 
 ## UI preview:
 <img src="doc/main.png"/>
+<img src="doc/skins.png">
+<img src="doc/sync.gif">
 <img src="doc/main2.png"/>
-<img src="doc/main3.png"/>
-<img src="doc/sftp.png"/>
-<img src="doc/option.png"/>
-<img src="doc/identity.png"/>
-<img src="doc/floattab.gif"/>
+<img src="doc/search.gif"/>
+<img src="doc/sftp.gif"/>
+<img src="doc/float.gif"/>
 <img src="doc/split.gif"/>
-<img src="doc/vnc.png"/>
 <img src="doc/color.gif"/>
 <img src="doc/vnc.png"/>
