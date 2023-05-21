@@ -1,7 +1,7 @@
 <p align="center">
   <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Cross platform / small memory / multi-protocol / multi-function / cloud sync</h2>
-  <div style="text-align: center;">[<a href="README.md">English</a>] | [<a href="README-zh.md">中文</a>]</div>
+  <h3 style="text-align: center;">[<a href="README.md">English</a>] | [<a href="README-zh.md">中文</a>]</h3>
 </p>
 
 # Overview

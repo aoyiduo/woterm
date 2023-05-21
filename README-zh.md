@@ -1,11 +1,11 @@
 <p align="center">
   <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
-  <h2 style="text-align: center;">Cross platform / small memory / multi-protocol / multi-function / cloud sync</h2>
-  <div style="text-align: center;">[<a href="README.md">English</a>] | [<a href="README-zh.md">中文</a>]</div>
+  <h2 style="text-align: center;">跨平台/小内存/多协议/多功能/云同步</h2>
+  <h3 style="text-align: center;">[<a href="README.md">English</a>] | [<a href="README-zh.md">中文</a>]</h3>
 </p>
 
 # 概要
-跨平台/小内存/多协议/多功能/云同步的远程管理工具，开箱即用，无需配置，安全稳定。
+跨平台的远程管理工具，开箱即用，无需配置，安全稳定。
 
 ## 功能描述
 - 支持Windows / Linux / MacOSX / Android。
