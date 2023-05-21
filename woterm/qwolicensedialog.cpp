@@ -37,9 +37,9 @@ QWoLicenseDialog::QWoLicenseDialog(QWidget *parent) :
     setWindowTitle(tr("License information"));
     ui->key->setReadOnly(true);
     ui->mid->setReadOnly(true);
-    QKxButtonAssist *btn = new QKxButtonAssist(":/woterm/resource/skin/ftp.png", false, ui->key);
+    QKxButtonAssist *btn = new QKxButtonAssist("../private/skins/black/ftp.png", false, ui->key);
     QObject::connect(btn, SIGNAL(clicked(int)), this, SLOT(onSNAssistButtonClicked(int)));
-    QKxButtonAssist *btn2 = new QKxButtonAssist(":/woterm/resource/skin/ftp.png", false, ui->mid);
+    QKxButtonAssist *btn2 = new QKxButtonAssist("../private/skins/black/ftp.png", false, ui->mid);
     QObject::connect(btn2, SIGNAL(clicked(int)), this, SLOT(onMIDAssistButtonClicked(int)));
 
     QObject::connect(ui->btnClose, SIGNAL(clicked()), this, SLOT(close()));

@@ -24,6 +24,7 @@ class QLabel;
 
 class QWoTermWidget;
 class QWoLoadingWidget;
+class QKxBackgroundImageRender;
 
 class QWoTermCreator
 {
@@ -100,4 +101,6 @@ protected:
     bool m_rkeyPaste;
     QString m_historyFile;
     ETermType m_ttype;
+
+    static QPointer<QKxBackgroundImageRender> m_bkImageRender;
 };

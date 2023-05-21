@@ -206,7 +206,7 @@ Popup {
                         sourceSize.width: 18
                         sourceSize.height: 18
                         fillMode: Image.PreserveAspectFit
-                        source: "qrc:/woterm/resource/skin/menu3.png"
+                        source: "qrc../private/skins/black/menu3.png"
                     }
                 }
                 onClicked: {
@@ -333,7 +333,7 @@ Popup {
                         Layout.rightMargin: 6
                         Image {
                             Layout.fillHeight: true
-                            source: model.isDir ? "qrc:/woterm/resource/skin/dirs.png" : "qrc:/woterm/resource/skin/file.png"
+                            source: model.isDir ? "qrc../private/skins/black/dirs.png" : "qrc../private/skins/black/file.png"
                             fillMode: Image.PreserveAspectFit
                             sourceSize.width: 24
                             sourceSize.height: 24
@@ -368,7 +368,7 @@ Popup {
                             Layout.alignment: Qt.AlignVCenter
                             sourceComponent: cbtn
                             onLoaded: {
-                                item.imageSource = "qrc:/woterm/resource/skin/right2.png"
+                                item.imageSource = "qrc../private/skins/black/right2.png"
                                 item.clicked.connect(onClicked)
                             }
                             function onClicked() {

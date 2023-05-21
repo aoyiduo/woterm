@@ -41,6 +41,7 @@
 
 #include "qmoapplication.h"
 #include "qmomainwindow.h"
+#include "qwotheme.h"
 
 static QFile g_fileLog;
 static QMutex g_mutexFileLog;
@@ -122,31 +123,11 @@ int main_pc(int argc, char *argv[])
 
     setDebugMessageToFile("trace.log", true);
     test();
-    QStringList styles = QStyleFactory::keys();
-    qDebug() << "embeded style list: " << styles;
-    QApplication::setStyle("fusion");
 
-    QFile f(":/woterm/resource/qss/desk_default.qss");
-    f.open(QFile::ReadOnly);
-    QByteArray qss = f.readAll();
-    f.close();
-#if defined(Q_OS_WIN)
-    qss = qss.replace("{{menu-item-padding-left}}","3");
-    qss = qss.replace("{{menu-item-padding-right}}","3");
-#elif defined(Q_OS_MAC)
-    qss = qss.replace("{{menu-item-padding-left}}","3");
-    qss = qss.replace("{{menu-item-padding-right}}","3");
-#elif defined(Q_OS_UNIX)
-    qss = qss.replace("{{menu-item-padding-left}}","24");
-    qss = qss.replace("{{menu-item-padding-right}}","28");
-#elif defined(Q_OS_ANDROID)
-    qss = qss.replace("{{menu-item-padding-left}}","3");
-    qss = qss.replace("{{menu-item-padding-right}}","3");
-#endif
-    app.setStyleSheet(qss);    
+    QWoTheme::instance();
 
     QTranslator translator;
-    QString lang = QWoSetting::languageFile();
+    QString lang = QWoSetting::absoluteLanguageFilePath();
     if(!lang.isEmpty() && translator.load(lang)){
         app.installTranslator(&translator);
     }
@@ -179,7 +160,7 @@ int main_qml(int argc, char *argv[])
     test();
 
     QTranslator translator;
-    QString lang = QWoSetting::languageFile();
+    QString lang = QWoSetting::absoluteLanguageFilePath();
     if(!lang.isEmpty() && translator.load(lang)){
         app.installTranslator(&translator);
     }

@@ -44,7 +44,7 @@ QToolButton *QKxButtonAssist::append(const QString &icon, bool frame)
     btn->setIcon(QIcon(icon));
     btn->setProperty("index", m_btns.length());
     if(!frame){
-        QString style = "QToolButton{border:0}\r\n";
+        QString style = "QToolButton{border:0;border-radius:3px;}\r\n";
         style += "QToolButton:hover{background-color:rgba(255,255,255,128)}\r\n";
         style += "QToolButton:pressed{background-color:rgba(200,200,200,128)}";
         btn->setStyleSheet(style);
@@ -68,7 +68,7 @@ void QKxButtonAssist::appendSeperator()
     QWidget *p = qobject_cast<QWidget*>(parent());
     QFrame *seperator = new QFrame(p);
     seperator->setFrameShape(QFrame::VLine);
-    seperator->setFrameShadow(QFrame::Plain);
+    seperator->setFrameShadow(QFrame::Sunken);
     seperator->setObjectName("buttonAssistVLine");
     m_layout->insertWidget(1, seperator);
 }

@@ -36,7 +36,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/nail.png</normaloff>:/woterm/resource/skin/nail.png</iconset>
+       <normaloff>../private/skins/black/nail.png</normaloff>../private/skins/black/nail.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -53,7 +53,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/fullscreen.png</normaloff>:/woterm/resource/skin/fullscreen.png</iconset>
+       <normaloff>../private/skins/black/fullscreen.png</normaloff>../private/skins/black/fullscreen.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -70,7 +70,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/exitfull.png</normaloff>:/woterm/resource/skin/exitfull.png</iconset>
+       <normaloff>../private/skins/black/exitfull.png</normaloff>../private/skins/black/exitfull.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -87,7 +87,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/minize2.png</normaloff>:/woterm/resource/skin/minize2.png</iconset>
+       <normaloff>../private/skins/black/minize2.png</normaloff>../private/skins/black/minize2.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -104,7 +104,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/scroll.png</normaloff>:/woterm/resource/skin/scroll.png</iconset>
+       <normaloff>../private/skins/black/scroll.png</normaloff>../private/skins/black/scroll.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -121,7 +121,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/signal.png</normaloff>:/woterm/resource/skin/signal.png</iconset>
+       <normaloff>../private/skins/black/signal.png</normaloff>../private/skins/black/signal.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -138,7 +138,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/audio_on.png</normaloff>:/woterm/resource/skin/audio_on.png</iconset>
+       <normaloff>../private/skins/black/audio_on.png</normaloff>../private/skins/black/audio_on.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -155,7 +155,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/audio_off.png</normaloff>:/woterm/resource/skin/audio_off.png</iconset>
+       <normaloff>../private/skins/black/audio_off.png</normaloff>../private/skins/black/audio_off.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -172,7 +172,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/ftp.png</normaloff>:/woterm/resource/skin/ftp.png</iconset>
+       <normaloff>../private/skins/black/ftp.png</normaloff>../private/skins/black/ftp.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -189,7 +189,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/lock2.png</normaloff>:/woterm/resource/skin/lock2.png</iconset>
+       <normaloff>../private/skins/black/lock2.png</normaloff>../private/skins/black/lock2.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -206,7 +206,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/wallpaper.png</normaloff>:/woterm/resource/skin/wallpaper.png</iconset>
+       <normaloff>../private/skins/black/wallpaper.png</normaloff>../private/skins/black/wallpaper.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -223,7 +223,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/screen.png</normaloff>:/woterm/resource/skin/screen.png</iconset>
+       <normaloff>../private/skins/black/screen.png</normaloff>../private/skins/black/screen.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -240,7 +240,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/stop2.png</normaloff>:/woterm/resource/skin/stop2.png</iconset>
+       <normaloff>../private/skins/black/stop2.png</normaloff>../private/skins/black/stop2.png</iconset>
      </property>
      <property name="iconSize">
       <size>

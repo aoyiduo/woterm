@@ -47,12 +47,12 @@ QKxFtpTransferModel::QKxFtpTransferModel(const QString& path, const QString& nam
     , m_transferIndex(-1)
 {
     m_hdrName << tr("Type") << tr("Status") << tr("Progress") << tr("File Size") << tr("Local File") << tr("Remote File");
-    m_iconUpload = QIcon(QPixmap(":/kxftp/resource/skin/upload.png").scaled(ICON_SIZE,ICON_SIZE));
-    m_iconDown = QIcon(QPixmap(":/kxftp/resource/skin/download.png").scaled(ICON_SIZE,ICON_SIZE));
-    m_iconReady = QIcon(QPixmap(":/kxftp/resource/skin/time.png").scaled(ICON_SIZE,ICON_SIZE));
-    m_iconPause = QIcon(QPixmap(":/kxftp/resource/skin/pause.png").scaled(ICON_SIZE,ICON_SIZE));
-    m_iconTransfer = QIcon(QPixmap(":/kxftp/resource/skin/transfer.png").scaled(ICON_SIZE,ICON_SIZE));
-    m_iconFinish = QIcon(QPixmap(":/kxftp/resource/skin/right.png").scaled(ICON_SIZE,ICON_SIZE));
+    m_iconUpload = QIcon(QPixmap("../private/skins/black/upload.png").scaled(ICON_SIZE,ICON_SIZE));
+    m_iconDown = QIcon(QPixmap("../private/skins/black/download.png").scaled(ICON_SIZE,ICON_SIZE));
+    m_iconReady = QIcon(QPixmap("../private/skins/black/time.png").scaled(ICON_SIZE,ICON_SIZE));
+    m_iconPause = QIcon(QPixmap("../private/skins/black/pause.png").scaled(ICON_SIZE,ICON_SIZE));
+    m_iconTransfer = QIcon(QPixmap("../private/skins/black/transfer.png").scaled(ICON_SIZE,ICON_SIZE));
+    m_iconFinish = QIcon(QPixmap("../private/skins/black/right.png").scaled(ICON_SIZE,ICON_SIZE));
 
     QMetaObject::invokeMethod(this, "load", Qt::QueuedConnection);
 }

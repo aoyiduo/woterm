@@ -26,20 +26,22 @@ public:
     static QString identityFilePath();
     static QString historyFilePath();
     static QString examplePath();
-    static QString privateDataPath();
+    static QString privatePath();
     static QString privateJsCorePath();
     static QString privateColorSchemaPath();
     static QString privateKeyboardLayoutPath();
-    static QString privateTranslationPath();
+    static QString privateLanguagesPath();
     static QString sshServerFilePath();
     static QString lastJsLoadPath();
     static void setLastJsLoadPath(const QString& path);
     static QMap<QString, QString> allLanguages();
-    Q_INVOKABLE static QString languageFile();
+    Q_INVOKABLE static QString languageTypeAsBCP47Field();
     Q_INVOKABLE static QStringList allLanguageNames();
     Q_INVOKABLE static QString languagePath(const QString& name);
     Q_INVOKABLE static QString languageName(const QString& path);
-    Q_INVOKABLE static void setLanguageFile(const QString& path);
+    Q_INVOKABLE static QString languageFileName();
+    Q_INVOKABLE static QString absoluteLanguageFilePath();
+    Q_INVOKABLE static void setLanguageFileName(const QString& path);
     Q_INVOKABLE static bool isChineseLanguageFile();
 
     static QString sshServerDbPath();
@@ -92,6 +94,15 @@ public:
 
     static QVariantMap ttyDefault();
     static void setTtyDefault(const QVariantMap& dm);
+
+    static QString terminalBackgroundImage();
+    static void setTerminalBackgroundImage(const QString& path);
+    static int terminalBackgroundImageAlpha();
+    static void setTerminalBackgroundImageAlpha(int v);
+    static bool terminalBackgroundImageEdgeSmooth();
+    static void setTerminalBackgroundImageEdgeSmooth(bool v);
+    static QString terminalBackgroundImagePosition();
+    static void setTerminalBackgroundImagePosition(const QString& pos);
 };
 
 #endif

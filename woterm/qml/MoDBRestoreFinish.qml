@@ -104,7 +104,7 @@ Page {
                     readOnly: true
                 }
                 ToolButton {
-                    icon.source: "qrc:/woterm/resource/skin/download2.png"
+                    icon.source: "qrc../private/skins/black/download2.png"
                     icon.color: "transparent"
                     onClicked: {
                         onlineList.open()
@@ -141,7 +141,7 @@ Page {
                 Button {
                     display: Button.TextBesideIcon
                     text: qsTr("Previous")
-                    icon.source: "qrc:/woterm/resource/skin/back.png"
+                    icon.source: "qrc../private/skins/black/back.png"
                     icon.color: "transparent"
 
                     onClicked: {
@@ -153,7 +153,7 @@ Page {
                     enabled: false
                     display: Button.TextBesideIcon
                     text: qsTr("Apply")
-                    icon.source: "qrc:/woterm/resource/skin/right.png"
+                    icon.source: "qrc../private/skins/black/right.png"
                     icon.color: "transparent"
 
                     onClicked: {

@@ -18,13 +18,16 @@
 #include <QVector>
 #include <QPoint>
 
+#if USE_FONT_DATABASE_SYSTEM_FONT
+//QFont ft = QFontDatabase::systemFont(QFontDatabase::FixedFont);
 
 #ifdef Q_OS_WIN
 #define DEFAULT_FONT_FAMILY ("Courier New")
 #elif defined(Q_OS_MAC)
-#define DEFAULT_FONT_FAMILY ("SF Mono")
+#define DEFAULT_FONT_FAMILY ("Monaco")
 #else
 #define DEFAULT_FONT_FAMILY ("Monospace")
+#endif
 #endif
 
 

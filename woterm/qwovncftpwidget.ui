@@ -64,8 +64,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/close.png</normaloff>:/woterm/resource/skin/close.png</iconset>
+        <iconset>
+         <normaloff>../private/skins/black/close.png</normaloff>../private/skins/black/close.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -79,8 +79,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="woterm.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

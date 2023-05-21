@@ -19,6 +19,7 @@
 #include "qkxkeytranslator.h"
 #include "qkxcolorschema.h"
 #include "qkxechoinput.h"
+#include "qkxbackgroundimagerender.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -110,19 +111,19 @@ QKxTermItem::QKxTermItem(QWidget* parent)
     setKeyLayoutByName(DEFAULT_KEY_LAYOUT);
     setColorSchema(DEFAULT_COLOR_SCHEMA);
 
-    QStringList families = QKxUtils::availableFontFamilies();
-    QString family;
-    for(auto it = families.begin(); it != families.end(); it++) {
-        if(families.contains(*it)) {
-            family = *it;
-            break;
-        }
-    }
-    int pt = QKxUtils::suggestFontSize(family, DEFAULT_FONT_SIZE);
+    QFont ft = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    QString family = ft.family();
+    int pt = ft.pointSize();
+
     QFont font = createFont(family, pt);
     setFont(font);
     setFocusPolicy(Qt::StrongFocus);
     QTimer::singleShot(100, this, SLOT(onSetActive()));
+}
+
+void QKxTermItem::setBackgroundImageRender(QKxBackgroundImageRender *render)
+{
+    m_bkImageRender = render;
 }
 
 QFont QKxTermItem::terminalFont() const
@@ -183,7 +184,6 @@ QFont QKxTermItem::createFont(const QString &family, int ftSize)
     }
     ftSize = QKxUtils::suggestFontSize(family, ftSize);
     QFont font(family, ftSize);
-    //QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     int strategy = QFont::PreferAntialias|QFont::ForceIntegerMetrics;
     font.setFamily(family);
     font.setPointSize(ftSize);
@@ -1089,6 +1089,9 @@ void QKxTermItem::paintEvent(QPaintEvent *ev)
     QPainter p(this);
     p.setClipRegion(ev->region());
     p.fillRect(rect(), m_backgroundColor);
+    if(m_bkImageRender) {
+        m_bkImageRender->render(&p, rect());
+    }
     paint(&p);
 }
 

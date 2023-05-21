@@ -30,6 +30,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QShowEvent>
+#include <QFontDatabase>
 
 
 QMoTermWidget::QMoTermWidget(const QString& target, ETermType ttype, QWidget *parent)
@@ -193,8 +194,9 @@ void QMoTermWidget::resetProperty(QVariantMap mdata)
     QString codec = mdata.value("textcodec", DEFAULT_TEXT_CODEC).toString();
     m_term->setTextCodec(codec);
 
-    QString fontName = mdata.value("fontName", DEFAULT_FONT_FAMILY).toString();
-    int fontSize = mdata.value("fontSize", DEFAULT_FONT_SIZE).toInt();    
+    QFont ft = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    QString fontName = mdata.value("fontName", ft.family()).toString();
+    int fontSize = mdata.value("fontSize", ft.pointSize()).toInt();
 
     m_term->setTerminalFont(fontName, fontSize);
 

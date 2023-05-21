@@ -64,15 +64,7 @@ void QWoVersionUpgradeTipDialog::checkVersion()
 
 void QWoVersionUpgradeTipDialog::getVersionDescription()
 {
-    QString lang = QDir::cleanPath(QWoSetting::languageFile());
-    int pos = lang.lastIndexOf('_');
-    if(pos > 0) {
-        lang = lang.mid(pos+1);
-    }
-    pos = lang.lastIndexOf('.');
-    if(pos > 0) {
-        lang = lang.left(pos);
-    }
+    QString lang = QWoSetting::languageTypeAsBCP47Field();
     QString verDesc = QString("http://down.woterm.com/.desc/latest-%1").arg(lang);
     qDebug() << "QWoVersionUpgradeTipDialog" << verDesc;
     QKxHttpClient *http = new QKxHttpClient(this);

@@ -113,7 +113,7 @@
              </property>
              <property name="icon">
               <iconset resource="woterm.qrc">
-               <normaloff>:/woterm/resource/skin/download2.png</normaloff>:/woterm/resource/skin/download2.png</iconset>
+               <normaloff>../private/skins/black/download2.png</normaloff>../private/skins/black/download2.png</iconset>
              </property>
             </widget>
            </item>
@@ -498,7 +498,7 @@
              </property>
              <property name="icon">
               <iconset resource="woterm.qrc">
-               <normaloff>:/woterm/resource/skin/dirs.png</normaloff>:/woterm/resource/skin/dirs.png</iconset>
+               <normaloff>../private/skins/black/dirs.png</normaloff>../private/skins/black/dirs.png</iconset>
              </property>
             </widget>
            </item>
@@ -544,7 +544,7 @@
              </property>
              <property name="icon">
               <iconset resource="woterm.qrc">
-               <normaloff>:/woterm/resource/skin/sftp.png</normaloff>:/woterm/resource/skin/sftp.png</iconset>
+               <normaloff>../private/skins/black/sftp.png</normaloff>../private/skins/black/sftp.png</iconset>
              </property>
             </widget>
            </item>

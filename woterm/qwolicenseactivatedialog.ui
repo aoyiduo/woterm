@@ -100,7 +100,7 @@
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="woterm.qrc">:/woterm/resource/skin/tips.png</pixmap>
+           <pixmap resource="woterm.qrc">../private/skins/black/tips.png</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -220,7 +220,7 @@
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="woterm.qrc">:/woterm/resource/skin/tips.png</pixmap>
+           <pixmap resource="woterm.qrc">../private/skins/black/tips.png</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>

@@ -110,17 +110,17 @@ QVariant QMoRecentHistoryModel::data(const QModelIndex &idx, int role) const
     if(role == ROLE_ICON_URL) {
         switch (ra.type) {
         case EOT_SSH:
-            return "qrc:/woterm/resource/skin/ssh2.png";
+            return "qrc../private/skins/black/ssh2.png";
         case EOT_SFTP:
-            return "qrc:/woterm/resource/skin/sftp.png";
+            return "qrc../private/skins/black/sftp.png";
         case EOT_TELNET:
-            return "qrc:/woterm/resource/skin/telnet.png";
+            return "qrc../private/skins/black/telnet.png";
         case EOT_RLOGIN:
-            return "qrc:/woterm/resource/skin/rlogin.png";
+            return "qrc../private/skins/black/rlogin.png";
         case EOT_MSTSC:
-            return "qrc:/woterm/resource/skin/mstsc2.png";
+            return "qrc../private/skins/black/mstsc2.png";
         case EOT_VNC:
-            return "qrc:/woterm/resource/skin/vnc2.png";
+            return "qrc../private/skins/black/vnc2.png";
         }
         return QVariant();
     }

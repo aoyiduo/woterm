@@ -56,14 +56,14 @@ QWoShower::QWoShower(QTabBar *tab, QWidget *parent)
     , m_tab(tab)
     , m_implCount(0)
 {
-    m_ptyico = QIcon(":/woterm/resource/skin/console.png");
-    m_sshico = QIcon(":/woterm/resource/skin/ssh2.png");
-    m_ftpico = QIcon(":/woterm/resource/skin/sftp.png");
-    m_telico = QIcon(":/woterm/resource/skin/telnet.png");
-    m_rloico = QIcon(":/woterm/resource/skin/rlogin.png");
-    m_mtsico = QIcon(":/woterm/resource/skin/mstsc2.png");
-    m_serico = QIcon(":/woterm/resource/skin/serialport.png");
-    m_vncico = QIcon(":/woterm/resource/skin/vnc2.png");
+    m_ptyico = QIcon("../private/skins/black/console.png");
+    m_sshico = QIcon("../private/skins/black/ssh2.png");
+    m_ftpico = QIcon("../private/skins/black/sftp.png");
+    m_telico = QIcon("../private/skins/black/telnet.png");
+    m_rloico = QIcon("../private/skins/black/rlogin.png");
+    m_mtsico = QIcon("../private/skins/black/mstsc2.png");
+    m_serico = QIcon("../private/skins/black/serialport.png");
+    m_vncico = QIcon("../private/skins/black/vnc2.png");
     QObject::connect(tab, SIGNAL(tabCloseRequested(int)), this, SLOT(onTabCloseRequested(int)));
     QObject::connect(tab, SIGNAL(currentChanged(int)), this, SLOT(onTabCurrentChanged(int)));
     QObject::connect(tab, SIGNAL(tabBarDoubleClicked(int)), this, SLOT(onTabbarDoubleClicked(int)));
@@ -93,7 +93,7 @@ bool QWoShower::openLocalShell()
     createTab(impl, m_ptyico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/console.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/console.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -122,7 +122,7 @@ bool QWoShower::openSsh(const QString &target, int gid)
     createTab(impl, m_sshico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm-"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/ssh2.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/ssh2.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -142,7 +142,7 @@ bool QWoShower::openSftp(const QString &target, int gid)
     createTab(impl, m_ftpico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/sftp.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/sftp.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -159,7 +159,7 @@ bool QWoShower::openTelnet(const QString &target)
     createTab(impl, m_telico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/telnet.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/telnet.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -177,7 +177,7 @@ bool QWoShower::openRLogin(const QString &target)
         createTab(impl, m_rloico, target);
         impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
         impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-        impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/rlogin.png");
+        impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/rlogin.png");
         emit floatChanged(impl, false);
         m_implCount++;
         return true;
@@ -200,7 +200,7 @@ bool QWoShower::openMstsc(const QString &target)
     createTab(impl, m_mtsico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Mstsc);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/mstsc2.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/mstsc2.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -217,7 +217,7 @@ bool QWoShower::openVnc(const QString &target)
     createTab(impl, m_vncico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Vnc);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/vnc2.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/vnc2.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -235,7 +235,7 @@ bool QWoShower::openSerialPort()
     createTab(impl, m_serico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/skin/serialport.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/serialport.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -633,8 +633,8 @@ void QWoShower::onTabContextMenu(QMouseEvent *ev)
     if(ev->buttons() & Qt::RightButton) {
         if(QKxVer::instance()->isFullFeather()) {
             QMenu menu;
-            menu.addAction(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open remote session"), this, SLOT(onOpenRemoteSession()));
-            menu.addAction(QIcon(":/woterm/resource/skin/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
+            menu.addAction(QIcon("../private/skins/black/nodes.png"), tr("Open remote session"), this, SLOT(onOpenRemoteSession()));
+            menu.addAction(QIcon("../private/skins/black/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
             menu.exec(QCursor::pos());
         }
     }

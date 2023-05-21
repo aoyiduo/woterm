@@ -25,7 +25,7 @@ Page {
     }
 
     header: MoToolBar {
-        source: "qrc:/woterm/resource/skin/left2.png"
+        source: "qrc../private/skins/black/left2.png"
         title: qsTr("Session manage")
         onLeftClicked: {
             closeArrived()
@@ -44,7 +44,7 @@ Page {
             Button {
                 display: Button.TextUnderIcon
                 text: qsTr("Add")
-                icon.source: "qrc:/woterm/resource/skin/add2.png"
+                icon.source: "qrc../private/skins/black/add2.png"
                 icon.color: "transparent"
                 onClicked: {
                     stack.push(cProperty)
@@ -54,7 +54,7 @@ Page {
             Button {
                 display: Button.TextUnderIcon
                 text: qsTr("Clear")
-                icon.source: "qrc:/woterm/resource/skin/remove.png"
+                icon.source: "qrc../private/skins/black/remove.png"
                 icon.color: "transparent"
                 onClicked: {
                     gSshConf.qmlClear()
@@ -65,7 +65,7 @@ Page {
             Button {
                 display: Button.TextUnderIcon
                 text: qsTr("Restore")
-                icon.source: "qrc:/woterm/resource/skin/import2.png"
+                icon.source: "qrc../private/skins/black/import2.png"
                 icon.color: "transparent"
 
                 onClicked: {
@@ -164,7 +164,7 @@ Page {
                                         background: Image{
                                             sourceSize.width: 32
                                             sourceSize.height: 32
-                                            source: "qrc:/woterm/resource/skin/connect.png"
+                                            source: "qrc../private/skins/black/connect.png"
                                         }
                                         onClicked: {                                            
                                             if(model.type === "SshWithSftp") {
@@ -204,7 +204,7 @@ Page {
                                         background: Image{
                                             sourceSize.width: 32
                                             sourceSize.height: 32
-                                            source: "qrc:/woterm/resource/skin/edit.png"
+                                            source: "qrc../private/skins/black/edit.png"
                                         }
                                         onClicked: {
                                             console.log("clicked now....")
@@ -217,7 +217,7 @@ Page {
                                         background: Image{
                                             sourceSize.width: 32
                                             sourceSize.height: 32
-                                            source: "qrc:/woterm/resource/skin/remove2.png"
+                                            source: "qrc../private/skins/black/remove2.png"
                                         }
                                         onClicked: {
                                             let retVal = gMessageBox.information(qsTr("Remove confirmation"), qsTr("Continue to remove related sessions?"), MessageDialog.Yes|MessageDialog.No)

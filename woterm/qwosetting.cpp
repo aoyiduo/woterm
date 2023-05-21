@@ -49,7 +49,7 @@ QString QWoSetting::examplePath()
     return QDir::cleanPath(path);
 }
 
-QString QWoSetting::privateDataPath()
+QString QWoSetting::privatePath()
 {
     static QString path = QDir::cleanPath(QApplication::applicationDirPath()+"/../private/");
     return path;
@@ -57,25 +57,25 @@ QString QWoSetting::privateDataPath()
 
 QString QWoSetting::privateJsCorePath()
 {
-    static QString path = QDir::cleanPath(privateDataPath() + "/jscore/");
+    static QString path = QDir::cleanPath(privatePath() + "/jscore/");
     return path;
 }
 
 QString QWoSetting::privateColorSchemaPath()
 {
-    static QString path = QDir::cleanPath(privateDataPath() + "/color-schemes/");
+    static QString path = QDir::cleanPath(privatePath() + "/color-schemes/");
     return path;
 }
 
 QString QWoSetting::privateKeyboardLayoutPath()
 {
-    static QString path = QDir::cleanPath(privateDataPath() + "/kb-layouts/");
+    static QString path = QDir::cleanPath(privatePath() + "/kb-layouts/");
     return path;
 }
 
-QString QWoSetting::privateTranslationPath()
+QString QWoSetting::privateLanguagesPath()
 {
-    static QString path = QDir::cleanPath(privateDataPath() + "/translations/");
+    static QString path = QDir::cleanPath(privatePath() + "/languages/");
     return path;
 }
 
@@ -187,43 +187,34 @@ void QWoSetting::setLastJsLoadPath(const QString &path)
     QWoSetting::setValue("js/last", path);
 }
 
-QString QWoSetting::languageFile()
-{
-    QString name = QWoSetting::value("language/path", "").toString();
-    if(name.isEmpty()) {
-        QLocale local;
-        QStringList langs = local.uiLanguages();
-        if(!langs.isEmpty()) {
-            QString lang = langs.at(0);
-            lang = lang.split('-').at(0);
-            QString path = QString(":/woterm/language/woterm_%1.qm").arg(lang.toLower());
-            QMap<QString,QString> langs = allLanguages();
-            if(langs.values().contains(path)) {
-                return path;
-            }
-        }
-        return QString(":/woterm/language/woterm_en.qm");;
-    }
-    return name;
-}
-
 QMap<QString, QString> QWoSetting::allLanguages()
 {
     static QMap<QString, QString> langs;
     if(langs.isEmpty()) {
-        QDir dir(":/woterm/language");
-        QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files, QDir::Name);
-        for(int i = 0;i < fileNames.length(); i++) {
-            QString path = dir.filePath(fileNames.at(i));
+        QDir dir(privateLanguagesPath());
+        QFileInfoList lsfi = dir.entryInfoList(QStringList("*.qm"), QDir::Files, QDir::Name);
+        for(int i = 0;i < lsfi.length(); i++) {
+            const QFileInfo& fi = lsfi.at(i);
+            QString path = fi.absoluteFilePath();
             QString type = QWoSetting::languageName(path);
             if(!type.isEmpty()){
-                langs.insert(type, path);
+                langs.insert(type, fi.fileName());
             }else{
                 QKxMessageBox::warning(nullptr, "warning", QString("The language file has no name:%1").arg(path));
             }
         }
     }
     return langs;
+}
+
+QString QWoSetting::languageTypeAsBCP47Field()
+{
+    QString name = QWoSetting::value("language/fileName").toString();
+    if(name.isEmpty()) {
+        return "en";
+    }
+    QString bcp47Field = name.mid(name.length() - 5, 2);
+    return bcp47Field;
 }
 
 QStringList QWoSetting::allLanguageNames()
@@ -245,14 +236,43 @@ QString QWoSetting::languageName(const QString &path)
     return translator.translate("English", "English");
 }
 
-void QWoSetting::setLanguageFile(const QString &lang)
+QString QWoSetting::languageFileName()
 {
-    QWoSetting::setValue("language/path", lang);
+    QString name = QWoSetting::value("language/fileName").toString();
+    int pos = name.lastIndexOf('/');
+    if(pos > 0) {
+        name = name.mid(pos+1);
+    }
+    if(name.isEmpty()) {
+        QLocale local;
+        QStringList langs = local.uiLanguages();
+        if(!langs.isEmpty()) {
+            QString lang = langs.at(0);
+            lang = lang.split('-').at(0);
+            QString path = QString("woterm_%1.qm").arg(lang.toLower());
+            QMap<QString,QString> langs = allLanguages();
+            if(langs.values().contains(path)) {
+                return path;
+            }
+        }
+        return QString("woterm_en.qm");;
+    }
+    return name;
+}
+
+QString QWoSetting::absoluteLanguageFilePath()
+{
+    return privateLanguagesPath() + "/" + languageFileName();
+}
+
+void QWoSetting::setLanguageFileName(const QString &lang)
+{
+    QWoSetting::setValue("language/fileName", lang);
 }
 
 bool QWoSetting::isChineseLanguageFile()
 {
-    QString fileName = languageFile();
+    QString fileName = languageFileName();
     return fileName.endsWith("_zh.qm");
 }
 
@@ -348,6 +368,7 @@ void QWoSetting::setListModel(const QString &where, bool isList)
 {
     setValue("sessionList/"+where, isList);
 }
+
 
 QString QWoSetting::adminPassword()
 {
@@ -451,4 +472,44 @@ void QWoSetting::setTtyDefault(const QVariantMap &dm)
 {
     QString v = QWoUtils::qVariantToBase64(dm);
     QWoSetting::setValue("property/ttyDefault", v);
+}
+
+QString QWoSetting::terminalBackgroundImage()
+{
+    return QWoSetting::value("terminal/backgroundImage").toString();
+}
+
+void QWoSetting::setTerminalBackgroundImage(const QString &path)
+{
+    QWoSetting::setValue("terminal/backgroundImage", path);
+}
+
+int QWoSetting::terminalBackgroundImageAlpha()
+{
+    return QWoSetting::value("terminal/backgroundImageAlpha", 128).toInt();
+}
+
+void QWoSetting::setTerminalBackgroundImageAlpha(int v)
+{
+    QWoSetting::setValue("terminal/backgroundImageAlpha", v);
+}
+
+bool QWoSetting::terminalBackgroundImageEdgeSmooth()
+{
+    return QWoSetting::value("terminal/backgroundImageEdgeSmooth", true).toBool();
+}
+
+void QWoSetting::setTerminalBackgroundImageEdgeSmooth(bool v)
+{
+    QWoSetting::setValue("terminal/backgroundImageEdgeSmooth", v);
+}
+
+QString QWoSetting::terminalBackgroundImagePosition()
+{
+    return QWoSetting::value("terminal/backgroundImagePosition", "000010000").toString();
+}
+
+void QWoSetting::setTerminalBackgroundImagePosition(const QString &pos)
+{
+    QWoSetting::setValue("terminal/backgroundImagePosition", pos);
 }

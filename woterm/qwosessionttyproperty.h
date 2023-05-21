@@ -28,7 +28,7 @@ class QKxTermItem;
 class QTimer;
 class QComboBox;
 class QToolButton;
-
+class QKxPositionItem;
 
 class QFontCleanDelegate : public QStyledItemDelegate
 {
@@ -76,6 +76,7 @@ private slots:
     void onFontCurrentIndexChanged(const QString& family);
     void onStyleCurrentIndexChanged(const QString& style);
     void onFontValueChanged(int v);
+    void onBkImageAlphaValueChanged(int v);
     void onBlockCursorToggled();
     void onUnderlineCursorToggled();
     void onBeamCursorToggled();
@@ -85,7 +86,8 @@ private slots:
     void onItemDoubleClicked(const QModelIndex &index);
     void onButtonImportClicked();
     void onFontFamilyRemove(const QString& family);
-
+    void onTileButtonClicked();
+    void onSelectButtonClicked();
 
 private:
     void initDefault();
@@ -102,6 +104,8 @@ private:
     QPointer<QKxTermWidget> m_preview;
     QPointer<QKxTermItem> m_term;
     QPointer<QFontCleanDelegate> m_delegate;
+    QPointer<QKxPositionItem> m_item;
+
 };
 
 #endif // QWOSESSIONTTYPROPERTY_H

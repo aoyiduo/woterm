@@ -26,7 +26,7 @@ QWoLineEdit::QWoLineEdit(QLineEdit *parent)
 {
     parent->installEventFilter(this);
     m_btn = new QToolButton(parent);
-    m_btn->setIcon(QIcon(":/woterm/resource/skin/tabclose.png"));
+    m_btn->setIcon(QIcon("../private/skins/black/tabclose.png"));
     QMargins m = m_edit->textMargins();
     m.setRight(m.right() + 16);
     m_edit->setTextMargins(m);

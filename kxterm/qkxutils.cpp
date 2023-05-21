@@ -21,6 +21,7 @@
 #include <QFontMetricsF>
 #include <QFontInfo>
 #include <QDataStream>
+#include <QCoreApplication>
 
 static QColor xterm_color256[] = {
     QColor("#000000"),
@@ -293,19 +294,39 @@ QVector<QColor> initDefault() {
 }
 
 static QMap<QString, QKxKeyTranslator*> layouts;
+static QStringList m_keyboardPaths;
+static QStringList m_colorPaths;
+void QKxUtils::addCustomKeyboardLayoutPaths(const QStringList &paths)
+{
+    m_keyboardPaths = paths;
+}
+
+void QKxUtils::addCustomColorSchemaPaths(const QStringList &paths)
+{
+    m_colorPaths = paths;
+}
+
 QStringList QKxUtils::availableKeyLayouts()
 {
     if(layouts.isEmpty()) {
-        QDir dir;
-        if(dir.cd(":/kxterm/kblayout")) {
-            QList<QFileInfo> fis = dir.entryInfoList(QDir::Files);
-            for(int i = 0; i < fis.length(); i++) {
-                QFileInfo& fi = fis[i];
-                QString fileName = fi.baseName();
-                QKxKeyTranslator *keyLayout = new QKxKeyTranslator();
-                if(keyLayout->load(fi.absoluteFilePath())){
-                    keyLayout->setName(fileName);
-                    layouts.insert(fileName, keyLayout);
+        QStringList paths = m_keyboardPaths;
+        QString path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../private/keytabs");
+        paths.append(path);
+        QStringList filters;
+        filters << "*.keytab";
+        for(auto it = paths.begin(); it != paths.end(); it++) {
+            QString path = *it;
+            QDir dir;
+            if(dir.cd(path)) {
+                QList<QFileInfo> fis = dir.entryInfoList(filters, QDir::Files);
+                for(int i = 0; i < fis.length(); i++) {
+                    QFileInfo& fi = fis[i];
+                    QString fileName = fi.baseName();
+                    QKxKeyTranslator *keyLayout = new QKxKeyTranslator();
+                    if(keyLayout->load(fi.absoluteFilePath())){
+                        keyLayout->setName(fileName);
+                        layouts.insert(fileName, keyLayout);
+                    }
                 }
             }
         }
@@ -332,13 +353,19 @@ static QMap<QString, QString> schemas;
 QStringList QKxUtils::availableColorSchemas()
 {
     if(schemas.isEmpty()) {
-        QDir dir;
-        if(dir.cd(":/kxterm/theme")) {
-            QList<QFileInfo> fis = dir.entryInfoList(QDir::Files);
-            for(int i = 0; i < fis.length(); i++) {
-                QFileInfo& fi = fis[i];
-                QString fileName = fi.fileName();
-                if(fileName.endsWith(".theme")){
+        QStringList paths = m_colorPaths;
+        QString path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../private/themes");
+        paths.append(path);
+        QStringList filters;
+        filters << "*.theme";
+        for(auto it = paths.begin(); it != paths.end(); it++) {
+            QString path = *it;
+            QDir dir;
+            if(dir.cd(path)) {
+                QList<QFileInfo> fis = dir.entryInfoList(filters, QDir::Files);
+                for(int i = 0; i < fis.length(); i++) {
+                    QFileInfo& fi = fis[i];
+                    QString fileName = fi.fileName();
                     schemas.insert(fi.baseName(), fi.absoluteFilePath());
                 }
             }

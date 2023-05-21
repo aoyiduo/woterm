@@ -27,8 +27,8 @@ QKxFilterLineEdit::QKxFilterLineEdit(QWidget *parent)
 {
     m_listView = new QKxFilterListView(this, topLevelWidget());
     QObject::connect(m_listView, SIGNAL(itemClicked(QString,int)), this, SLOT(onListViewItemClicked(QString,int)));
-    QKxButtonAssist *assist = new QKxButtonAssist(":/woterm/resource/skin/add2.png", this);
-    assist->append(":/woterm/resource/skin/connect.png", true);
+    QKxButtonAssist *assist = new QKxButtonAssist("../private/skins/black/add2.png", this);
+    assist->append("../private/skins/black/connect.png", true);
     QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
     QObject::connect(this, SIGNAL(returnPressed()), this, SLOT(onAssistReturnPressed()));
 }

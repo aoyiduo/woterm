@@ -14,8 +14,8 @@
    <string>QWoMainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="woterm.qrc">
-    <normaloff>:/woterm/resource/skin/woterm4.png</normaloff>:/woterm/resource/skin/woterm4.png</iconset>
+   <iconset>
+    <normaloff>../private/skins/black/woterm4.png</normaloff>../private/skins/black/woterm4.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">
@@ -27,7 +27,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -62,6 +62,7 @@
     <addaction name="actionRestore"/>
     <addaction name="actionBackup"/>
     <addaction name="separator"/>
+    <addaction name="actionRestart"/>
     <addaction name="actionExit"/>
     <addaction name="separator"/>
    </widget>
@@ -128,8 +129,8 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">
    <property name="icon">
-    <iconset resource="woterm.qrc">
-     <normaloff>:/woterm/resource/skin/stop2.png</normaloff>:/woterm/resource/skin/stop2.png</iconset>
+    <iconset>
+     <normaloff>../private/skins/black/stop2.png</normaloff>../private/skins/black/stop2.png</iconset>
    </property>
    <property name="text">
     <string>Exit</string>
@@ -142,8 +143,8 @@
   </action>
   <action name="actionSessionList">
    <property name="icon">
-    <iconset resource="woterm.qrc">
-     <normaloff>:/woterm/resource/skin/layout.png</normaloff>:/woterm/resource/skin/layout.png</iconset>
+    <iconset>
+     <normaloff>../private/skins/black/layout.png</normaloff>../private/skins/black/layout.png</iconset>
    </property>
    <property name="text">
     <string>Session List</string>
@@ -151,8 +152,8 @@
   </action>
   <action name="actionSessionNew">
    <property name="icon">
-    <iconset resource="woterm.qrc">
-     <normaloff>:/woterm/resource/skin/add2.png</normaloff>:/woterm/resource/skin/add2.png</iconset>
+    <iconset>
+     <normaloff>../private/skins/black/add2.png</normaloff>../private/skins/black/add2.png</iconset>
    </property>
    <property name="text">
     <string>New</string>
@@ -160,8 +161,8 @@
   </action>
   <action name="actionIdentityManage">
    <property name="icon">
-    <iconset resource="woterm.qrc">
-     <normaloff>:/woterm/resource/skin/keyset.png</normaloff>:/woterm/resource/skin/keyset.png</iconset>
+    <iconset>
+     <normaloff>../private/skins/black/keyset.png</normaloff>../private/skins/black/keyset.png</iconset>
    </property>
    <property name="text">
     <string>Identity manage</string>
@@ -175,8 +176,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="woterm.qrc">
-     <normaloff>:/woterm/resource/skin/about.png</normaloff>:/woterm/resource/skin/about.png</iconset>
+    <iconset>
+     <normaloff>../private/skins/black/about.png</normaloff>../private/skins/black/about.png</iconset>
    </property>
    <property name="text">
     <string>About</string>
@@ -184,8 +185,8 @@
   </action>
   <action name="actionDocument">
    <property name="icon">
-    <iconset resource="woterm.qrc">
-     <normaloff>:/woterm/resource/skin/help.png</normaloff>:/woterm/resource/skin/help.png</iconset>
+    <iconset>
+     <normaloff>../private/skins/black/help.png</normaloff>../private/skins/black/help.png</iconset>
    </property>
    <property name="text">
     <string>Online Document</string>
@@ -203,8 +204,8 @@
   </action>
   <action name="actionRestore">
    <property name="icon">
-    <iconset resource="woterm.qrc">
-     <normaloff>:/woterm/resource/skin/import.png</normaloff>:/woterm/resource/skin/import.png</iconset>
+    <iconset>
+     <normaloff>../private/skins/black/import.png</normaloff>../private/skins/black/import.png</iconset>
    </property>
    <property name="text">
     <string>Restore</string>
@@ -212,8 +213,8 @@
   </action>
   <action name="actionAdministrator">
    <property name="icon">
-    <iconset resource="woterm.qrc">
-     <normaloff>:/woterm/resource/skin/password .png</normaloff>:/woterm/resource/skin/password .png</iconset>
+    <iconset>
+     <normaloff>../private/skins/black/password .png</normaloff>../private/skins/black/password .png</iconset>
    </property>
    <property name="text">
     <string>Administrator</string>
@@ -221,8 +222,8 @@
   </action>
   <action name="actionOpenRemote">
    <property name="icon">
-    <iconset resource="woterm.qrc">
-     <normaloff>:/woterm/resource/skin/nodes.png</normaloff>:/woterm/resource/skin/nodes.png</iconset>
+    <iconset>
+     <normaloff>../private/skins/black/nodes.png</normaloff>../private/skins/black/nodes.png</iconset>
    </property>
    <property name="text">
     <string>Open remote session</string>
@@ -230,8 +231,8 @@
   </action>
   <action name="actionOpenLocal">
    <property name="icon">
-    <iconset resource="woterm.qrc">
-     <normaloff>:/woterm/resource/skin/console.png</normaloff>:/woterm/resource/skin/console.png</iconset>
+    <iconset>
+     <normaloff>../private/skins/black/console.png</normaloff>../private/skins/black/console.png</iconset>
    </property>
    <property name="text">
     <string>Open local session</string>
@@ -239,8 +240,8 @@
   </action>
   <action name="actionOpenSerialport">
    <property name="icon">
-    <iconset resource="woterm.qrc">
-     <normaloff>:/woterm/resource/skin/serialport.png</normaloff>:/woterm/resource/skin/serialport.png</iconset>
+    <iconset>
+     <normaloff>../private/skins/black/serialport.png</normaloff>../private/skins/black/serialport.png</iconset>
    </property>
    <property name="text">
     <string>Open serialport session</string>
@@ -291,10 +292,13 @@
     <string>Tool options</string>
    </property>
   </action>
+  <action name="actionRestart">
+   <property name="text">
+    <string>Restart application</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="woterm.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

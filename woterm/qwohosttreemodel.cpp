@@ -17,15 +17,15 @@ Q_GLOBAL_STATIC(QWoHostTreeModel, gtreeModel)
 QWoHostTreeModel::QWoHostTreeModel(QObject *parent)
     : QStandardItemModel(parent)
 {
-    m_sshIcon = QIcon(QPixmap(":/woterm/resource/skin/ssh2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_sftpIcon = QIcon(QPixmap(":/woterm/resource/skin/sftp.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_telnetIcon = QIcon(QPixmap(":/woterm/resource/skin/telnet.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_rloginIcon = QIcon(QPixmap(":/woterm/resource/skin/rlogin.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_mstscIcon = QIcon(QPixmap(":/woterm/resource/skin/mstsc2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_vncIcon = QIcon(QPixmap(":/woterm/resource/skin/vnc2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_serialIcon = QIcon(QPixmap(":/woterm/resource/skin/serialport.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_folderOpenIcon = QIcon(QPixmap(":/woterm/resource/skin/dirs.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_folderCloseIcon = QIcon(QPixmap(":/woterm/resource/skin/dir_close.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_sshIcon = QIcon(QPixmap("../private/skins/black/ssh2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_sftpIcon = QIcon(QPixmap("../private/skins/black/sftp.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_telnetIcon = QIcon(QPixmap("../private/skins/black/telnet.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_rloginIcon = QIcon(QPixmap("../private/skins/black/rlogin.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_mstscIcon = QIcon(QPixmap("../private/skins/black/mstsc2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_vncIcon = QIcon(QPixmap("../private/skins/black/vnc2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_serialIcon = QIcon(QPixmap("../private/skins/black/serialport.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_folderOpenIcon = QIcon(QPixmap("../private/skins/black/dirs.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_folderCloseIcon = QIcon(QPixmap("../private/skins/black/dir_close.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
 
     QMetaObject::invokeMethod(this, "refreshList", Qt::QueuedConnection);
     QObject::connect(QWoSshConf::instance(), SIGNAL(dataReset()), this, SLOT(onDataReset()));

@@ -16,6 +16,8 @@ if(MSVC)
 endif()
 
 find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 QuickWidgets SerialPort LinguistTools REQUIRED)
+find_package(Qt5Core CONFIG REQUIRED Private)
+find_package(Qt5Gui CONFIG REQUIRED Private)
 if(ANDROID)
     find_package(Qt5 COMPONENTS AndroidExtras REQUIRED)
 endif()
@@ -24,15 +26,17 @@ message(STATUS "root This is BINARY dir " ${PROJECT_BINARY_DIR})
 message(STATUS "root This is SOURCE dir " ${PROJECT_SOURCE_DIR})
 
 set(SOURCE_FILES
+    qkxdockwidget.cpp
     qkxbuttonassist.cpp
-    qkxfilterbox.cpp
     qkxfilterlineedit.cpp
     qkxfilterlistview.cpp    
     qkxmessagebox.cpp
     qkxtouchpoint.cpp
     qkxloadingbarwidget.cpp
+    qkxpositionitem.cpp
     #window object
     main.cpp
+    qwotheme.cpp
     qwoapplication.cpp
     qwomenubutton.cpp
     qwoaboutdialog.cpp
@@ -172,14 +176,16 @@ set(SOURCE_FILES
 )
 
 set(HEADER_FILES
+    qkxdockwidget.h
     qkxbuttonassist.h
-    qkxfilterbox.h
     qkxfilterlineedit.h
     qkxfilterlistview.h    
     qkxtouchpoint.h
     qkxmessagebox.h
     qkxloadingbarwidget.h
+    qkxpositionitem.h
     # window object
+    qwotheme.h
     qwoapplication.h
     qwomenubutton.h
     qwoaboutdialog.h
@@ -490,6 +496,13 @@ elseif(APPLE)
         LINK_FLAGS "-sectcreate __CGPreLoginApp __cgpreloginapp /dev/null"
     )
     target_link_libraries(${PROJECT_NAME} ${CMAKE_DL_LIBS})
+    add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_CURRENT_SOURCE_DIR}/../private"
+        COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+        COMMAND cp -Rf "${CMAKE_CURRENT_SOURCE_DIR}/../private" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/../private"
+        COMMAND ls -l "$<TARGET_FILE_DIR:${PROJECT_NAME}>/../*"
+    )
 elseif(ANDROID)
     message("android system.")
     set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android" CACHE INTERNAL "")
@@ -515,6 +528,6 @@ else()
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets Qt5::SerialPort Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::CorePrivate Qt5::Gui Qt5::GuiPrivate Qt5::Widgets  Qt5::SerialPort Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets)
 
 

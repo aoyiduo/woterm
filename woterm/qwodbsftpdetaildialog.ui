@@ -162,7 +162,7 @@
         </property>
         <property name="icon">
          <iconset resource="woterm.qrc">
-          <normaloff>:/woterm/resource/skin/proxy.png</normaloff>:/woterm/resource/skin/proxy.png</iconset>
+          <normaloff>../private/skins/black/proxy.png</normaloff>../private/skins/black/proxy.png</iconset>
         </property>
        </widget>
       </item>

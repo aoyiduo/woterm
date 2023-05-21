@@ -20,6 +20,8 @@
 #include "qwoshortcutdelegate.h"
 #include "qkxmessagebox.h"
 #include "qwofontlistmodel.h"
+#include "qkxpositionitem.h"
+#include "qkxbuttonassist.h"
 
 #include <QTabBar>
 #include <QBoxLayout>
@@ -43,7 +45,7 @@ QFontCleanDelegate::QFontCleanDelegate(QWidget *parent)
     : QStyledItemDelegate(parent)
 {
     m_btnRemove = new QToolButton(parent);
-    m_btnRemove->setIcon(QIcon(":/woterm/resource/skin/close.png"));
+    m_btnRemove->setIcon(QIcon("../private/skins/black/close.png"));
     m_btnRemove->setIconSize(QSize(BUTTON_REMOVE_SIZE,BUTTON_REMOVE_SIZE));
     QSize sz(BUTTON_REMOVE_SIZE,BUTTON_REMOVE_SIZE);
     m_btnRemove->resize(sz);
@@ -134,6 +136,7 @@ QWoSessionTTYProperty::QWoSessionTTYProperty(ETTYType type, QWidget *parent)
     m_tabBar->addTab(tr("Pattern"));
     m_tabBar->addTab(tr("Shortcut"));
     m_tabBar->addTab(tr("Other"));
+    m_tabBar->addTab(tr("Background image"));
     QObject::connect(m_tabBar, SIGNAL(currentChanged(int)), this, SLOT(onPageCurrentChanged(int)));
 
     m_preview = new QKxTermWidget(this);
@@ -199,6 +202,45 @@ QWoSessionTTYProperty::QWoSessionTTYProperty(ETTYType type, QWidget *parent)
 
     QObject::connect(ui->btnImport, SIGNAL(clicked()), this, SLOT(onButtonImportClicked()));
 
+    {
+        ui->frame->layout()->deleteLater();
+        QVBoxLayout *layout = new QVBoxLayout(ui->frame);
+        m_item = new QKxPositionItem(ui->frame);
+        m_item->setFixedSize(100, 100);
+        QObject::connect(m_item, SIGNAL(clicked(int)), ui->chkTileNone, SLOT(click()));
+        layout->addWidget(m_item);
+    }
+    {
+        int val = QWoSetting::terminalBackgroundImageAlpha();
+        ui->bkImgAlpha->setRange(30, 220);
+        ui->bkImgAlpha->setValue(val);
+        ui->alphaValue->setText(QString::number(val));
+    }
+    {
+        bool smooth = QWoSetting::terminalBackgroundImageEdgeSmooth();
+        ui->chkEdgeSmooth->setChecked(smooth);
+    }
+    {
+        QString path = QWoSetting::terminalBackgroundImage();
+        ui->bkImage->setText(path);
+
+        QKxButtonAssist *btn = new QKxButtonAssist("../private/skins/black/remove.png", ui->bkImage);
+        QObject::connect(btn, SIGNAL(clicked(int)), ui->bkImage, SLOT(clear()));
+    }
+
+    {
+        QString pos = QWoSetting::terminalBackgroundImagePosition();
+        m_item->setPositionAsString(pos);
+    }
+
+    QObject::connect(ui->chkTileNone, SIGNAL(clicked()), this, SLOT(onTileButtonClicked()));
+    QObject::connect(ui->chkTileH, SIGNAL(clicked()), this, SLOT(onTileButtonClicked()));
+    QObject::connect(ui->chkTileV, SIGNAL(clicked()), this, SLOT(onTileButtonClicked()));
+    QObject::connect(ui->chkTileAll, SIGNAL(clicked()), this, SLOT(onTileButtonClicked()));
+    QObject::connect(ui->btnSelect, SIGNAL(clicked()), this, SLOT(onSelectButtonClicked()));
+
+    QObject::connect(ui->bkImgAlpha, SIGNAL(valueChanged(int)), this, SLOT(onBkImageAlphaValueChanged(int)));
+
     initDefault();
     adjustSize();
 }
@@ -227,8 +269,9 @@ void QWoSessionTTYProperty::setCustom(const QVariantMap &mdata)
             m_term->setTextCodec(name);
         }
         if(mdata.contains("fontName")) {
-            QString fontName = mdata.value("fontName", DEFAULT_FONT_FAMILY).toString();
-            int fontSize = mdata.value("fontSize", DEFAULT_FONT_SIZE).toInt();
+            QFont ft = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+            QString fontName = mdata.value("fontName", ft.family()).toString();
+            int fontSize = mdata.value("fontSize", ft.pointSize()).toInt();
             ui->fontSize->setValue(fontSize);
             ui->fontChooser->setCurrentText(fontName);
             m_term->setTerminalFont(fontName, fontSize);
@@ -283,6 +326,9 @@ void QWoSessionTTYProperty::onPageCurrentChanged(int idx)
     case 2:
         ui->stacked->setCurrentWidget(ui->other);
         break;
+    case 3:
+        ui->stacked->setCurrentWidget(ui->bkimg);
+        break;
     }
 }
 
@@ -305,6 +351,11 @@ void QWoSessionTTYProperty::onStyleCurrentIndexChanged(const QString &style)
 void QWoSessionTTYProperty::onFontValueChanged(int v)
 {
     refleshFontPreview();
+}
+
+void QWoSessionTTYProperty::onBkImageAlphaValueChanged(int v)
+{
+    ui->alphaValue->setText(QString::number(v));
 }
 
 void QWoSessionTTYProperty::onBlockCursorToggled()
@@ -371,6 +422,16 @@ void QWoSessionTTYProperty::onButtonSaveClicked()
     if(!m_bCustom) {
         QWoSetting::setTtyDefault(m_result);
     }
+
+
+    /*set background image*/
+    QString path = ui->bkImage->text();
+    QWoSetting::setTerminalBackgroundImage(path);
+    QWoSetting::setTerminalBackgroundImageAlpha(ui->bkImgAlpha->value());
+    QWoSetting::setTerminalBackgroundImageEdgeSmooth(ui->chkEdgeSmooth->isChecked());
+    QWoSetting::setTerminalBackgroundImagePosition(m_item->postionAsString());
+
+
     close();
 }
 
@@ -436,6 +497,35 @@ void QWoSessionTTYProperty::onFontFamilyRemove(const QString &family)
     QMetaObject::invokeMethod(model, "reload", Qt::QueuedConnection);
 }
 
+void QWoSessionTTYProperty::onTileButtonClicked()
+{
+    QRadioButton *btn = qobject_cast<QRadioButton*>(sender());
+    if(ui->chkTileNone == btn) {
+        m_item->setTileMode(0);
+    }else if(ui->chkTileH == btn){
+        m_item->setTileMode(1);
+    }else if(ui->chkTileV == btn) {
+        m_item->setTileMode(2);
+    }else if(ui->chkTileAll == btn) {
+        m_item->setTileMode(3);
+    }
+}
+
+void QWoSessionTTYProperty::onSelectButtonClicked()
+{
+    QString file = QFileDialog::getOpenFileName(this, tr("Image file"), QDir::homePath(), "Images (*.png *.jpg)");
+    if(file.isEmpty()) {
+        return;
+    }
+    QImage img(file);
+    if(img.isNull() || img.width() < 128 || img.height() < 128) {
+        QKxMessageBox::information(this, tr("Image information"), tr("Image size cannot be smaller than 128*128"));
+        return;
+    }
+
+    ui->bkImage->setText(file);
+}
+
 void QWoSessionTTYProperty::initDefault()
 {
     QVariantMap mdata = QWoSetting::ttyDefault();
@@ -452,10 +542,11 @@ void QWoSessionTTYProperty::initDefault()
     ui->codepage->setCurrentText(codec);
     m_term->setTextCodec(codec);
 
-    QString fontName = mdata.value("fontName", DEFAULT_FONT_FAMILY).toString();
-    int fontSize = mdata.value("fontSize", DEFAULT_FONT_SIZE).toInt();
-    ui->fontSize->setValue(fontSize);
+    QFont ft = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    QString fontName = mdata.value("fontName", ft.family()).toString();
     ui->fontChooser->setCurrentText(fontName);
+    int fontSize = mdata.value("fontSize", ft.pointSize()).toInt();
+    ui->fontSize->setValue(fontSize);
     m_term->setTerminalFont(fontName, fontSize);
     refleshFontPreview();
 

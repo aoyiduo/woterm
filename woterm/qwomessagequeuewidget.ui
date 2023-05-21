@@ -45,7 +45,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/close.png</normaloff>:/woterm/resource/skin/close.png</iconset>
+         <normaloff>../private/skins/black/close.png</normaloff>../private/skins/black/close.png</iconset>
        </property>
       </widget>
      </item>

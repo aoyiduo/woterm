@@ -24,7 +24,7 @@ QWoAdminDialog::QWoAdminDialog(QWidget *parent) :
     setWindowTitle(tr("Administator"));
     Qt::WindowFlags flags = windowFlags();
     setWindowFlags(flags &~Qt::WindowContextHelpButtonHint);
-    QKxButtonAssist *assist = new QKxButtonAssist(":/woterm/resource/skin/eye.png", ui->pass);
+    QKxButtonAssist *assist = new QKxButtonAssist("../private/skins/black/eye.png", ui->pass);
     QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
     QObject::connect(ui->pass, SIGNAL(textChanged(QString)), this, SLOT(onTextChanged(QString)));
     QObject::connect(ui->btnPassReset, SIGNAL(clicked()), this, SLOT(onPasswordResetClicked()));

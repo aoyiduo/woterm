@@ -175,7 +175,7 @@
          </property>
          <property name="icon">
           <iconset resource="woterm.qrc">
-           <normaloff>:/woterm/resource/skin/pattern2.png</normaloff>:/woterm/resource/skin/pattern2.png</iconset>
+           <normaloff>../private/skins/black/pattern2.png</normaloff>../private/skins/black/pattern2.png</iconset>
          </property>
         </widget>
        </item>
@@ -200,7 +200,7 @@
          </property>
          <property name="icon">
           <iconset resource="woterm.qrc">
-           <normaloff>:/woterm/resource/skin/linkcfg.png</normaloff>:/woterm/resource/skin/linkcfg.png</iconset>
+           <normaloff>../private/skins/black/linkcfg.png</normaloff>../private/skins/black/linkcfg.png</iconset>
          </property>
         </widget>
        </item>
@@ -350,7 +350,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/add2.png</normaloff>:/woterm/resource/skin/add2.png</iconset>
+         <normaloff>../private/skins/black/add2.png</normaloff>../private/skins/black/add2.png</iconset>
        </property>
       </widget>
      </item>

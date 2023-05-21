@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>390</width>
-    <height>228</height>
+    <height>254</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -79,8 +79,8 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset resource="woterm.qrc">
-             <normaloff>:/woterm/resource/skin/dirs.png</normaloff>:/woterm/resource/skin/dirs.png</iconset>
+            <iconset>
+             <normaloff>../private/skins/black/dirs.png</normaloff>../private/skins/black/dirs.png</iconset>
            </property>
           </widget>
          </item>
@@ -120,7 +120,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset resource="../kxftp/qkxftp.qrc">
+            <iconset>
              <normaloff>:/kxftp/resource/skin/copy.png</normaloff>:/kxftp/resource/skin/copy.png</iconset>
            </property>
           </widget>
@@ -144,8 +144,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/dirs.png</normaloff>:/woterm/resource/skin/dirs.png</iconset>
+        <iconset>
+         <normaloff>../private/skins/black/dirs.png</normaloff>../private/skins/black/dirs.png</iconset>
        </property>
       </widget>
      </item>
@@ -184,8 +184,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/download.png</normaloff>:/woterm/resource/skin/download.png</iconset>
+        <iconset>
+         <normaloff>../private/skins/black/download.png</normaloff>../private/skins/black/download.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -317,9 +317,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../kxftp/qkxftp.qrc"/>
-  <include location="woterm.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

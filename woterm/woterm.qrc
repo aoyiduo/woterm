@@ -1,199 +1,39 @@
 <RCC>
     <qresource prefix="/woterm">
-        <file>resource/skin/add.png</file>
-        <file>resource/skin/download.png</file>
-        <file>resource/skin/export.png</file>
-        <file>resource/skin/hsplit.png</file>
-        <file>resource/skin/import.png</file>
-        <file>resource/skin/list.png</file>
-        <file>resource/skin/manage.png</file>
-        <file>resource/skin/reload.png</file>
-        <file>resource/skin/tabclose.png</file>
-        <file>resource/skin/upload.png</file>
-        <file>resource/skin/vsplit.png</file>
-        <file>resource/skin/woterm.png</file>
-        <file>resource/skin/woterm2.png</file>
-        <file>resource/skin/cfgdef.png</file>
-        <file>resource/skin/woterm3.png</file>
-        <file>resource/skin/woterm4.png</file>
-        <file>resource/skin/find.png</file>
-        <file>resource/skin/connect.png</file>
-        <file>resource/skin/linkcfg.png</file>
-        <file>resource/skin/save.png</file>
-        <file>resource/skin/about.png</file>
-        <file>resource/skin/javascript.png</file>
-        <file>resource/skin/javascript2.png</file>
-        <file>resource/skin/js.png</file>
-        <file>resource/skin/folder.png</file>
-        <file>resource/skin/debug.png</file>
-        <file>resource/skin/run.png</file>
-        <file>resource/skin/stop.png</file>
-        <file>resource/skin/palette.png</file>
-        <file>resource/skin/pattern2.png</file>
-        <file>resource/skin/style.png</file>
-        <file>resource/skin/nodes.png</file>
-        <file>resource/skin/add2.png</file>
-        <file>resource/skin/haddsplit.png</file>
-        <file>resource/skin/vaddsplit.png</file>
-        <file>resource/skin/layout.png</file>
-        <file>resource/skin/layout2.png</file>
-        <file>resource/skin/setting2.png</file>
-        <file>resource/skin/setting3.png</file>
-        <file>resource/skin/setting.png</file>
-        <file>resource/skin/history.png</file>
-        <file>resource/skin/keys.png</file>
-        <file>resource/skin/keyset.png</file>
-        <file>resource/skin/help.png</file>
-        <file>resource/skin/help2.png</file>
-        <file>resource/skin/delete.png</file>
-        <file>resource/skin/dirs.png</file>
-        <file>resource/skin/sftp.png</file>
-        <file>resource/skin/sftp2.png</file>
-        <file>resource/skin/file.png</file>
-        <file>resource/skin/link.png</file>
-        <file>resource/skin/back.png</file>
-        <file>resource/skin/forward.png</file>
-        <file>resource/skin/back2.png</file>
-        <file>resource/skin/back3.png</file>
-        <file>resource/skin/enter.png</file>
-        <file>resource/skin/enter2.png</file>
-        <file>resource/skin/enter3.png</file>
-        <file>resource/skin/select.png</file>
-        <file>resource/skin/download2.png</file>
-        <file>resource/skin/mkdir.png</file>
-        <file>resource/skin/rmdir.png</file>
-        <file>resource/skin/rmfile.png</file>
-        <file>resource/skin/loading.png</file>
-        <file>resource/skin/upload2.png</file>
-        <file>resource/skin/ssh.png</file>
-        <file>resource/skin/telnet.png</file>
-        <file>resource/skin/ssh2.png</file>
-        <file>resource/skin/rlogin.png</file>
-        <file>resource/skin/home.png</file>
-        <file>resource/skin/home2.png</file>
-        <file>resource/skin/mstsc.png</file>
-        <file>resource/skin/mstsc2.png</file>
-        <file>resource/skin/multiplex.png</file>
-        <file>resource/skin/serialport.png</file>
-        <file>resource/skin/vnc.png</file>
-        <file>resource/skin/vnc2.png</file>
-        <file>resource/skin/vnc3.png</file>
-        <file>language/woterm_en.qm</file>
-        <file>language/woterm_zh.qm</file>
-        <file>resource/skin/proxy.png</file>
-        <file>resource/skin/flowchart.png</file>
-        <file>resource/skin/exitfull.png</file>
-        <file>resource/skin/fullscreen.png</file>
-        <file>resource/skin/i18n1.png</file>
-        <file>resource/skin/i18n2.png</file>
-        <file>resource/skin/i18n3.png</file>
-        <file>resource/skin/lock2.png</file>
-        <file>resource/skin/logo.png</file>
-        <file>resource/skin/logo2.png</file>
-        <file>resource/skin/logo3.png</file>
-        <file>resource/skin/minize2.png</file>
-        <file>resource/skin/screen.png</file>
-        <file>resource/skin/scroll.png</file>
-        <file>resource/skin/setting4.png</file>
-        <file>resource/skin/signal.png</file>
-        <file>resource/skin/signal_1.png</file>
-        <file>resource/skin/signal_2.png</file>
-        <file>resource/skin/signal_3.png</file>
-        <file>resource/skin/signal_4.png</file>
-        <file>resource/skin/signal_5.png</file>
-        <file>resource/skin/social-javascript.png</file>
-        <file>resource/skin/wallpaper.png</file>
-        <file>resource/skin/woterm5.png</file>
-        <file>resource/skin/woterm6.png</file>
-        <file>resource/skin/woterm7.png</file>
-        <file>resource/skin/woterm8.png</file>
-        <file>resource/skin/stop2.png</file>
-        <file>resource/skin/check.png</file>
-        <file>resource/skin/radio.png</file>
-        <file>resource/skin/nail.png</file>
-        <file>resource/skin/nail2.png</file>
-        <file>resource/skin/ftp.png</file>
-        <file>resource/skin/close.png</file>
-        <file>resource/skin/audio_off.png</file>
-        <file>resource/skin/audio_on.png</file>
-        <file>resource/skin/dir_close.png</file>
-        <file>resource/skin/tree.png</file>
-        <file>resource/skin/tree2.png</file>
-        <file>resource/skin/admin.png</file>
-        <file>resource/skin/password .png</file>
-        <file>resource/skin/account.png</file>
-        <file>resource/skin/eye.png</file>
-        <file>resource/skin/mark.png</file>
-        <file>resource/skin/select2.png</file>
-        <file>resource/skin/select3.png</file>
-        <file>resource/skin/folder2.png</file>
-        <file>resource/skin/select4.png</file>
-        <file>resource/skin/transfer2.png</file>
-        <file>resource/skin/transfer3.png</file>
-        <file>resource/skin/enter4.png</file>
-        <file>resource/skin/history2.png</file>
-        <file>resource/skin/console.png</file>
-        <file>resource/skin/arrowdown.png</file>
         <file>qml/MoMainView.qml</file>
         <file>qml/MoDBRestoreView.qml</file>
         <file>qml/MoToolBar.qml</file>
-        <file>resource/skin/menu.png</file>
         <file>qml/main.qml</file>
         <file>qml/MoMainMenu.qml</file>
-        <file>resource/skin/left2.png</file>
-        <file>resource/skin/right.png</file>
-        <file>resource/skin/right2.png</file>
-        <file>resource/skin/time.png</file>
-        <file>resource/skin/transfer.png</file>
         <file>qml/MoDBRestoreCryptInput.qml</file>
         <file>qml/MoDBRestoreSftpInput.qml</file>
         <file>qml/MoDBRestoreOnlineList.qml</file>
         <file>qml/MoSessionManageView.qml</file>
-        <file>resource/skin/edit.png</file>
-        <file>resource/skin/left1.png</file>
-        <file>resource/skin/remove.png</file>
-        <file>resource/skin/remove2.png</file>
-        <file>resource/skin/touch.png</file>
-        <file>resource/skin/touch2.png</file>
         <file>qml/MoSessionProperty.qml</file>
         <file>qml/MoSimpleChoose.qml</file>
-        <file>resource/qss/desk_default.qss</file>
-        <file>resource/qss/mobile_default.qss</file>
-        <file>resource/skin/caps.png</file>
-        <file>resource/skin/caps2.png</file>
-        <file>resource/skin/keysym.png</file>
-        <file>resource/skin/keyenter.png</file>
-        <file>resource/skin/history3.png</file>
-        <file>resource/skin/down.png</file>
-        <file>resource/skin/up.png</file>
-        <file>resource/skin/number.png</file>
-        <file>resource/skin/space.png</file>
         <file>qml/MoMessageBox.qml</file>
         <file>qml/MoDBRestoreSetup.qml</file>
         <file>qml/MoDBRestoreFinish.qml</file>
-        <file>resource/skin/import2.png</file>
         <file>qml/MoIdentifyView.qml</file>
         <file>qml/MoIdentifyPublicKey.qml</file>
         <file>qml/MoFileDialog.qml</file>
         <file>qml/MoSftpView.qml</file>
         <file>qml/sftp.qml</file>
-        <file>resource/skin/menu2.png</file>
         <file>qml/MoInputDialog.qml</file>
         <file>qml/MoSftpNameDialog.qml</file>
         <file>qml/MoPasswordInput.qml</file>
         <file>qml/shot.js</file>
-        <file>resource/skin/menu3.png</file>
         <file>qml/MoSftpTransfer.qml</file>
         <file>qml/MoSftpConfigure.qml</file>
-        <file>resource/skin/sad.png</file>
-        <file>resource/skin/sad2.png</file>
-        <file>resource/skin/sad3.png</file>
         <file>qml/MoAboutView.qml</file>
         <file>qml/MoLanguageView.qml</file>
         <file>qml/MoSystemInformation.qml</file>
-        <file>resource/skin/keyboard.png</file>
-        <file>resource/skin/tips.png</file>
-        <file>resource/skin/permission.png</file>
+        <file>resource/images/woterm.png</file>
+        <file>resource/images/woterm2.png</file>
+        <file>resource/images/woterm3.png</file>
+        <file>resource/images/woterm4.png</file>
+        <file>resource/images/woterm5.png</file>
+        <file>resource/images/woterm6.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

@@ -28,7 +28,7 @@ Page {
     }
 
     header: MoToolBar {
-        source: "qrc:/woterm/resource/skin/left2.png"
+        source: "qrc../private/skins/black/left2.png"
         title: qsTr("Identity")
         onLeftClicked: {
             closeArrived()
@@ -208,7 +208,7 @@ Page {
                             background: Image{
                                 sourceSize.width: 32
                                 sourceSize.height: 32
-                                source: "qrc:/woterm/resource/skin/right2.png"
+                                source: "qrc../private/skins/black/right2.png"
                             }
                             onClicked: {
                                 if(listView.currentIndex >= 0) {

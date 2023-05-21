@@ -172,7 +172,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/back2.png</normaloff>:/woterm/resource/skin/back2.png</iconset>
+         <normaloff>../private/skins/black/back2.png</normaloff>../private/skins/black/back2.png</iconset>
        </property>
       </widget>
      </item>
@@ -341,7 +341,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/left2.png</normaloff>:/woterm/resource/skin/left2.png</iconset>
+         <normaloff>../private/skins/black/left2.png</normaloff>../private/skins/black/left2.png</iconset>
        </property>
       </widget>
      </item>
@@ -352,7 +352,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/right2.png</normaloff>:/woterm/resource/skin/right2.png</iconset>
+         <normaloff>../private/skins/black/right2.png</normaloff>../private/skins/black/right2.png</iconset>
        </property>
       </widget>
      </item>
@@ -363,7 +363,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/space.png</normaloff>:/woterm/resource/skin/space.png</iconset>
+         <normaloff>../private/skins/black/space.png</normaloff>../private/skins/black/space.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -380,7 +380,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/up.png</normaloff>:/woterm/resource/skin/up.png</iconset>
+         <normaloff>../private/skins/black/up.png</normaloff>../private/skins/black/up.png</iconset>
        </property>
       </widget>
      </item>
@@ -391,7 +391,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/down.png</normaloff>:/woterm/resource/skin/down.png</iconset>
+         <normaloff>../private/skins/black/down.png</normaloff>../private/skins/black/down.png</iconset>
        </property>
       </widget>
      </item>
@@ -402,7 +402,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/keysym.png</normaloff>:/woterm/resource/skin/keysym.png</iconset>
+         <normaloff>../private/skins/black/keysym.png</normaloff>../private/skins/black/keysym.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -419,7 +419,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/keyenter.png</normaloff>:/woterm/resource/skin/keyenter.png</iconset>
+         <normaloff>../private/skins/black/keyenter.png</normaloff>../private/skins/black/keyenter.png</iconset>
        </property>
        <property name="iconSize">
         <size>

@@ -42,7 +42,7 @@
           </property>
           <property name="icon">
            <iconset resource="woterm.qrc">
-            <normaloff>:/woterm/resource/skin/dirs.png</normaloff>:/woterm/resource/skin/dirs.png</iconset>
+            <normaloff>../private/skins/black/dirs.png</normaloff>../private/skins/black/dirs.png</iconset>
           </property>
          </widget>
         </item>

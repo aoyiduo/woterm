@@ -49,7 +49,7 @@
      </property>
      <property name="icon">
       <iconset resource="woterm.qrc">
-       <normaloff>:/woterm/resource/skin/arrowdown.png</normaloff>:/woterm/resource/skin/arrowdown.png</iconset>
+       <normaloff>../private/skins/black/arrowdown.png</normaloff>../private/skins/black/arrowdown.png</iconset>
      </property>
     </widget>
    </item>

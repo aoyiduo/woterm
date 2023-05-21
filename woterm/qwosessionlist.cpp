@@ -82,11 +82,11 @@ QWoSessionList::QWoSessionList(QWidget *parent)
     m_proxyModel->setRecursiveFilteringEnabled(true);
 
     if(QWoSetting::isListModel("docker") || !QKxVer::instance()->isFullFeather()) {
-        m_btnModel->setIcon(QIcon(":/woterm/resource/skin/list.png"));
+        m_btnModel->setIcon(QIcon("../private/skins/black/list.png"));
         m_proxyModel->setSourceModel(m_listModel);
         m_model = m_listModel;
     }else{
-        m_btnModel->setIcon(QIcon(":/woterm/resource/skin/tree.png"));
+        m_btnModel->setIcon(QIcon("../private/skins/black/tree.png"));
         m_proxyModel->setSourceModel(m_treeModel);
         m_model = m_treeModel;
     }    
@@ -418,12 +418,12 @@ void QWoSessionList::onListViewGroupLayout()
         return;
     }
     if(m_model == m_listModel) {
-        m_btnModel->setIcon(QIcon(":/woterm/resource/skin/tree.png"));
+        m_btnModel->setIcon(QIcon("../private/skins/black/tree.png"));
         m_proxyModel->setSourceModel(m_treeModel);
         m_model = m_treeModel;
         QWoSetting::setListModel("docker", false);
     }else{
-        m_btnModel->setIcon(QIcon(":/woterm/resource/skin/list.png"));
+        m_btnModel->setIcon(QIcon("../private/skins/black/list.png"));
         m_proxyModel->setSourceModel(m_listModel);
         m_model = m_listModel;
         QWoSetting::setListModel("docker", true);        
@@ -439,39 +439,39 @@ bool QWoSessionList::handleListViewContextMenu(QContextMenuEvent *ev)
     m_menu = &menu;
 
     if(idxs.isEmpty()) {
-        menu.addAction(QIcon(":/woterm/resource/skin/reload.png"), tr("ReloadAll"), this, SLOT(onListViewItemReload()));
-        menu.addAction(QIcon(":/woterm/resource/skin/add.png"), tr("Add"), this, SLOT(onListViewItemAdd()));
+        menu.addAction(QIcon("../private/skins/black/reload.png"), tr("ReloadAll"), this, SLOT(onListViewItemReload()));
+        menu.addAction(QIcon("../private/skins/black/add.png"), tr("Add"), this, SLOT(onListViewItemAdd()));
     }else if(idxs.length() == 1) {
         QModelIndex idx = idxs.at(0);
         HostInfo hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
-        menu.addAction(QIcon(":/woterm/resource/skin/reload.png"), tr("ReloadAll"), this, SLOT(onListViewItemReload()));
-        menu.addAction(QIcon(":/woterm/resource/skin/add.png"), tr("Add"), this, SLOT(onListViewItemAdd()));
-        menu.addAction(QIcon(":/woterm/resource/skin/ftp.png"), tr("Copy"), this, SLOT(onListViewItemCopy()));
+        menu.addAction(QIcon("../private/skins/black/reload.png"), tr("ReloadAll"), this, SLOT(onListViewItemReload()));
+        menu.addAction(QIcon("../private/skins/black/add.png"), tr("Add"), this, SLOT(onListViewItemAdd()));
+        menu.addAction(QIcon("../private/skins/black/ftp.png"), tr("Copy"), this, SLOT(onListViewItemCopy()));
         if(hi.type == SshWithSftp) {
-            menu.addAction(QIcon(":/woterm/resource/skin/ssh2.png"), tr("SshConnect"), this, SLOT(onListViewItemOpenSsh()));
+            menu.addAction(QIcon("../private/skins/black/ssh2.png"), tr("SshConnect"), this, SLOT(onListViewItemOpenSsh()));
         }
         if(hi.type == SshWithSftp || hi.type == SftpOnly) {
-            menu.addAction(QIcon(":/woterm/resource/skin/sftp.png"), tr("SftpConnect"), this, SLOT(onListViewItemOpenSftp()));
+            menu.addAction(QIcon("../private/skins/black/sftp.png"), tr("SftpConnect"), this, SLOT(onListViewItemOpenSftp()));
         }
         if(hi.type == Telnet) {
-            menu.addAction(QIcon(":/woterm/resource/skin/telnet.png"), tr("TelnetConnect"), this, SLOT(onListViewItemOpenTelnet()));
+            menu.addAction(QIcon("../private/skins/black/telnet.png"), tr("TelnetConnect"), this, SLOT(onListViewItemOpenTelnet()));
         }
         if(hi.type == RLogin) {
-            menu.addAction(QIcon(":/woterm/resource/skin/rlogin.png"), tr("RLoginConnect"), this, SLOT(onListViewItemOpenRLogin()));
+            menu.addAction(QIcon("../private/skins/black/rlogin.png"), tr("RLoginConnect"), this, SLOT(onListViewItemOpenRLogin()));
         }
         if(hi.type == Mstsc) {
-            menu.addAction(QIcon(":/woterm/resource/skin/mstsc2.png"), tr("MstscConnect"), this, SLOT(onListViewItemOpenMstsc()));
+            menu.addAction(QIcon("../private/skins/black/mstsc2.png"), tr("MstscConnect"), this, SLOT(onListViewItemOpenMstsc()));
         }
         if(hi.type == Vnc) {
-            menu.addAction(QIcon(":/woterm/resource/skin/vnc2.png"), tr("VncConnect"), this, SLOT(onListViewItemOpenVnc()));
+            menu.addAction(QIcon("../private/skins/black/vnc2.png"), tr("VncConnect"), this, SLOT(onListViewItemOpenVnc()));
         }
         if(hi.type == SerialPort) {
-            menu.addAction(QIcon(":/woterm/resource/skin/serialport.png"), tr("SerialConnect"), this, SLOT(onListViewItemOpenSerialPort()));
+            menu.addAction(QIcon("../private/skins/black/serialport.png"), tr("SerialConnect"), this, SLOT(onListViewItemOpenSerialPort()));
         }
-        menu.addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Edit"), this, SLOT(onListViewItemModify()));
+        menu.addAction(QIcon("../private/skins/black/palette.png"), tr("Edit"), this, SLOT(onListViewItemModify()));
         menu.addAction(tr("Delete"), this, SLOT(onListViewItemDelete()));
     }else{
-        menu.addAction(QIcon(":/woterm/resource/skin/ftp.png"), tr("Copy"), this, SLOT(onListViewItemCopy()));
+        menu.addAction(QIcon("../private/skins/black/ftp.png"), tr("Copy"), this, SLOT(onListViewItemCopy()));
         menu.addAction(tr("Delete"), this, SLOT(onListViewItemDelete()));
     }
     if(QKxVer::instance()->isFullFeather()) {

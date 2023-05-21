@@ -105,7 +105,7 @@ Page {
                         Layout.fillWidth: true
                     }
                     ToolButton {
-                        icon.source: "qrc:/woterm/resource/skin/dirs.png"
+                        icon.source: "qrc../private/skins/black/dirs.png"
                         icon.color: "transparent"
                         onClicked: {
                             var pathLast = gSetting.lastBackupPath()
@@ -124,7 +124,7 @@ Page {
                     Button {
                         display: Button.TextBesideIcon
                         text: qsTr("Apply")
-                        icon.source: "qrc:/woterm/resource/skin/right.png"
+                        icon.source: "qrc../private/skins/black/right.png"
                         icon.color: "transparent"
 
                         onClicked: {
@@ -158,7 +158,7 @@ Page {
                         Layout.fillWidth: true
                     }
                     ToolButton {
-                        icon.source: "qrc:/woterm/resource/skin/sftp.png"
+                        icon.source: "qrc../private/skins/black/sftp.png"
                         icon.color: "transparent"
                         onClicked: {
                             sftpInput.open()
@@ -179,7 +179,7 @@ Page {
                     Button {
                         display: Button.TextBesideIcon
                         text: qsTr("Next")
-                        icon.source: "qrc:/woterm/resource/skin/forward.png"
+                        icon.source: "qrc../private/skins/black/forward.png"
                         icon.color: "transparent"
 
                         onClicked: {

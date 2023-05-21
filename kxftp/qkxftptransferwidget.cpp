@@ -124,28 +124,28 @@ QKxFtpTransferWidget::QKxFtpTransferWidget(const QString& path, const QString& n
         QPushButton *btnHome = new QPushButton(localArea);
         QObject::connect(btnHome, SIGNAL(clicked(bool)), this, SLOT(onLocalHomeButtonClicked()));
         btnHome->setObjectName("ftp");
-        btnHome->setIcon(QIcon(QPixmap(":/kxftp/resource/skin/home.png").scaled(24, 24)));
+        btnHome->setIcon(QIcon(QPixmap("../private/skins/black/home.png").scaled(24, 24)));
         tool->addWidget(btnHome);
         QPushButton *btnReturn = new QPushButton(localArea);
         QObject::connect(btnReturn, SIGNAL(clicked(bool)), this, SLOT(onLocalBackButtonClicked()));
         btnReturn->setObjectName("ftp");
-        btnReturn->setIcon(QIcon(QPixmap(":/kxftp/resource/skin/back.png").scaled(24, 24)));
+        btnReturn->setIcon(QIcon(QPixmap("../private/skins/black/back.png").scaled(24, 24)));
         tool->addWidget(btnReturn);
         QPushButton *btnEnter = new QPushButton(localArea);
         QObject::connect(btnEnter, SIGNAL(clicked(bool)), this, SLOT(onLocalForwardButtonClicked()));
         btnEnter->setObjectName("ftp");
-        btnEnter->setIcon(QIcon(QPixmap(":/kxftp/resource/skin/forward.png").scaled(24, 24)));
+        btnEnter->setIcon(QIcon(QPixmap("../private/skins/black/forward.png").scaled(24, 24)));
         tool->addWidget(btnEnter);
 
         QPushButton *btnRefresh = new QPushButton(localArea);
         QObject::connect(btnRefresh, SIGNAL(clicked(bool)), this, SLOT(onLocalRefreshButtonClicked()));
         btnRefresh->setObjectName("ftp");
-        btnRefresh->setIcon(QIcon(QPixmap(":/kxftp/resource/skin/reload.png").scaled(24, 24)));
+        btnRefresh->setIcon(QIcon(QPixmap("../private/skins/black/reload.png").scaled(24, 24)));
         tool->addWidget(btnRefresh);
 
         QPushButton *btnBrowser = new QPushButton(localArea);
         btnBrowser->setObjectName("ftp");
-        btnBrowser->setIcon(QIcon(QPixmap(":/kxftp/resource/skin/folder.png").scaled(24, 24)));
+        btnBrowser->setIcon(QIcon(QPixmap("../private/skins/black/folder.png").scaled(24, 24)));
         QObject::connect(btnBrowser, SIGNAL(clicked(bool)), this, SLOT(onLocalBrowserButtonClicked()));
         tool->addWidget(btnBrowser);
         QLineEdit *edit = new QLineEdit(localArea);
@@ -184,28 +184,28 @@ QKxFtpTransferWidget::QKxFtpTransferWidget(const QString& path, const QString& n
         QPushButton *btnHome = new QPushButton(remoteArea);
         QObject::connect(btnHome, SIGNAL(clicked(bool)), this, SLOT(onRemoteHomeButtonClicked()));
         btnHome->setObjectName("ftp");
-        btnHome->setIcon(QIcon(QPixmap(":/kxftp/resource/skin/home.png").scaled(24, 24)));
+        btnHome->setIcon(QIcon(QPixmap("../private/skins/black/home.png").scaled(24, 24)));
         tool->addWidget(btnHome);
         QPushButton *btnReturn = new QPushButton(remoteArea);
         QObject::connect(btnReturn, SIGNAL(clicked(bool)), this, SLOT(onRemoteBackButtonClicked()));
         btnReturn->setObjectName("ftp");
-        btnReturn->setIcon(QIcon(QPixmap(":/kxftp/resource/skin/back.png").scaled(24, 24)));
+        btnReturn->setIcon(QIcon(QPixmap("../private/skins/black/back.png").scaled(24, 24)));
         tool->addWidget(btnReturn);
         QPushButton *btnEnter = new QPushButton(remoteArea);
         QObject::connect(btnEnter, SIGNAL(clicked(bool)), this, SLOT(onRemoteForwardButtonClicked()));
         btnEnter->setObjectName("ftp");
-        btnEnter->setIcon(QIcon(QPixmap(":/kxftp/resource/skin/forward.png").scaled(24, 24)));
+        btnEnter->setIcon(QIcon(QPixmap("../private/skins/black/forward.png").scaled(24, 24)));
         tool->addWidget(btnEnter);
 
         QPushButton *btnRefresh = new QPushButton(remoteArea);
         QObject::connect(btnRefresh, SIGNAL(clicked(bool)), this, SLOT(onRemoteRefreshButtonClicked()));
         btnRefresh->setObjectName("ftp");
-        btnRefresh->setIcon(QIcon(QPixmap(":/kxftp/resource/skin/reload.png").scaled(24, 24)));
+        btnRefresh->setIcon(QIcon(QPixmap("../private/skins/black/reload.png").scaled(24, 24)));
         tool->addWidget(btnRefresh);
 
         QPushButton *btnCopy = new QPushButton(remoteArea);
         btnCopy->setObjectName("ftp");
-        btnCopy->setIcon(QIcon(QPixmap(":/kxftp/resource/skin/copy.png").scaled(24, 24)));
+        btnCopy->setIcon(QIcon(QPixmap("../private/skins/black/copy.png").scaled(24, 24)));
         QObject::connect(btnCopy, SIGNAL(clicked(bool)), this, SLOT(onRemoteCopyButtonClicked()));
         tool->addWidget(btnCopy);
         QLineEdit *edit = new QLineEdit(remoteArea);
@@ -369,20 +369,20 @@ void QKxFtpTransferWidget::onLocalContextMenuRequested(const QPoint &pos)
     QMenu menu(this);
     QFileInfo fi = m_modelLocal->fileInfo(idx);
     if(idx.isValid()) {
-        QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/upload.png"), tr("Upload"), this, SLOT(onLocalFileUpload()));
+        QAction *tmp = menu.addAction(QIcon("../private/skins/black/upload.png"), tr("Upload"), this, SLOT(onLocalFileUpload()));
         tmp->setProperty("index", idx);
     }
     QString path = m_localEdit->text();
     if(!path.isEmpty()) {
-        QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/folder.png"), tr("Create Directory"), this, SLOT(onLocalCreateDirectory()));
+        QAction *tmp = menu.addAction(QIcon("../private/skins/black/folder.png"), tr("Create Directory"), this, SLOT(onLocalCreateDirectory()));
         tmp->setProperty("index", idx);
     }
     {
-        QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/login.png"), tr("Browser Directory"), this, SLOT(onLocalBrowserDirectory()));
+        QAction *tmp = menu.addAction(QIcon("../private/skins/black/login.png"), tr("Browser Directory"), this, SLOT(onLocalBrowserDirectory()));
         tmp->setProperty("index", idx);
     }
     {
-        QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/reload.png"), tr("Refresh"), this, SLOT(onLocalFileRefresh()));
+        QAction *tmp = menu.addAction(QIcon("../private/skins/black/reload.png"), tr("Refresh"), this, SLOT(onLocalFileRefresh()));
         tmp->setProperty("index", idx);
     }
     menu.exec(QCursor::pos());
@@ -573,18 +573,18 @@ void QKxFtpTransferWidget::onRemoteContextMenuRequested(const QPoint &pos)
         // only device in account can download file from remote device.
         // for safety.
         // prevent from bad men steal resource from normal device.
-        QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/download.png"), tr("Download"), this, SLOT(onRemoteFileDownload()));
+        QAction *tmp = menu.addAction(QIcon("../private/skins/black/download.png"), tr("Download"), this, SLOT(onRemoteFileDownload()));
         tmp->setProperty("index", idx);
         hasMenu = true;
     }
     QString path = m_remoteEdit->text();
     if(!path.isEmpty()) {
-        QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/folder.png"), tr("Create Directory"), this, SLOT(onRemoteCreateDirectory()));
+        QAction *tmp = menu.addAction(QIcon("../private/skins/black/folder.png"), tr("Create Directory"), this, SLOT(onRemoteCreateDirectory()));
         tmp->setProperty("index", idx);
         hasMenu = true;
     }
     {
-        QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/reload.png"), tr("Refresh"), this, SLOT(onRemoteFileRefresh()));
+        QAction *tmp = menu.addAction(QIcon("../private/skins/black/reload.png"), tr("Refresh"), this, SLOT(onRemoteFileRefresh()));
         tmp->setProperty("index", idx);
     }
     menu.exec(QCursor::pos());
@@ -705,37 +705,37 @@ void QKxFtpTransferWidget::onTransferContextMenuRequested(const QPoint &pos)
         bool canStart = m_modelTransfer->first(QKxFtpTransferModel::ETS_Transfer) < 0;
         QKxFtpTransferModel::ETaskStatus status = m_modelTransfer->taskStatus(idx);
         if(status == QKxFtpTransferModel::ETS_Pause) {
-            QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/start.png"), tr("Start"), this, SLOT(onTransferStart()));
+            QAction *tmp = menu.addAction(QIcon("../private/skins/black/start.png"), tr("Start"), this, SLOT(onTransferStart()));
             tmp->setProperty("index", idx);
         }
         if(status == QKxFtpTransferModel::ETS_Ready || status == QKxFtpTransferModel::ETS_Transfer) {
             if(canStart) {
-                QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/start.png"), tr("Start"), this, SLOT(onTransferStart()));
+                QAction *tmp = menu.addAction(QIcon("../private/skins/black/start.png"), tr("Start"), this, SLOT(onTransferStart()));
                 tmp->setProperty("index", idx);
             }else{
-                QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/pause.png"), tr("Stop"), this, SLOT(onTransferStop()));
+                QAction *tmp = menu.addAction(QIcon("../private/skins/black/pause.png"), tr("Stop"), this, SLOT(onTransferStop()));
                 tmp->setProperty("index", idx);
             }
         }
         {
-            QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/reload.png"), tr("Restart"), this, SLOT(onTransferRestart()));
+            QAction *tmp = menu.addAction(QIcon("../private/skins/black/reload.png"), tr("Restart"), this, SLOT(onTransferRestart()));
             tmp->setProperty("index", idx);
         }
         {
-            QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/remove.png"), tr("Remove"), this, SLOT(onTransferRemove()));
+            QAction *tmp = menu.addAction(QIcon("../private/skins/black/remove.png"), tr("Remove"), this, SLOT(onTransferRemove()));
             tmp->setProperty("index", idx);
         }
     }
     if(m_modelTransfer->startCount() > 0) {
-        QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/stopall.png"), tr("Stop all"), this, SLOT(onTransferStopAll()));
+        QAction *tmp = menu.addAction(QIcon("../private/skins/black/stopall.png"), tr("Stop all"), this, SLOT(onTransferStopAll()));
         tmp->setProperty("index", idx);
     }
     if(m_modelTransfer->stopCount() > 0) {
-        QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/startall.png"), tr("Start all"), this, SLOT(onTransferStartAll()));
+        QAction *tmp = menu.addAction(QIcon("../private/skins/black/startall.png"), tr("Start all"), this, SLOT(onTransferStartAll()));
         tmp->setProperty("index", idx);
     }
     {
-        QAction *tmp = menu.addAction(QIcon(":/kxftp/resource/skin/removeall.png"), tr("Remove all"), this, SLOT(onTransferRemoveAll()));
+        QAction *tmp = menu.addAction(QIcon("../private/skins/black/removeall.png"), tr("Remove all"), this, SLOT(onTransferRemoveAll()));
         tmp->setProperty("index", idx);
     }
     menu.exec(QCursor::pos());

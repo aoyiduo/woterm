@@ -47,6 +47,8 @@
 #include "qkxfilterlineedit.h"
 #include "qwoversionupgradetipdialog.h"
 #include "qwolicensetrialapplydialog.h"
+#include "qwotheme.h"
+#include "qkxdockwidget.h"
 #include "qkxver.h"
 #include "version.h"
 
@@ -69,6 +71,7 @@
 #include <QInputDialog>
 #include <QToolButton>
 #include <QSslSocket>
+#include <QSpacerItem>
 
 QWoMainWindow::QWoMainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -113,11 +116,11 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     m_recent = new QWoRecentHistory(this);
     QObject::connect(m_recent, SIGNAL(readyToConnect(QString,int)), this, SLOT(onSessionReadyToConnect(QString,int)));
 
-    m_sessionDock = new QDockWidget(tr("Session Manager"), this);
+    m_sessionDock = new QKxDockWidget(tr("Session Manager"), this);
     m_sessionDock->setObjectName("Session Manager");
     m_sessionDock->setFloating(false);
     m_sessionDock->setFeatures(QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetClosable);
-    m_sessionDock->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);    
+    m_sessionDock->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, m_sessionDock);
     m_sessions = new QWoSessionList(m_sessionDock);
     m_sessionDock->setWidget(m_sessions);
@@ -359,9 +362,9 @@ void QWoMainWindow::onButtonAssistClicked(QToolButton *btn)
     QRect rt = btn->rect();
     QPoint pt = btn->mapToGlobal(rt.bottomLeft());
     QMenu menu(this);
-    menu.addAction(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open remote session"), this, SLOT(onOpenRemoteSession()));
-    menu.addAction(QIcon(":/woterm/resource/skin/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
-    menu.addAction(QIcon(":/woterm/resource/skin/serialport.png"), tr("Open serialport session"), this, SLOT(onOpenSerialPort()));
+    menu.addAction(QIcon("../private/skins/black/nodes.png"), tr("Open remote session"), this, SLOT(onOpenRemoteSession()));
+    menu.addAction(QIcon("../private/skins/black/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
+    menu.addAction(QIcon("../private/skins/black/serialport.png"), tr("Open serialport session"), this, SLOT(onOpenSerialPort()));
     menu.exec(pt);
 }
 
@@ -475,18 +478,29 @@ void QWoMainWindow::onActionSystemOptionsTriggered()
     QWoSystemOptionDialog dlg(this);
     if(dlg.exec() == QDialog::Accepted) {
         QString lang = dlg.language();
-        if(!lang.isEmpty()) {
-            QString langNow = QWoSetting::languageFile();
-            if(lang != langNow) {
-                QWoSetting::setLanguageFile(lang);
-                if(QKxMessageBox::warning(this, tr("Language"), tr("The language has been changed, restart application to take effect right now."), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
+        QString skin = dlg.skin();
+        if(!lang.isEmpty() || !skin.isEmpty()) {
+            QString langNow = QWoSetting::languageFileName();
+            QString skinNow = QWoTheme::instance()->skinUniqueName();
+            if(lang != langNow || skin != skinNow ) {
+                QWoSetting::setLanguageFileName(lang);
+                QWoTheme::instance()->setSkinUniqueName(skin);
+                if(QKxMessageBox::warning(this, tr("Configure information"), tr("The configure has been changed, restart application to take effect right now."), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
                     QString path = QCoreApplication::instance()->applicationFilePath();
                     if(QKxProcessLaunch::startDetached(path)) {
                         QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
                     }
                 }
-            }
+            }            
         }
+    }
+}
+
+void QWoMainWindow::onActionRestartOptionsTriggered()
+{
+    QString path = QCoreApplication::instance()->applicationFilePath();
+    if(QKxProcessLaunch::startDetached(path)) {
+        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
     }
 }
 
@@ -611,6 +625,7 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onActionAboutTriggered()));
     QObject::connect(ui->actionLicense, SIGNAL(triggered()), this, SLOT(onActionLicenseTriggered()));
     QObject::connect(ui->actionUpgrade, SIGNAL(triggered()), this, SLOT(onActionUpgradeTriggered()));
+    QObject::connect(ui->actionRestart, SIGNAL(triggered()), this, SLOT(onActionRestartOptionsTriggered()));
 
     if(QKxVer::instance()->isFullFeather()) {
         QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));      
@@ -629,29 +644,41 @@ void QWoMainWindow::initToolBar()
     QToolBar *tool = ui->mainToolBar;
     tool->setWindowTitle(tr("Toolbar"));
     {
-        QPushButton *btn = new QPushButton(QIcon(":/woterm/resource/skin/history.png"), tr("History"), tool);
-        btn->setObjectName("menuButton");
+        QPushButton *btn = new QPushButton(QIcon("../private/skins/black/history.png"), tr("History"), tool);
+        btn->setFlat(true);
+        btn->setMinimumWidth(100);
         QMenu *menu = new QMenu(btn);
         QObject::connect(menu, SIGNAL(aboutToShow()), this, SLOT(onRecentMenuAboutToShow()));
         btn->setMenu(menu);
         tool->addWidget(btn);
     }
-    tool->addSeparator();
-    tool->addAction(QIcon(":/woterm/resource/skin/add2.png"), tr("New"), this, SLOT(onNewSession()));
 
     if(QKxVer::instance()->isFullFeather()){
-        QPushButton *btn = new QPushButton(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open"), tool);
-        btn->setObjectName("menuButton");
-        QKxButtonAssist *btnAssist = new QKxButtonAssist(":/woterm/resource/skin/arrowdown.png", false, btn);
+        QPushButton *btn = new QPushButton(QIcon("../private/skins/black/nodes.png"), tr("Open"), tool);
+        btn->setFlat(true);
+        btn->setMaximumWidth(100);
+        QKxButtonAssist *btnAssist = new QKxButtonAssist("../private/skins/black/arrowdown.png", btn);
         QObject::connect(btnAssist, SIGNAL(pressed(QToolButton*)), this, SLOT(onButtonAssistClicked(QToolButton*)));
-        btnAssist->appendSeperator();
         QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onOpenRemoteSession()));
         tool->addWidget(btn);
     }else{
-        tool->addAction(QIcon(":/woterm/resource/skin/nodes.png"), tr("Open"), this, SLOT(onOpenRemoteSession()));
+        QPushButton *btn = new QPushButton(QIcon("../private/skins/black/nodes.png"), tr("Open"), tool);
+        btn->setFlat(true);
+        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onOpenRemoteSession()));
+        tool->addWidget(btn);
     }
-    tool->addAction(QIcon(":/woterm/resource/skin/layout.png"), tr("List"), this, SLOT(onLayout()));
-    tool->addSeparator();
+    {
+        QPushButton *btn = new QPushButton(QIcon("../private/skins/black/add2.png"), tr("New"), tool);
+        btn->setFlat(true);
+        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onNewSession()));
+        tool->addWidget(btn);
+    }
+    {
+        QPushButton *btn = new QPushButton(QIcon("../private/skins/black/layout.png"), tr("List"), tool);
+        btn->setFlat(true);
+        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onLayout()));
+        tool->addWidget(btn);
+    }
     if(QKxVer::instance()->isFullFeather()){
         QLineEdit *input = new QKxFilterLineEdit(tool);        
         input->setMaximumWidth(250);

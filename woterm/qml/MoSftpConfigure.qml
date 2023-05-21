@@ -81,7 +81,7 @@ Popup {
                 height: parent.height
                 Image{
                     anchors.centerIn: parent
-                    source: "qrc:/woterm/resource/skin/dirs.png"
+                    source: "qrc../private/skins/black/dirs.png"
                     sourceSize.width: 16
                     sourceSize.height: 16
                 }

@@ -63,7 +63,7 @@ Page {
     }
 
     header: MoToolBar {
-        source: "qrc:/woterm/resource/skin/left2.png"
+        source: "qrc../private/skins/black/left2.png"
         title: qsTr("Session property")
         onLeftClicked: {
             finished()
@@ -304,7 +304,7 @@ Page {
                         height: parent.height
                         Image{
                             anchors.centerIn: parent
-                            source: "qrc:/woterm/resource/skin/tabclose.png"
+                            source: "qrc../private/skins/black/tabclose.png"
                             sourceSize.width: 16
                             sourceSize.height: 16
                         }
@@ -342,7 +342,7 @@ Page {
                         height: parent.height
                         Image{
                             anchors.centerIn: parent
-                            source: "qrc:/woterm/resource/skin/tabclose.png"
+                            source: "qrc../private/skins/black/tabclose.png"
                             sourceSize.width: 16
                             sourceSize.height: 16
                         }

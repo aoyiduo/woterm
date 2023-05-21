@@ -41,9 +41,9 @@ QDBMergeActionDelegate::QDBMergeActionDelegate(QTableView *tblView, QWidget *par
     : QStyledItemDelegate(parent)
     , m_parent(parent)
     , m_tblView(tblView) {
-    m_btnAdd = new QPushButton(QIcon(":/woterm/resource/skin/add.png"), tr("Add"), parent);
-    m_btnRemove = new QPushButton(QIcon(":/woterm/resource/skin/close.png"), tr("Remove"), parent);
-    m_btnReplace = new QPushButton(QIcon(":/woterm/resource/skin/ftp.png"), tr("Replace"), parent);
+    m_btnAdd = new QPushButton(QIcon("../private/skins/black/add.png"), tr("Add"), parent);
+    m_btnRemove = new QPushButton(QIcon("../private/skins/black/close.png"), tr("Remove"), parent);
+    m_btnReplace = new QPushButton(QIcon("../private/skins/black/ftp.png"), tr("Replace"), parent);
     m_btnAdd->setObjectName("restoreButton");
     m_btnRemove->setObjectName("restoreButton");
     m_btnReplace->setObjectName("restoreButton");

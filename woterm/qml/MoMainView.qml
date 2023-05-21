@@ -53,7 +53,7 @@ Page{
     }
 
     header: MoToolBar {
-        source: "qrc:/woterm/resource/skin/menu.png"
+        source: "qrc../private/skins/black/menu.png"
         title: qsTr("WoTerm")
         onLeftClicked: {
             drawer.open()
@@ -113,7 +113,7 @@ Page{
             Button {
                 display: Button.TextUnderIcon
                 text: qsTr("Remote Sessions")
-                icon.source: "qrc:/woterm/resource/skin/nodes.png"
+                icon.source: "qrc../private/skins/black/nodes.png"
                 icon.color: "transparent"
                 onClicked: {
                     stack.push(sessions)
@@ -123,7 +123,7 @@ Page{
             Button {
                 display: Button.TextUnderIcon
                 text: qsTr("Local terminal")
-                icon.source: "qrc:/woterm/resource/skin/console.png"
+                icon.source: "qrc../private/skins/black/console.png"
                 icon.color: "transparent"
 
                 onClicked: {
@@ -134,7 +134,7 @@ Page{
             Button {
                 display: Button.TextUnderIcon
                 text: qsTr("Identity")
-                icon.source: "qrc:/woterm/resource/skin/keyset.png"
+                icon.source: "qrc../private/skins/black/keyset.png"
                 icon.color: "transparent"
                 onClicked: {
                     gstack.push(identify)
@@ -145,7 +145,7 @@ Page{
                 display: Button.TextUnderIcon
                 text: qsTr("Test")
                 visible: quick.debugVersion
-                icon.source: "qrc:/woterm/resource/skin/keyset.png"
+                icon.source: "qrc../private/skins/black/keyset.png"
                 icon.color: "transparent"
                 property int cnt: 0
                 onClicked: {
@@ -180,7 +180,7 @@ Page{
                     spacing: 10
                     Image {
                         smooth: true
-                        source: "qrc:/woterm/resource/skin/sad3.png"
+                        source: "qrc../private/skins/black/sad3.png"
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                     Label {
@@ -286,7 +286,7 @@ Page{
                                 background: Image{
                                     sourceSize.width: 32
                                     sourceSize.height: 32
-                                    source: "qrc:/woterm/resource/skin/connect.png"
+                                    source: "qrc../private/skins/black/connect.png"
                                 }
                                 onClicked: {
                                     gMainWindow.openRecent(model.name, model.type)

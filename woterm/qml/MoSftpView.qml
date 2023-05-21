@@ -99,14 +99,14 @@ Page {
             bottomPadding: 0
 
             Button {
-                icon.source: "qrc:/woterm/resource/skin/home.png"
+                icon.source: "qrc../private/skins/black/home.png"
                 icon.color: "transparent"
                 onClicked: {
                     gSftp.openHome();
                 }
             }
             Button {
-                icon.source: "qrc:/woterm/resource/skin/back.png"
+                icon.source: "qrc../private/skins/black/back.png"
                 icon.color: "transparent"
                 onClicked: {
                     var path = pathRemote.text+"/.."
@@ -114,7 +114,7 @@ Page {
                 }
             }
             Button {
-                icon.source: "qrc:/woterm/resource/skin/forward.png"
+                icon.source: "qrc../private/skins/black/forward.png"
                 icon.color: "transparent"
                 onClicked: {
                     var name = gSftpModel.fileName(listView.currentIndex)
@@ -123,7 +123,7 @@ Page {
                 }
             }
             Button {
-                icon.source: "qrc:/woterm/resource/skin/reload.png"
+                icon.source: "qrc../private/skins/black/reload.png"
                 icon.color: "transparent"
                 onClicked: {
                     var path = pathRemote.text
@@ -131,7 +131,7 @@ Page {
                 }
             }
             Button {
-                icon.source: "qrc:/woterm/resource/skin/menu2.png"
+                icon.source: "qrc../private/skins/black/menu2.png"
                 icon.color: "transparent"
                 onClicked: menu.open()
                 Menu {
@@ -349,7 +349,7 @@ Page {
                             background: Image{
                                 sourceSize.width: 32
                                 sourceSize.height: 32
-                                source: "qrc:/woterm/resource/skin/right2.png"
+                                source: "qrc../private/skins/black/right2.png"
                             }
                             onClicked: {
                                 var path = pathRemote.text + "/" + model.name

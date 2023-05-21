@@ -161,11 +161,11 @@ QVariant QMoSftpRemoteModel::data(const QModelIndex &index, int role) const
 
     if(role == ROLE_ICON_URL) {
         if(fi.isDir()) {
-            return "qrc:/woterm/resource/skin/folder2.png";
+            return "qrc../private/skins/black/folder2.png";
         }else if(fi.isLink()) {
-            return "qrc:/woterm/resource/skin/link.png";
+            return "qrc../private/skins/black/link.png";
         }
-        return "qrc:/woterm/resource/skin/file.png";
+        return "qrc../private/skins/black/file.png";
     }
     if(role == ROLE_SHORT_STRING) {
         return QString("%1 %2 %3:%4 %5").arg(fi.permission).arg(fi.size).arg(fi.owner).arg(fi.group).arg(fi.date);

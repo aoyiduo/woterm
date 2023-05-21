@@ -14,6 +14,7 @@
 
 #include <QDialog>
 #include <QMap>
+#include <QList>
 
 namespace Ui {
 class QWoSystemOptionDialog;
@@ -27,11 +28,14 @@ public:
     explicit QWoSystemOptionDialog(QWidget *parent = nullptr);
     ~QWoSystemOptionDialog();
     QString language() const;
+    QString skin() const;
 private slots:
     void onButtonSaveClicked();
+    void onSkinCurrentIndexChanged(const QString& name);
 private:
     Ui::QWoSystemOptionDialog *ui;
     QMap<QString, QString> m_langs;
+    QMap<QString, QString> m_skins;
     QString m_lang;
     QString m_result;
 };

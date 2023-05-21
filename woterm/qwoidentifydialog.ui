@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="woterm.qrc">
-    <normaloff>:/woterm/resource/skin/keyset.png</normaloff>:/woterm/resource/skin/keyset.png</iconset>
+    <normaloff>../private/skins/black/keyset.png</normaloff>../private/skins/black/keyset.png</iconset>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>

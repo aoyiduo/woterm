@@ -66,17 +66,17 @@ void QWoRecentHistory::buildMenu(QMenu *menu)
     auto iconFile=[=](int t){
         switch (t) {
         case EOT_SSH:
-            return ":/woterm/resource/skin/ssh2.png";
+            return "../private/skins/black/ssh2.png";
         case EOT_SFTP:
-            return ":/woterm/resource/skin/sftp.png";
+            return "../private/skins/black/sftp.png";
         case EOT_TELNET:
-            return ":/woterm/resource/skin/telnet.png";
+            return "../private/skins/black/telnet.png";
         case EOT_RLOGIN:
-            return ":/woterm/resource/skin/rlogin.png";
+            return "../private/skins/black/rlogin.png";
         case EOT_MSTSC:
-            return ":/woterm/resource/skin/mstsc2.png";
+            return "../private/skins/black/mstsc2.png";
         case EOT_VNC:
-            return ":/woterm/resource/skin/vnc2.png";
+            return "../private/skins/black/vnc2.png";
         }
         return "";
     };

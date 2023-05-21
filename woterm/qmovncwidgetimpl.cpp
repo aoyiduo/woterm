@@ -67,11 +67,11 @@ void QMoVncWidgetImpl::onTouchPointClicked()
         QObject::connect(m_menu, SIGNAL(clicked(int)), this, SLOT(onMenuItemClickedArrived(int)));
     }
     if(m_keyboard && m_keyboard->isVisible()) {
-        m_menu->addItem(MID_KEYBOARD, tr("Close keyboard"), ":/woterm/resource/skin/keyboard.png");
+        m_menu->addItem(MID_KEYBOARD, tr("Close keyboard"), "../private/skins/black/keyboard.png");
     }else{
-        m_menu->addItem(MID_KEYBOARD, tr("Open keyboard"), ":/woterm/resource/skin/keyboard.png");
+        m_menu->addItem(MID_KEYBOARD, tr("Open keyboard"), "../private/skins/black/keyboard.png");
     }
-    m_menu->addItem(MID_MANUAL, tr("Manual"), ":/woterm/resource/skin/help.png");
+    m_menu->addItem(MID_MANUAL, tr("Manual"), "../private/skins/black/help.png");
     m_menu->setFixedSize(size());
     m_menu->show();
 }

@@ -22,7 +22,7 @@ QWoTermMask::QWoTermMask(QWidget *parent) :
 {
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_TranslucentBackground, true);
+    setAttribute(Qt::WA_StyledBackground, true);
     setVisible(false);
     QObject::connect(ui->btnClose, SIGNAL(clicked()), this, SLOT(close()));
     QObject::connect(ui->btnReconnect, SIGNAL(clicked()), this, SLOT(onReconnect()));
@@ -37,14 +37,6 @@ void QWoTermMask::onReconnect()
 {
     hide();
     emit reconnect();
-}
-
-void QWoTermMask::paintEvent(QPaintEvent *paint)
-{
-    QPainter p(this);
-
-    p.setBrush(QColor(128,128,128,128));
-    p.drawRect(0,0, width(), height());
 }
 
 void QWoTermMask::mousePressEvent(QMouseEvent *ev)

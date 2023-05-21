@@ -22,13 +22,13 @@ Q_GLOBAL_STATIC(QWoHostListModel, glistModel)
 QWoHostListModel::QWoHostListModel(QObject *parent)
     : QAbstractListModel (parent)
 {
-    m_sshIcon = QIcon(QPixmap(":/woterm/resource/skin/ssh2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_sftpIcon = QIcon(QPixmap(":/woterm/resource/skin/sftp.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_telnetIcon = QIcon(QPixmap(":/woterm/resource/skin/telnet.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_rloginIcon = QIcon(QPixmap(":/woterm/resource/skin/rlogin.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_mstscIcon = QIcon(QPixmap(":/woterm/resource/skin/mstsc2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_vncIcon = QIcon(QPixmap(":/woterm/resource/skin/vnc2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_serialIcon = QIcon(QPixmap(":/woterm/resource/skin/serialport.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_sshIcon = QIcon(QPixmap("../private/skins/black/ssh2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_sftpIcon = QIcon(QPixmap("../private/skins/black/sftp.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_telnetIcon = QIcon(QPixmap("../private/skins/black/telnet.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_rloginIcon = QIcon(QPixmap("../private/skins/black/rlogin.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_mstscIcon = QIcon(QPixmap("../private/skins/black/mstsc2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_vncIcon = QIcon(QPixmap("../private/skins/black/vnc2.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_serialIcon = QIcon(QPixmap("../private/skins/black/serialport.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
     QMetaObject::invokeMethod(this, "refreshList", Qt::QueuedConnection);
 
     QObject::connect(QWoSshConf::instance(), SIGNAL(dataReset()), this, SLOT(onDataReset()));
@@ -111,35 +111,35 @@ QVariantMap QWoHostListModel::qmlGet(int row)
     dm.insert("proxyJump", hi.proxyJump);
     if(hi.type == SshWithSftp) {
         dm.insert("type", "SshWithSftp");
-        dm.insert("icon", "qrc:/woterm/resource/skin/ssh2.png");
+        dm.insert("icon", "qrc../private/skins/black/ssh2.png");
         dm.insert("tip", QString("%1:%2 - %3 - %4").arg(hi.host).arg(hi.port).arg(hi.user).arg(hi.group));
     }else if(hi.type == SftpOnly) {
         dm.insert("type", "SftpOnly");
-        dm.insert("icon", "qrc:/woterm/resource/skin/sftp.png");
+        dm.insert("icon", "qrc../private/skins/black/sftp.png");
         dm.insert("tip", QString("%1:%2 - %3 - %4").arg(hi.host).arg(hi.port).arg(hi.user).arg(hi.group));
     }else if(hi.type == Telnet) {
         dm.insert("type", "Telnet");
-        dm.insert("icon", "qrc:/woterm/resource/skin/telnet.png");
+        dm.insert("icon", "qrc../private/skins/black/telnet.png");
         dm.insert("tip", QString("%1:%2 - %3 - %4").arg(hi.host).arg(hi.port).arg(hi.user).arg(hi.group));
     }else if(hi.type == RLogin) {
         dm.insert("type", "RLogin");
-        dm.insert("icon", "qrc:/woterm/resource/skin/rlogin.png");
+        dm.insert("icon", "qrc../private/skins/black/rlogin.png");
         dm.insert("tip", QString("%1:%2 - %3 - %4").arg(hi.host).arg(hi.port).arg(hi.user).arg(hi.group));
     }else if(hi.type == SerialPort) {
         dm.insert("type", "RLogin");
-        dm.insert("icon", "qrc:/woterm/resource/skin/serialport.png");
+        dm.insert("icon", "qrc../private/skins/black/serialport.png");
         dm.insert("tip", QString("Should be remove"));
     }else if(hi.type == Mstsc) {
         dm.insert("type", "RLogin");
-        dm.insert("icon", "qrc:/woterm/resource/skin/mstsc2.png");
+        dm.insert("icon", "qrc../private/skins/black/mstsc2.png");
         dm.insert("tip", QString("%1:%2 - %3 - %4").arg(hi.host).arg(hi.port).arg(hi.user).arg(hi.group));
     }else if(hi.type == Vnc) {
         dm.insert("type", "RLogin");
-        dm.insert("icon", "qrc:/woterm/resource/skin/vnc2.png");
+        dm.insert("icon", "qrc../private/skins/black/vnc2.png");
         dm.insert("tip", QString("%1:%2 - %3").arg(hi.host).arg(hi.port).arg(hi.group));
     }else{
         dm.insert("type", "Unknow");
-        dm.insert("icon", "qrc:/woterm/resource/skin/vnc2.png");
+        dm.insert("icon", "qrc../private/skins/black/vnc2.png");
         dm.insert("tip", QString("Unknow"));
     }
 
@@ -205,19 +205,19 @@ QVariant QWoHostListModel::data(const QModelIndex &index, int role) const
         }
         switch (hi.type) {
         case SshWithSftp:
-            return "qrc:/woterm/resource/skin/ssh2.png";
+            return "qrc../private/skins/black/ssh2.png";
         case SftpOnly:
-            return "qrc:/woterm/resource/skin/sftp.png";
+            return "qrc../private/skins/black/sftp.png";
         case Telnet:
-            return "qrc:/woterm/resource/skin/telnet.png";
+            return "qrc../private/skins/black/telnet.png";
         case RLogin:
-            return "qrc:/woterm/resource/skin/rlogin.png";
+            return "qrc../private/skins/black/rlogin.png";
         case Mstsc:
-            return "qrc:/woterm/resource/skin/mstsc2.png";
+            return "qrc../private/skins/black/mstsc2.png";
         case Vnc:
-            return "qrc:/woterm/resource/skin/vnc2.png";
+            return "qrc../private/skins/black/vnc2.png";
         case SerialPort:
-            return "qrc:/woterm/resource/skin/serialport.png";
+            return "qrc../private/skins/black/serialport.png";
         }
         return QVariant();
     }

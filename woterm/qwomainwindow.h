@@ -74,6 +74,7 @@ private slots:
     void onActionRDPOptionsTriggered();
     void onActionToolOptionsTriggered();
     void onActionSystemOptionsTriggered();
+    void onActionRestartOptionsTriggered();
     void onActionSettingTriggered();
     void onActionFindTriggered();
     void onActionAboutTriggered();

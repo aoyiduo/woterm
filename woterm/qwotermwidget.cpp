@@ -25,6 +25,8 @@
 #include "qwoshower.h"
 #include "qkxmessagebox.h"
 #include "qwoptytermwidget.h"
+#include "qkxbackgroundimagerender.h"
+#include "qkxutils.h"
 
 #include "qkxtermitem.h"
 
@@ -39,15 +41,18 @@
 #include <QShortcut>
 #include <QFileDialog>
 #include <QFile>
+#include <QFontDatabase>
 
+
+QPointer<QKxBackgroundImageRender> QWoTermWidget::m_bkImageRender;
 
 QWoTermWidget::QWoTermWidget(const QString& target, int gid, ETermType ttype, QWidget *parent)
     : QKxTermWidget(parent)
     , m_target(target)
     , m_gid(gid)
     , m_bexit(false)
-    , m_ttype(ttype)
     , m_rkeyPaste(false)
+    , m_ttype(ttype)
 {
     static int idx = 0;
     setObjectName(QString("QWoTermWidget:%1").arg(idx++));
@@ -236,9 +241,13 @@ void QWoTermWidget::resetProperty(QVariantMap mdata, bool force)
     QString codec = mdata.value("textcodec", DEFAULT_TEXT_CODEC).toString();
     m_term->setTextCodec(codec);
 
-    QString fontName = mdata.value("fontName", DEFAULT_FONT_FAMILY).toString();
-    int fontSize = mdata.value("fontSize", DEFAULT_FONT_SIZE).toInt();
-    m_term->setTerminalFont(fontName, fontSize);
+    QFont ft = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    QString fontName = mdata.value("fontName", ft.family()).toString();
+    int fontSize = mdata.value("fontSize", ft.pointSize()).toInt();
+    QStringList families = QKxUtils::availableFontFamilies();
+    if(families.contains(fontName)) {
+        m_term->setTerminalFont(fontName, fontSize);
+    }
     QString cursorType = mdata.value("cursorType", "block").toString();
     if(cursorType.isEmpty() || cursorType == "block") {
         m_term->setCursorType(QKxTermItem::CT_Block);
@@ -252,6 +261,23 @@ void QWoTermWidget::resetProperty(QVariantMap mdata, bool force)
     bool dragPaste = mdata.value("dragPaste", false).toBool();
     m_term->setDragCopyAndPaste(dragPaste);
     m_rkeyPaste = mdata.value("rkeyPaste", false).toBool();
+
+
+    QString path = QWoSetting::terminalBackgroundImage();
+    int alpha = QWoSetting::terminalBackgroundImageAlpha();
+    bool smooth = QWoSetting::terminalBackgroundImageEdgeSmooth();
+    QString position = QWoSetting::terminalBackgroundImagePosition();
+    if(path.isEmpty()) {
+        if(m_bkImageRender) {
+            m_bkImageRender->deleteLater();
+        }
+        return;
+    }
+    if(m_bkImageRender == nullptr) {
+        m_bkImageRender = new QKxBackgroundImageRender(QCoreApplication::instance());
+    }
+    m_bkImageRender->setImagePath(path, position, smooth, alpha);
+    m_term->setBackgroundImageRender(m_bkImageRender);
 }
 
 void QWoTermWidget::splitWidget(const QString& target, int gid, bool vertical)

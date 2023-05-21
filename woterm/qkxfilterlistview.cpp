@@ -36,7 +36,7 @@ QSessionButtonActionDelegate::QSessionButtonActionDelegate(QListView *lstView, Q
     , m_listView(lstView)
 {
     m_btnSftp = new QToolButton(parent);
-    m_btnSftp->setIcon(QIcon(":/woterm/resource/skin/sftp.png"));
+    m_btnSftp->setIcon(QIcon("../private/skins/black/sftp.png"));
     m_btnSftp->setIconSize(QSize(BUTTON_REMOVE_SIZE,BUTTON_REMOVE_SIZE));
 
     QSize sz(BUTTON_REMOVE_SIZE,BUTTON_REMOVE_SIZE);

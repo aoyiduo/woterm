@@ -49,7 +49,6 @@ set(HEADER_FILES
 )
 
 set(OTHER_FILES
-    qkxftp.qrc
 )
 
 include_directories(${SERVICE_ROOT_DIR}

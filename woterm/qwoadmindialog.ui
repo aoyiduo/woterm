@@ -58,7 +58,7 @@
           </property>
           <property name="icon">
            <iconset resource="woterm.qrc">
-            <normaloff>:/woterm/resource/skin/save.png</normaloff>:/woterm/resource/skin/save.png</iconset>
+            <normaloff>../private/skins/black/save.png</normaloff>../private/skins/black/save.png</iconset>
           </property>
           <property name="iconSize">
            <size>

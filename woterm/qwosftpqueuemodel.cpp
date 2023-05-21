@@ -24,10 +24,10 @@ QWoSftpQueueModel::QWoSftpQueueModel(QObject *parent)
     , m_maxTextHeight(0)
 {
     m_font = QGuiApplication::font();
-    m_uploadIcon = QIcon(QPixmap(":/woterm/resource/skin/upload.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_downIcon = QIcon(QPixmap(":/woterm/resource/skin/download.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_dirIcon = QIcon(QPixmap(":/woterm/resource/skin/dirs.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_fileIcon = QIcon(QPixmap(":/woterm/resource/skin/file.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_uploadIcon = QIcon(QPixmap("../private/skins/black/upload.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_downIcon = QIcon(QPixmap("../private/skins/black/download.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_dirIcon = QIcon(QPixmap("../private/skins/black/dirs.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_fileIcon = QIcon(QPixmap("../private/skins/black/file.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
 }
 
 bool QWoSftpQueueModel::append(const TaskInfo &ti)

@@ -13,9 +13,12 @@
 #include "ui_qwosystemoptiondialog.h"
 
 #include "qwosetting.h"
+#include "qwotheme.h"
 
 #include <QStringListModel>
 #include <QComboBox>
+#include <QDebug>
+#include <QMessageBox>
 
 QWoSystemOptionDialog::QWoSystemOptionDialog(QWidget *parent) :
     QDialog(parent),
@@ -27,15 +30,30 @@ QWoSystemOptionDialog::QWoSystemOptionDialog(QWidget *parent) :
 
     setWindowTitle(tr("System options"));
 
+
     m_langs = QWoSetting::allLanguages();
     ui->langChooser->setModel(new QStringListModel(m_langs.keys(), this));
+    QString lang = QWoSetting::languageFileName();
+
+    if(m_langs.values().contains(lang)) {
+        QString name = m_langs.key(lang);
+        ui->langChooser->setCurrentText(name);
+    }
+
+    QWoTheme *theme = QWoTheme::instance();
+    m_skins = theme->skinFriendNames();
+    ui->skinChooser->setModel(new QStringListModel(m_skins.values(), this));
+    QString uname = theme->skinUniqueName();
+    qDebug() << "QWoSystemOptionDialog" << uname << m_skins;
+    if(m_skins.contains(uname)) {
+        QString friendName = m_skins.value(uname);
+        ui->skinChooser->setCurrentText(friendName);
+    }
+
     QObject::connect(ui->btnSave, SIGNAL(clicked()), this, SLOT(onButtonSaveClicked()));
     QObject::connect(ui->btnCancel, SIGNAL(clicked()), this, SLOT(close()));
+    QObject::connect(ui->skinChooser, SIGNAL(currentIndexChanged(QString)), this, SLOT(onSkinCurrentIndexChanged(QString)));
 
-    QString lang = QWoSetting::languageFile();
-    if(m_langs.values().contains(lang)) {
-        ui->langChooser->setCurrentText(QWoSetting::languageName(lang));
-    }
     adjustSize();
 }
 
@@ -51,10 +69,30 @@ QString QWoSystemOptionDialog::language() const
     if(path.isEmpty()) {
         return QString();
     }
-    return m_langs.value(lang);
+    return path;
+}
+
+QString QWoSystemOptionDialog::skin() const
+{
+    QString name = ui->skinChooser->currentText();
+    QString path = m_skins.key(name);
+    if(path.isEmpty()) {
+        return QString();
+    }
+    return path;
 }
 
 void QWoSystemOptionDialog::onButtonSaveClicked()
 {
     done(QDialog::Accepted);
+}
+
+void QWoSystemOptionDialog::onSkinCurrentIndexChanged(const QString &name)
+{
+    QWoTheme *theme = QWoTheme::instance();
+    for(auto it = m_skins.begin(); it != m_skins.end(); it++) {
+        if(it.value() == name) {
+            return;
+        }
+    }
 }

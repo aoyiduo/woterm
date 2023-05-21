@@ -22,6 +22,8 @@ class QKxKeyTranslator;
 class QTERM_EXPORT QKxUtils
 {
 public:
+    static void addCustomKeyboardLayoutPaths(const QStringList& paths);
+    static void addCustomColorSchemaPaths(const QStringList& paths);
     static QStringList availableKeyLayouts();
     static QKxKeyTranslator *keyboardLayout(const QString& name);
     static QStringList availableColorSchemas();

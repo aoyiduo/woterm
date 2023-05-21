@@ -24,7 +24,7 @@ QIcon QWoTermStyle::standardIcon(QStyle::StandardPixmap standardIcon, const QSty
 {
     switch (standardIcon) {
     case SP_DialogCloseButton:
-        return QIcon(":/woterm/resource/skin/tabclose.png");
+        return QIcon("../private/skins/black/tabclose.png");
     default:
         return QProxyStyle::standardIcon(standardIcon, option, widget);
     }

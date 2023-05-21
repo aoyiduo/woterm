@@ -223,7 +223,7 @@ void QWoSessionProperty::init()
         QObject::connect(ui->port, SIGNAL(textChanged(QString)), this, SLOT(onPortTextChanged(QString)));
         ui->password->setEchoMode(QLineEdit::Password);
         if(QKxVer::instance()->isFullFeather()) {
-            QKxButtonAssist *assist = new QKxButtonAssist(":/woterm/resource/skin/eye.png", ui->password);
+            QKxButtonAssist *assist = new QKxButtonAssist("../private/skins/black/eye.png", ui->password);
             QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
         }
     }

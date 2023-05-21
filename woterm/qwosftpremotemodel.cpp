@@ -23,9 +23,9 @@ QWoSftpRemoteModel::QWoSftpRemoteModel(QObject *parent)
     : QAbstractListModel (parent)
 {
     m_font = QGuiApplication::font();
-    m_dirIcon = QIcon(QPixmap(":/woterm/resource/skin/folder2.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_fileIcon = QIcon(QPixmap(":/woterm/resource/skin/file.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_linkIcon = QIcon(QPixmap(":/woterm/resource/skin/link.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_dirIcon = QIcon(QPixmap("../private/skins/black/folder2.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_fileIcon = QIcon(QPixmap("../private/skins/black/file.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+    m_linkIcon = QIcon(QPixmap("../private/skins/black/link.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
 }
 
 QWoSftpRemoteModel::~QWoSftpRemoteModel()

@@ -290,7 +290,7 @@ Popup {
                             background: Image{
                                 sourceSize.width: 32
                                 sourceSize.height: 32
-                                source: "qrc:/woterm/resource/skin/remove.png"
+                                source: "qrc../private/skins/black/remove.png"
                             }
                             onClicked: {
                                 gSftpTransferModel.removeTask(listView.currentIndex)

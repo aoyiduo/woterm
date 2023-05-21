@@ -27,7 +27,7 @@ class QKxColorSchema;
 class QTimer;
 class QLabel;
 class QKxTouchPoint;
-
+class QKxBackgroundImageRender;
 class QKxEchoInput;
 class QTERM_EXPORT QKxTermItem : public QWidget
 {
@@ -79,6 +79,8 @@ public:
     Q_PROPERTY(bool inputEnable READ inputEnable WRITE setInputEnable)
 public:
     explicit QKxTermItem(QWidget *parent = nullptr);
+
+    void setBackgroundImageRender(QKxBackgroundImageRender *render);
 
     QFont terminalFont() const;
     QFontInfo setTerminalFont(const QString& family, int fontSize);
@@ -355,6 +357,9 @@ private:
 
     int m_lineDragStart;
     qint64 m_updateFullLast;
+
+    /* background image */
+    QPointer<QKxBackgroundImageRender> m_bkImageRender;
 };
 
 #endif // QTERM_H

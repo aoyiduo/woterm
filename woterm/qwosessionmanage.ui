@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="woterm.qrc">
-    <normaloff>:/woterm/resource/skin/nodes.png</normaloff>:/woterm/resource/skin/nodes.png</iconset>
+    <normaloff>../private/skins/black/nodes.png</normaloff>../private/skins/black/nodes.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -41,7 +41,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/select.png</normaloff>:/woterm/resource/skin/select.png</iconset>
+         <normaloff>../private/skins/black/select.png</normaloff>../private/skins/black/select.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -58,7 +58,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/add.png</normaloff>:/woterm/resource/skin/add.png</iconset>
+         <normaloff>../private/skins/black/add.png</normaloff>../private/skins/black/add.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -75,7 +75,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/linkcfg.png</normaloff>:/woterm/resource/skin/linkcfg.png</iconset>
+         <normaloff>../private/skins/black/linkcfg.png</normaloff>../private/skins/black/linkcfg.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -92,7 +92,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/delete.png</normaloff>:/woterm/resource/skin/delete.png</iconset>
+         <normaloff>../private/skins/black/delete.png</normaloff>../private/skins/black/delete.png</iconset>
        </property>
        <property name="iconSize">
         <size>

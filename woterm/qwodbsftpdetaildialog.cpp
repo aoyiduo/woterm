@@ -35,7 +35,7 @@ QWoDbSftpDetailDialog::QWoDbSftpDetailDialog(QWidget *parent) :
     setWindowTitle(tr("Sftp server"));
     ui->identity->setReadOnly(true);
     ui->password->setEchoMode(QLineEdit::Password);
-    QKxButtonAssist *assist = new QKxButtonAssist(":/woterm/resource/skin/eye.png", ui->password);
+    QKxButtonAssist *assist = new QKxButtonAssist("../private/skins/black/eye.png", ui->password);
     QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
     ui->type->setModel(new QStringListModel(QStringList() << tr("Password") << tr("Identity file"), ui->type));
     QObject::connect(ui->type, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentTextChanged()));

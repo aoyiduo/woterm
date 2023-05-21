@@ -63,7 +63,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/enter2.png</normaloff>:/woterm/resource/skin/enter2.png</iconset>
+         <normaloff>../private/skins/black/enter2.png</normaloff>../private/skins/black/enter2.png</iconset>
        </property>
       </widget>
      </item>

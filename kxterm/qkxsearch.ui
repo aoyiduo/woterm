@@ -44,7 +44,7 @@
      </property>
      <property name="icon">
       <iconset resource="qkxterm.qrc">
-       <normaloff>:/kxterm/image/prev.png</normaloff>:/kxterm/image/prev.png</iconset>
+       <normaloff>../private/skins/black/prev.png</normaloff>../private/skins/black/prev.png</iconset>
      </property>
     </widget>
    </item>
@@ -55,7 +55,7 @@
      </property>
      <property name="icon">
       <iconset resource="qkxterm.qrc">
-       <normaloff>:/kxterm/image/next.png</normaloff>:/kxterm/image/next.png</iconset>
+       <normaloff>../private/skins/black/next.png</normaloff>../private/skins/black/next.png</iconset>
      </property>
      <property name="autoDefault">
       <bool>false</bool>
@@ -72,7 +72,7 @@
      </property>
      <property name="icon">
       <iconset resource="qkxterm.qrc">
-       <normaloff>:/kxterm/image/find.png</normaloff>:/kxterm/image/find.png</iconset>
+       <normaloff>../private/skins/black/find.png</normaloff>../private/skins/black/find.png</iconset>
      </property>
     </widget>
    </item>
@@ -83,7 +83,7 @@
      </property>
      <property name="icon">
       <iconset resource="qkxterm.qrc">
-       <normaloff>:/kxterm/image/close.png</normaloff>:/kxterm/image/close.png</iconset>
+       <normaloff>../private/skins/black/close.png</normaloff>../private/skins/black/close.png</iconset>
      </property>
     </widget>
    </item>

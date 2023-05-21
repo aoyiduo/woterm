@@ -129,7 +129,7 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
                 model->setHome();
             }
         }
-        QKxButtonAssist *my = new QKxButtonAssist(":/woterm/resource/skin/keyenter.png", ui->localPath);
+        QKxButtonAssist *my = new QKxButtonAssist("../private/skins/black/keyenter.png", ui->localPath);
         QObject::connect(ui->localPath, SIGNAL(returnPressed()), this, SLOT(onLocalPathReturnPressed()));
         QObject::connect(my, SIGNAL(clicked(int)), this, SLOT(onLocalPathReturnPressed()));
     }
@@ -170,7 +170,7 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
 
     if(m_isUltimate && assist) {
         ui->btnFollow->setProperty(SYNC_FOLLOW_FLAG, false);
-        ui->btnFollow->setIcon(QIcon(":/woterm/resource/skin/select2.png"));
+        ui->btnFollow->setIcon(QIcon("../private/skins/black/select2.png"));
         ui->btnFollow->setToolTip(tr("The directory is out of sync with the terminal."));
         QObject::connect(ui->btnFollow, SIGNAL(clicked()), this, SLOT(onRemoteFollowButtonClicked()));
     }else{
@@ -178,7 +178,7 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
     }
 
     {
-        QKxButtonAssist *my = new QKxButtonAssist(":/woterm/resource/skin/keyenter.png", ui->remotePath);
+        QKxButtonAssist *my = new QKxButtonAssist("../private/skins/black/keyenter.png", ui->remotePath);
         QObject::connect(ui->remotePath, SIGNAL(returnPressed()), this, SLOT(onRemotePathReturnPressed()));
         QObject::connect(my, SIGNAL(clicked(int)), this, SLOT(onRemotePathReturnPressed()));
     }
@@ -667,42 +667,44 @@ void QWoSftpWidget::onRemoteContextMenuRequested(const QPoint& pos)
     QMenu menu(this);
     if(lsfi.isEmpty()) {
         menu.addAction(tr("Select all"), this, SLOT(onRemoteMenuSelectAll()));
-        menu.addAction(QIcon(":/woterm/resource/skin/back3.png"), tr("Back"), this, SLOT(onRemoteMenuReturnTopDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/reload.png"), tr("Refresh"), this, SLOT(onRemoteMenuReloadDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/home.png"), tr("Home Directory"), this, SLOT(onRemoteMenuGoHomeDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/mkdir.png"), tr("Create Directory"), this, SLOT(onRemoteMenuCreateDirectory()));
+        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("Back"), this, SLOT(onRemoteMenuReturnTopDirectory()));
+        menu.addAction(QIcon("../private/skins/black/reload.png"), tr("Refresh"), this, SLOT(onRemoteMenuReloadDirectory()));
+        menu.addAction(QIcon("../private/skins/black/home.png"), tr("Home Directory"), this, SLOT(onRemoteMenuGoHomeDirectory()));
+        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("Create Directory"), this, SLOT(onRemoteMenuCreateDirectory()));
         if(m_bAssist){
-            menu.addAction(QIcon(":/woterm/resource/skin/upload2.png"), tr("Upload"), this, SLOT(onRemoteMenuUpload()));
+            menu.addAction(QIcon("../private/skins/black/upload2.png"), tr("Upload"), this, SLOT(onRemoteMenuUpload()));
         }
     }else{
         FileInfo fi = lsfi.at(0);
         menu.addAction(tr("Deselect all"), this, SLOT(onRemoteMenuDeselectAll()));
-        menu.addAction(QIcon(":/woterm/resource/skin/back3.png"), tr("Back"), this, SLOT(onRemoteMenuReturnTopDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/reload.png"), tr("Refresh"), this, SLOT(onRemoteMenuReloadDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/home.png"), tr("Home Directory"), this, SLOT(onRemoteMenuGoHomeDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/mkdir.png"), tr("Create Directory"), this, SLOT(onRemoteMenuCreateDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/rmfile.png"), tr("Remove selections"), this, SLOT(onRemoteMenuRemoveSelection()));
-        menu.addAction(QIcon(":/woterm/resource/skin/permission.png"), tr("Modify the permission"), this, SLOT(onRemoteModifyItemPermission()));
+        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("Back"), this, SLOT(onRemoteMenuReturnTopDirectory()));
+        menu.addAction(QIcon("../private/skins/black/reload.png"), tr("Refresh"), this, SLOT(onRemoteMenuReloadDirectory()));
+        menu.addAction(QIcon("../private/skins/black/home.png"), tr("Home Directory"), this, SLOT(onRemoteMenuGoHomeDirectory()));
+        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("Create Directory"), this, SLOT(onRemoteMenuCreateDirectory()));
+        menu.addAction(QIcon("../private/skins/black/rmfile.png"), tr("Remove selections"), this, SLOT(onRemoteMenuRemoveSelection()));
+        menu.addAction(QIcon("../private/skins/black/permission.png"), tr("Modify the permission"), this, SLOT(onRemoteModifyItemPermission()));
         if(lsfi.length() == 1) {
             menu.addAction(tr("Rename"), this, SLOT(onRemoteMenuRename()));
-            menu.addAction(tr("Edit file content"), this, SLOT(onRemoteMenuEditFileContent()));
+            if(fi.isFile()) {
+                menu.addAction(tr("Edit file content"), this, SLOT(onRemoteMenuEditFileContent()));
+            }
         }
         menu.addAction(tr("Move to other directory"), this, SLOT(onRemoteMenuMoveToOtherDirectory()));
         if(fi.isDir()) {
-            menu.addAction(QIcon(":/woterm/resource/skin/enter.png"), tr("Enter"), this, SLOT(onRemoteMenuEnterDirectory()));
+            menu.addAction(QIcon("../private/skins/black/enter.png"), tr("Enter"), this, SLOT(onRemoteMenuEnterDirectory()));
             if(m_isUltimate) {
-                menu.addAction(QIcon(":/woterm/resource/skin/download2.png"), tr("Download"), this, SLOT(onRemoteMenuDownload()));
+                menu.addAction(QIcon("../private/skins/black/download2.png"), tr("Download"), this, SLOT(onRemoteMenuDownload()));
             }
         }else if(fi.isFile()){
-            menu.addAction(QIcon(":/woterm/resource/skin/download2.png"), tr("Download"), this, SLOT(onRemoteMenuDownload()));
+            menu.addAction(QIcon("../private/skins/black/download2.png"), tr("Download"), this, SLOT(onRemoteMenuDownload()));
         }else if(fi.isLink()) {
-            menu.addAction(QIcon(":/woterm/resource/skin/enter3.png"), tr("Try Enter"), this, SLOT(onRemoteMenuTryEnterDirectory()));
+            menu.addAction(QIcon("../private/skins/black/enter3.png"), tr("Try Enter"), this, SLOT(onRemoteMenuTryEnterDirectory()));
         }
         if(m_bAssist){
-            menu.addAction(QIcon(":/woterm/resource/skin/upload2.png"), tr("Upload"), this, SLOT(onRemoteMenuUpload()));
+            menu.addAction(QIcon("../private/skins/black/upload2.png"), tr("Upload"), this, SLOT(onRemoteMenuUpload()));
         }
     }
-    menu.addAction(QIcon(":/woterm/resource/skin/multiplex.png"), tr("New Session Multiplex"), this, SLOT(onNewSessionMultiplex()));
+    menu.addAction(QIcon("../private/skins/black/multiplex.png"), tr("New Session Multiplex"), this, SLOT(onNewSessionMultiplex()));
     if(m_bAssist) {
         menu.addAction(tr("Close"), this, SLOT(onForceToCloseThisSession()));
     }
@@ -805,27 +807,27 @@ void QWoSftpWidget::onLocalContextMenuRequested(const QPoint &pos)
         if(m_isUltimate){
             menu.addAction(tr("Select all"), this, SLOT(onLocalMenuSelectAll()));
         }
-        menu.addAction(QIcon(":/woterm/resource/skin/back3.png"), tr("Back"), this, SLOT(onLocalMenuReturnTopDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/reload.png"), tr("Refresh"), this, SLOT(onLocalMenuReloadDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/home.png"), tr("Home directory"), this, SLOT(onLocalMenuGoHomeDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/mkdir.png"), tr("Create directory"), this, SLOT(onLocalMenuCreateDirectory()));
+        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("Back"), this, SLOT(onLocalMenuReturnTopDirectory()));
+        menu.addAction(QIcon("../private/skins/black/reload.png"), tr("Refresh"), this, SLOT(onLocalMenuReloadDirectory()));
+        menu.addAction(QIcon("../private/skins/black/home.png"), tr("Home directory"), this, SLOT(onLocalMenuGoHomeDirectory()));
+        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("Create directory"), this, SLOT(onLocalMenuCreateDirectory()));
     }else{
         QFileInfo fi = lsfi.at(0);
         if(m_isUltimate){
             menu.addAction(tr("Deselect all"), this, SLOT(onLocalMenuDeselectAll()));
         }
-        menu.addAction(QIcon(":/woterm/resource/skin/back3.png"), tr("Back"), this, SLOT(onLocalMenuReturnTopDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/reload.png"), tr("Refresh"), this, SLOT(onLocalMenuReloadDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/home.png"), tr("Home directory"), this, SLOT(onLocalMenuGoHomeDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/mkdir.png"), tr("Create directory"), this, SLOT(onLocalMenuCreateDirectory()));
-        menu.addAction(QIcon(":/woterm/resource/skin/rmfile.png"), tr("Remove selections"), this, SLOT(onLocalMenuRemoveSelection()));
+        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("Back"), this, SLOT(onLocalMenuReturnTopDirectory()));
+        menu.addAction(QIcon("../private/skins/black/reload.png"), tr("Refresh"), this, SLOT(onLocalMenuReloadDirectory()));
+        menu.addAction(QIcon("../private/skins/black/home.png"), tr("Home directory"), this, SLOT(onLocalMenuGoHomeDirectory()));
+        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("Create directory"), this, SLOT(onLocalMenuCreateDirectory()));
+        menu.addAction(QIcon("../private/skins/black/rmfile.png"), tr("Remove selections"), this, SLOT(onLocalMenuRemoveSelection()));
         if(fi.isDir()) {
-            menu.addAction(QIcon(":/woterm/resource/skin/enter.png"), tr("Enter"), this, SLOT(onLocalMenuEnterDirectory()));
+            menu.addAction(QIcon("../private/skins/black/enter.png"), tr("Enter"), this, SLOT(onLocalMenuEnterDirectory()));
         }else if(fi.isSymLink()) {
-            menu.addAction(QIcon(":/woterm/resource/skin/enter3.png"), tr("Try enter"), this, SLOT(onLocalMenuTryEnterDirectory()));
+            menu.addAction(QIcon("../private/skins/black/enter3.png"), tr("Try enter"), this, SLOT(onLocalMenuTryEnterDirectory()));
         }
         if(m_isUltimate || !fi.isDir()){
-            menu.addAction(QIcon(":/woterm/resource/skin/upload2.png"), tr("Upload"), this, SLOT(onLocalMenuUpload()));
+            menu.addAction(QIcon("../private/skins/black/upload2.png"), tr("Upload"), this, SLOT(onLocalMenuUpload()));
         }
     }
     QPoint pt = QCursor::pos();
@@ -1270,8 +1272,13 @@ void QWoSftpWidget::onRemoteMenuEditFileContent()
     if(lsfi.length() != 1) {
         return;
     }
+
     QString path = m_remoteModel->path();
     const FileInfo& fi = lsfi.first();
+    if(fi.isDir()) {
+        QKxMessageBox::message(this, tr("File information"), tr("Directory is not supported to edit."));
+        return;
+    }
     if(fi.size > (1024 * 1024 * 5)) {
         QKxMessageBox::message(this, tr("File information"), tr("Editing files larger than 5M bytes is not supported."));
         return;
@@ -1348,11 +1355,11 @@ void QWoSftpWidget::onRemoteFollowButtonClicked()
     QVariant v = ui->btnFollow->property(SYNC_FOLLOW_FLAG);
     if(v.toBool()) {
         ui->btnFollow->setProperty(SYNC_FOLLOW_FLAG, false);
-        ui->btnFollow->setIcon(QIcon(":/woterm/resource/skin/select2.png"));
+        ui->btnFollow->setIcon(QIcon("../private/skins/black/select2.png"));
         ui->btnFollow->setToolTip(tr("The directory is out of sync with the terminal."));
     }else{
         ui->btnFollow->setProperty(SYNC_FOLLOW_FLAG, true);
-        ui->btnFollow->setIcon(QIcon(":/woterm/resource/skin/select4.png"));
+        ui->btnFollow->setIcon(QIcon("../private/skins/black/select4.png"));
         ui->btnFollow->setToolTip(tr("Keep the directory synchronized with the terminal."));
     }
 }

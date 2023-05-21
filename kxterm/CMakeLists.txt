@@ -26,6 +26,7 @@ set(SOURCE_FILES
     qvteimpl.cpp
     wcwidth.cpp
     qkxechoinput.cpp
+    qkxbackgroundimagerender.cpp
 )
 
 set(HAEDER_FILES
@@ -43,11 +44,11 @@ set(HAEDER_FILES
     qvteimpl.h
     wcwidth.h
     qkxechoinput.h
+    qkxbackgroundimagerender.h
     qkxterm_share.h
 )
 
 set(OTHER_FILES
-    qkxterm.qrc
     qkxsearch.ui
 )
 

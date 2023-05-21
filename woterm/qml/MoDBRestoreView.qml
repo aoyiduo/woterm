@@ -15,7 +15,7 @@ Page {
     }
 
     header: MoToolBar {
-        source: "qrc:/woterm/resource/skin/left2.png"
+        source: "qrc../private/skins/black/left2.png"
         title: qsTr("Restore")
         onLeftClicked: {
             closeArrived()

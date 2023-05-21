@@ -40,7 +40,7 @@ QWoLicenseActivateDialog::QWoLicenseActivateDialog(QWidget *parent) :
 
     setMinimumWidth(360);
 
-    QKxButtonAssist *btn = new QKxButtonAssist(":/woterm/resource/skin/ftp.png", false, ui->mid);
+    QKxButtonAssist *btn = new QKxButtonAssist("../private/skins/black/ftp.png", false, ui->mid);
     QObject::connect(btn, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
     QObject::connect(ui->btnClose, SIGNAL(clicked()), this, SLOT(close()));
     QObject::connect(ui->btnClose2, SIGNAL(clicked()), this, SLOT(close()));

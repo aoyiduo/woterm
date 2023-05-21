@@ -1,0 +1,297 @@
+﻿* {
+    background-color: rgb(243,243,243);
+    color: rgb(51,51,51);
+}
+
+QMenuBar {
+    background-color: rgb(221,221,221);
+    color: rgb(51,51,51);
+}
+
+QMenuBar::item {
+     spacing: 3px; /* spacing between menu bar items */
+     padding: 1px 7px;
+     background: transparent;
+     border-radius: 4px;
+     margin: 0px 3px;
+     color: rgb(51,51,51);
+}
+
+QMenuBar::item:selected { /* when selected using mouse or keyboard */
+    background: rgb(210,210,210);
+    color: rgb(51,51,51);
+}
+
+QMenuBar::item:pressed {
+    background: rgb(178,178,178);
+    color: rgb(31,31,31);
+}
+
+QMenu {
+    background-color: rgb(240,240,240); /* sets background of the menu */
+    border: 1px rgb(240,240,240);
+    padding: 3px 5px;
+    margin: 2px; /* can not zero for easy trigger clicked action.*/
+}
+
+QMenu::item {
+ /* sets background of menu item. set this to something non-transparent
+     if you want menu color and menu item color to be different */
+    background-color: transparent;
+    padding: 5px 30px 5px 30px;
+    margin: 0;
+}
+
+QMenu::item:selected { /* when user selects item using mouse or keyboard */
+    background-color: rgb(0, 46, 128);
+    color: rgb(234,234,234);
+}
+
+QToolBar {
+    background-color: rgb(243,243,243);
+    border-top: 1px solid rgb(243,243,243);
+    border-bottom: 1px solid lightGray;
+    spacing: 5px; /* spacing between items in the tool bar */
+    max-height: 26px;
+    min-height: 26px;
+}
+
+QToolBar QPushButton {
+    max-height: 24px;
+    min-height: 24px;
+}
+
+QToolBar QPushButton:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(243,243,243), stop: 0.5 rgb(250,250,250), stop: 1 rgb(243,243,243));
+    max-height: 24px;
+    border: 1px solid gray;
+    border-radius: 3px;
+}
+
+QToolBar QToolButton {
+    max-height: 20px;
+    min-height: 20px;
+    background: transparent;
+    border: 0px;
+}
+
+QToolBar QToolButton:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(243,243,243), stop: 0.5 rgb(250,250,250), stop: 1 rgb(243,243,243));
+    max-height: 24px;
+    border: 1px solid gray;
+    border-radius: 3px;
+}
+
+QToolBar QLineEdit {
+    border: 1px solid darkgray;
+    border-radius: 3px;
+    min-height: 22px;
+    max-height: 22px;
+}
+
+QToolBar QLineEdit:hover {
+    border: 1px solid gray;
+}
+
+QListView::item:selected {
+    background-color: rgb(0, 46, 128);
+    color: white;
+}
+
+QTreeView::item:selected {
+    background-color: rgb(0, 46, 128);
+    color: white;
+}
+
+QTreeView::item::disabled {
+    background-color: darkgray;
+    color: gray;
+}
+
+QHeaderView::section {
+    background-color: rgb(243,243,243);
+    padding-left: 4px;
+    border: 1px solid rgb(210,210,210);
+}
+
+QLineEdit {
+    border: 1px solid rgb(100,100,100);
+    border-radius: 3px;
+    selection-background-color: rgba(0, 46, 128, 200);
+    min-height: 22px;
+    max-height: 22px;
+}
+
+QLineEdit:hover {
+    border: 1px solid darkgray;
+}
+
+QLineEdit[readOnly="false"]{
+    background-color: white;
+}
+
+QPushButton {
+    max-height: 26px;
+    min-height: 26px;
+}
+
+QComboBox {
+    max-height: 24px;
+    min-height: 24px;
+}
+
+QComboBox QAbstractItemView {
+     border: 1px solid rgb(100,100,100);
+}
+
+QComboBox::item:selected {
+     selection-background-color: rgb(0, 46, 128);
+     color: white;
+}
+
+QLabel {
+    background: transparent;
+}
+
+QScrollArea {
+    background: black;
+    border: 0px;
+}
+
+QTabBar {
+    background: transparent;
+}
+
+QTabBar::tab {
+    min-width:8px;
+    max-height: 30px;
+    min-height: 20px;
+    padding-left: 6px;
+    padding-right: 0px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border:1px solid rgb(100,100,100);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+QTabBar::tab:selected {
+    background: rgb(0, 46, 128);
+    color: white;
+}
+
+QTabBar::tab:!selected {
+     margin-top:2px;
+}
+
+QTabBar::close-button {
+    image: url(../private/skins/black/tabclose.png);
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+QTabBar::close-button:hover {
+    image: url(../private/skins/black/tabclose.png);
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+QWoTermMask{
+    background: black;
+}
+
+QWoTermMask QPushButton {
+    max-height: 60px;    
+}
+
+
+QScrollBar:vertical {
+    border: 1px solid #999999;
+    background:white;
+    width:10px;
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar::handle:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(0, 46, 128), stop: 0.5 rgb(0, 46, 128), stop:1 rgb(0, 46, 128));
+    min-height: 20px;
+    border-radius: 3px;
+}
+QScrollBar::add-line:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(0, 46, 128), stop: 0.5 rgb(0, 46, 128),  stop:1 rgb(0, 46, 128));
+    height: 0px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0  rgb(0, 46, 128), stop: 0.5 rgb(0, 46, 128),  stop:1 rgb(0, 46, 128));
+    height: 0 px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+QScrollBar:horizontal {
+    border: 1px solid #999999;
+    background:white;
+    height:10px;
+    margin: 0px 0px 0px 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(0, 46, 128), stop: 0.5 rgb(0, 46, 128), stop:1 rgb(0, 46, 128));
+    min-width: 20px;
+    border-radius: 3px;
+}
+
+QScrollBar::add-line:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(0, 46, 128), stop: 0.5 rgb(0, 46, 128),  stop:1 rgb(0, 46, 128));
+    width: 0px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0  rgb(0, 46, 128), stop: 0.5 rgb(0, 46, 128),  stop:1 rgb(0, 46, 128));
+    width: 0 px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QSlider::groove:horizontal {
+    border: 1px solid #999999;
+    height: 10px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
+    background: white;
+    border-radius: 5px;
+}
+
+QSlider::handle:horizontal {
+    background: rgb(51,51,51);
+    border: 1px solid #5c5c5c;   
+    width: 18px;
+    margin: -2px 0px;
+    border-radius: 5px;
+}
+
+QSlider::sub-page:horizontal {
+    border: 1px solid #999999;
+    background: rgb(0, 46, 128);    
+    border-radius: 5px;
+} 
+
+QWoPasswordInput, QWoVncFtpWidget, QWoSftpTransferWidget{
+    padding: 5px;
+    border: 1px solid #313131;   
+    border-radius: 5px;
+}
+
+QWidget#deskopTool {
+    border-width: 1px;
+    border-left-color: #313131;
+    border-right-color: #313131;
+    border-bottom-color: #313131;
+    border-style: solid;
+    border-bottom-left-radius: 5;
+    border-bottom-right-radius: 5;
+    padding: 3px;
+    min-width: 9ex;
+    min-height: 20px;
+}

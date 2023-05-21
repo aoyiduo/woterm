@@ -33,7 +33,7 @@ QWoDBRestoreDialog::QWoDBRestoreDialog(QWidget *parent) :
     setWindowTitle(tr("Database Restore"));
 
     ui->filePath->setReadOnly(true);
-    QKxButtonAssist *assist = new QKxButtonAssist(":/woterm/resource/skin/folder.png", ui->filePath);
+    QKxButtonAssist *assist = new QKxButtonAssist("../private/skins/black/folder.png", ui->filePath);
     QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
     QObject::connect(ui->btnRestore, SIGNAL(clicked()), this, SLOT(onRestoreButtonClicked()));
 }

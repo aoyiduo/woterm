@@ -40,10 +40,10 @@ QWoSftpItemDelegate::QWoSftpItemDelegate(QWidget *parent)
     : QStyledItemDelegate(parent)
     , m_parent(parent)
 {
-    m_uploadIcon = QPixmap(":/woterm/resource/skin/upload.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation);
-    m_downIcon = QPixmap(":/woterm/resource/skin/download.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation);
-    m_dirIcon = QPixmap(":/woterm/resource/skin/dirs.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation);
-    m_fileIcon = QPixmap(":/woterm/resource/skin/file.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation);
+    m_uploadIcon = QPixmap("../private/skins/black/upload.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation);
+    m_downIcon = QPixmap("../private/skins/black/download.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation);
+    m_dirIcon = QPixmap("../private/skins/black/dirs.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation);
+    m_fileIcon = QPixmap("../private/skins/black/file.png").scaled(18, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation);
 }
 
 void QWoSftpItemDelegate::onRemoveArrived()
@@ -111,7 +111,7 @@ QWidget *QWoSftpItemDelegate::createEditor(QWidget *parent, const QStyleOptionVi
         QHBoxLayout *layout = new QHBoxLayout(container);
         container->setLayout(layout);
         layout->setContentsMargins(0,0,0,0);
-        QIcon remove = QIcon(QPixmap(":/woterm/resource/skin/close.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
+        QIcon remove = QIcon(QPixmap("../private/skins/black/close.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
         QPushButton *btnRemove = new QPushButton(container);
         btnRemove->setObjectName("transferRemove");
         btnRemove->setIcon(remove);
@@ -566,7 +566,7 @@ bool QWoSftpTransferWidget::uploadFile(const QString &_local, const QString &_re
     QString local = QDir::cleanPath(_local);
     QString remote = QDir::cleanPath(_remote);
     setTaskLabel(local, remote);
-    ui->btnType->setIcon(QIcon(":/woterm/resource/skin/upload.png"));
+    ui->btnType->setIcon(QIcon("../private/skins/black/upload.png"));
     QVariantMap dm;
     dm.insert("taskId", tid);
     dm.insert("remote", remote);
@@ -586,7 +586,7 @@ bool QWoSftpTransferWidget::downloadDir(const QString &_remote, const QString &_
     QString local = QDir::cleanPath(_local);
     QString remote = QDir::cleanPath(_remote);
     setTaskLabel(local, remote);
-    ui->btnType->setIcon(QIcon(":/woterm/resource/skin/download.png"));
+    ui->btnType->setIcon(QIcon("../private/skins/black/download.png"));
     QVariantMap dm;
     dm.insert("taskId", tid);
     dm.insert("basePath", remote);
@@ -605,7 +605,7 @@ bool QWoSftpTransferWidget::downloadFile(const QString &_remote, const QString &
     QString local = QDir::cleanPath(_local);
     QString remote = QDir::cleanPath(_remote);
     setTaskLabel(local, remote);
-    ui->btnType->setIcon(QIcon(":/woterm/resource/skin/download.png"));
+    ui->btnType->setIcon(QIcon("../private/skins/black/download.png"));
     QVariantMap dm;
     dm.insert("taskId", tid);
     dm.insert("remote", remote);

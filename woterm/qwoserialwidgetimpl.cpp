@@ -263,7 +263,7 @@ void QWoSerialTermWidget::contextMenuEvent(QContextMenuEvent *ev)
         m_menu = new QMenu(this);
         m_copy = m_menu->addAction(tr("Copy"));
         QObject::connect(m_copy, SIGNAL(triggered()), this, SLOT(onCopyToClipboard()));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
+        m_menu->addAction(QIcon("../private/skins/black/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
         m_menu->addAction(tr("Clean history"), this, SLOT(onCleanThisSession()));
     }
     QKxTermItem *term = termItem();

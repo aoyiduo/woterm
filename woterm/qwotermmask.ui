@@ -49,7 +49,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/reload.png</normaloff>:/woterm/resource/skin/reload.png</iconset>
+         <normaloff>../private/skins/black/reload.png</normaloff>../private/skins/black/reload.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -82,7 +82,7 @@
        </property>
        <property name="icon">
         <iconset resource="woterm.qrc">
-         <normaloff>:/woterm/resource/skin/tabclose.png</normaloff>:/woterm/resource/skin/tabclose.png</iconset>
+         <normaloff>../private/skins/black/tabclose.png</normaloff>../private/skins/black/tabclose.png</iconset>
        </property>
        <property name="iconSize">
         <size>

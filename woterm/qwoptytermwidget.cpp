@@ -252,11 +252,11 @@ void QWoPtyTermWidget::contextMenuEvent(QContextMenuEvent *ev)
         m_copy = m_menu->addAction(tr("Copy"));
         QObject::connect(m_copy, SIGNAL(triggered()), this, SLOT(onCopyToClipboard()));
         m_paste = m_menu->addAction(tr("Paste"));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/reload.png"), tr("Force reload"), this, SLOT(onForceToReconnect()));
+        m_menu->addAction(QIcon("../private/skins/black/reload.png"), tr("Force reload"), this, SLOT(onForceToReconnect()));
         QObject::connect(m_paste, SIGNAL(triggered()), this, SLOT(onPasteFromClipboard()));
-        QAction *vsplit = m_menu->addAction(QIcon(":/woterm/resource/skin/vsplit.png"), tr("Split vertical"));
+        QAction *vsplit = m_menu->addAction(QIcon("../private/skins/black/vsplit.png"), tr("Split vertical"));
         QObject::connect(vsplit, SIGNAL(triggered()), this, SLOT(onVerticalSplitView()));
-        QAction *hsplit = m_menu->addAction(QIcon(":/woterm/resource/skin/hsplit.png"), tr("Split horizontal"));
+        QAction *hsplit = m_menu->addAction(QIcon("../private/skins/black/hsplit.png"), tr("Split horizontal"));
         QObject::connect(hsplit, SIGNAL(triggered()), this, SLOT(onHorizontalSplitView()));
 
         QAction *close = m_menu->addAction(tr("Close session"));
@@ -266,8 +266,8 @@ void QWoPtyTermWidget::contextMenuEvent(QContextMenuEvent *ev)
             m_menu->addAction(tr("Float this tab"), this, SLOT(onFloatThisTab()));
         }
 
-        m_menu->addAction(QIcon(":/woterm/resource/skin/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
-        m_menu->addAction(QIcon(":/woterm/resource/skin/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
+        m_menu->addAction(QIcon("../private/skins/black/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
+        m_menu->addAction(QIcon("../private/skins/black/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
         m_output = m_menu->addAction(tr("Output history to file"), this, SLOT(onOutputHistoryToFile()));
         m_stop = m_menu->addAction(tr("Stop history to file"), this, SLOT(onStopOutputHistoryFile()));
     }

@@ -107,7 +107,7 @@ QVariant QMoSftpQueueModel::data(const QModelIndex &idx, int role) const
     }
 
     if(role == ROLE_ICON_URL) {
-        return ti.isDir ? "qrc:/woterm/resource/skin/dirs.png" : "qrc:/woterm/resource/skin/file.png";
+        return ti.isDir ? "qrc../private/skins/black/dirs.png" : "qrc../private/skins/black/file.png";
     }
     if(role == ROLE_SHORT_STRING) {
         return QString("%1-%2").arg(ti.local).arg(ti.remote);
