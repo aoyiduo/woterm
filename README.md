@@ -52,13 +52,13 @@ The client code has been completely open source, and the third-party code which 
 <a href="http://woterm.com">http://woterm.com</a>
 
 ## UI preview:
-<img src="doc/main.png"/>
-<img src="doc/skins.png">
-<img src="doc/sync.gif">
-<img src="doc/main2.png"/>
-<img src="doc/search.gif"/>
-<img src="doc/sftp.gif"/>
-<img src="doc/float.gif"/>
-<img src="doc/split.gif"/>
-<img src="doc/color.gif"/>
-<img src="doc/vnc.png"/>
+<div>Main UI<br><img src="doc/main.png"/></div>
+<div>Multiple skins<br><img src="doc/skins.png"></div>
+<div>Cloud sync<br><img src="doc/sync.gif"></div>
+<div>Administrator<br><img src="doc/main2.png"/></div>
+<div>Keyword filter<br><img src="doc/search.gif"/></div>
+<div>File transfer<br><img src="doc/sftp.gif"/></div>
+<div>Tab float<br><img src="doc/float.gif"/></div>
+<div>window split<br><img src="doc/split.gif"/></div>
+<div>terminal theme<br><img src="doc/color.gif"/></div>
+<div>VNC terminal<br><img src="doc/vnc.png"/></div>

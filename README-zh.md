@@ -51,13 +51,13 @@
 <a href="http://woterm.com">http://woterm.com</a>
 
 ## 界面预览
-<img src="doc/main.png"/>
-<img src="doc/skins.png">
-<img src="doc/sync.gif">
-<img src="doc/main2.png"/>
-<img src="doc/search.gif"/>
-<img src="doc/sftp.gif"/>
-<img src="doc/float.gif"/>
-<img src="doc/split.gif"/>
-<img src="doc/color.gif"/>
-<img src="doc/vnc.png"/>
+<div>主界面<br><img src="doc/main.png"/></div>
+<div>多皮肤<br><img src="doc/skins.png"></div>
+<div>云同步<br><img src="doc/sync.gif"></div>
+<div>管理员登录<br><img src="doc/main2.png"/></div>
+<div>关键字搜索<br><img src="doc/search.gif"/></div>
+<div>SFTP的上传下载<br><img src="doc/sftp.gif"/></div>
+<div>选项卡浮动<br><img src="doc/float.gif"/></div>
+<div>窗口分割<br><img src="doc/split.gif"/></div>
+<div>终端配色表<br><img src="doc/color.gif"/></div>
+<div>VNC终端<br><img src="doc/vnc.png"/></div>
