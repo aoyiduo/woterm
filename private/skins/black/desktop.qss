@@ -1,10 +1,10 @@
 ﻿* {
-    background-color: rgba(60,60,60,200);
+    background-color: rgb(60,60,60);
     color: rgb(204,204,204);
 }
 
 QMenuBar {
-    background-color: rgba(60,60,60,200);
+    background-color: rgb(60,60,60);
     color: rgb(178,178,178);
 }
 
@@ -28,8 +28,8 @@ QMenuBar::item:pressed {
 }
 
 QMenu {
-    background-color: rgba(60,60,60,200); /* sets background of the menu */
-    border: 1px rgba(60,60,60,200);
+    background-color: rgb(60,60,60); /* sets background of the menu */
+    border: 1px rgb(60,60,60);
     padding: 3px 5px;
     margin: 2px; /* can not zero for easy trigger clicked action.*/
 }
@@ -48,7 +48,7 @@ QMenu::item:selected { /* when user selects item using mouse or keyboard */
 }
 
 QToolBar {
-    background-color: rgba(60,60,60,200);
+    background-color: rgb(60,60,60);
     border-top: 1px solid rgb(100,100,100);
     border-bottom: 1px solid rgb(100,100,100);
     spacing: 5px; /* spacing between items in the tool bar */
@@ -76,7 +76,7 @@ QToolBar QToolButton {
 }
 
 QToolBar QToolButton:hover {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgba(80,80,80,200), stop: 0.5 rgba(60,60,60,200), stop: 1 rgba(80,80,80,200));
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgba(80,80,80,200), stop: 0.5 rgb(60,60,60), stop: 1 rgba(80,80,80,200));
     max-height: 24px;
     border: 1px solid darkgray;
     border-radius: 3px;
@@ -94,7 +94,7 @@ QToolBar QLineEdit:hover {
 }
 
 QDockWidget {
-    background: rgba(60,60,60,200);
+    background: rgb(60,60,60);
     margin 0px;
 }
 
@@ -201,6 +201,13 @@ QTabBar::close-button:hover {
     padding-bottom: 1px;
 }
 
+QKxTermItem > QLabel {
+    background-color: rgb(60,60,60);
+    color: rgb(204,204,204);
+    border: 1px solid #313131;   
+    border-radius: 5px;
+}
+
 QWoTermMask{
     background: black;
 }
@@ -216,18 +223,18 @@ QScrollBar:vertical {
     margin: 0px 0px 0px 0px;
 }
 QScrollBar::handle:vertical {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgba(60,60,60,200), stop: 0.5 rgba(60,60,60,200), stop:1 rgba(60,60,60,200));
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(60,60,60), stop: 0.5 rgb(60,60,60), stop:1 rgb(60,60,60));
     min-height: 20px;
     border-radius: 3px;
 }
 QScrollBar::add-line:vertical {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgba(60,60,60,200), stop: 0.5 rgba(60,60,60,200),  stop:1 rgba(60,60,60,200));
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(60,60,60), stop: 0.5 rgb(60,60,60),  stop:1 rgb(60,60,60));
     height: 0px;
     subcontrol-position: bottom;
     subcontrol-origin: margin;
 }
 QScrollBar::sub-line:vertical {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0  rgba(60,60,60,200), stop: 0.5 rgba(60,60,60,200),  stop:1 rgba(60,60,60,200));
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0  rgb(60,60,60), stop: 0.5 rgb(60,60,60),  stop:1 rgb(60,60,60));
     height: 0 px;
     subcontrol-position: top;
     subcontrol-origin: margin;
@@ -241,20 +248,20 @@ QScrollBar:horizontal {
 }
 
 QScrollBar::handle:horizontal {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgba(60,60,60,200), stop: 0.5 rgba(60,60,60,200), stop:1 rgba(60,60,60,200));
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(60,60,60), stop: 0.5 rgb(60,60,60), stop:1 rgb(60,60,60));
     min-width: 20px;
     border-radius: 3px;
 }
 
 QScrollBar::add-line:horizontal {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgba(60,60,60,200), stop: 0.5 rgba(60,60,60,200),  stop:1 rgba(60,60,60,200));
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(60,60,60), stop: 0.5 rgb(60,60,60),  stop:1 rgb(60,60,60));
     width: 0px;
     subcontrol-position: right;
     subcontrol-origin: margin;
 }
 
 QScrollBar::sub-line:horizontal {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0  rgba(60,60,60,200), stop: 0.5 rgba(60,60,60,200),  stop:1 rgba(60,60,60,200));
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0  rgb(60,60,60), stop: 0.5 rgb(60,60,60),  stop:1 rgb(60,60,60));
     width: 0 px;
     subcontrol-position: left;
     subcontrol-origin: margin;
@@ -285,6 +292,11 @@ QWoPasswordInput, QWoVncFtpWidget, QWoSftpTransferWidget{
     padding: 5px;
     border: 1px solid #313131;   
     border-radius: 5px;
+}
+
+QWoUnionInputItem {
+    padding: 5px;
+    border-top-color: 1px solid #313131;
 }
 
 QWidget#deskopTool {

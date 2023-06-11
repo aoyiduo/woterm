@@ -34,6 +34,7 @@ protected:
     virtual void handleTabContextMenu(QMenu *menu) = 0;
     virtual QMap<QString, QString> collectUnsafeCloseMessage() = 0;    
     virtual bool handleCustomProperties();
+    virtual bool isRemoteSession();
 protected:
     friend class QWoShower;
     int m_id;

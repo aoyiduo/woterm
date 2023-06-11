@@ -9,8 +9,8 @@
 *
 *******************************************************************************************/
 
-#ifndef QMODIRASSIST_H
-#define QMODIRASSIST_H
+#ifndef QKXDIRASSIST_H
+#define QKXDIRASSIST_H
 
 #include <QObject>
 #include <QDir>
@@ -18,11 +18,11 @@
 #include <QList>
 #include <QVariantMap>
 
-class QMoDirAssist : public QObject
+class QKxDirAssist : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QStringList nameFilters READ nameFilters WRITE setNameFilters NOTIFY nameFiltersChanged)
-    Q_PROPERTY(QMoDirAssist::Filters filter READ filter WRITE setFilter)
+    Q_PROPERTY(QKxDirAssist::Filters filter READ filter WRITE setFilter)
 public:
     enum Filter {
         Dirs        = QDir::Dirs,
@@ -54,13 +54,13 @@ public:
     Q_DECLARE_FLAGS(Filters, Filter)
 
 public:
-    explicit QMoDirAssist(QObject *parent = nullptr);
+    explicit QKxDirAssist(QObject *parent = nullptr);
 
     QStringList nameFilters() const;
     void setNameFilters(const QStringList& filters);
 
-    QMoDirAssist::Filters filter() const;
-    void setFilter(QMoDirAssist::Filters filters);
+    QKxDirAssist::Filters filter() const;
+    void setFilter(QKxDirAssist::Filters filters);
 
     Q_INVOKABLE QString downloadLocation() const;
     Q_INVOKABLE QString picturesLocation() const;
@@ -76,6 +76,8 @@ public:
     Q_INVOKABLE QString toNativeSeparators(const QString& path) const;
     Q_INVOKABLE QVariantMap fileInfo(const QString& path) const;
     Q_INVOKABLE bool makePath(const QString& path);
+    Q_INVOKABLE bool exist(const QString& path);
+    Q_INVOKABLE bool rename(const QString& pathSrc, const QString& pathDst);
 signals:
     void nameFiltersChanged();
 private:
@@ -84,8 +86,8 @@ private:
 
 private:
     QStringList m_nameFilters;
-    QMoDirAssist::Filters m_filters;
+    QKxDirAssist::Filters m_filters;
     QStringList m_drivers;
 };
 
-#endif // QMODIRASSIST_H
+#endif // QKXDIRASSIST_H

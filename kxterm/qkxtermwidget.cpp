@@ -114,6 +114,7 @@ QKxTermWidget::QKxTermWidget(QWidget* parent)
     m_vscroll->setStyleSheet(scrollbar_invalid);
     QObject::connect(m_term, SIGNAL(scrollValueChanged(int,int)), this, SLOT(onTermScrollValueChanged(int,int)));
     QObject::connect(m_term, SIGNAL(activePathArrived(QString)), this, SIGNAL(activePathArrived(QString)));
+    QObject::connect(m_term, SIGNAL(sendData(QByteArray)), this, SIGNAL(sendData(QByteArray)));
     QObject::connect(m_vscroll, SIGNAL(valueChanged(int)), this, SLOT(onScrollValueChanged(int)));
     m_term->installEventFilter(this);
     m_keyFind = QKeySequence(Qt::CTRL + Qt::Key_F);
@@ -155,6 +156,11 @@ QString QKxTermWidget::termName() const
 void QKxTermWidget::setTermName(const QString &name)
 {
     m_term->setTermName(name);
+}
+
+void QKxTermWidget::sendInput(const QByteArray &cmd)
+{
+    m_term->sendData(cmd);
 }
 
 void QKxTermWidget::setFindShortCut(QKeySequence key)

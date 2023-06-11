@@ -55,22 +55,20 @@ QString QWoSetting::privatePath()
     return path;
 }
 
-QString QWoSetting::privateJsCorePath()
+QString QWoSetting::playbooksPath()
 {
-    static QString path = QDir::cleanPath(privatePath() + "/jscore/");
+    static QString path = QDir::cleanPath(privatePath() + "/playbooks/");
     return path;
 }
 
-QString QWoSetting::privateColorSchemaPath()
+QString QWoSetting::customPlaybooksPath()
 {
-    static QString path = QDir::cleanPath(privatePath() + "/color-schemes/");
-    return path;
+    return QWoSetting::value("Playbooks/customPath").toString();
 }
 
-QString QWoSetting::privateKeyboardLayoutPath()
+void QWoSetting::setCustomPlaybooksPath(const QString &path)
 {
-    static QString path = QDir::cleanPath(privatePath() + "/kb-layouts/");
-    return path;
+    QWoSetting::setValue("Playbooks/customPath", path);
 }
 
 QString QWoSetting::privateLanguagesPath()

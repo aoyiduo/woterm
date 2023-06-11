@@ -35,11 +35,11 @@ QWoHostSimpleList::QWoHostSimpleList(EHostType type, QWidget *parent)
 
     QObject::connect(ui->rxfind, SIGNAL(textChanged(QString)), this, SLOT(onEditTextChanged(QString)));
     QObject::connect(ui->hostList, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onListItemDoubleClicked(QModelIndex)));
-    QObject::connect(ui->ok, SIGNAL(clicked()), this, SLOT(onOpenSelectSessions()));
+    QObject::connect(ui->btnOk, SIGNAL(clicked()), this, SLOT(onOpenSelectSessions()));
+    QObject::connect(ui->btnCancel, SIGNAL(clicked()), this, SLOT(close()));
 
-    ui->rxfind->setReadOnly(true);
+    ui->rxfind->setReadOnly(false);
     ui->rxfind->clear();
-    ui->rxfind->hide();
 }
 
 QWoHostSimpleList::~QWoHostSimpleList()
@@ -82,12 +82,12 @@ void QWoHostSimpleList::onListItemDoubleClicked(const QModelIndex &item)
         return;
     }
     m_result = name;
-    close();
+    done(QDialog::Accepted+1);
 }
 
 void QWoHostSimpleList::onOpenSelectSessions()
 {
     QModelIndex item = ui->hostList->currentIndex();
     m_result = item.data().toString();
-    close();
+    done(QDialog::Accepted+1);
 }

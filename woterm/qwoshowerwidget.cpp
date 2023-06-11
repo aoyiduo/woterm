@@ -36,3 +36,7 @@ bool QWoShowerWidget::handleCustomProperties()
     int ret = dlg.exec();
     return ret == QWoSessionProperty::Save;
 }
+
+bool QWoShowerWidget::isRemoteSession() {
+    return true;
+}

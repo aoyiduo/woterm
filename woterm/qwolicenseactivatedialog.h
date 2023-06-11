@@ -33,6 +33,7 @@ private slots:
     void onTypeButtonClicked();
     void onKeyModifyButtonClicked();
     void onRetryToRedeemLicense(int code, const QByteArray& body);
+    void onValidResult(int code, const QByteArray& body);
 private:
     Ui::QWoLicenseActivateDialog *ui;
 };

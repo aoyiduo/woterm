@@ -26,6 +26,7 @@ class QWoSessionList;
 class QWoCommandHistoryForm;
 class QToolButton;
 class QWoRecentHistory;
+class QPushButton;
 
 namespace Ui {
 class QWoMainWindow;
@@ -45,6 +46,7 @@ protected:
     void closeEvent(QCloseEvent *event);
 private slots:
     void onNewSession();
+    void onJavascriptRunner();
     void onOpenRemoteSession();
     void onOpenLocalSession();
     void onOpenSerialPort();
@@ -58,6 +60,13 @@ private slots:
     void onRecentMenuAboutToShow();
 
     void onReportResult(int code, const QByteArray& body);
+
+    void onTabMergeButtonClicked();
+    void onTabSeperateButtonClicked();    
+    void onTabCurrentChanged(int idx);
+
+    void onPlaybookButtonClicked();
+    void onPlaybookAssistButtonClicked(QToolButton* btn);
 
 private slots:
     void onActionNewTriggered();
@@ -80,14 +89,16 @@ private slots:
     void onActionAboutTriggered();
     void onActionHelpTriggered();
     void onActionWebsiteTriggered();
-    void onActionScriptRunTriggered();
     void onActionSshKeyManageTriggered();
     void onActionAdminTriggered();
     void onActionLicenseTriggered();
     void onActionUpgradeTriggered();
+    void onActionPlaybookOptionsTriggered();
 
     void onFilterArrivedArrived(const QString& name, int type);
     void onFilterCreateArrived(const QString& name);
+
+
 
 private:
     void initMenuBar();
@@ -105,4 +116,5 @@ private:
     QPointer<QDockWidget> m_sessionDock;
     QPointer<QWoShower> m_shower;
     QPointer<QWoRecentHistory> m_recent;
+    QPointer<QPushButton> m_btnTabMerge;
 };

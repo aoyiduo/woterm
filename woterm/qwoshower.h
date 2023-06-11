@@ -48,24 +48,36 @@ private:
         ELT_RLOGIN = 5,
         ELT_RDP = 6,
         ELT_VNC = 7,
-        ELT_SERIALPORT = 8
+        ELT_SERIALPORT = 8,
+        ELT_PLAYBOOK = 9,
+        ELT_SCRIPT
+
     };
 public:
     explicit QWoShower(QTabBar *tab, QWidget *parent=nullptr);
     virtual ~QWoShower();
+    bool openPlayBook(const QString& name, const QString& path);
     bool openLocalShell();
-    bool openScriptRuner(const QString& script);
+    void attachLocalShell(QWoTermWidget* term, int idx);
+
     bool openSsh(const QString& target, int gid = -1);
-    bool openSsh(const QStringList& targets, int gid = -1);
+    void attachSsh(QWoTermWidget* term, int idx);
     bool openSftp(const QString& target, int gid = -1);
+
     bool openTelnet(const QString& target);
+    void attachTelnet(QWoTermWidget* term, int idx);
+
     bool openRLogin(const QString& target);
+    void attachRLogin(QWoTermWidget* term, int idx);
+
     bool openMstsc(const QString& target);
     bool openVnc(const QString& target);
     bool openSerialPort();
     void setBackgroundColor(const QColor& clr);
     void openFindDialog();
 
+    Q_INVOKABLE void mergeFromRightTab();
+    Q_INVOKABLE void seperateToRightTab();
     Q_INVOKABLE bool restoreSession(QWoShowerWidget *impl);
     Q_INVOKABLE void floatSession(QWoShowerWidget *impl, bool full);
 
@@ -87,7 +99,7 @@ protected:
 
 private:
     void closeSession(int idx);
-    void createTab(QWoShowerWidget *widget, const QIcon& icon, const QString& tabName);
+    void createTab(QWoShowerWidget *widget, const QIcon& icon, const QString& tabName, int idx = -1);
     bool tabMouseButtonPress(QMouseEvent *ev);
     bool tabMouseButtonMove(QMouseEvent *ev);
 
@@ -108,6 +120,8 @@ private slots:
     void onOpenLocalSession();
 
 private:
+    QIcon m_bookico;
+    QIcon m_jsico;
     QIcon m_ptyico;
     QIcon m_telico;
     QIcon m_sshico;

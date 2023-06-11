@@ -86,6 +86,7 @@ public:
 
     /* remove directory */
     static bool removeDirectory(const QString& path);
+    static void copyDirectory(const QString& src, const QString& dst);
 
     static QString findShellPath();
 

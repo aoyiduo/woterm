@@ -14,8 +14,8 @@
    <string>QWoMainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>../private/skins/black/woterm4.png</normaloff>../private/skins/black/woterm4.png</iconset>
+   <iconset resource="woterm.qrc">
+    <normaloff>:/woterm/resource/images/woterm2.png</normaloff>:/woterm/resource/images/woterm2.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">
@@ -86,10 +86,11 @@
      <addaction name="actionRDPOptions"/>
      <addaction name="actionToolOptions"/>
     </widget>
-    <addaction name="menuGlobal_option"/>
-    <addaction name="actionSystemOptions"/>
+    <addaction name="actionPlaybooks"/>
     <addaction name="actionIdentityManage"/>
     <addaction name="actionAdministrator"/>
+    <addaction name="menuGlobal_option"/>
+    <addaction name="actionSystemOptions"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -297,8 +298,20 @@
     <string>Restart application</string>
    </property>
   </action>
+  <action name="actionPlaybook">
+   <property name="text">
+    <string>Playbook...</string>
+   </property>
+  </action>
+  <action name="actionPlaybooks">
+   <property name="text">
+    <string>Playbooks</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="woterm.qrc"/>
+ </resources>
  <connections/>
 </ui>

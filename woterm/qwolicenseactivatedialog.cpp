@@ -84,13 +84,39 @@ void QWoLicenseActivateDialog::onActivateButtonClicked()
         QKxMessageBox::information(this, tr("Parameter error"), tr("Please input a valid License key first."));
         return;
     }
+
     QKxVer *ver = QKxVer::instance();
+
+    QString keyOld = ver->licenseKey();
+    if(key == keyOld) {
+        return;
+    }
+
     QString errMsg;
-    if(!ver->parse(key, errMsg)) {
+    int licenseType;
+    if(!ver->valid(key, licenseType, errMsg)) {
         QKxMessageBox::information(this, tr("Parameter error"), errMsg);
         return;
-    }    
-    done(QDialog::Accepted+1);
+    }
+    if(licenseType == QKxLicense::ETrialVersion) {
+        if(!ver->parse(key, errMsg)) {
+            QKxMessageBox::information(this, tr("Parameter error"), errMsg);
+            return;
+        }
+        done(QDialog::Accepted+1);
+        return;
+    }
+
+    QKxHttpClient *http = new QKxHttpClient(this);
+    QObject::connect(http, SIGNAL(result(int,QByteArray)), this, SLOT(onValidResult(int,QByteArray)));
+    QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
+    QJsonObject obj;
+    obj.insert("mid", ver->machineID());
+    obj.insert("info", ver->encryptKey(ver->machineID(), key));
+    QJsonDocument doc;
+    doc.setObject(obj);
+    QByteArray json = doc.toJson(QJsonDocument::Compact);
+    http->post("http://key.woterm.com/valid", json, "application/json; charset=utf-8");
 }
 
 void QWoLicenseActivateDialog::onRedeemButtonClicked()
@@ -262,4 +288,33 @@ void QWoLicenseActivateDialog::onRetryToRedeemLicense(int code, const QByteArray
         }
         QKxMessageBox::information(this, tr("Redeem error"), tr("Try again later for error:%1").arg(errMsg));
     }
+}
+
+void QWoLicenseActivateDialog::onValidResult(int code, const QByteArray &body)
+{
+    if(code == 200) {
+        QJsonDocument doc = QJsonDocument::fromJson(body);
+        if(doc.isEmpty()) {
+            QKxMessageBox::information(this, tr("License error"), tr("Try again later"));
+            return;
+        }
+        QJsonObject obj = doc.object();
+        int ierr = obj.value("error").toInt();
+        QString desc = obj.value("desc").toString();
+        if(ierr == 0) {
+            QString data = obj.value("data").toString();
+            QKxVer *ver = QKxVer::instance();
+            QString key = ver->decryptKey(ver->machineID(), data);
+            QString errMsg;
+            if(!ver->parse(key, errMsg)) {
+                QKxMessageBox::information(this, tr("Parameter error"), errMsg);
+                return;
+            }
+            done(QDialog::Accepted+1);
+            return;
+        }
+        QKxMessageBox::information(this, tr("Server error"), tr("Server error:%1, %2!").arg(ierr).arg(desc));
+        return;
+    }
+    QKxMessageBox::information(this, tr("Network error"), tr("Network error:%1, try it again!").arg(code));
 }

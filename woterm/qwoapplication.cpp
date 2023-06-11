@@ -16,6 +16,15 @@
 #include "qkxmessagebox.h"
 #include "qwotheme.h"
 
+#include "qkxscriptremotecommand.h"
+#include "qkxscriptfilecontentcommand.h"
+#include "qkxscriptfiletransfercommand.h"
+#include "qkxscriptlocalcommand.h"
+#include "qkxscriptfilelistcommand.h"
+#include "qkxscriptbigscriptcommand.h"
+#include "qkxdirassist.h"
+#include "qkxfileassist.h"
+
 #include <QStyleFactory>
 #include <QDebug>
 #include <QFile>
@@ -25,7 +34,9 @@
 #include <QLibraryInfo>
 #include <QLibrary>
 #include <QTimer>
-
+#include <QQmlEngine>
+#include <QJSEngine>
+#include <QQuickStyle>
 
 QWoApplication::QWoApplication(int &argc, char **argv)
     : QApplication(argc, argv)
@@ -43,6 +54,15 @@ QWoApplication::QWoApplication(int &argc, char **argv)
     QStringList libpaths = libraryPaths();
     qDebug() << libpaths;
     QMetaObject::invokeMethod(this, "init", Qt::QueuedConnection);
+
+    qmlRegisterType<QKxScriptRemoteCommand>("RemoteCommand", 1,0, "RemoteCommand");
+    qmlRegisterType<QKxScriptLocalCommand>("LocalCommand", 1,0, "LocalCommand");
+    qmlRegisterType<QKxScriptFileTransferCommand>("FileTransferCommand", 1,0, "FileTransferCommand");
+    qmlRegisterType<QKxScriptFileListCommand>("FileListCommand", 1,0, "FileListCommand");
+    qmlRegisterType<QKxScriptFileContentCommand>("FileContentCommand", 1,0, "FileContentCommand");
+    qmlRegisterType<QKxScriptBigScriptCommand>("BigScriptCommand", 1,0, "BigScriptCommand");
+    qmlRegisterType<QKxDirAssist>("LocalDir", 1,0, "LocalDir");
+    qmlRegisterType<QKxFileAssist>("LocalFile", 1,0, "LocalFile");
 }
 
 QWoApplication *QWoApplication::instance()

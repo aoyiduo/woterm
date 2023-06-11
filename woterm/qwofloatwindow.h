@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -30,7 +30,8 @@ public:
     enum EToolType {
         ETT_Term = 1,
         ETT_Vnc = 2,
-        ETT_Mstsc = 3
+        ETT_Mstsc = 3,
+        ETT_Common = 4
     };
 public:
     explicit QWoFloatWindow(QWoShowerWidget *child, QWoShower *shower, EToolType type);

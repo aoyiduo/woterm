@@ -29,6 +29,8 @@
 #include "qwobindportpermissiondialog.h"
 #include "qkxver.h"
 #include "qwosessionproperty.h"
+#include "qwoplaybookwidget.h"
+#include "qwoplaybookwidgetimpl.h"
 
 #include <QTabBar>
 #include <QResizeEvent>
@@ -56,6 +58,8 @@ QWoShower::QWoShower(QTabBar *tab, QWidget *parent)
     , m_tab(tab)
     , m_implCount(0)
 {
+    m_jsico = QIcon("../private/skins/black/javascript.png");
+    m_bookico = QIcon("../private/skins/black/js.png");
     m_ptyico = QIcon("../private/skins/black/console.png");
     m_sshico = QIcon("../private/skins/black/ssh2.png");
     m_ftpico = QIcon("../private/skins/black/sftp.png");
@@ -80,15 +84,32 @@ QWoShower::~QWoShower()
     }
 }
 
+bool QWoShower::openPlayBook(const QString& name, const QString &path)
+{
+    if(m_implCount >= QKxVer::instance()->maxTabCount()) {
+        QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
+        return false;
+    }
+    QString target = tr("PB")+":"+name;
+    QWoPlaybookWidgetImpl *impl = new QWoPlaybookWidgetImpl(path, target, m_tab, this);
+    impl->setProperty("ETabLimitType", ELT_PLAYBOOK);
+    createTab(impl, m_bookico, target);
+    impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Common);
+    impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/js.png");
+    emit floatChanged(impl, false);
+    m_implCount++;
+    return true;
+}
+
 bool QWoShower::openLocalShell()
 {
     if(m_implCount >= QKxVer::instance()->maxTabCount()) {
         QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
         return false;
     }
-    int gid = QWoUtils::gid();
     QString target = tr("Local shell");
-    QWoPtyTermWidgetImpl *impl = new QWoPtyTermWidgetImpl(target, gid, m_tab, this);
+    QWoPtyTermWidgetImpl *impl = new QWoPtyTermWidgetImpl(target, QWoUtils::gid(), m_tab, this);
     impl->setProperty("ETabLimitType", ELT_LOCALSHELL);
     createTab(impl, m_ptyico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
@@ -99,33 +120,54 @@ bool QWoShower::openLocalShell()
     return true;
 }
 
-bool QWoShower::openScriptRuner(const QString& script)
+void QWoShower::attachLocalShell(QWoTermWidget *term, int idx)
 {
-    if(m_implCount >= QKxVer::instance()->maxTabCount()) {
-        QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
-        return false;
-    }
-    return true;
+    QString target = term->target();
+    int gid = term->gid();
+    QWoPtyTermWidgetImpl *impl = new QWoPtyTermWidgetImpl(target, gid, m_tab, this);
+    impl->setProperty("ETabLimitType", ELT_LOCALSHELL);
+    impl->setForCreated(term);
+    createTab(impl, m_ptyico, target, idx);
+    impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
+    impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/console.png");
+    emit floatChanged(impl, false);
+    m_implCount++;
 }
 
 bool QWoShower::openSsh(const QString &target, int gid)
 {
-    if(gid < 0) {
-        gid = QWoUtils::gid();
-    }
     if(m_implCount >= QKxVer::instance()->maxTabCount()) {
         QKxMessageBox::information(this, tr("Version restrictions"), tr("The tab's count has reached the limit."));
         return false;
+    }
+    if(gid < 0) {
+        gid = QWoUtils::gid();
     }
     QWoSshTermWidgetImpl *impl = new QWoSshTermWidgetImpl(target, gid, m_tab, this);
     impl->setProperty("ETabLimitType", ELT_SSH);
     createTab(impl, m_sshico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
-    impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm-"+target);
+    impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
     impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/ssh2.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
+}
+
+void QWoShower::attachSsh(QWoTermWidget *term, int idx)
+{
+    QString target = term->target();
+    int gid = term->gid();
+    QWoSshTermWidgetImpl *impl = new QWoSshTermWidgetImpl(target, gid, m_tab, this);
+    impl->setForCreated(term);
+    impl->setProperty("ETabLimitType", ELT_SSH);
+    createTab(impl, m_sshico, target, idx);
+    impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
+    impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/ssh2.png");
+    emit floatChanged(impl, false);
+    m_implCount++;
 }
 
 bool QWoShower::openSftp(const QString &target, int gid)
@@ -165,6 +207,21 @@ bool QWoShower::openTelnet(const QString &target)
     return true;
 }
 
+void QWoShower::attachTelnet(QWoTermWidget *term, int idx)
+{
+    QString target = term->target();
+    int gid = term->gid();
+    QWoTelnetTermWidgetImpl *impl = new QWoTelnetTermWidgetImpl(target, gid, m_tab, this);
+    impl->setForCreated(term);
+    impl->setProperty("ETabLimitType", ELT_TELNET);
+    createTab(impl, m_telico, target, idx);
+    impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
+    impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/telnet.png");
+    emit floatChanged(impl, false);
+    m_implCount++;
+}
+
 bool QWoShower::openRLogin(const QString &target)
 {
     if(m_implCount >= QKxVer::instance()->maxTabCount()) {
@@ -187,6 +244,21 @@ bool QWoShower::openRLogin(const QString &target)
         return openRLogin(target);
     }
     return false;
+}
+
+void QWoShower::attachRLogin(QWoTermWidget *term, int idx)
+{
+    QString target = term->target();
+    int gid = term->gid();
+    QWoRLoginTermWidgetImpl *impl = new QWoRLoginTermWidgetImpl(target, gid, m_tab, this);
+    impl->setForCreated(term);
+    impl->setProperty("ETabLimitType", ELT_RLOGIN);
+    createTab(impl, m_rloico, target, idx);
+    impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
+    impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
+    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/rlogin.png");
+    emit floatChanged(impl, false);
+    m_implCount++;
 }
 
 bool QWoShower::openMstsc(const QString &target)
@@ -254,26 +326,6 @@ bool QWoShower::restoreSession(QWoShowerWidget *impl)
 }
 
 
-bool QWoShower::openSsh(const QStringList &targets, int gid)
-{
-//    if(targets.isEmpty()) {
-//        return false;
-//    }
-//    QStringList mytargets = targets;
-//    QString target = mytargets.takeFirst();
-//    QWoSshTermWidgetImpl *impl = new QWoSshTermWidgetImpl(target, gid, m_tab, this);
-//    impl->joinToVertical(target);
-//    createTab(impl, m_sshico, target);
-//    int row = targets.length() > 4 ? 3 : 2;
-//    for(int r = 1; r < row; r++) {
-//        impl->joinToVertical(mytargets.takeFirst());
-//    }
-//    for(int r = 0; r < row && mytargets.length() > 0; r++) {
-//        impl->joinToHorizontal(r, mytargets.takeFirst());
-//    }
-    return true;
-}
-
 void QWoShower::setBackgroundColor(const QColor &clr)
 {
     QPalette pal;
@@ -285,14 +337,110 @@ void QWoShower::setBackgroundColor(const QColor &clr)
 void QWoShower::openFindDialog()
 {
     int idx = m_tab->currentIndex();
-    if (idx < 0 || idx > m_tab->count()) {
+    if (idx < 0 || idx >= m_tab->count()) {
         return;
     }
     QVariant v = m_tab->tabData(idx);
     QWoShowerWidget *target = v.value<QWoShowerWidget*>();
-//    QSplitter *take = m_terms.at(idx);
-//    Q_ASSERT(target == take);
-    //    take->toggleShowSearchBar();
+}
+
+void QWoShower::mergeFromRightTab()
+{
+    int idx = m_tab->currentIndex();
+    if (idx < 0 || idx >= m_tab->count()) {
+        return;
+    }
+    if(idx == m_tab->count() - 1) {
+        QKxMessageBox::information(this, tr("Merge information"), tr("There are no right tab to merge."));
+        return;
+    }
+
+    QVariant vImpl = m_tab->tabData(idx);
+    QWoTermWidgetImpl *impl = vImpl.value<QWoTermWidgetImpl*>();
+    if(impl == nullptr) {
+        QKxMessageBox::information(this, tr("Merge information"), tr("Current tab is not a text terminal tab."));
+        return;
+    }
+
+    QVariant vImplRight = m_tab->tabData(idx+1);
+    QWoTermWidgetImpl *implRight = vImplRight.value<QWoTermWidgetImpl*>();
+    if(implRight == nullptr) {
+        QKxMessageBox::information(this, tr("Merge information"), tr("Cannot merge because the right tab is not a text terminal."));
+        return;
+    }
+    QList<QPointer<QWoTermWidget>> terms = implRight->termAll();
+    if(impl->termCount() + terms.length() > 8) {
+        QKxMessageBox::information(this, tr("Merge information"), tr("The number of merging has exceeded 8 and cannot be continued."));
+        return;
+    }
+    for(auto it = terms.begin(); it != terms.end(); it++) {
+        QWoTermWidget *term = *it;
+        if(term == nullptr) {
+            continue;
+        }
+        term->detachWidget();
+        impl->attachBy(term);
+    }
+    if(implRight->termCount() == 0) {
+        implRight->deleteLater();
+    }
+    m_tab->setCurrentIndex(idx);
+}
+
+void QWoShower::seperateToRightTab()
+{
+    int idx = m_tab->currentIndex();
+    if (idx < 0 || idx >= m_tab->count()) {
+        return;
+    }
+
+    QVariant vImpl = m_tab->tabData(idx);
+    QWoTermWidgetImpl *impl = vImpl.value<QWoTermWidgetImpl*>();
+    if(impl == nullptr) {
+        QKxMessageBox::information(this, tr("Seperation information"), tr("Current tab is not a text terminal tab."));
+        return;
+    }
+    QList<QPointer<QWoTermWidget> > all = impl->termAll();
+    if(all.length() <= 1) {
+        QKxMessageBox::information(this, tr("Seperation information"), tr("Current tab has only one window, not need to seperate."));
+        return;
+    }
+    int tabTotal = all.length() + m_tab->count() - 1;
+    if(tabTotal >= QKxVer::instance()->maxTabCount()) {
+        QKxMessageBox::information(this, tr("Version restrictions"), tr("The remaining number of tabs is not enough to seperate."));
+        return;
+    }
+    QString targetName = impl->targetName();
+    auto it = std::find_if(all.begin(), all.end(), [=](const QWoTermWidget* term) {
+        return term->target() == targetName;
+    });
+    if(it != all.end()) {
+        all.erase(it);
+    }
+
+    for(int i = all.length() - 1; i >= 0; i--) {
+        QWoTermWidget *term = all.at(i);
+        if(term == nullptr) {
+            continue;
+        }
+        term->detachWidget();
+        if(term->isLocalShell()) {
+            attachLocalShell(term, idx+1);
+        }else{
+            const HostInfo& hi = QWoSshConf::instance()->find(term->target());
+            if(hi.type == SshWithSftp) {
+                attachSsh(term, idx+1);
+            }else if(hi.type == Telnet) {
+                attachTelnet(term, idx+1);
+            }else if(hi.type == RLogin) {
+                attachRLogin(term, idx+1);
+            }
+        }
+    }
+    if(impl->termCount() == 0) {
+        impl->deleteLater();
+    }
+    m_tab->setCurrentIndex(idx);
 }
 
 int QWoShower::tabCount()
@@ -374,10 +522,10 @@ void QWoShower::closeSession(int idx)
     target->deleteLater();
 }
 
-void QWoShower::createTab(QWoShowerWidget *impl, const QIcon&icon, const QString& tabName)
+void QWoShower::createTab(QWoShowerWidget *impl, const QIcon&icon, const QString& tabName, int pos)
 {
     addWidget(impl);
-    int idx = m_tab->addTab(icon, tabName);
+    int idx = m_tab->insertTab(pos, icon, tabName);
     m_tab->setCurrentIndex(idx);
     m_tab->setTabData(idx, QVariant::fromValue(impl));
     QObject::connect(impl, SIGNAL(destroyed(QObject*)), this, SLOT(onTabWidgetDestroy(QObject*)), Qt::UniqueConnection);
@@ -404,8 +552,10 @@ bool QWoShower::tabMouseButtonPress(QMouseEvent *ev)
         m_tabMenu->setProperty(TAB_TARGET_IMPL, QVariant::fromValue(impl));
         menu.addAction(tr("Close this tab"), this, SLOT(onCloseThisTabSession()));
         menu.addAction(tr("Close other tab"), this, SLOT(onCloseOtherTabSession()));
-        menu.addAction(tr("New same session"), this, SLOT(onNewTheSameSession()));
-        menu.addAction(tr("Copy host address"), this, SLOT(onCopyTabSessionAddress()));
+        if(impl->isRemoteSession()) {
+            menu.addAction(tr("New same session"), this, SLOT(onNewTheSameSession()));
+            menu.addAction(tr("Copy host address"), this, SLOT(onCopyTabSessionAddress()));
+        }
         menu.addAction(tr("Edit this session"), this, SLOT(onEditThisTabSession()));
         menu.addAction(tr("Float this tab"), this, SLOT(onFloatThisTabSession()));
         impl->handleTabContextMenu(&menu);

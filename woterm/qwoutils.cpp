@@ -809,6 +809,26 @@ bool QWoUtils::removeDirectory(const QString &path)
     return d.rmdir(".");
 }
 
+void QWoUtils::copyDirectory(const QString &src, const QString &dst)
+{
+    QDir d;
+    if(!d.mkpath(dst)) {
+        return;
+    }
+    d.setPath(src);
+    QFileInfoList lsFiles = d.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot);
+    for(auto it = lsFiles.begin(); it != lsFiles.end(); it++) {
+        const QFileInfo& fi = *it;
+        if(fi.isDir()) {
+            QString subPath = fi.absoluteFilePath();
+            QString dstPath = dst + "/" + fi.fileName();
+            copyDirectory(subPath, dstPath);
+        }else{
+            QFile::copy(fi.absoluteFilePath(), dst + "/" + fi.fileName());
+        }
+    }
+}
+
 QString QWoUtils::findShellPath()
 {
 #ifdef Q_OS_WIN

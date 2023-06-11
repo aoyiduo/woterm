@@ -32,7 +32,7 @@
 #include "qmomessageboxassist.h"
 #include "qmodbsftpdetailassist.h"
 #include "qwodbsftpdownsync.h"
-#include "qmodirassist.h"
+#include "qkxdirassist.h"
 #include "qmosftpremotemodel.h"
 #include "qmosftpassist.h"
 #include "qmoquickassist.h"
@@ -70,7 +70,7 @@ QMoMainWindow::QMoMainWindow(QWidget *parent)
     QQmlEngine *engine = ui->quick->engine();
     QObject::connect(engine, SIGNAL(quit()), this, SLOT(onWindowCloseArrived()));
 
-    QWoUtils::injectJS(engine, QStringList() << ":/woterm/qml/shot.js");
+    QWoUtils::injectJS(engine, QStringList() << ":/woterm/js/async.js" << ":/woterm/js/utils.js" );
 
     m_qmlContext->setContextProperty("quick", new QMoQuickAssist(ui->quick));
     m_qmlContext->setContextProperty("gApp", QMoApplication::instance());

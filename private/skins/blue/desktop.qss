@@ -195,6 +195,13 @@ QTabBar::close-button:hover {
     padding-bottom: 1px;
 }
 
+QKxTermItem > QLabel {
+    background-color: rgb(0,26,64);
+    color: rgb(178,178,178);
+    border: 1px solid #313131;   
+    border-radius: 5px;
+}
+
 QWoTermMask{
     background: black;
 }
@@ -280,6 +287,11 @@ QWoPasswordInput, QWoVncFtpWidget, QWoSftpTransferWidget{
     padding: 5px;
     border: 1px solid #313131;   
     border-radius: 5px;
+}
+
+QWoUnionInputItem {
+    padding: 5px;
+    border-top-color: 1px solid #313131;
 }
 
 QWidget#deskopTool {

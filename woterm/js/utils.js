@@ -20,34 +20,6 @@
         return typeof(object) === "object" && typeof(object.modalChanged) === "function";
     }
 
-    function Promise() {
-        this._callbacks = [];
-    }
-
-    Promise.prototype.then = function(func, context) {
-        var p;
-        if (this._isdone) {
-            p = func.apply(context, this.result);
-        } else {
-            p = new Promise();
-            this._callbacks.push(function () {
-                var res = func.apply(context, arguments);
-                if (res && typeof res.then === 'function'){
-                    res.then(p.done, p);
-                }
-            });
-        }
-        return p;
-    };
-
-    Promise.prototype.done = function() {
-        this.result = arguments;
-        this._isdone = true;
-        for (var i = 0; i < this._callbacks.length; i++) {
-            this._callbacks[i].apply(null, arguments);
-        }
-        this._callbacks = [];
-    };
 
     function shot(funcSignal, funcb, item, context) {
         if(!_instanceOfSignal(funcSignal)) {
@@ -80,14 +52,7 @@
         }
     }
 
-    function promise() {
-        var p = new Promise()
-        return p;
-    }
-
     exports.Q = {
-        Promise: Promise,
-        promise: promise,
         shot: shot,
         isItem: _instanceOfItem,
         isPopup: _instanceOfPopup,

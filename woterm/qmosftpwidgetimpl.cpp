@@ -41,7 +41,7 @@ QMoSftpWidgetImpl::QMoSftpWidgetImpl(const QString& target, QWidget *parent)
     m_quick->setResizeMode(QQuickWidget::SizeRootObjectToView);
 
     QQmlEngine *engine = m_quick->engine();
-    QWoUtils::injectJS(engine, QStringList() << ":/woterm/qml/shot.js");
+    QWoUtils::injectJS(engine, QStringList() << ":/woterm/js/async.js" << ":/woterm/js/utils.js" );
 
     layout->addWidget(m_quick);
 

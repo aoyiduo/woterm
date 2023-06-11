@@ -22,6 +22,7 @@ class QTabBar;
 class QWoCommandLineInput;
 class QHBoxLayout;
 class QVBoxLayout;
+class QWoUnionInputItem;
 
 class QWoTermWidgetImpl : public QWoShowerWidget
 {
@@ -30,12 +31,26 @@ public:
     explicit QWoTermWidgetImpl(const QString& target, int gid, QTabBar *tab, QWidget *parent=nullptr);
     virtual ~QWoTermWidgetImpl();
     void joinToVertical(const QString& target);
-    void joinToHorizontal(int row, const QString& target);    
+    void joinToHorizontal(int row, const QString& target);
+    // different function for diffent thing, donot merge them.
+    // add for merge.
+    void attachBy(QWoTermWidget *term);
+    // add for seperate.
+    void setForCreated(QWoTermWidget *term);
+
+    QList<QPointer<QWoTermWidget>> termAll();
+    int termCount();
+
+    Q_INVOKABLE void openInput();
+    void closeInput();
 signals:
     void aboutToClose(QCloseEvent* event);
 
 private slots:
     void onRootSplitterDestroy();
+    void onUnionInputArrived(const QString& cmd);
+    void onMergeTheRightTabTriggered();
+    void onSeperateChildWindowTriggered();
 private:
     Q_INVOKABLE void init();
 protected:
@@ -46,6 +61,7 @@ protected:
     virtual void handleTabContextMenu(QMenu *menu);
     virtual bool handleCustomProperties();
     virtual void updateEnable(bool on);
+    virtual bool eventFilter(QObject *watched, QEvent *event);
 protected:
     void addAssistant(QWidget *w, bool first);
 private:
@@ -55,13 +71,18 @@ private:
     void resetTabText();
     void setTabText(const QString& title);
     bool event(QEvent* e);
+private:
+    void resetUnionInput();
 protected:
     friend class QWoTermWidget;
     const int m_gid;
     const QPointer<QTabBar> m_tab;
     QPointer<QSplitter> m_termRoot;
     QPointer<QSplitter> m_root;
+    QPointer<QWoTermWidget> m_inject; //
     QList<QPointer<QWoTermWidget>> m_terms;
     QPointer<QMenu> m_menu;
+
+    QPointer<QWoUnionInputItem> m_input;
 
 };

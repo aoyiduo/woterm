@@ -128,6 +128,8 @@ public:
     }
 
     void handleClose(int code) {
+        m_lastCommandExitStatus = ssh_channel_get_exit_status(m_channel);
+       // qDebug() << "handleClose" << "ssh_channel_get_exit_status" << m_lastCommandExitStatus;
         if(m_channel) {
             ssh_channel_close(m_channel);
             ssh_channel_free(m_channel);
@@ -143,7 +145,7 @@ public:
             int nbytes = ssh_channel_read_nonblocking(m_channel, buf.data(), MAX_BUFFER, 0);
             if(nbytes == 0) {
                 return true;
-            }else if(nbytes < 0) {
+            }else if(nbytes < 0) {                
                 return false;
             }
             total += nbytes;
@@ -171,6 +173,18 @@ public:
             m_colsLast = cols;
             m_rowsLast = rows;
             int err = ssh_channel_change_pty_size(m_channel, cols, rows);
+            return err != SSH_ERROR;
+        }else if(msg.type == MT_SIGNAL) {
+            QByteArray sig;
+            QDataStream buf(msg.data);
+            buf >> sig;
+            int err = ssh_channel_request_send_signal(m_channel, sig);
+            return err != SSH_ERROR;
+        }else if(msg.type == MT_BREAK) {
+            int length;
+            QDataStream buf(msg.data);
+            buf >> length;
+            int err = ssh_channel_request_send_break(m_channel, length);
             return err != SSH_ERROR;
         }
         return true;
@@ -793,6 +807,9 @@ private:
         if(m_abort) {
             return -999;
         }
+        if(m_rfile == nullptr) {
+            return -1;
+        }
         QByteArray buf(MAX_BUFFER, Qt::Uninitialized);
         int n = sftp_async_read(m_rfile, buf.data(), buf.length(), m_asyncRequest);
         if(n <= 0){
@@ -886,6 +903,9 @@ private:
     int _runUploading(const QVariantMap& user) {
         if(m_abort) {
             return -999;
+        }
+        if(m_rfile == nullptr) {
+            return -1;
         }
         if(!m_lfile.isOpen()) {
             return -1;
@@ -1308,6 +1328,8 @@ private:
     }
 
     virtual void handleClose(int code){
+        int err = sftp_get_error(m_sftp);
+        m_lastCommandExitStatus = err == SSH_FX_OK ? 0 : -1;
         if(m_rfile) {
             sftp_close(m_rfile);
             m_rfile = nullptr;
@@ -1316,6 +1338,7 @@ private:
             sftp_free(m_sftp);
             m_sftp = nullptr;
         }
+        m_lfile.close();
         emit finishArrived(code);
     }
 
@@ -1337,6 +1360,9 @@ private:
     }
 
     virtual bool handleRequest(struct MsgRequest& msg) {
+        if(m_sftp == nullptr) {
+            return false;
+        }
         try {
             if(!isFtpFatal()) {
                 _handleRequest(msg);
@@ -1575,6 +1601,18 @@ public:
         ds << cols << rows;
         push(MT_PTYSIZE, buf, cli);
     }
+    void shellSignal(QWoSshChannel *cli, const QByteArray& sig) {
+        QByteArray buf;
+        QDataStream ds(&buf, QIODevice::WriteOnly);
+        ds << sig;
+        push(MT_SIGNAL, buf, cli);
+    }
+    void shellBreak(QWoSshChannel *cli, int length) {
+        QByteArray buf;
+        QDataStream ds(&buf, QIODevice::WriteOnly);
+        ds << length;
+        push(MT_BREAK, buf, cli);
+    }
 
     void sftpOpenDir(QWoSshChannel *cli, const QStringList& paths, const QVariantMap& user) {
         QByteArray buf;
@@ -1811,8 +1849,8 @@ private:
 
 QWoSSHConnection::QWoSSHConnection(QObject *parent)
     : QThread(parent)
-    , m_listenSocket(0)
     , m_conn(nullptr)
+    , m_listenSocket(0)
     , m_connectionState(-1)
 {
     QObject::connect(this, SIGNAL(connectionFinished(bool)), this, SLOT(onConnectionFinished(bool)));
@@ -1823,6 +1861,14 @@ QWoSSHConnection::~QWoSSHConnection()
     wait();
 }
 
+QString QWoSSHConnection::hostName() const
+{
+    if(m_conn == nullptr) {
+        return "";
+    }
+    return m_conn->name();
+}
+
 
 void QWoSSHConnection::append(QWoSshChannel *cli)
 {
@@ -1831,6 +1877,9 @@ void QWoSSHConnection::append(QWoSshChannel *cli)
 
 void QWoSSHConnection::remove(QWoSshChannel *cli)
 {
+    if(m_conn == nullptr) {
+        return;
+    }
     if(m_connectionState < 1) {
         m_conn->stop();
     }else{
@@ -1904,6 +1953,20 @@ void QWoSSHConnection::shellSize(QWoSshChannel*cli, int cols, int rows)
 {
     if(m_conn) {
         m_conn->shellSize(cli, cols, rows);
+    }
+}
+
+void QWoSSHConnection::shellSignal(QWoSshChannel *cli, const QByteArray &sig)
+{
+    if(m_conn) {
+        m_conn->shellSignal(cli, sig);
+    }
+}
+
+void QWoSSHConnection::shellBreak(QWoSshChannel *cli, int length)
+{
+    if(m_conn) {
+        m_conn->shellBreak(cli, length);
     }
 }
 
@@ -2226,6 +2289,7 @@ bool QWoSSHConnection::connectToProxy(int i, const QString &host, ushort port)
 
 QWoSshChannel::QWoSshChannel(QObject *parent)
     : QObject(parent)
+    , m_lastCommandExitStatus(-1)
 {
 }
 
@@ -2235,6 +2299,7 @@ QWoSshChannel::~QWoSshChannel()
 
 bool QWoSshChannel::start(const QString &host, int gid)
 {
+    m_host = host;
     QWoSshFactory *factory = QWoSshFactory::instance();
     bool ct = false;
     m_conn = factory->get(gid, &ct);
@@ -2258,6 +2323,7 @@ bool QWoSshChannel::start(const QString &host, int gid)
 
 bool QWoSshChannel::start(const HostInfo &hi, int gid)
 {
+    m_host = hi.name;
     QWoSshFactory *factory = QWoSshFactory::instance();
     bool ct = false;
     m_conn = factory->get(gid, &ct);
@@ -2301,6 +2367,11 @@ bool QWoSshChannel::hasRunning()
     return false;
 }
 
+int QWoSshChannel::lastCommandExitCode()
+{
+    return m_lastCommandExitStatus;
+}
+
 QWoSSHConnection *QWoSshChannel::connection()
 {
     return m_conn;
@@ -2330,6 +2401,20 @@ void QWoSshShell::updateSize(int cols, int rows)
 {
     if(m_conn) {
         m_conn->shellSize(this, cols, rows);
+    }
+}
+
+void QWoSshShell::sendBreak(int length)
+{
+    if(m_conn) {
+        m_conn->shellBreak(this, length);
+    }
+}
+
+void QWoSshShell::sendSignal(const QByteArray &sig)
+{
+    if(m_conn) {
+        m_conn->shellSignal(this, sig);
     }
 }
 
@@ -2547,6 +2632,9 @@ QWoSshFtp *QWoSshFactory::createSftp()
 
 void QWoSshFactory::release(QWoSshChannel *obj)
 {
+    if(obj == nullptr || m_dels.contains(obj)) {
+        return;
+    }
     obj->disconnect();
     QObject::connect(obj, SIGNAL(finishArrived(int)), this, SLOT(onChannelFinishArrived(int)));
     if(!obj->hasRunning()) {
@@ -2568,6 +2656,22 @@ QWoSSHConnection *QWoSshFactory::get(int gid, bool *pcreated)
         m_objs.insert(gid, conn);
     }
     return conn;
+}
+
+int QWoSshFactory::groudId(const QString &name)
+{
+    for(auto it = m_objs.begin(); it != m_objs.end(); it++) {
+        int id = it.key();
+        QWoSSHConnection *conn = it.value();
+        if(conn == nullptr) {
+            continue;
+        }
+        QString nameHit = conn->hostName();
+        if(nameHit == name) {
+            return id;
+        }
+    }
+    return -1;
 }
 
 void QWoSshFactory::onChannelFinishArrived(int)

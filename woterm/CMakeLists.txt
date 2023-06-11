@@ -15,7 +15,7 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 QuickWidgets SerialPort LinguistTools REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Widgets Qml Quick QuickControls2 Charts QuickWidgets SerialPort LinguistTools REQUIRED)
 find_package(Qt5Core CONFIG REQUIRED Private)
 find_package(Qt5Gui CONFIG REQUIRED Private)
 if(ANDROID)
@@ -26,8 +26,17 @@ message(STATUS "root This is BINARY dir " ${PROJECT_BINARY_DIR})
 message(STATUS "root This is SOURCE dir " ${PROJECT_SOURCE_DIR})
 
 set(SOURCE_FILES
+    qkxscriptlocalcommand.cpp
+    qkxscriptfilecontentcommand.cpp
+    qkxscriptfilelistcommand.cpp
+    qkxscriptfiletransfercommand.cpp
+    qkxscriptbigscriptcommand.cpp
+    qkxscriptremotecommand.cpp
+    qkxscriptcommand.cpp    
     qkxdockwidget.cpp
     qkxbuttonassist.cpp
+    qkxdirassist.cpp
+    qkxfileassist.cpp
     qkxfilterlineedit.cpp
     qkxfilterlistview.cpp    
     qkxmessagebox.cpp
@@ -73,6 +82,8 @@ set(SOURCE_FILES
     qwosettingdialog.cpp
     qwoshower.cpp
     qwoshowerwidget.cpp
+    qwounioninputitem.cpp
+    qwounioninputconfiguredialog.cpp
     qwosshconf.cpp
     qwotermmask.cpp
     qwotermstyle.cpp
@@ -132,6 +143,13 @@ set(SOURCE_FILES
     qwolicenseactivatedialog.cpp
     qwoversionupgradetipdialog.cpp
     qwolicensetrialapplydialog.cpp
+    qwoplaybooktermwidget.cpp
+    qwoplaybookmanagedialog.cpp
+    qwoplaybookconfiguredialog.cpp
+    qwoplaybookwidget.cpp
+    qwoplaybookwidgetimpl.cpp
+    qwoplaybookconsoleproxy.cpp
+    qwoplaybookconsole.cpp
     qwotelnet.cpp
     qwoutils.cpp
     qwowidget.cpp
@@ -160,8 +178,7 @@ set(SOURCE_FILES
     qmokeyboard.cpp
     qmoredpoint.cpp
     qmomessageboxassist.cpp
-    qmodbsftpdetailassist.cpp
-    qmodirassist.cpp
+    qmodbsftpdetailassist.cpp    
     qmosftpremotemodel.cpp
     qmosftpassist.cpp
     qmosftpwidgetimpl.cpp
@@ -176,8 +193,17 @@ set(SOURCE_FILES
 )
 
 set(HEADER_FILES
+    qkxscriptlocalcommand.h
+    qkxscriptfilecontentcommand.h
+    qkxscriptfilelistcommand.h
+    qkxscriptfiletransfercommand.h
+    qkxscriptbigscriptcommand.h
+    qkxscriptremotecommand.h
+    qkxscriptcommand.h
     qkxdockwidget.h
     qkxbuttonassist.h
+    qkxdirassist.h
+    qkxfileassist.h
     qkxfilterlineedit.h
     qkxfilterlistview.h    
     qkxtouchpoint.h
@@ -223,6 +249,8 @@ set(HEADER_FILES
     qwosettingdialog.h
     qwoshower.h
     qwoshowerwidget.h
+    qwounioninputitem.h
+    qwounioninputconfiguredialog.h
     qwosshconf.h
     qwotermmask.h
     qwotermstyle.h
@@ -282,6 +310,13 @@ set(HEADER_FILES
     qwolicenseactivatedialog.h
     qwoversionupgradetipdialog.h
     qwolicensetrialapplydialog.h
+    qwoplaybooktermwidget.h
+    qwoplaybookmanagedialog.h
+    qwoplaybookconfiguredialog.h
+    qwoplaybookwidget.h
+    qwoplaybookwidgetimpl.h
+    qwoplaybookconsoleproxy.h
+    qwoplaybookconsole.h
     qwotelnet.h
     qwoutils.h
     qwowidget.h
@@ -311,8 +346,7 @@ set(HEADER_FILES
     qmokeyboard.h
     qmoredpoint.h
     qmomessageboxassist.h
-    qmodbsftpdetailassist.h
-    qmodirassist.h
+    qmodbsftpdetailassist.h    
     qmosftpremotemodel.h
     qmosftpassist.h
     qmosftpwidgetimpl.h
@@ -329,7 +363,10 @@ set(HEADER_FILES
 
 set(OTHER_FILES
     woterm.qrc
+    qwoplaybookmanagedialog.ui
+    qwoplaybookconfiguredialog.ui
     # window object
+    qwoplaybookwidget.ui
     qkxfilterlistview.ui    
     qwoaboutdialog.ui
     qwomenubutton.ui
@@ -357,6 +394,8 @@ set(OTHER_FILES
     qwosettingdialog.ui
     qwotermmask.ui
     qwoserialinput.ui
+    qwounioninputitem.ui
+    qwounioninputconfiguredialog.ui
     qwosftpwidget.ui
     qwosftptransferwidget.ui
     qwosftppermissiondialog.ui
@@ -368,6 +407,7 @@ set(OTHER_FILES
     qwodbsftpdetaildialog.ui
     qwodbrestoredialog.ui
     qwodbpowerrestoredialog.ui
+    qwoplaybookconsole.ui
     qwobindportpermissiondialog.ui
     qwodbsftpdownlistdialog.ui
     qwogroupinputdialog.ui
@@ -528,6 +568,6 @@ else()
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::CorePrivate Qt5::Gui Qt5::GuiPrivate Qt5::Widgets  Qt5::SerialPort Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::CorePrivate Qt5::Gui Qt5::GuiPrivate Qt5::Widgets  Qt5::SerialPort Qt5::Qml Qt5::Charts Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets)
 
 

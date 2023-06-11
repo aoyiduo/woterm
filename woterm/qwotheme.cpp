@@ -24,6 +24,7 @@
 #include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QQuickStyle>
 
 
 Q_GLOBAL_STATIC(QWoTheme, gWoTheme)
@@ -55,6 +56,7 @@ QWoTheme::QWoTheme(QObject *parent)
     QStringList styles = QStyleFactory::keys();
     qDebug() << "embeded style list: " << styles;
     QApplication::setStyle("fusion");
+    QQuickStyle::setStyle("fusion");
     reload();
     m_skinUniqueName = QWoSetting::value("skin/current", "black").toString();
     if(!loadSkinByUniqueName(m_skinUniqueName)) {

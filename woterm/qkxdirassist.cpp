@@ -9,14 +9,14 @@
 *
 *******************************************************************************************/
 
-#include "qmodirassist.h"
+#include "qkxdirassist.h"
 
 #include <QUrl>
 #include <QDebug>
 #include <QStandardPaths>
 
 
-QMoDirAssist::QMoDirAssist(QObject *parent)
+QKxDirAssist::QKxDirAssist(QObject *parent)
     : QObject(parent)
     , m_filters(AllEntries|AllDirs|Drives)
 {
@@ -27,12 +27,12 @@ QMoDirAssist::QMoDirAssist(QObject *parent)
     }
 }
 
-QStringList QMoDirAssist::nameFilters() const
+QStringList QKxDirAssist::nameFilters() const
 {
     return m_nameFilters;
 }
 
-void QMoDirAssist::setNameFilters(const QStringList &filters)
+void QKxDirAssist::setNameFilters(const QStringList &filters)
 {
     if(m_nameFilters != filters) {
         m_nameFilters = filters;
@@ -40,52 +40,52 @@ void QMoDirAssist::setNameFilters(const QStringList &filters)
     }
 }
 
-QMoDirAssist::Filters QMoDirAssist::filter() const
+QKxDirAssist::Filters QKxDirAssist::filter() const
 {
     return m_filters;
 }
 
-void QMoDirAssist::setFilter(QMoDirAssist::Filters filters)
+void QKxDirAssist::setFilter(QKxDirAssist::Filters filters)
 {
     m_filters = filters;
 }
 
-QString QMoDirAssist::downloadLocation() const
+QString QKxDirAssist::downloadLocation() const
 {
     return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 }
 
-QString QMoDirAssist::picturesLocation() const
+QString QKxDirAssist::picturesLocation() const
 {
     return QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 }
 
-QString QMoDirAssist::appConfigLocation() const
+QString QKxDirAssist::appConfigLocation() const
 {
     return QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
 }
 
-QString QMoDirAssist::appDataLocation() const
+QString QKxDirAssist::appDataLocation() const
 {
     return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 }
 
-QString QMoDirAssist::homeLocation() const
+QString QKxDirAssist::homeLocation() const
 {
     return QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 }
 
-QString QMoDirAssist::tempLocation() const
+QString QKxDirAssist::tempLocation() const
 {
     return QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 }
 
-QString QMoDirAssist::homePath() const
+QString QKxDirAssist::homePath() const
 {
     return QDir::homePath();
 }
 
-QVariantList QMoDirAssist::entryInfoList(const QString &_path) const
+QVariantList QKxDirAssist::entryInfoList(const QString &_path) const
 {
     QString path = absoluteFilePath(_path);
     if(path == "/") {
@@ -104,7 +104,7 @@ QVariantList QMoDirAssist::entryInfoList(const QString &_path) const
     return castToVariantList(lsfi);
 }
 
-QString QMoDirAssist::absoluteFilePath(const QString &_path) const
+QString QKxDirAssist::absoluteFilePath(const QString &_path) const
 {
     QString path = _path;
     if(path.startsWith("file:")) {
@@ -129,29 +129,41 @@ QString QMoDirAssist::absoluteFilePath(const QString &_path) const
     return pathAbs;
 }
 
-QString QMoDirAssist::cleanPath(const QString &path) const
+QString QKxDirAssist::cleanPath(const QString &path) const
 {
     return QDir::cleanPath(path);
 }
 
-QString QMoDirAssist::toNativeSeparators(const QString &path) const
+QString QKxDirAssist::toNativeSeparators(const QString &path) const
 {
     return QDir::toNativeSeparators(path);
 }
 
-QVariantMap QMoDirAssist::fileInfo(const QString &path) const
+QVariantMap QKxDirAssist::fileInfo(const QString &path) const
 {
     QFileInfo fi(path);
     return castToVariantMap(fi);
 }
 
-bool QMoDirAssist::makePath(const QString &path)
+bool QKxDirAssist::makePath(const QString &path)
 {
     QDir d;
     return d.mkpath(path);
 }
 
-QVariantMap QMoDirAssist::castToVariantMap(const QFileInfo &fi) const
+bool QKxDirAssist::exist(const QString &path)
+{
+    QFileInfo fi(path);
+    return fi.exists();
+}
+
+bool QKxDirAssist::rename(const QString &pathSrc, const QString &pathDst)
+{
+    QDir d;
+    return d.rename(pathSrc, pathDst);
+}
+
+QVariantMap QKxDirAssist::castToVariantMap(const QFileInfo &fi) const
 {
     QVariantMap dm;
     QString fileName = fi.fileName();
@@ -178,13 +190,13 @@ QVariantMap QMoDirAssist::castToVariantMap(const QFileInfo &fi) const
     permissions.append(fi.permission(QFile::WriteOther) ? "w" : "-");
     permissions.append(fi.permission(QFile::ExeOther) ? "x" : "-");
     dm.insert("permissions", permissions);
-    dm.insert("canWrite", (flag & (QFile::WriteUser)) > 0);
-    dm.insert("canRead", (flag & (QFile::ReadUser)) > 0);
-    dm.insert("canExecute", (flag & (QFile::ExeUser)) > 0);
+    dm.insert("canWrite", bool((flag & (QFile::WriteUser)) > 0));
+    dm.insert("canRead", bool((flag & (QFile::ReadUser)) > 0));
+    dm.insert("canExecute", bool((flag & (QFile::ExeUser)) > 0));
     return dm;
 }
 
-QVariantList QMoDirAssist::castToVariantList(const QFileInfoList &lsfi) const
+QVariantList QKxDirAssist::castToVariantList(const QFileInfoList &lsfi) const
 {
     QVariantList lsv;
     for(auto it = lsfi.begin(); it != lsfi.end(); it++) {

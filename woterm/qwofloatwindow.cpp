@@ -37,7 +37,7 @@ QWoFloatWindow::QWoFloatWindow(QWoShowerWidget *child, QWoShower *shower, EToolT
     layout->addWidget(child);
     m_layout = layout;
 
-    if(type == ETT_Term || type == ETT_Mstsc) {
+    if(type != ETT_Vnc) {
         m_tool = new QWoBaseToolForm(this);
         QObject::connect(m_tool, SIGNAL(enter()), this, SLOT(onToolEnter()));
         QObject::connect(m_tool, SIGNAL(leave()), this, SLOT(onToolLeave()));

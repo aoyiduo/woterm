@@ -27,9 +27,6 @@ public:
     static QString historyFilePath();
     static QString examplePath();
     static QString privatePath();
-    static QString privateJsCorePath();
-    static QString privateColorSchemaPath();
-    static QString privateKeyboardLayoutPath();
     static QString privateLanguagesPath();
     static QString sshServerFilePath();
     static QString lastJsLoadPath();
@@ -43,6 +40,10 @@ public:
     Q_INVOKABLE static QString absoluteLanguageFilePath();
     Q_INVOKABLE static void setLanguageFileName(const QString& path);
     Q_INVOKABLE static bool isChineseLanguageFile();
+
+    static QString playbooksPath();
+    static QString customPlaybooksPath();
+    static void setCustomPlaybooksPath(const QString& path);
 
     static QString sshServerDbPath();
     static QString sftpTaskDbPath();

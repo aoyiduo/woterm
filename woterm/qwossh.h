@@ -52,6 +52,7 @@ class QWoSSHConnection : public QThread
 public:
     explicit QWoSSHConnection(QObject *parent= nullptr);
     virtual ~QWoSSHConnection();
+    QString hostName() const;
     void append(QWoSshChannel *cli);
     void remove(QWoSshChannel *cli);
     bool hasRunning();
@@ -61,6 +62,8 @@ public:
     void setInputResult(const QString& pass);
     void shellWrite(QWoSshChannel *cli, const QByteArray& buf);
     void shellSize(QWoSshChannel *cli, int cols, int rows);
+    void shellSignal(QWoSshChannel *cli, const QByteArray& sig);
+    void shellBreak(QWoSshChannel *cli, int length);
     void sftpOpenDir(QWoSshChannel *cli, const QStringList& paths, const QVariantMap& user);
     void sftpMkDir(QWoSshChannel *cli, const QString& path, int mode, const QVariantMap& user);
     void sftpMkPath(QWoSshChannel *cli, const QString& path, int mode, const QVariantMap& user);
@@ -118,6 +121,13 @@ public:
     void stop();
     void setInputResult(const QString& pass);
     bool hasRunning();
+    inline QString targetHost() const {
+        return m_host;
+    }
+    // last command exit code.
+    // usefull for powshell command mode.
+    // shell command exit code normal is bigger than zero.
+    int lastCommandExitCode();
     QWoSSHConnection *connection();
 signals:
     void finishArrived(int);
@@ -137,6 +147,8 @@ protected:
     friend class QSshMultClient;
     friend class QWoSSHConnection;
     QPointer<QWoSSHConnection> m_conn;
+    int m_lastCommandExitStatus;
+    QString m_host;
 };
 
 class QWoSshShell : public QWoSshChannel
@@ -147,6 +159,8 @@ public:
     virtual ~QWoSshShell();
     void write(const QByteArray& buf);
     void updateSize(int cols, int rows);
+    void sendBreak(int length=10);
+    void sendSignal(const QByteArray& sig);
 signals:
     void dataArrived(const QByteArray& buf);
 protected:
@@ -216,6 +230,7 @@ public:
     QWoSshFtp *createSftp();
     void release(QWoSshChannel *obj);
     QWoSSHConnection *get(int gid, bool *pcreated);
+    int groudId(const QString& name);
 private slots:
     void onChannelFinishArrived(int);
     void onConnectionFinishArrived(int);

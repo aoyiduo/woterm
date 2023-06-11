@@ -49,7 +49,8 @@ public:
     enum ETermType {
         ETTRemoteTarget,
         ETTLocalShell,
-        ETTSerialPort
+        ETTSerialPort,
+        ETTConsole
     };
 public:
     explicit QWoTermWidget(const QString& target, int gid, ETermType ttype, QWidget *parent=nullptr);
@@ -58,10 +59,14 @@ public:
     void closeAndDelete();
 
     void splitWidget(const QString& target, int gid, bool vertical);
+    bool attachWidget(QWoTermWidget *w, bool vertical);
+    void detachWidget();
 
     void triggerPropertyCheck();
 
     QString target() const;
+    int gid() const;
+    bool isLocalShell();
 
     void showLoading(bool on);
     void reloadProperty();
@@ -87,7 +92,7 @@ private:
     void resetProperty(QVariantMap data, bool force=false);
 
     QWoTermWidgetImpl *findTermImpl();
-    void addToTermImpl();
+    Q_INVOKABLE void addToTermImpl();
     void removeFromTermImpl();
 
     void onBroadcastMessage(int type, QVariant msg);

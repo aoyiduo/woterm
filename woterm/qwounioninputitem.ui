@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QWoUnionInputItem</class>
+ <widget class="QWidget" name="QWoUnionInputItem">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>480</width>
+    <height>43</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>480</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QToolButton" name="btnSetting">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../private/skins/black/setting2.png</normaloff>../private/skins/black/setting2.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="input"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnInput">
+     <property name="text">
+      <string>Input</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../private/skins/black/keyenter.png</normaloff>../private/skins/black/keyenter.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>16</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

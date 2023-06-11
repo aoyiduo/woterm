@@ -1,0 +1,5 @@
+{
+"name": "Test Command",
+"source": "main.qml",
+"description": "Test Command for study."
+}

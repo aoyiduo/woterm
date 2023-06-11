@@ -121,7 +121,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>:/kxftp/resource/skin/copy.png</normaloff>:/kxftp/resource/skin/copy.png</iconset>
+             <normaloff>../private/skins/black/copy.png</normaloff>../private/skins/black/copy.png</iconset>
            </property>
           </widget>
          </item>

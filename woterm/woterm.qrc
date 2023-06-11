@@ -22,7 +22,6 @@
         <file>qml/MoInputDialog.qml</file>
         <file>qml/MoSftpNameDialog.qml</file>
         <file>qml/MoPasswordInput.qml</file>
-        <file>qml/shot.js</file>
         <file>qml/MoSftpTransfer.qml</file>
         <file>qml/MoSftpConfigure.qml</file>
         <file>qml/MoAboutView.qml</file>
@@ -34,6 +33,8 @@
         <file>resource/images/woterm4.png</file>
         <file>resource/images/woterm5.png</file>
         <file>resource/images/woterm6.png</file>
+        <file>qml/playbook.qml</file>
+        <file>js/async.js</file>
+        <file>js/utils.js</file>
     </qresource>
-    <qresource prefix="/"/>
 </RCC>

@@ -26,4 +26,5 @@ public:
 protected:
     virtual QWoTermWidget *createTermWidget(const QString& target, int gid, QWidget *parent);
     virtual bool handleCustomProperties();
+    virtual bool isRemoteSession();
 };

@@ -64,7 +64,7 @@ public:
     void updatePassword(const QString& name, const QString& password);
 
     QList<HostInfo> hostList(EHostType type = All) const;
-    QStringList hostNameList(EHostType type = All) const;
+    QStringList hostNameList(EHostType type = All) const;    
     QList<HostInfo> proxyJumpers(const QString& name, int max=2) const;
     Q_INVOKABLE QStringList qmlProxyJumpers() const;
 

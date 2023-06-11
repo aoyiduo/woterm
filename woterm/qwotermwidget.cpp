@@ -55,8 +55,8 @@ QWoTermWidget::QWoTermWidget(const QString& target, int gid, ETermType ttype, QW
     , m_ttype(ttype)
 {
     static int idx = 0;
-    setObjectName(QString("QWoTermWidget:%1").arg(idx++));
     addToTermImpl();
+    setObjectName(QString("QWoTermWidget:%1").arg(idx++));    
     setAttribute(Qt::WA_StyledBackground);
     setAttribute(Qt::WA_DeleteOnClose);
     initDefault();
@@ -116,6 +116,16 @@ void QWoTermWidget::triggerPropertyCheck()
 QString QWoTermWidget::target() const
 {
     return m_target;
+}
+
+int QWoTermWidget::gid() const
+{
+    return m_gid;
+}
+
+bool QWoTermWidget::isLocalShell()
+{
+    return m_ttype == ETTLocalShell;
 }
 
 void QWoTermWidget::showLoading(bool on)
@@ -312,6 +322,69 @@ void QWoTermWidget::splitWidget(const QString& target, int gid, bool vertical)
     ls << width / 2 << width / 2;
     splitter->setSizes(ls);
     impl->updateEnable(true);
+    impl->addToList(term);
+}
+
+bool QWoTermWidget::attachWidget(QWoTermWidget *term, bool vertical)
+{
+    QSplitter *splitParent = qobject_cast<QSplitter*>(parent());
+    if(splitParent == nullptr) {
+        return false;
+    }
+
+    QWoTermWidgetImpl *impl = findTermImpl();
+    impl->updateEnable(false);
+    int cnt = splitParent->count();
+    QSplitter *splitter = splitParent;
+    if(cnt > 1) {
+        QList<int> ls = splitParent->sizes();
+        int idx = splitParent->indexOf(this);
+        QSplitter *splitNew = new QSplitter(splitParent);
+        splitParent->insertWidget(idx, splitNew);
+        splitNew->setChildrenCollapsible(false);
+        splitNew->addWidget(this);
+        splitParent->setSizes(ls);
+        splitter = splitNew;
+        splitter->setHandleWidth(1);
+        splitter->setOpaqueResize(false);
+    }
+    splitter->setOrientation(vertical ? Qt::Vertical : Qt::Horizontal);
+    term->setParent(splitter);
+    splitter->addWidget(term);
+    QObject *obj = term->parent();
+    QWidget *obj2 = term->parentWidget();
+    Q_ASSERT(obj == splitter && obj2 == splitter);
+    term->show();
+    int width = splitter->width();
+    QList<int> ls;
+    ls << width / 2 << width / 2;
+    splitter->setSizes(ls);
+    impl->updateEnable(true);
+    impl->addToList(term);
+    return true;
+}
+
+void QWoTermWidget::detachWidget()
+{
+    m_bexit = true;
+    removeFromTermImpl();
+    QSplitter *splitParent = qobject_cast<QSplitter*>(parent());
+    if(splitParent == nullptr) {
+        return;
+    }
+    int cnt = splitParent->count();
+    if(cnt == 1) {
+        splitParent->deleteLater();
+        splitParent = qobject_cast<QSplitter*>(splitParent->parent());
+        while(splitParent != nullptr) {
+            if(splitParent->count() > 1) {
+                break;
+            }
+            splitParent->deleteLater();
+            splitParent = qobject_cast<QSplitter*>(splitParent->parent());
+        }
+    }
+    setParent(nullptr);
 }
 
 QWoTermWidgetImpl *QWoTermWidget::findTermImpl()

@@ -46,6 +46,7 @@ QWoTermWidget *QWoSshTermWidgetImpl::createTermWidget(const QString &target, int
 
 void QWoSshTermWidgetImpl::handleTabContextMenu(QMenu *menu)
 {
+    QWoTermWidgetImpl::handleTabContextMenu(menu);
     if(m_sftp == nullptr) {
         menu->addAction(tr("Open sftp assistant"), this, SLOT(onSftpAssistOpen()));
     }else{

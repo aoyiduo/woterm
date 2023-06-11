@@ -33,8 +33,11 @@ public:
     QString termName() const;
     void setTermName(const QString& name);
 
+    void sendInput(const QByteArray& cmd);
+
     void setFindShortCut(QKeySequence key);
 signals:
+    void sendData(const QByteArray& buf);
     void activePathArrived(const QString& path);
 protected:
     void resizeEvent(QResizeEvent *ev);

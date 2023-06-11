@@ -17,7 +17,7 @@
 #include "qmodbsftpdetailassist.h"
 #include "qmosftptransferassist.h"
 #include "qwodbsftpdownsync.h"
-#include "qmodirassist.h"
+#include "qkxdirassist.h"
 #include "qmoaboutassist.h"
 
 #include <QStyleFactory>
@@ -59,7 +59,7 @@ QMoApplication::QMoApplication(int &argc, char **argv)
 
     qmlRegisterType<QMoDbSftpDetailAssist>("MoDbSftpDetail", 1,0, "MoDbSftpDetail");
     qmlRegisterType<QWoDBSftpDownSync>("MoDBSftpDownSync", 1,0, "MoDBSftpDownSync");
-    qmlRegisterType<QMoDirAssist>("MoDir", 1,0, "MoDir");
+    qmlRegisterType<QKxDirAssist>("MoDir", 1,0, "MoDir");
     qmlRegisterType<QMoAboutAssist>("MoAbout", 1,0, "MoAbout");
 }
 

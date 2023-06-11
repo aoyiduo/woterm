@@ -47,10 +47,13 @@
 #include "qkxfilterlineedit.h"
 #include "qwoversionupgradetipdialog.h"
 #include "qwolicensetrialapplydialog.h"
+#include "qwoplaybookmanagedialog.h"
 #include "qwotheme.h"
 #include "qkxdockwidget.h"
 #include "qkxver.h"
 #include "version.h"
+
+#include "qwotermwidgetimpl.h"
 
 #include <QApplication>
 #include <QFileDialog>
@@ -80,6 +83,8 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     ui->setupUi(this);
     setMinimumSize(QSize(800, 600));
     setAttribute(Qt::WA_DeleteOnClose);
+
+    setWindowIcon(QIcon(":/woterm/resource/images/woterm2.png"));
 
     QKxVer *ver = QKxVer::instance();
     QKxVer::ELicenseType type = ver->licenseType();
@@ -134,6 +139,10 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     m_tab->setTabsClosable(true);
     m_tab->setExpanding(false);
     m_tab->setUsesScrollButtons(true);
+
+    QObject::connect(m_tab, SIGNAL(currentChanged(int)), this, SLOT(onTabCurrentChanged(int)));
+
+
     m_shower = new QWoShower(m_tab, this);
 
     QObject::connect(m_shower, SIGNAL(tabEmpty()), this, SLOT(onShouldAppExit()));
@@ -191,6 +200,11 @@ void QWoMainWindow::onNewSession()
     if(retVal == QWoSessionProperty::Save || retVal == QWoSessionProperty::Connect) {
         QWoHostListModel::instance()->refreshList();
     }
+}
+
+void QWoMainWindow::onJavascriptRunner()
+{
+
 }
 
 void QWoMainWindow::onOpenRemoteSession()
@@ -308,9 +322,8 @@ void QWoMainWindow::onAppStart()
     }
     if(QKxVer::instance()->isFullFeather()) {
         QKxVer *ver = QKxVer::instance();
-        if(QWoSetting::shouldReportLicense()) {
+        if(true || QWoSetting::shouldReportLicense()) { // make sure to check invalid every time.
             QWoSetting::setIgnoreTodayReportLicense();
-
             QKxHttpClient *http = new QKxHttpClient(this);
             QObject::connect(http, SIGNAL(result(int,QByteArray)), this, SLOT(onReportResult(int,QByteArray)));
             QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
@@ -379,7 +392,76 @@ void QWoMainWindow::onRecentMenuAboutToShow()
 
 void QWoMainWindow::onReportResult(int code, const QByteArray &body)
 {
-    qDebug() << "onReportResult" << code << body;
+    //qDebug() << "onReportResult" << code << body;
+    QJsonDocument jsdoc = QJsonDocument::fromJson(body);
+    if(!jsdoc.isObject()) {
+        return;
+    }
+    QJsonObject obj = jsdoc.object();
+    if(!obj.contains("error")) {
+        return;
+    }
+    QVariant err = obj.value("error");
+    int ierr = err.toInt();
+    if(ierr != 0) {
+        QKxVer *ver = QKxVer::instance();
+        QKxVer::ELicenseType type = ver->licenseType();
+        if( type == QKxVer::ESchoolVersion || type == QKxVer::EUltimateVersion ) {
+            // key has been migrate to another machine.
+            QKxVer::instance()->remove();
+            QString desc = obj.value("desc").toString();
+            QKxMessageBox::information(this, tr("Error Information"), tr("The license code has been invalidated as follow reason")+"\r\n"+desc);
+            QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+        }
+    }
+}
+
+void QWoMainWindow::onTabMergeButtonClicked()
+{
+    if(m_tab->count() == 0) {
+        QKxMessageBox::information(this, tr("Merge information"), tr("No tabs to merge."));
+        return;
+    }
+    m_shower->mergeFromRightTab();
+}
+
+void QWoMainWindow::onTabSeperateButtonClicked()
+{
+    m_shower->seperateToRightTab();
+}
+
+void QWoMainWindow::onTabCurrentChanged(int idx)
+{
+    /*
+    QVariant vImpl = m_tab->tabData(idx);
+    QWoTermWidgetImpl *impl = vImpl.value<QWoTermWidgetImpl*>();
+    if(impl == nullptr) {
+        m_btnTabMerge->setEnabled(false);
+        m_btnTabSeperate->setEnabled(false);
+        return;
+    }
+    m_btnTabMerge->setEnabled(true);
+    m_btnTabSeperate->setEnabled(impl->termCount() > 1);
+    */
+}
+
+void QWoMainWindow::onPlaybookButtonClicked()
+{
+    QWoPlaybookManageDialog dlg(this);
+    if(dlg.exec() == QDialog::Accepted+1) {
+        m_shower->openPlayBook(dlg.name(), dlg.path());
+    }
+}
+
+void QWoMainWindow::onPlaybookAssistButtonClicked(QToolButton* btn)
+{
+    QRect rt = btn->rect();
+    QPoint pt = btn->mapToGlobal(rt.bottomLeft());
+    QMenu menu(this);
+    menu.addAction(QIcon("../private/skins/black/nodes.png"), tr("Open remote session"), this, SLOT(onOpenRemoteSession()));
+    menu.addAction(QIcon("../private/skins/black/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
+    menu.addAction(QIcon("../private/skins/black/serialport.png"), tr("Open serialport session"), this, SLOT(onOpenSerialPort()));
+    menu.exec(pt);
 }
 
 void QWoMainWindow::onActionNewTriggered()
@@ -531,11 +613,6 @@ void QWoMainWindow::onActionWebsiteTriggered()
     QDesktopServices::openUrl(QUrl("http://woterm.com/"));
 }
 
-void QWoMainWindow::onActionScriptRunTriggered()
-{
-    m_shower->openScriptRuner("script");
-}
-
 void QWoMainWindow::onActionSshKeyManageTriggered()
 {
     QWoIdentifyDialog::open(true, this);
@@ -579,6 +656,14 @@ void QWoMainWindow::onActionLicenseTriggered()
 void QWoMainWindow::onActionUpgradeTriggered()
 {
     QWoVersionUpgradeTipDialog::check(this, false);
+}
+
+void QWoMainWindow::onActionPlaybookOptionsTriggered()
+{
+    QWoPlaybookManageDialog dlg(this);
+    if(dlg.exec() == QDialog::Accepted+1) {
+        m_shower->openPlayBook(dlg.name(), dlg.path());
+    }
 }
 
 void QWoMainWindow::onFilterArrivedArrived(const QString &name, int type)
@@ -628,6 +713,12 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionRestart, SIGNAL(triggered()), this, SLOT(onActionRestartOptionsTriggered()));
 
     if(QKxVer::instance()->isFullFeather()) {
+        QObject::connect(ui->actionPlaybooks, SIGNAL(triggered()), this, SLOT(onActionPlaybookOptionsTriggered()));
+    }else{
+        ui->actionPlaybooks->setVisible(false);
+    }
+
+    if(QKxVer::instance()->isFullFeather()) {
         QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));      
         ui->menuOpen->setVisible(true);
         ui->actionOpenRemote2->deleteLater();
@@ -646,7 +737,7 @@ void QWoMainWindow::initToolBar()
     {
         QPushButton *btn = new QPushButton(QIcon("../private/skins/black/history.png"), tr("History"), tool);
         btn->setFlat(true);
-        btn->setMinimumWidth(100);
+        btn->setMinimumWidth(90);
         QMenu *menu = new QMenu(btn);
         QObject::connect(menu, SIGNAL(aboutToShow()), this, SLOT(onRecentMenuAboutToShow()));
         btn->setMenu(menu);
@@ -656,7 +747,7 @@ void QWoMainWindow::initToolBar()
     if(QKxVer::instance()->isFullFeather()){
         QPushButton *btn = new QPushButton(QIcon("../private/skins/black/nodes.png"), tr("Open"), tool);
         btn->setFlat(true);
-        btn->setMaximumWidth(100);
+        btn->setMaximumWidth(90);
         QKxButtonAssist *btnAssist = new QKxButtonAssist("../private/skins/black/arrowdown.png", btn);
         QObject::connect(btnAssist, SIGNAL(pressed(QToolButton*)), this, SLOT(onButtonAssistClicked(QToolButton*)));
         QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onOpenRemoteSession()));
@@ -679,6 +770,21 @@ void QWoMainWindow::initToolBar()
         QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onLayout()));
         tool->addWidget(btn);
     }
+    if(QKxVer::instance()->isFullFeather()){
+        QPushButton *btn = new QPushButton(QIcon("../private/skins/black/merge.png"), tr("Merge"), tool);
+        btn->setFlat(true);
+        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onTabMergeButtonClicked()));
+        tool->addWidget(btn);
+        m_btnTabMerge = btn;
+    }
+
+    if(QKxVer::instance()->isFullFeather()){
+        QPushButton *btn = new QPushButton(QIcon("../private/skins/black/js.png"), tr("Playbooks"), tool);
+        btn->setFlat(true);
+        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onPlaybookButtonClicked()));
+        tool->addWidget(btn);
+    }
+
     if(QKxVer::instance()->isFullFeather()){
         QLineEdit *input = new QKxFilterLineEdit(tool);        
         input->setMaximumWidth(250);

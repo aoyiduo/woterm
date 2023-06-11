@@ -51,3 +51,8 @@ bool QWoPtyTermWidgetImpl::handleCustomProperties()
     }
     return true;
 }
+
+bool QWoPtyTermWidgetImpl::isRemoteSession()
+{
+    return false;
+}
