@@ -57,6 +57,7 @@ public:
     static void setSocketKeepAlive(int sock, bool on);
     static bool createPair(int server, ushort port, int fd[2]);
     static bool createPair2(ushort basePort, int fd[2]);
+    static bool createPair3(int fd[]);
 
     static ushort listenLocal(int server, ushort basePort);
     static int socketError();

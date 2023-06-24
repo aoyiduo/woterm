@@ -14,6 +14,8 @@
 #include "qwosshconf.h"
 #include "qkxmessagebox.h"
 #include "qwomainwindow.h"
+#include "qwofloatwindow.h"
+#include "qwoshower.h"
 
 QWoShowerWidget::QWoShowerWidget(const QString &target, QWidget *parent)
     : QWoWidget (parent)
@@ -39,4 +41,15 @@ bool QWoShowerWidget::handleCustomProperties()
 
 bool QWoShowerWidget::isRemoteSession() {
     return true;
+}
+
+void QWoShowerWidget::onShowFullScreen()
+{
+    QWoFloatWindow *wfloat = qobject_cast<QWoFloatWindow*>(topLevelWidget());
+    if(wfloat != nullptr) {
+        wfloat->showFullScreen();
+        QMetaObject::invokeMethod(this, "updateStatus", Qt::QueuedConnection);
+        return;
+    }
+    QMetaObject::invokeMethod(QWoMainWindow::shower(), "floatSession", Q_ARG(QWoShowerWidget*, this), Q_ARG(bool, true));
 }

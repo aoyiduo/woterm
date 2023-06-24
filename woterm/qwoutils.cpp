@@ -41,6 +41,7 @@
 #include <fcntl.h>
 #define myclosesocket  closesocket
 typedef int socket_t;
+typedef int socklen_t;
 #else
 #include <netdb.h>
 #include <sys/socket.h>
@@ -53,6 +54,7 @@ typedef int socket_t;
 #include <sys/types.h>
 #include <errno.h>
 typedef int socket_t;
+typedef unsigned int socklen_t;
 #define myclosesocket(x)    close(x)
 #endif
 
@@ -511,6 +513,40 @@ bool QWoUtils::createPair2(ushort basePort, int fd[])
     }
     myclosesocket(server);
     return false;
+}
+
+bool QWoUtils::createPair3(int fd[])
+{
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    int server = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    if(bind(server, (struct sockaddr *)&addr, sizeof(struct sockaddr_in)) == -1) {
+        myclosesocket(server);
+        return false;
+    }
+    if(listen(server, 5) == -1) {
+        myclosesocket(server);
+        return false;
+    }
+    int length = sizeof(struct sockaddr_in);
+    if(::getsockname(server, (struct sockaddr *)&addr, (socklen_t*)&length) == -1) {
+        myclosesocket(server);
+        return false;
+    }
+    int fd1 = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if(::connect(fd1, (struct sockaddr *)&addr, sizeof(struct sockaddr_in)) == -1) {
+        myclosesocket(fd1);
+        myclosesocket(server);
+        return false;
+    }
+    int fd2 = accept(server, nullptr, nullptr);
+    fd[0] = int(fd1);
+    fd[1] = int(fd2);
+    myclosesocket(server);
+    return true;
 }
 
 ushort QWoUtils::listenLocal(int server, ushort basePort)

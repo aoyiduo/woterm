@@ -34,6 +34,7 @@ protected:
     virtual QMap<QString, QString> collectUnsafeCloseMessage();
 private slots:
     void onRootDestroy();
+    void onSmartResize();
 private:
     QPointer<QWoRdpWidget> m_rdp;
 };

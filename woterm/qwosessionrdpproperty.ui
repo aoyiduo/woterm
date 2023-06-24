@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>518</width>
-    <height>184</height>
+    <height>372</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -110,6 +110,96 @@
          <layout class="QHBoxLayout" name="horizontalLayout_5"/>
         </item>
        </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Color depth</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QRadioButton" name="rad16Bit">
+        <property name="text">
+         <string>16bit</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rad32Bit">
+        <property name="text">
+         <string>32bit</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
+      <string>Audio setting</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <item>
+       <widget class="QRadioButton" name="radPlayServer">
+        <property name="text">
+         <string>Play on server</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radPlayLocal">
+        <property name="text">
+         <string>Play on local</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radPlayDisable">
+        <property name="text">
+         <string>Play disable</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Performance</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QCheckBox" name="chkDragContent">
+        <property name="text">
+         <string>Disable drag window with content</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chkWallpaper">
+        <property name="text">
+         <string>Disable wallpaper</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chkTheme">
+        <property name="text">
+         <string>Disable  window theme</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chkFontSmooth">
+        <property name="text">
+         <string>Disable font smooth</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

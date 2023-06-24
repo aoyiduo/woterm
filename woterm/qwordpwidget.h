@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -11,13 +11,13 @@
 
 #pragma once
 
-#include <QWidget>
+#include <QScrollArea>
 #include <QPointer>
 
 
 class QWoLoadingWidget;
 class QWoTermMask;
-class QRdpWork;
+class QRdpWidget;
 
 class QWoRdpWidget : public QWidget
 {
@@ -26,33 +26,32 @@ public:
     explicit QWoRdpWidget(const QString& target, QWidget *parent=nullptr);
     ~QWoRdpWidget();
 
-    void setFullScreen(bool full);
+    bool smartResize() const;
+    void setSmartResize(bool on);
+
 signals:
     void aboutToClose(QCloseEvent* event);
-private slots:
-    void onTimeout();
-private:
-    Q_INVOKABLE void reconnect();
 private:
     void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent *event);
-    void paintEvent(QPaintEvent *ev);
-    void mousePressEvent(QMouseEvent* ev);
-    void mouseMoveEvent(QMouseEvent *ev);
-    void mouseReleaseEvent(QMouseEvent *ev);
-    void wheelEvent(QWheelEvent *ev);
-    void keyPressEvent(QKeyEvent *ev);
-    void keyReleaseEvent(QKeyEvent *ev);
-    void focusInEvent(QFocusEvent *ev);
-    void focusOutEvent(QFocusEvent *ev);
     bool focusNextPrevChild(bool next);
 private slots:
     void onSessionReconnect();
     void onForceToCloseThisSession();
     void onFinished();
+
+    void onConnectingArrived();
+    void onConnectedArrived();
+    void onDisconnectedArrived();
+
+private:
+    Q_INVOKABLE void reconnect();
+    Q_INVOKABLE void resizeRdpWidget();
 private:
     const QString m_target;
+    QPointer<QScrollArea> m_area;
+    QPointer<QRdpWidget> m_rdp;
     QPointer<QWoLoadingWidget> m_loading;
-    QPointer<QWoTermMask> m_mask;
-    QPointer<QRdpWork> m_rdp;
+    QPointer<QWoTermMask> m_mask;    
+    bool m_smartResize;
 };

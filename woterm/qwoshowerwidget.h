@@ -35,6 +35,9 @@ protected:
     virtual QMap<QString, QString> collectUnsafeCloseMessage() = 0;    
     virtual bool handleCustomProperties();
     virtual bool isRemoteSession();
+
+protected slots:
+    void onShowFullScreen();
 protected:
     friend class QWoShower;
     int m_id;

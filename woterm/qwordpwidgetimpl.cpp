@@ -47,7 +47,9 @@ bool QWoRdpWidgetImpl::handleTabMouseEvent(QMouseEvent *ev)
 
 void QWoRdpWidgetImpl::handleTabContextMenu(QMenu *menu)
 {
-    //menu->addAction(tr("ShowFullScreen"), this, SLOT(onShowFullScreen()));
+    QAction *act = menu->addAction(tr("Smart resize"), this, SLOT(onSmartResize()));
+    act->setCheckable(true);
+    act->setChecked(m_rdp->smartResize());
 }
 
 QMap<QString, QString> QWoRdpWidgetImpl::collectUnsafeCloseMessage()
@@ -58,4 +60,11 @@ QMap<QString, QString> QWoRdpWidgetImpl::collectUnsafeCloseMessage()
 void QWoRdpWidgetImpl::onRootDestroy()
 {
     deleteLater();
+}
+
+void QWoRdpWidgetImpl::onSmartResize()
+{
+    QAction *action = qobject_cast<QAction*>(sender());
+
+    m_rdp->setSmartResize(action->isChecked());
 }

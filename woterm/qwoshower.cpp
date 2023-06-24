@@ -96,7 +96,7 @@ bool QWoShower::openPlayBook(const QString& name, const QString &path)
     createTab(impl, m_bookico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Common);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/js.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/black/js.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -114,7 +114,7 @@ bool QWoShower::openLocalShell()
     createTab(impl, m_ptyico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/console.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/console.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -130,7 +130,7 @@ void QWoShower::attachLocalShell(QWoTermWidget *term, int idx)
     createTab(impl, m_ptyico, target, idx);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/console.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/console.png");
     emit floatChanged(impl, false);
     m_implCount++;
 }
@@ -149,7 +149,7 @@ bool QWoShower::openSsh(const QString &target, int gid)
     createTab(impl, m_sshico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/ssh2.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/ssh2.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -165,7 +165,7 @@ void QWoShower::attachSsh(QWoTermWidget *term, int idx)
     createTab(impl, m_sshico, target, idx);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/ssh2.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/ssh2.png");
     emit floatChanged(impl, false);
     m_implCount++;
 }
@@ -184,7 +184,7 @@ bool QWoShower::openSftp(const QString &target, int gid)
     createTab(impl, m_ftpico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/sftp.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/sftp.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -201,7 +201,7 @@ bool QWoShower::openTelnet(const QString &target)
     createTab(impl, m_telico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/telnet.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/telnet.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -217,7 +217,7 @@ void QWoShower::attachTelnet(QWoTermWidget *term, int idx)
     createTab(impl, m_telico, target, idx);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/telnet.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/telnet.png");
     emit floatChanged(impl, false);
     m_implCount++;
 }
@@ -234,7 +234,7 @@ bool QWoShower::openRLogin(const QString &target)
         createTab(impl, m_rloico, target);
         impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
         impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-        impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/rlogin.png");
+        impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/rlogin.png");
         emit floatChanged(impl, false);
         m_implCount++;
         return true;
@@ -256,7 +256,7 @@ void QWoShower::attachRLogin(QWoTermWidget *term, int idx)
     createTab(impl, m_rloico, target, idx);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/rlogin.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/rlogin.png");
     emit floatChanged(impl, false);
     m_implCount++;
 }
@@ -272,7 +272,7 @@ bool QWoShower::openMstsc(const QString &target)
     createTab(impl, m_mtsico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Mstsc);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/mstsc2.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/mstsc2.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -289,7 +289,7 @@ bool QWoShower::openVnc(const QString &target)
     createTab(impl, m_vncico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Vnc);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/vnc2.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/vnc2.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -307,7 +307,7 @@ bool QWoShower::openSerialPort()
     createTab(impl, m_serico, target);
     impl->setProperty(FLOAT_WINDOW_TOOLBAR, QWoFloatWindow::ETT_Term);
     impl->setProperty(FLOAT_WINDOW_TITLE, "WoTerm:"+target);
-    impl->setProperty(FLOAT_WINDOW_ICON, "../private/skins/black/serialport.png");
+    impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/serialport.png");
     emit floatChanged(impl, false);
     m_implCount++;
     return true;
@@ -558,6 +558,7 @@ bool QWoShower::tabMouseButtonPress(QMouseEvent *ev)
         }
         menu.addAction(tr("Edit this session"), this, SLOT(onEditThisTabSession()));
         menu.addAction(tr("Float this tab"), this, SLOT(onFloatThisTabSession()));
+        menu.addAction(tr("Show full screen"), impl, SLOT(onShowFullScreen()));
         impl->handleTabContextMenu(&menu);
         menu.exec(QCursor::pos());
     }else if(ev->buttons().testFlag(Qt::LeftButton)){

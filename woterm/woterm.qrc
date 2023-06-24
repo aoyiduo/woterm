@@ -36,5 +36,13 @@
         <file>qml/playbook.qml</file>
         <file>js/async.js</file>
         <file>js/utils.js</file>
+        <file>resource/images/console.png</file>
+        <file>resource/images/js.png</file>
+        <file>resource/images/rlogin.png</file>
+        <file>resource/images/serialport.png</file>
+        <file>resource/images/sftp.png</file>
+        <file>resource/images/ssh2.png</file>
+        <file>resource/images/telnet.png</file>
+        <file>resource/images/vnc2.png</file>
     </qresource>
 </RCC>

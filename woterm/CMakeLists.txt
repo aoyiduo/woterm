@@ -508,6 +508,8 @@ if(WIN32)
         COMMAND ${CMAKE_COMMAND} -E echo "finish to find rc.exe path"
     )
 elseif(APPLE)
+    set(SOURCE_FILES ${SOURCE_FILES} qwomac.mm)
+    set(HEADER_FILES ${HEADER_FILES} qwomac.h)
     message("apple system.")
     link_libraries(ptyqt SQLiteCpp sqlite3 crypto ssh qssh rdp zmodem libtelnet)
 

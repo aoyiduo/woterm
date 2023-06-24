@@ -44,6 +44,7 @@ public slots:
     void onDeleteLater();
 private:
     void resizeEvent(QResizeEvent *e);
+    void closeEvent(QCloseEvent* ev);
     void updateToolbarPosition();
 private:
     EToolType m_type;

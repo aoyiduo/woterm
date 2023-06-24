@@ -14,6 +14,9 @@
 
 #include "qwoutils.h"
 #include "qwosetting.h"
+#include "qkxmessagebox.h"
+
+#include <QDesktopWidget>
 
 QWoSessionRDPProperty::QWoSessionRDPProperty(QWidget *parent)
     : QDialog(parent)
@@ -41,22 +44,7 @@ QWoSessionRDPProperty::~QWoSessionRDPProperty()
 void QWoSessionRDPProperty::setCustom(const QVariantMap &mdata)
 {
     m_bCustom = true;
-    if(!mdata.isEmpty()) {
-        if(mdata.contains("desktopType")) {
-            QString deskType = mdata.value("desktopType", "desktop").toString();
-            if(deskType == "desktop") {
-                ui->deskRadio->setChecked(true);
-                ui->fixRadio->setChecked(false);
-            }else{
-                ui->deskRadio->setChecked(false);
-                ui->fixRadio->setChecked(true);
-                QString width = mdata.value("desktopWidth", "1024").toString();
-                QString height = mdata.value("desktopHeight", "768").toString();
-                ui->fixWidth->setText(width);
-                ui->fixHeight->setText(height);
-            }
-        }
-    }
+    resetProperty(mdata);
 }
 
 QVariantMap QWoSessionRDPProperty::result() const
@@ -66,15 +54,36 @@ QVariantMap QWoSessionRDPProperty::result() const
 
 void QWoSessionRDPProperty::onButtonSaveClicked()
 {
-    QVariantMap mvar;    
+    QVariantMap mvar;
     if(ui->fixRadio->isChecked()) {
         QString width = ui->fixWidth->text();
         QString height = ui->fixHeight->text();
+        if(width.isEmpty() || height.isEmpty()) {
+            QKxMessageBox::warning(this, tr("Parameter errors"), tr("The parameter value of width or height should be valid."));
+            return;
+        }
         mvar.insert("desktopType", "fix");
         mvar.insert("desktopWidth", width);
         mvar.insert("desktopHeight", height);
     }else{
         mvar.insert("desktopType", "desktop");
+    }
+
+    if(ui->rad16Bit->isChecked()) {
+        mvar.insert("colorDepth", 16);
+    }else{
+        mvar.insert("colorDepth", 32);
+    }
+    mvar.insert("noContent", ui->chkDragContent->isChecked());
+    mvar.insert("noWallpaper", ui->chkWallpaper->isChecked());
+    mvar.insert("noTheme", ui->chkTheme->isChecked());
+    mvar.insert("noFontSmooth", ui->chkFontSmooth->isChecked());
+    if(ui->radPlayDisable->isChecked()) {
+        mvar.insert("audioMode", 2);
+    }else if(ui->radPlayLocal->isChecked()) {
+        mvar.insert("audioMode", 0);
+    }else{
+        mvar.insert("audioMode", 1);
     }
 
     m_result = mvar;
@@ -88,6 +97,14 @@ void QWoSessionRDPProperty::initDefault()
 {
     QVariantMap mdata = QWoSetting::rdpDefault();
 
+    resetProperty(mdata, true);
+}
+
+void QWoSessionRDPProperty::resetProperty(const QVariantMap& mdata, bool force)
+{
+    if(mdata.isEmpty() && !force) {
+        return;
+    }
     QString deskType = mdata.value("desktopType", "desktop").toString();
     if(deskType == "desktop") {
         ui->deskRadio->setChecked(true);
@@ -95,9 +112,42 @@ void QWoSessionRDPProperty::initDefault()
     }else{
         ui->deskRadio->setChecked(false);
         ui->fixRadio->setChecked(true);
-        QString width = mdata.value("desktopWidth", "1024").toString();
-        QString height = mdata.value("desktopHeight", "768").toString();
+        QDesktopWidget desk;
+        QRect rt = desk.screenGeometry(this);
+        QString width = mdata.value("desktopWidth", rt.width()).toString();
+        QString height = mdata.value("desktopHeight", rt.height()).toString();
+        if(width.isEmpty()) {
+            width = QString::number(rt.width());
+        }
+        if(height.isEmpty()) {
+            height = QString::number(rt.height());
+        }
         ui->fixWidth->setText(width);
         ui->fixHeight->setText(height);
     }
+
+    int depth = mdata.value("colorDepth", 16).toInt();
+    if(depth == 16) {
+        ui->rad16Bit->setChecked(true);
+    }else{
+        ui->rad32Bit->setChecked(true);
+    }
+
+    int mode = mdata.value("audioMode", 0).toInt();
+    if(mode == 0) {
+        ui->radPlayLocal->setChecked(true);
+    }else if(mode == 1) {
+        ui->radPlayServer->setChecked(true);
+    }else {
+        ui->radPlayDisable->setChecked(true);
+    }
+
+    bool noContent = mdata.value("noContent", false).toBool();
+    ui->chkDragContent->setChecked(noContent);
+    bool noWallpaper = mdata.value("noWallpaper", false).toBool();
+    ui->chkWallpaper->setChecked(noWallpaper);
+    bool noTheme = mdata.value("noTheme", false).toBool();
+    ui->chkTheme->setChecked(noTheme);
+    bool noSmooth = mdata.value("noFontSmooth", true).toBool();
+    ui->chkFontSmooth->setChecked(noSmooth);
 }

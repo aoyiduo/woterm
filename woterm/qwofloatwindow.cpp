@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -18,14 +18,15 @@
 #include <QPropertyAnimation>
 #include <QResizeEvent>
 #include <QDebug>
+#include <QTimer>
 
 #define DURATION_DEFAULT        (150)
 
 QWoFloatWindow::QWoFloatWindow(QWoShowerWidget *child, QWoShower *shower, EToolType type)
     : QWidget(nullptr)
-    , m_child(child)
-    , m_shower(shower)
     , m_type(type)
+    , m_shower(shower)
+    , m_child(child)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     child->setParent(this);
@@ -49,13 +50,30 @@ QWoFloatWindow::QWoFloatWindow(QWoShowerWidget *child, QWoShower *shower, EToolT
 
 void QWoFloatWindow::restoreToShower()
 {
-    m_shower->restoreSession(m_child);
 #ifdef Q_OS_MAC
     // must be show normal or will be black and no response to all operation, why?why?why?
-    showNormal();
-#endif
+    qDebug() << "restoreShower trigered now: fullscreen:" << isFullScreen();
+    if(isFullScreen()) {
+        showNormal();
+        QPointer<QWidget> self = this;
+        QTimer::singleShot(100, this, [=](){
+            qDebug() << "try delete again after one second";
+            if(self) {
+                qDebug() << "still exist and delete again.";
+                m_shower->restoreSession(m_child);
+                close();
+            }
+        });
+    }else{
+        m_shower->restoreSession(m_child);
+        hide();
+        deleteLater();
+    }
+#else
+    m_shower->restoreSession(m_child);
     hide();
     deleteLater();
+#endif
 }
 
 void QWoFloatWindow::onToolEnter()
@@ -121,6 +139,20 @@ void QWoFloatWindow::resizeEvent(QResizeEvent *e)
     QWidget::resizeEvent(e);
     updateToolbarPosition();
 }
+
+#ifdef Q_OS_MAC
+#include "qwomac.h"
+void QWoFloatWindow::closeEvent(QCloseEvent *ev)
+{
+    QWidget::closeEvent(ev);
+    QWoMac::closeWidget(winId());
+}
+#else
+void QWoFloatWindow::closeEvent(QCloseEvent *ev)
+{
+    QWidget::closeEvent(ev);
+}
+#endif
 
 void QWoFloatWindow::updateToolbarPosition()
 {

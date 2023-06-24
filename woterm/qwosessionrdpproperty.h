@@ -32,6 +32,7 @@ private slots:
     void onButtonSaveClicked();
 private:
     void initDefault();
+    void resetProperty(const QVariantMap& dm, bool force = false);
 private:
     Ui::QWoSessionRDPProperty *ui;
     bool m_bCustom;

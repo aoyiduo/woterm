@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -15,10 +15,10 @@
 #include "qwoloadingwidget.h"
 #include "qwotermmask.h"
 
-#include "qrdpdef.h"
-#include "qrdpwork.h"
+#include "qrdpwidget.h"
 #include "qwoutils.h"
 #include "qwoshower.h"
+#include "qwosetting.h"
 
 #include <QCloseEvent>
 #include <QVBoxLayout>
@@ -31,88 +31,41 @@
 QWoRdpWidget::QWoRdpWidget(const QString &target, QWidget *parent)
     : QWidget(parent)
     , m_target(target)
+    , m_smartResize(true)
 {
-    QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);
-    m_loading = new QWoLoadingWidget(QColor("#1296DB"), this);
+    m_area = new QScrollArea(this);
+    m_area->setFrameShape(QFrame::NoFrame);
+    m_area->setContentsMargins(0, 0, 0, 0);
+
+    m_loading = new QWoLoadingWidget(QColor(18,150,219), this);
     m_mask = new QWoTermMask(this);
     QObject::connect(m_mask, SIGNAL(aboutToClose(QCloseEvent*)), this, SLOT(onForceToCloseThisSession()));
     QObject::connect(m_mask, SIGNAL(reconnect()), this, SLOT(onSessionReconnect()));
 
-    QTimer *timer = new QTimer(this);
-    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
-    timer->start(50);
+    m_rdp = QRdpWidget::create(false, m_area);
+    m_area->setWidget(m_rdp);
+    QObject::connect(m_rdp, SIGNAL(connectingArrived()), this, SLOT(onConnectingArrived()));
+    QObject::connect(m_rdp, SIGNAL(connectedArrived()), this, SLOT(onConnectedArrived()));
+    QObject::connect(m_rdp, SIGNAL(disconnectedArrived()), this, SLOT(onDisconnectedArrived()));
 
-    setAttribute(Qt::WA_InputMethodEnabled, true);
-    setFocusPolicy(Qt::StrongFocus);
-    setMouseTracking(true);
+    m_rdp->hide();
+    QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);
 }
 
 QWoRdpWidget::~QWoRdpWidget()
 {
-    if(m_rdp) {
-        QWoRdpFactory::instance()->release(m_rdp);
-    }
-}
-
-void QWoRdpWidget::setFullScreen(bool full)
-{
 
 }
 
-void QWoRdpWidget::reconnect()
+bool QWoRdpWidget::smartResize() const
 {
-    if(m_rdp) {
-        QWoRdpFactory::instance()->release(m_rdp);
-    }
-    m_rdp = QWoRdpFactory::instance()->create();
-    QObject::connect(m_rdp, SIGNAL(finished()), this, SLOT(onFinished()));
-    QDesktopWidget desk;
-    QRect rt = desk.screenGeometry(this);
-    int width = rt.width();
-    int height = rt.height();
-
-    /* FIXME: desktopWidth has a limitation that it should be divisible by 4,
-         *        otherwise the screen will crash when connecting to an XP desktop.*/
-    width = (width + 3) & (~3);
-    const HostInfo& hi = QWoSshConf::instance()->find(m_target);
-
-    QRdpWork::TargetInfo ti;
-    ti.host = hi.host;
-    ti.password = hi.password;
-    ti.port = hi.port;
-    ti.user = hi.user;
-
-    QVariantMap mdata = QWoUtils::qBase64ToVariant(hi.property).toMap();
-    if(mdata.contains("desktopType")) {
-        QString deskType = mdata.value("desktopType", "desktop").toString();
-        if(deskType == "fix") {
-            int w = mdata.value("desktopWidth", "1024").toInt();
-            int h = mdata.value("desktopHeight", "768").toInt();
-            if(w > 10) {
-                width = w;
-            }
-            if(h > 10) {
-                height = h;
-            }
-        }
-    }
-    m_rdp->start(ti, width, height);
-    m_loading->show();
+    return m_smartResize;
 }
 
-void QWoRdpWidget::onTimeout()
+void QWoRdpWidget::setSmartResize(bool on)
 {
-    if(m_rdp) {
-        QRect rt = m_rdp->clip(size());
-        if(!rt.isEmpty()){
-            rt.adjust(-10, -10, 10, 10);
-            if(m_loading->isVisible()) {
-                m_loading->setVisible(false);
-                m_mask->setVisible(false);
-            }
-            update(rt);
-        }
-    }
+    m_smartResize = on;
+    QMetaObject::invokeMethod(this, "resizeRdpWidget", Qt::QueuedConnection);
 }
 
 void QWoRdpWidget::closeEvent(QCloseEvent *event)
@@ -128,79 +81,10 @@ void QWoRdpWidget::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
     QSize sz = event->size();
+    m_area->setGeometry(0, 0, sz.width(), sz.height());
     m_loading->setGeometry(0, 0, sz.width(), sz.height());
     m_mask->setGeometry(0, 0, sz.width(), sz.height());
-}
-
-void QWoRdpWidget::paintEvent(QPaintEvent *ev)
-{
-    if(m_rdp == nullptr) {
-        return;
-    }
-    QPainter p(this);
-    p.setClipRegion(ev->region());
-    p.setRenderHint(QPainter::SmoothPixmapTransform);
-    QImage img = m_rdp->capture();
-    QRect drawRt = rect();
-    p.drawImage(drawRt, img);
-}
-
-void QWoRdpWidget::mousePressEvent(QMouseEvent *ev)
-{
-    if(m_rdp){
-        m_rdp->mousePressEvent(ev, size());
-    }
-}
-
-void QWoRdpWidget::mouseMoveEvent(QMouseEvent *ev)
-{
-    if(m_rdp){
-        m_rdp->mouseMoveEvent(ev, size());
-    }
-}
-
-void QWoRdpWidget::mouseReleaseEvent(QMouseEvent *ev)
-{
-    if(m_rdp){
-        m_rdp->mouseReleaseEvent(ev, size());
-    }
-}
-
-void QWoRdpWidget::wheelEvent(QWheelEvent *ev)
-{
-    if(m_rdp){
-        m_rdp->wheelEvent(ev, size());
-    }
-}
-
-void QWoRdpWidget::keyPressEvent(QKeyEvent *ev)
-{
-    if(m_rdp){
-        m_rdp->keyPressEvent(ev);
-    }
-}
-
-void QWoRdpWidget::keyReleaseEvent(QKeyEvent *ev)
-{
-    if(m_rdp){
-        m_rdp->keyReleaseEvent(ev);
-    }
-}
-
-void QWoRdpWidget::focusInEvent(QFocusEvent *ev)
-{
-    QWidget::focusInEvent(ev);
-    if(m_rdp){
-        m_rdp->restoreKeyboardStatus();
-    }
-}
-
-void QWoRdpWidget::focusOutEvent(QFocusEvent *ev)
-{
-    QWidget::focusOutEvent(ev);
-    if(m_rdp){
-        m_rdp->restoreKeyboardStatus();
-    }
+    resizeRdpWidget();
 }
 
 bool QWoRdpWidget::focusNextPrevChild(bool next)
@@ -220,11 +104,104 @@ void QWoRdpWidget::onForceToCloseThisSession()
 
 void QWoRdpWidget::onFinished()
 {
-    if(m_rdp) {
-        QWoRdpFactory::instance()->release(m_rdp);
-    }
-
-    m_rdp = nullptr;
     m_mask->setVisible(true);
     m_loading->setVisible(false);
+    m_rdp->hide();
+}
+
+void QWoRdpWidget::onConnectingArrived()
+{
+    m_loading->show();
+    m_mask->hide();
+}
+
+void QWoRdpWidget::onConnectedArrived()
+{
+    m_loading->hide();
+    m_mask->hide();
+    m_rdp->show();
+}
+
+void QWoRdpWidget::onDisconnectedArrived()
+{
+    m_loading->hide();
+    m_mask->show();
+    m_rdp->hide();
+}
+
+void QWoRdpWidget::reconnect()
+{
+    QDesktopWidget desk;
+    QRect rt = desk.screenGeometry(this);
+    int width = rt.width();
+    int height = rt.height();
+
+    /* FIXME: desktopWidth has a limitation that it should be divisible by 4,
+             *        otherwise the screen will crash when connecting to an XP desktop.*/
+    width = (width + 3) & (~3);
+    const HostInfo& hi = QWoSshConf::instance()->find(m_target);
+
+    QVariantMap mdata = QWoUtils::qBase64ToVariant(hi.property).toMap();
+    if(mdata.isEmpty()) {
+        mdata = QWoSetting::rdpDefault();
+    }
+    if(mdata.contains("desktopType")) {
+        QString deskType = mdata.value("desktopType", "desktop").toString();
+        if(deskType == "fix") {
+            int w = mdata.value("desktopWidth", rt.width()).toInt();
+            int h = mdata.value("desktopHeight", rt.height()).toInt();
+            if(w > 10) {
+                width = w;
+            }
+            if(h > 10) {
+                height = h;
+            }
+        }
+    }    
+    int colorDepth = mdata.value("colorDepth", 16).toInt();
+    m_rdp->setColorDepth(colorDepth);
+
+    int mode = mdata.value("audioMode", 0).toInt();
+    if(mode == 0) {
+        m_rdp->setAudioPlayMode(QRdpWidget::ePlayOnLocal);
+    }else if(mode == 1) {
+        m_rdp->setAudioPlayMode(QRdpWidget::ePlayOnServer);
+    }else {
+        m_rdp->setAudioPlayMode(QRdpWidget::ePlayDisable);
+    }
+
+    QRdpWidget::PerformanceFlags flags;
+    bool noContent = mdata.value("noContent", false).toBool();
+    if(noContent) {
+        flags |= QRdpWidget::eDISABLE_FULLWINDOWDRAG;
+    }
+    bool noWallpaper = mdata.value("noWallpaper", false).toBool();
+    if(noWallpaper) {
+        flags |= QRdpWidget::eDISABLE_WALLPAPER;
+    }
+
+    bool noTheme = mdata.value("noTheme", false).toBool();
+    if(noTheme) {
+        flags |= QRdpWidget::eDISABLE_THEMING;
+    }
+
+    bool noSmooth = mdata.value("noFontSmooth", true).toBool();
+    if(!noSmooth) {
+        flags |= QRdpWidget::eENABLE_FONT_SMOOTHING;
+    }
+    m_rdp->setPerformanceFlags(flags);
+    m_rdp->setDesktopSize(width, height);
+    m_rdp->start(hi.host, hi.port, hi.user, hi.password);
+    resizeRdpWidget();
+}
+
+void QWoRdpWidget::resizeRdpWidget()
+{
+    if(m_smartResize) {
+        QSize sz = m_area->size();
+        m_rdp->resize(sz);
+    }else{
+        QSize ds = m_rdp->desktopSize();
+        m_rdp->resize(ds);
+    }
 }
