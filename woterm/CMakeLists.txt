@@ -110,6 +110,7 @@ set(SOURCE_FILES
     qwosftppermissiondialog.cpp
     qwosftprenamedialog.cpp
     qwosftpmovefiledialog.cpp
+    qwosftptreeview.cpp
     qwoserialinput.cpp
     qwoserialwidgetimpl.cpp
     qwordpwidget.cpp
@@ -277,6 +278,7 @@ set(HEADER_FILES
     qwosftppermissiondialog.h
     qwosftprenamedialog.h
     qwosftpmovefiledialog.h
+    qwosftptreeview.h
     qwoserialinput.h
     qwoserialwidgetimpl.h
     qwordpwidget.h

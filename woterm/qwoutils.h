@@ -43,7 +43,6 @@ public:
     static int hasDesktopShortcut(bool everyone);
     static int createDesktopShortcut(bool everyone, const QString& name, const QString& desc, const QString& iconPath);
     static void removeDesktopShortcut(bool everyone);
-    static QByteArray filePermissionToText(int type, int flag);
     static QString getDefaultGateway();
 
 

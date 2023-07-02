@@ -215,6 +215,9 @@ signals:
     // path: the current path.
     // data: the file info under the current path.
     void fileList(const QVariantList& data, const QVariantMap& user);
+protected:
+    QByteArray filePermissionToText(int type, int flag);
+
 private:
     virtual void init();
 };

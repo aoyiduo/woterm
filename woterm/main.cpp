@@ -103,6 +103,7 @@ void setDebugMessageToFile(const QString& name, bool tryDelete = false)
 
 void test()
 {
+
 }
 
 
@@ -120,7 +121,6 @@ int main_pc(int argc, char *argv[])
 #endif
 
     setDebugMessageToFile("trace.log", true);
-    test();
 
     QWoTheme::instance();
 

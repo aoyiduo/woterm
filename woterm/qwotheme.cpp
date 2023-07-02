@@ -56,7 +56,7 @@ QWoTheme::QWoTheme(QObject *parent)
     QStringList styles = QStyleFactory::keys();
     qDebug() << "embeded style list: " << styles;
     QApplication::setStyle("fusion");
-    QQuickStyle::setStyle("fusion");
+    QQuickStyle::setStyle("fusion");    
     reload();
     m_skinUniqueName = QWoSetting::value("skin/current", "black").toString();
     if(!loadSkinByUniqueName(m_skinUniqueName)) {
@@ -119,11 +119,19 @@ QIcon QWoTheme::icon(const QString &fileName)
 
 QAbstractFileEngine *QWoTheme::create(const QString &file) const
 {
-    if(file.isEmpty()) {
-        return nullptr;
+    static QString skinRelativePrefix = "../private/skins";
+    static QString skinsPath;
+    if(skinsPath.isEmpty()) {
+        skinsPath = QDir::cleanPath(QWoSetting::privatePath() + "/skins");
+        skinsPath = skinsPath.toLower();
+        //qInfo() << "QWoTheme::create" << skinsPath;
     }
-    if(!file.contains("/private/skins/")) {
-        return nullptr;
+    if(!file.startsWith(skinRelativePrefix)) {
+        QString fileLower = file.toLower();
+        if(!fileLower.contains(skinsPath)) {
+            //qInfo() << "QWoTheme::create" << fileLower << skinsPath;
+            return nullptr;
+        }
     }
     if(file.endsWith("skin.json")) {
         return nullptr;

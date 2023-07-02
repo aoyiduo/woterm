@@ -56,7 +56,6 @@ private:
 
 private:
     friend class FileEngineHandler;
-    QString m_skinPath;
     FileEngineHandler *m_handler;
     QStringList m_customSkinPaths;
     QString m_skinUniqueName;

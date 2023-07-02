@@ -4,7 +4,7 @@
 <context>
     <name>English</name>
     <message>
-        <location filename="../../woterm/qwosetting.cpp" line="234"/>
+        <location filename="../../woterm/qwosetting.cpp" line="243"/>
         <source>English</source>
         <translation>简体中文</translation>
     </message>
@@ -2401,17 +2401,17 @@
         <translation>经典调色板模式</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoutils.cpp" line="806"/>
+        <location filename="../../woterm/qwoutils.cpp" line="767"/>
         <source>Ultimate version</source>
         <translation>旗舰版</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoutils.cpp" line="806"/>
+        <location filename="../../woterm/qwoutils.cpp" line="767"/>
         <source>this is the feature of the ultimate version, please upgrade to latest version.</source>
         <translation>此为旗舰版功能，请升级至最新版本。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoutils.cpp" line="817"/>
+        <location filename="../../woterm/qwoutils.cpp" line="778"/>
         <source>Password input</source>
         <translation>密码输入</translation>
     </message>
@@ -7762,6 +7762,16 @@
         <source>Error</source>
         <translation>错误</translation>
     </message>
+    <message>
+        <location filename="../../woterm/qwosftptransferwidget.cpp" line="474"/>
+        <source>Permission error</source>
+        <translation>权限错误</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwosftptransferwidget.cpp" line="474"/>
+        <source>It is not allowed to directly download or upload files related to the skin directory, which will cause confusion in skin loading.</source>
+        <translation>不允许直接下载或上传与皮肤目录相关的文件，那会造成皮肤加载混乱。</translation>
+    </message>
 </context>
 <context>
     <name>QWoSftpWidget</name>
@@ -7811,261 +7821,261 @@
         <translation>刷新文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="174"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1359"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="176"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1337"/>
         <source>The directory is out of sync with the terminal.</source>
         <translation>文件夹不与终端同步</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="260"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="262"/>
         <source>Reject request</source>
         <translation>拒绝请求</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="260"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="262"/>
         <source>Please wait until the current task is completed.</source>
         <translation>请等待当前任务完成。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="494"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="472"/>
         <source>Editor error</source>
         <translation>编辑器错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="494"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="472"/>
         <source>Please configure the text editing tool in the tool options dialog box first.</source>
         <translation>请先在工具选项对话框中配置文本编辑工具。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="500"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="478"/>
         <source>File error</source>
         <translation>文件错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="500"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="478"/>
         <source>The temp file has been lost.</source>
         <translation>临时文件已经丢失。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="532"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="510"/>
         <source>Modify information</source>
         <translation>修改信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="532"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="510"/>
         <source>The content has been modified. Do you need to submit it to the server?</source>
         <translation>内容已被修改。您需要将其提交到服务器吗？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="645"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1154"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="623"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1132"/>
         <source>the follow files has exist or version restrictions:</source>
         <translation>以下文件已经存在或版本限制：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="652"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="630"/>
         <source>Upload task</source>
         <translation>上传任务</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="652"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="630"/>
         <source>Do you want to upload this related file?</source>
         <translation>是否继续上传相关文件？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="669"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="808"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="647"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="786"/>
         <source>Select all</source>
         <translation>选择所有</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="670"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="680"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="810"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="819"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="648"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="658"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="788"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="797"/>
         <source>Back</source>
         <translation>返回</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="671"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="681"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="811"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="820"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="649"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="659"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="789"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="798"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="672"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="682"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="650"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="660"/>
         <source>Home Directory</source>
         <translation>返回主文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="673"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="683"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="651"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="661"/>
         <source>Create Directory</source>
         <translation>创建文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="675"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="704"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="830"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="653"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="682"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="808"/>
         <source>Upload</source>
         <translation>上传</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="679"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="817"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="657"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="795"/>
         <source>Deselect all</source>
         <translation>取消所选</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="684"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="823"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="662"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="801"/>
         <source>Remove selections</source>
         <translation>删除选中项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="685"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="663"/>
         <source>Modify the permission</source>
         <translation>修改文件权限</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="687"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1557"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="665"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1565"/>
         <source>Rename</source>
         <translation>重命名</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="689"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="667"/>
         <source>Edit file content</source>
         <translation>编辑文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="692"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="670"/>
         <source>Move to other directory</source>
         <translation>移动至其它文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="812"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="821"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="790"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="799"/>
         <source>Home directory</source>
         <translation>主文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="813"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="822"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="791"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="800"/>
         <source>Create directory</source>
         <translation>创建文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="827"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="805"/>
         <source>Try enter</source>
         <translation>尝试进入</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="879"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="857"/>
         <source>directory name</source>
         <translation>文件夹名</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="880"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="858"/>
         <source>Please input a directory name</source>
         <translation>请输入一个文件夹名称</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="887"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="865"/>
         <source>information</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="887"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="865"/>
         <source>the new directory name should be empty!</source>
         <translation>新文件夹名不能为空！</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="967"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="945"/>
         <source>Input error</source>
         <translation>输入错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="967"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="945"/>
         <source>The directory entered does not exist.</source>
         <translation>所输入的文件夹不存在。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1052"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1030"/>
         <source>Permission information</source>
         <translation>权限信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1052"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1030"/>
         <source>Have other files also been modified with the same access permissions?</source>
         <translation>是否也使用相同的访问权限修改了其他文件？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1253"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1231"/>
         <source>Move file</source>
         <translation>移动文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1253"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1231"/>
         <source>Input a existing directory to save the selected file.</source>
         <translation>输入现有目录以保存所选文件。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1279"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1257"/>
         <source>Directory is not supported to edit.</source>
         <translation>文件夹不支持编辑。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1283"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1261"/>
         <source>Editing files larger than 5M bytes is not supported.</source>
         <translation>不支持编辑大于5M字节的文件。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1287"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1265"/>
         <source>The target file exceeds 500K bytes. Do you want to continue editing?</source>
         <translation>目标文件超过500K字节。是否要继续编辑？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1342"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1402"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1320"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1393"/>
         <source>SFTP</source>
         <translation>SFTP</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1342"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1402"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1320"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1393"/>
         <source>No items are currently selected.</source>
         <translation>当前没有选中项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1363"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1341"/>
         <source>Keep the directory synchronized with the terminal.</source>
         <translation>保持文件夹与终端同步</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1513"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1521"/>
         <source>The modified file[%1] has been successfully submitted.</source>
         <translation>已成功提交修改后的文件[%1]。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1526"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1534"/>
         <source>The remote path[%1] does not exist or does not have permission to access it?</source>
         <translation>远程路径[%1]不存在或没有访问权限？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1551"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1559"/>
         <source>Chmod</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1279"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1283"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1287"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1513"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1526"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1257"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1261"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1265"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1521"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1534"/>
         <source>File information</source>
         <translation>文件信息</translation>
     </message>
@@ -8078,8 +8088,8 @@
         <translation type="vanished">删除文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="694"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="825"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="672"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="803"/>
         <source>Enter</source>
         <translation>进入</translation>
     </message>
@@ -8088,29 +8098,29 @@
         <translation type="vanished">删除文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="696"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="699"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="674"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="677"/>
         <source>Download</source>
         <translation>下载</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="701"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="679"/>
         <source>Try Enter</source>
         <translation>尝度进入</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="707"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="685"/>
         <source>New Session Multiplex</source>
         <translation>新建连接复用</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="709"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="687"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="746"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1566"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="724"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1574"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
@@ -8119,57 +8129,57 @@
         <translation type="vanished">保存文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="621"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1133"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="599"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1111"/>
         <source>FileExist</source>
         <translation>文件存在</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="622"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1134"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="600"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1112"/>
         <source>has the same name in the target path. override it?</source>
         <translation>已经存在同名文件，是否覆盖？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="643"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="645"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="621"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="623"/>
         <source>Upload information</source>
         <translation>上传信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="643"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1152"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="621"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1130"/>
         <source>the follow files has exist:</source>
         <translation>以下文件已经存在：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1103"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1081"/>
         <source>Save directory</source>
         <translation>保存文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1110"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1088"/>
         <source>Parameter error</source>
         <translation>参数错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1110"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1088"/>
         <source>Please select directory to save it.</source>
         <translation>请选择文件夹去保存</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1152"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1154"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1130"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1132"/>
         <source>Download information</source>
         <translation>下载信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1167"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1145"/>
         <source>Select files</source>
         <translation>选择文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1172"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1150"/>
         <source>Select File</source>
         <translation>选择文件</translation>
     </message>
@@ -8890,12 +8900,12 @@ Continue To Close It?</source>
 <context>
     <name>QWoUtils</name>
     <message>
-        <location filename="../../woterm/qwoutils.cpp" line="820"/>
+        <location filename="../../woterm/qwoutils.cpp" line="781"/>
         <source>Ok</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoutils.cpp" line="821"/>
+        <location filename="../../woterm/qwoutils.cpp" line="782"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>

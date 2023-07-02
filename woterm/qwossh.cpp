@@ -537,7 +537,7 @@ private:
         int ownerMax = 0, groupMax = 0, sizeMax = 0, dateMax = 0, nameMax = 0;
         while ((attr = sftp_readdir(m_sftp, dir)) != nullptr && !m_abort){
             QByteArray longName(attr->longname);
-            QByteArray type = QWoUtils::filePermissionToText(attr->type, attr->permissions);
+            QByteArray type = filePermissionToText(attr->type, attr->permissions);
             QByteArray owner(attr->owner);
             QByteArray group(attr->group);
             QByteArray size(QByteArray::number(qint64(attr->size)));
@@ -951,7 +951,7 @@ private:
         QList<QByteArray> item;
         {
             QByteArray longName(attr->longname);
-            QByteArray type = QWoUtils::filePermissionToText(attr->type, attr->permissions);
+            QByteArray type = filePermissionToText(attr->type, attr->permissions);
             QByteArray owner(attr->owner);
             QByteArray group(attr->group);
             QByteArray size(QByteArray::number(qint64(attr->size)));
@@ -2595,6 +2595,49 @@ void QWoSshFtp::abort()
     if(m_conn) {
         m_conn->sftpAbort(this);
     }
+}
+
+//suid, sgid, sticky_bit | user_read, user_write, user_execute | group_read, group_write, group_execute | others_read, others_write, others_execute
+#define FILE_PERMISSION_SUID            (1 << 11)
+#define FILE_PERMISSION_SGID            (1 << 10)
+#define FILE_PERMISSION_STICKY_BIT      (1 << 9)
+#define FILE_PERMISSION_USER_READ       (1 << 8)
+#define FILE_PERMISSION_USER_WRITE      (1 << 7)
+#define FILE_PERMISSION_USER_EXECUTE    (1 << 6)
+#define FILE_PERMISSION_GROUP_READ      (1 << 5)
+#define FILE_PERMISSION_GROUP_WRITE     (1 << 4)
+#define FILE_PERMISSION_GROUP_EXECUTE   (1 << 3)
+#define FILE_PERMISSION_OTHER_READ      (1 << 2)
+#define FILE_PERMISSION_OTHER_WRITE     (1 << 1)
+#define FILE_PERMISSION_OTHER_EXECUTE   (1)
+QByteArray QWoSshFtp::filePermissionToText(int type, int flag)
+{
+    QByteArray buf;
+    switch (type) {
+    case SSH_FILEXFER_TYPE_REGULAR:
+        buf.append('-');
+        break;
+    case SSH_FILEXFER_TYPE_DIRECTORY:
+        buf.append('d');
+        break;
+    case SSH_FILEXFER_TYPE_SYMLINK:
+        buf.append('l');
+        break;
+    default:
+        //buf.append('0'+type);
+        buf.append('-');
+        break;
+    }
+    buf.append(flag&FILE_PERMISSION_USER_READ ? 'r':'-');
+    buf.append(flag&FILE_PERMISSION_USER_WRITE ? 'w':'-');
+    buf.append(flag&FILE_PERMISSION_USER_EXECUTE ? 'x':'-');
+    buf.append(flag&FILE_PERMISSION_GROUP_READ ? 'r':'-');
+    buf.append(flag&FILE_PERMISSION_GROUP_WRITE ? 'w':'-');
+    buf.append(flag&FILE_PERMISSION_GROUP_EXECUTE ? 'x':'-');
+    buf.append(flag&FILE_PERMISSION_OTHER_READ ? 'r':'-');
+    buf.append(flag&FILE_PERMISSION_OTHER_WRITE ? 'w':'-');
+    buf.append(flag&FILE_PERMISSION_OTHER_EXECUTE ? 'x':'-');
+    return buf;
 }
 
 

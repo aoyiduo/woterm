@@ -18,6 +18,7 @@
 #include <QPointer>
 #include <QList>
 #include <QFileInfo>
+#include <QUrl>
 
 namespace Ui {
 class QWoSftpWidget;
@@ -127,6 +128,7 @@ protected slots:
     void onRemoteFollowButtonClicked();
     void onRemoteTransferButtonClicked();
     void onRemotePathChanged(const QString& path);
+    void onRemoteDropArrived(const QList<QUrl>& urls);
     /* local */
     void onLocalHomeButtonClicked();
     void onLocalBackButtonClicked();
@@ -134,6 +136,7 @@ protected slots:
     void onLocalReloadButtonClicked();
     void onLocalBrowserButtonClicked();
     void onLocalPathChanged(const QString& path);
+    void onLocalDropArrived(const QList<QUrl>& urls);
 
     /*editor*/
     void onEditorDestroy();

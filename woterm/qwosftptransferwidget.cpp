@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -470,6 +470,10 @@ void QWoSftpTransferWidget::runTask(const TaskInfo& ti)
     if(ti.isDir) {
         ui->fileCount->setText(QString::number(m_taskFiles.length()));
     }
+    if(isPrivateSkinPath(ti.local)) {
+        QKxMessageBox::warning(this, tr("Permission error"), tr("It is not allowed to directly download or upload files related to the skin directory, which will cause confusion in skin loading."));
+        return;
+    }
     if(ti.isDir) {
         if(ti.isDown) {
             downloadDir(ti.remote, ti.local, ti.taskId);
@@ -707,6 +711,24 @@ void QWoSftpTransferWidget::setTaskLabel(const QString &_local, const QString &_
     }
     ui->fileLocal->setText(local);
     ui->fileRemote->setText(remote);
+}
+
+bool QWoSftpTransferWidget::isPrivateSkinPath(const QString &file)
+{
+    static QString skinRelativePrefix = "../private/skins";
+    static QString skinsPath;
+    if(skinsPath.isEmpty()) {
+        skinsPath = QDir::cleanPath(QWoSetting::privatePath() + "/skins");
+        skinsPath = skinsPath.toLower();
+    }
+    if(file.startsWith(skinRelativePrefix)) {
+        return true;
+    }
+    QString fileLower = file.toLower();
+    if(fileLower.contains(skinsPath)) {
+        return true;
+    }
+    return false;
 }
 
 bool QWoSftpTransferWidget::canAddTask()

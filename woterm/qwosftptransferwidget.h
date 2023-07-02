@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -29,6 +29,7 @@ class QWoSftpQueueModel;
 class QWoTreeView;
 class QPushButton;
 class QWoSftpItemDelegate;
+class QKxMessageBox;
 
 class QWoSftpItemDelegate : public QStyledItemDelegate
 {
@@ -116,6 +117,8 @@ private:
     void outputFileList();
     Q_INVOKABLE void listFile(const QString& path);
     void setTaskLabel(const QString& local, const QString& remote);
+
+    bool isPrivateSkinPath(const QString& path);
 protected:
     virtual void showEvent(QShowEvent *event);
     virtual void hideEvent(QHideEvent *event);

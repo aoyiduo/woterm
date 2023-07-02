@@ -209,6 +209,15 @@ QString QWoSetting::languageTypeAsBCP47Field()
 {
     QString name = QWoSetting::value("language/fileName").toString();
     if(name.isEmpty()) {
+        QLocale local;
+        QStringList langs = local.uiLanguages();
+        if(!langs.isEmpty()) {
+            QString lang = langs.at(0);
+            lang = lang.split('-').at(0);
+            if(lang == "zh") {
+                return lang;
+            }
+        }
         return "en";
     }
     QString bcp47Field = name.mid(name.length() - 5, 2);

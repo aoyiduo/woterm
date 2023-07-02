@@ -282,10 +282,17 @@ QSlider::sub-page:horizontal {
     border-radius: 5px;
 } 
 
-QWoPasswordInput, QWoVncFtpWidget, QWoSftpTransferWidget{
+QWoPasswordInput, QWoVncFtpWidget{
     padding: 5px;
     border: 1px solid #313131;   
     border-radius: 5px;
+}
+
+QWoSftpTransferWidget{
+    padding: 5px;
+    border: 1px solid #313131;   
+    border-radius: 5px;
+    min-width: 420px;
 }
 
 QWoUnionInputItem {

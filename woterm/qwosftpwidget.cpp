@@ -17,7 +17,7 @@
 #include "qwopasswordinput.h"
 #include "qwosshconf.h"
 #include "qkxutils.h"
-#include "qwotreeview.h"
+#include "qwosftptreeview.h"
 #include "qwosftpnamedialog.h"
 #include "qwosftptransferwidget.h"
 #include "qwosetting.h"
@@ -92,7 +92,7 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
         ui->localFrame->setLayout(layout);
         ui->localFrame->setFrameShape(QFrame::NoFrame);
 
-        m_local = new QWoTreeView(ui->localFrame);
+        m_local = new QWoSftpTreeView(ui->localFrame);
         m_local->setDragDropMode(QAbstractItemView::DropOnly);
         m_local->setAcceptDrops(true);
         m_local->setObjectName("localTreeView");
@@ -111,6 +111,7 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
         QObject::connect(m_local, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onLocalItemDoubleClicked(QModelIndex)));
         QObject::connect(m_local, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onLocalContextMenuRequested(QPoint)));
         QObject::connect(m_localModel, SIGNAL(pathChanged(QString)), this, SLOT(onLocalPathChanged(QString)));
+        QObject::connect(m_local, SIGNAL(dropArrived(QList<QUrl>)), this, SLOT(onLocalDropArrived(QList<QUrl>)));
 
         QObject::connect(ui->btnLocalHome, SIGNAL(clicked()), this, SLOT(onLocalHomeButtonClicked()));
         QObject::connect(ui->btnLocalBack, SIGNAL(clicked()), this, SLOT(onLocalBackButtonClicked()));
@@ -143,7 +144,7 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
     ui->remoteFrame->setFrameShape(QFrame::NoFrame);
     layout->setSpacing(0);
     layout->setMargin(0);
-    m_remote = new QWoTreeView(ui->remoteFrame);
+    m_remote = new QWoSftpTreeView(ui->remoteFrame);
     m_remote->setDragDropMode(QAbstractItemView::DropOnly);
     m_remote->setAcceptDrops(true);
     m_remote->viewport()->installEventFilter(this);
@@ -161,6 +162,7 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
 
     QObject::connect(m_remote, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onRemoteItemDoubleClicked(QModelIndex)));
     QObject::connect(m_remote, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onRemoteContextMenuRequested(QPoint)));
+    QObject::connect(m_remote, SIGNAL(dropArrived(QList<QUrl>)), this, SLOT(onRemoteDropArrived(QList<QUrl>)));
     QObject::connect(ui->btnRemoteHome, SIGNAL(clicked()), this, SLOT(onRemoteHomeButtonClicked()));
     QObject::connect(ui->btnRemoteBack, SIGNAL(clicked()), this, SLOT(onRemoteBackButtonClicked()));
     QObject::connect(ui->btnRemoteForward, SIGNAL(clicked()), this, SLOT(onRemoteForwardButtonClicked()));
@@ -335,20 +337,7 @@ bool QWoSftpWidget::eventFilter(QObject *obj, QEvent *ev)
 {
     QEvent::Type t = ev->type();
     //qDebug() << "eventFilter" << t << obj->objectName();
-    if(obj == m_local) {
-        if(t == QEvent::DragEnter) {
-            handleLocalDragEnterEvent((QDropEvent*)ev);
-            if(ev->isAccepted()) {
-                return true;
-            }
-        }else if(t == QEvent::Drop) {
-            QDropEvent *de = (QDropEvent*)ev;
-            handleLocalDropEvent(de);
-            if(de->isAccepted()) {
-                return true;
-            }
-        }
-    }else if(m_local && obj == m_local->viewport()) {
+    if(m_local && obj == m_local->viewport()) {
         if(t == QEvent::MouseButtonPress) {
             QMouseEvent *me = (QMouseEvent*)ev;
             if(me->button() == Qt::LeftButton) {
@@ -359,18 +348,7 @@ bool QWoSftpWidget::eventFilter(QObject *obj, QEvent *ev)
             }
         }
     } else if(obj == m_remote) {
-        if(t == QEvent::DragEnter) {
-            handleRemoteDragEnterEvent((QDropEvent*)ev);
-            if(ev->isAccepted()) {
-                return true;
-            }
-        }else if(t == QEvent::Drop) {
-            QDropEvent *de = (QDropEvent*)ev;
-            handleRemoteDropEvent(de);
-            if(de->isAccepted()) {
-                return true;
-            }
-        }else if(t == QEvent::Resize) {
+        if(t == QEvent::Resize) {
             QResizeEvent *re = (QResizeEvent*)ev;
             QSize sz = re->size();
             if(m_loading) {
@@ -1375,6 +1353,19 @@ void QWoSftpWidget::onRemotePathChanged(const QString &path)
     QWoSetting::setValue(QString("sftp/lastPathRemote:%1").arg(m_target), path);
 }
 
+void QWoSftpWidget::onRemoteDropArrived(const QList<QUrl> &urls)
+{
+    QStringList tasks;
+    for(auto it = urls.begin(); it != urls.end(); it++) {
+        const QUrl& url = *it;
+        QString fileLocal = url.toLocalFile();
+        tasks.append(fileLocal);
+    }
+    if(!tasks.isEmpty()) {
+        QMetaObject::invokeMethod(this, "runUploadTask", Qt::QueuedConnection, Q_ARG(QStringList, tasks));
+    }
+}
+
 void QWoSftpWidget::onLocalHomeButtonClicked()
 {
     m_localModel->setHome();
@@ -1425,6 +1416,23 @@ void QWoSftpWidget::onLocalPathChanged(const QString &path)
 {
     ui->localPath->setText(path);
     QWoSetting::setValue("sftp/lastPathLocal", path);
+}
+
+void QWoSftpWidget::onLocalDropArrived(const QList<QUrl> &urls)
+{
+    for(auto it = urls.begin(); it != urls.end(); it++) {
+        const QUrl& url = *it;
+        QString localFile = url.toLocalFile();
+        QFileInfo fi(localFile);
+        if(fi.exists()) {
+            if(fi.isDir()) {
+                m_localModel->setPath(fi.absoluteFilePath());
+            }else{
+                m_localModel->setPath(fi.path());
+            }
+            return;
+        }
+    }
 }
 
 void QWoSftpWidget::onEditorDestroy()
