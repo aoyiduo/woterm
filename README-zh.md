@@ -53,6 +53,8 @@
 ## 界面预览
 <div>主界面<br><img src="doc/main.png"/></div>
 <div>多皮肤<br><img src="doc/skins.png"></div>
+<div>剧本<br><img src="doc/playbook.gif"></div>
+<div>选项卡合并及分离<br><img src="doc/merge.gif"></div>
 <div>云同步<br><img src="doc/sync.gif"></div>
 <div>管理员登录<br><img src="doc/main2.png"/></div>
 <div>关键字搜索<br><img src="doc/search.gif"/></div>

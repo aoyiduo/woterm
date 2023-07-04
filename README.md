@@ -54,6 +54,8 @@ The client code has been completely open source, and the third-party code which 
 ## UI preview:
 <div>Main UI<br><img src="doc/main.png"/></div>
 <div>Multiple skins<br><img src="doc/skins.png"></div>
+<div>Playbook<br><img src="doc/playbook.gif"></div>
+<div>Merge and seperate<br><img src="doc/merge.gif"></div>
 <div>Cloud sync<br><img src="doc/sync.gif"></div>
 <div>Administrator<br><img src="doc/main2.png"/></div>
 <div>Keyword filter<br><img src="doc/search.gif"/></div>
