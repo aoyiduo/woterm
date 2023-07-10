@@ -618,7 +618,7 @@ void QWoShower::onTabWidgetDestroy(QObject *it)
 
 void QWoShower::onTabbarDoubleClicked(int index)
 {
-    if(index < 0 && QKxVer::instance()->isFullFeather()) {
+    if(index < 0) {
         openLocalShell();
     }
 }
@@ -782,12 +782,10 @@ void QWoShower::onCleanNilFloatWindow()
 void QWoShower::onTabContextMenu(QMouseEvent *ev)
 {
     if(ev->buttons() & Qt::RightButton) {
-        if(QKxVer::instance()->isFullFeather()) {
-            QMenu menu;
-            menu.addAction(QIcon("../private/skins/black/nodes.png"), tr("Open remote session"), this, SLOT(onOpenRemoteSession()));
-            menu.addAction(QIcon("../private/skins/black/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
-            menu.exec(QCursor::pos());
-        }
+        QMenu menu;
+        menu.addAction(QIcon("../private/skins/black/nodes.png"), tr("Open remote session"), this, SLOT(onOpenRemoteSession()));
+        menu.addAction(QIcon("../private/skins/black/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
+        menu.exec(QCursor::pos());
     }
 }
 

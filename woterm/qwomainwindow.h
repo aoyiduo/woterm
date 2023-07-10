@@ -94,6 +94,7 @@ private slots:
     void onActionLicenseTriggered();
     void onActionUpgradeTriggered();
     void onActionPlaybookOptionsTriggered();
+    void onActionactionPurchaseLicenseTriggered();
 
     void onFilterArrivedArrived(const QString& name, int type);
     void onFilterCreateArrived(const QString& name);

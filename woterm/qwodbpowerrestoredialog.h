@@ -76,6 +76,7 @@ private slots:
     void onTypeWidgetShow();
     void onBackupListClicked();
     void onGroupModeClicked();
+    void onLocalFileBrowserClicked();
 
 
     void onActionArrived(int action, const QModelIndex& idx);

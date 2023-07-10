@@ -27,7 +27,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -56,7 +56,6 @@
     </widget>
     <addaction name="actionSessionNew"/>
     <addaction name="menuOpen"/>
-    <addaction name="actionOpenRemote2"/>
     <addaction name="menuRecent"/>
     <addaction name="separator"/>
     <addaction name="actionRestore"/>
@@ -100,6 +99,7 @@
     <addaction name="actionDocument"/>
     <addaction name="actionAbout"/>
     <addaction name="actionLicense"/>
+    <addaction name="actionPurchaseLicense"/>
     <addaction name="actionUpgrade"/>
    </widget>
    <addaction name="menuFile"/>
@@ -306,6 +306,11 @@
   <action name="actionPlaybooks">
    <property name="text">
     <string>Playbooks</string>
+   </property>
+  </action>
+  <action name="actionPurchaseLicense">
+   <property name="text">
+    <string>Purchase license</string>
    </property>
   </action>
  </widget>

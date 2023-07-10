@@ -41,7 +41,7 @@ public:
     bool ZSendFiles(const QStringList& files, Protocol protocol=PT_ZModem);
     bool ZReceive(const QString& path, Protocol protocol=PT_ZModem);
     bool onReceive(const QByteArray& buf);
-    void stop();
+    void abort();
 public:
 signals:
     void dataArrived(const QByteArray& buf);
@@ -81,30 +81,36 @@ private:
     int InitXmit();
     int XmitFile(const QString& file);
     int FinishXmit();
-    int doIO();
+    int processWithTimeout(int second = 60);
     void formatError(int err, const QString& fileName);
     void formatStatus(int type, int value, char *msg);
     void status(const QString& msg, bool newLine=false);
     bool init();
     void exitLater();
     void cleanup();
+    int findExitFlags(const QByteArray& buf, QByteArray& out);
+    int findZeroData(const QByteArray& buf);
+    void mysleep(int second);
+
 private slots:
     void onTickerTimeout();
 private:
     const bool m_bTelnet;
     bool m_bInit;
-    bool m_bWaitForExit;
     bool m_bSend;
     Protocol m_protocol;
     ZModem *m_zmodem;
     ZPrivate *m_prv;
     QStringList m_files; // for send
     QString m_path; // for save
-    bool m_stop;
-    QWaitCondition m_sigal;
+    bool m_abort;
     QMutex m_mutex;
     QList<ZMsg> m_queue;
     QTimer m_ticker;
+    int m_letter24CharCount, m_letter8Count, m_zeroCharCount;
+    bool m_isFileSend;
+    bool m_remoteRZSZHasExit;
+    QString m_lastFile;
 };
 
 class QWoModemFactory : public QObject

@@ -108,6 +108,7 @@ public:
             emit finishArrived(-1);
             return false;
         }
+
         QObject::connect(m_pty, SIGNAL(readyRead()),  this, SLOT(onReadyRead()));
         QObject::connect(m_pty, SIGNAL(finished()), this, SLOT(onFinished()));
         emit connectionFinished(true);

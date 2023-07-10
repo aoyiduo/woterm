@@ -61,6 +61,9 @@ public:
     static bool shouldReportLicense();
     static void setIgnoreTodayReportLicense();
 
+    static bool isAlwayFreeVersion();
+    static void setAlwayFreeVersion(bool on);
+
     static bool shouldPopupUpgradeUltimate();
     static void setIgnoreTodayUpgradeUltimate();
 

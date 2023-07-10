@@ -201,6 +201,9 @@ QWoDBPowerRestoreDialog::QWoDBPowerRestoreDialog(QWidget *parent)
 
     QString lastFile = QWoSetting::value("DBBackup/lastLocalFile").toString();
     ui->pathLocal->setText(lastFile);
+    ui->pathLocal->setReadOnly(true);
+    QObject::connect(ui->btnBrowser, SIGNAL(clicked()), this, SLOT(onLocalFileBrowserClicked()));
+
     QString cryptType = QWoSetting::value("DBBackup/lastCryptType").toString();
     if(cryptType.isEmpty()) {
         ui->cryptType->setCurrentIndex(0);
@@ -394,6 +397,15 @@ void QWoDBPowerRestoreDialog::onBackupListClicked()
 void QWoDBPowerRestoreDialog::onGroupModeClicked()
 {
     showMergeResult();
+}
+
+void QWoDBPowerRestoreDialog::onLocalFileBrowserClicked()
+{
+    QString path = QFileDialog::getOpenFileName(this, tr("SQLite database"), QDir::homePath(), tr("SQLite database (*.db)"));
+    if(path.isEmpty()) {
+        return;
+    }
+    ui->pathLocal->setText(path);
 }
 
 void QWoDBPowerRestoreDialog::onActionArrived(int action, const QModelIndex &idx)

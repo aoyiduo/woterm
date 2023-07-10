@@ -100,9 +100,7 @@ void QWoSshTermWidget::onDataArrived(const QByteArray &buf)
     }
     m_stateConnected = ESC_Connected;
     if(m_modem->isRunning()) {
-        if(!m_modem->onReceive(buf)) {
-            //qDebug() << "onDataArrived" << buf;
-        }
+        m_modem->onReceive(buf);
     }else{
         if(m_restoreLastActivePath) {
             m_ssh->write("\r\ncd " + m_lastActivePath.toUtf8() + "\r\n");
@@ -302,14 +300,13 @@ void QWoSshTermWidget::onModifyThisSession()
 void QWoSshTermWidget::onZmodemSend(bool local)
 {
     if(local) {
-//        if(!checkProgram("rz")) {
-//            if(local) {
-//                m_term->parseError("failed to find rz program, please install lrzsz.");
-//                m_term->waitInput();
-//                QKxMessageBox::warning(this, tr("warning"), tr("failed to find rz program, please install lrzsz."));
-//            }
-//            return;
-//        }
+        if(!checkZmodemInstall()) {
+            if(local) {
+                m_term->parseError("failed to find rz program, please install lrzsz.");
+                QKxMessageBox::warning(this, tr("warning"), tr("failed to find rz program, please install lrzsz."));
+            }
+            return;
+        }
     }
     QString pathLast = QWoSetting::value("zmodem/lastPath", "").toString();
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Files"), pathLast);
@@ -344,7 +341,7 @@ void QWoSshTermWidget::onZmodemRecv(bool local)
 
 void QWoSshTermWidget::onZmodemAbort()
 {
-    m_modem->stop();
+    m_modem->abort();
 }
 
 void QWoSshTermWidget::onZmodemDataArrived(const QByteArray &buf)
@@ -433,7 +430,7 @@ int QWoSshTermWidget::isZmodemCommand(const QByteArray &data)
     return -1;
 }
 
-bool QWoSshTermWidget::checkProgram(const QByteArray &name)
+bool QWoSshTermWidget::checkZmodemInstall()
 {
     if(m_modem->isRunning()) {
         return false;
@@ -441,12 +438,19 @@ bool QWoSshTermWidget::checkProgram(const QByteArray &name)
     if(m_term->appMode()) {
         return false;
     }
-    QString txt;
-    int code;
-    if(!m_term->trapCommand("which "+name, txt, code)) {
+    QString content, reason;
+    QString yes = "Yes, lrzsz has been installed.";
+    QString no = "No, you need to install lrzsz package to execute zmodem.";
+    QString cmd = QString("which rz && echo \"%1\" || echo \"%2\"").arg(yes, no);
+    if(!m_term->executeCommand(cmd, content, reason)) {
         return false;
     }
-    return code == 0;
+    QString result = content;
+    int pos = result.indexOf(cmd);
+    if(pos >= 0) {
+        result = result.mid(pos+cmd.length());
+    }
+    return result.contains(yes);
 }
 
 void QWoSshTermWidget::reconnect(bool restore)

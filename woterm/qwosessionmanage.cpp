@@ -52,7 +52,7 @@ QWoSessionManage::QWoSessionManage(QWidget *parent)
     m_proxyModel = new QWoSortFilterProxyModel(4, this);
     m_proxyModel->setRecursiveFilteringEnabled(true);
     ui->btnModel->setText(tr("Mode"));
-    if(QWoSetting::isListModel("manage")|| !QKxVer::instance()->isFullFeather()) {
+    if(QWoSetting::isListModel("manage")) {
         ui->btnModel->setIcon(QIcon("../private/skins/black/list.png"));
         m_proxyModel->setSourceModel(m_listModel);
         m_model = m_listModel;
@@ -79,19 +79,17 @@ QWoSessionManage::QWoSessionManage(QWidget *parent)
     resizeHeader();
 
 
-    QObject::connect(ui->filter, SIGNAL(textChanged(const QString&)), this, SLOT(onEditTextChanged(const QString&)));
+    QObject::connect(ui->filter, SIGNAL(textChanged(QString)), this, SLOT(onEditTextChanged(QString)));
     QObject::connect(ui->btnOpen, SIGNAL(clicked()), this, SLOT(onOpenReady()));
     QObject::connect(ui->btnDelete, SIGNAL(clicked()), this, SLOT(onDeleteReady()));
     QObject::connect(ui->btnModify, SIGNAL(clicked()), this, SLOT(onModifyReady()));
     QObject::connect(ui->btnNew, SIGNAL(clicked()), this, SLOT(onNewReady()));
-    QObject::connect(m_tree, SIGNAL(itemChanged(const QModelIndex&)), this, SLOT(onTreeItemSelected(const QModelIndex&)));
-    QObject::connect(m_tree, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onTreeItemDoubleClicked(const QModelIndex&)));
-    if(QKxVer::instance()->isFullFeather()) {
-        ui->btnModel->setVisible(true);
-        QObject::connect(ui->btnModel, SIGNAL(clicked()), this, SLOT(onTreeModelSwitch()));
-    }else{
-        ui->btnModel->setVisible(false);
-    }
+    QObject::connect(m_tree, SIGNAL(itemChanged(QModelIndex)), this, SLOT(onTreeItemSelected(QModelIndex)));
+    QObject::connect(m_tree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onTreeItemDoubleClicked(QModelIndex)));
+
+    ui->btnModel->setVisible(true);
+    QObject::connect(ui->btnModel, SIGNAL(clicked()), this, SLOT(onTreeModelSwitch()));
+
 
     ui->filter->clear();
     ui->filter->setPlaceholderText(tr("Enter keyword to search target quickly"));

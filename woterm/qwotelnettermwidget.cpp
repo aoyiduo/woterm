@@ -247,7 +247,7 @@ void QWoTelnetTermWidget::onModifyThisSession()
 void QWoTelnetTermWidget::onZmodemSend(bool local)
 {
     if(local) {
-        if(!checkProgram("rz")) {
+        if(!checkZmodemInstall()) {
             return;
         }
     }
@@ -284,7 +284,7 @@ void QWoTelnetTermWidget::onZmodemRecv(bool local)
 
 void QWoTelnetTermWidget::onZmodemAbort()
 {
-    m_modem->stop();
+    m_modem->abort();
 }
 
 void QWoTelnetTermWidget::onZmodemDataArrived(const QByteArray &buf)
@@ -339,7 +339,7 @@ int QWoTelnetTermWidget::isZmodemCommand(const QByteArray &data)
     return -1;
 }
 
-bool QWoTelnetTermWidget::checkProgram(const QByteArray &name)
+bool QWoTelnetTermWidget::checkZmodemInstall()
 {
     if(m_modem->isRunning()) {
         return false;
@@ -347,12 +347,19 @@ bool QWoTelnetTermWidget::checkProgram(const QByteArray &name)
     if(m_term->appMode()) {
         return false;
     }
-    QString txt;
-    int code;
-    if(!m_term->trapCommand("which "+name, txt, code)) {
+    QString content, reason;
+    QString yes = "Yes, lrzsz has been installed.";
+    QString no = "No, you need to install lrzsz package to execute zmodem.";
+    QString cmd = QString("which rz && echo \"%1\" || echo \"%2\"").arg(yes, no);
+    if(!m_term->executeCommand(cmd, content, reason)) {
         return false;
     }
-    return code == 0;
+    QString result = content;
+    int pos = result.indexOf(cmd);
+    if(pos >= 0) {
+        result = result.mid(pos+cmd.length());
+    }
+    return result.contains(yes);
 }
 
 void QWoTelnetTermWidget::reconnect()

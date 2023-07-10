@@ -503,31 +503,58 @@ QString QKxTermItem::plainText(const QPoint &start, const QPoint &end)
     return m_view->plainText(start, end);
 }
 
-bool QKxTermItem::trapCommand(const QString &cmd, QString &content, int &code, int timeout)
+bool QKxTermItem::tryToCheckIdleState()
 {
-    waitInput();
-    QByteArray _cmd = cmd.simplified().toUtf8();
-    if(_cmd.at(_cmd.length() - 1) != '\r') {
-        _cmd.append('\r');
-    }
-    handleSendData(_cmd);
-
+    static int gid = 0;
+    gid++;
+    QString echo = QString("[id=%1]Check idle state").arg(gid);
+    QString cmd = QString("echo \"%1\" > /dev/null").arg(echo);
+    cmd += "\r\n";
+    handleSendData(cmd.toLatin1());
     QPoint pt1 = m_view->cursorToViewPosition();
     int id = m_view->setCapture(pt1);
-    wait(timeout);
+    wait(1000);
+    if(!m_view->releaseCapture(id, &pt1)) {
+        return false;
+    }
+    QPoint pt2 = m_view->cursorToViewPosition();
+    QString content = plainText(pt1, pt2);
+    return content.contains(echo);
+}
+
+bool QKxTermItem::executeCommand(const QString &_cmd, QString &content, QString &reason, int msTimeout)
+{
+    if(m_readOnly) {
+        reason = tr("In read-only mode, no commands can be executed.");
+        return false;
+    }
+    if(appMode()) {
+        reason = tr("There are no conditions for executing commands in the current state.");
+        return false;
+    }
+    QString cmd = _cmd;
+    if(!cmd.endsWith("\r\n")) {
+        if(cmd.endsWith("\r") || cmd.endsWith("\n")) {
+            cmd.replace(cmd.length()-1, "\r\n");
+        }else{
+            cmd += "\r\n";
+        }
+    }
+    handleSendData(cmd.toUtf8());
+    QPoint pt1 = m_view->cursorToViewPosition();
+    int id = m_view->setCapture(pt1);
+    wait(msTimeout);
     if(!m_view->releaseCapture(id, &pt1)) {
         return false;
     }
     QPoint pt2 = m_view->cursorToViewPosition();
     content = plainText(pt1, pt2);
-    code = lastExitCode();
+    // make sure the content include the command.
+    int pos = content.indexOf(_cmd);
+    if(pos > 0) {
+        content = content.mid(pos);
+    }
     return true;
-}
-
-void QKxTermItem::waitInput()
-{
-    handleSendData("\r");
-    wait();
 }
 
 void QKxTermItem::simulateKeyPress(QKeyEvent *ev)
@@ -708,7 +735,7 @@ int QKxTermItem::wait(int timeout)
     QObject::connect(&timer, &QTimer::timeout, [&loop] () {
         loop.exit(-1);
     });
-    QObject::connect(m_vte, SIGNAL(titleChanged(const QString&)), &loop, SLOT(quit()));
+    QObject::connect(m_vte, SIGNAL(titleChanged(QString)), &loop, SLOT(quit()));
     timer.setSingleShot(true);
     timer.setInterval(timeout);
     timer.start();
@@ -716,9 +743,14 @@ int QKxTermItem::wait(int timeout)
     return code;
 }
 
-int QKxTermItem::lastExitCode()
+int QKxTermItem::lastCommandExitCode()
 {
-    handleSendData("echo $?\r");
+    static int gid = 0;
+    gid++;
+    QString prefix = QString("[id=%1]The last exit code:").arg(gid);
+    QString subfix = ",You can run it again.";
+    QString cmd = QString("echo \"%1$?%2\"\r\n").arg(prefix, subfix);
+    handleSendData(cmd.toUtf8());
     QPoint pt1 = m_view->cursorToViewPosition();
     int id = m_view->setCapture(pt1);
     if(wait() != 0) {
@@ -728,15 +760,13 @@ int QKxTermItem::lastExitCode()
         return -2;
     }
     QPoint pt2 = m_view->cursorToViewPosition();
-    QStringList lines = plainText(pt1, pt2).split('\n');
+    QString content = plainText(pt1, pt2);
     QString code = "";
-    for(int i= 0; i < lines.count(); i++) {
-        if(lines.at(i).simplified().endsWith("echo $?")) {
-            if(i+1 < lines.count()) {
-                code = lines.at(i+1).simplified();
-                break;
-            }
-        }
+    int pos = content.lastIndexOf(prefix);
+    if(pos >= 0) {
+        int iStart = pos + prefix.length();
+        int iEnd = content.indexOf(subfix, iStart);
+        code = content.mid(iStart, iEnd - iStart);
     }
     if(code.isEmpty()) {
         return -3;

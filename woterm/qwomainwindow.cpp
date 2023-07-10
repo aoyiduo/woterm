@@ -89,28 +89,25 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     QKxVer *ver = QKxVer::instance();
     QKxVer::ELicenseType type = ver->licenseType();
     QString typeVersion;
-    if(type == QKxVer::EFreeVersion) {
-        typeVersion = tr("Free");
-    }else if(type == QKxVer::ETrialVersion) {
+    if(type == QKxVer::ETrialVersion) {
         typeVersion = tr("Trial");
         if(ver->isExpired()) {
             typeVersion += tr("[expired]");
+            typeVersion += " - ";
+            typeVersion += tr("Please purchase the license to support us");
         }
-    } else if(type == QKxVer::ESchoolVersion) {
-        typeVersion = tr("School");
-        if(ver->isExpired()) {
-            typeVersion += tr("[expired]");
-        }
-    } else if(type == QKxVer::EUltimateVersion) {
+        typeVersion += tr("");
+    }else if(type == QKxVer::EUltimateVersion) {
         typeVersion = tr("Ultimate");
         if(ver->isExpired()) {
             typeVersion += tr("[expired]");
+            typeVersion += " - ";
+            typeVersion += tr("Please purchase the license to support us");
         }
     } else {
-        typeVersion = tr("Unknow");
-        if(ver->isExpired()) {
-            typeVersion += tr("[expired]");
-        }
+        typeVersion = tr("Free");
+        typeVersion += " - ";
+        typeVersion += tr("Please purchase the license to support us");
     }
     setWindowTitle(tr("WoTerm") + " " + typeVersion);
 
@@ -491,10 +488,13 @@ void QWoMainWindow::onActionBackupTriggered()
         dlg.exec();
     }else{
         QString path = QWoSetting::lastBackupPath();
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Backup Session Database"), path, "SQLite3 (*.db *.bak)");
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Backup Session Database"), path, "SQLite3 (*.db)");
         qDebug() << "fileName" << fileName;
         if(fileName.isEmpty()) {
             return;
+        }
+        if(!fileName.endsWith(".db")) {
+            fileName += ".db";
         }
         QFileInfo fi(fileName);
         QString last = fi.absolutePath();
@@ -666,6 +666,11 @@ void QWoMainWindow::onActionPlaybookOptionsTriggered()
     }
 }
 
+void QWoMainWindow::onActionactionPurchaseLicenseTriggered()
+{
+    QDesktopServices::openUrl(QUrl("http://woterm.com/prices"));
+}
+
 void QWoMainWindow::onFilterArrivedArrived(const QString &name, int type)
 {
     onSessionReadyToConnect(name, type);
@@ -712,22 +717,12 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionUpgrade, SIGNAL(triggered()), this, SLOT(onActionUpgradeTriggered()));
     QObject::connect(ui->actionRestart, SIGNAL(triggered()), this, SLOT(onActionRestartOptionsTriggered()));
 
-    if(QKxVer::instance()->isFullFeather()) {
-        QObject::connect(ui->actionPlaybooks, SIGNAL(triggered()), this, SLOT(onActionPlaybookOptionsTriggered()));
-    }else{
-        ui->actionPlaybooks->setVisible(false);
-    }
+    QObject::connect(ui->actionPlaybooks, SIGNAL(triggered()), this, SLOT(onActionPlaybookOptionsTriggered()));
+    QObject::connect(ui->actionPurchaseLicense, SIGNAL(triggered()), this, SLOT(onActionactionPurchaseLicenseTriggered()));
 
-    if(QKxVer::instance()->isFullFeather()) {
-        QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));      
-        ui->menuOpen->setVisible(true);
-        ui->actionOpenRemote2->deleteLater();
-    }else{
-        ui->actionAdministrator->setVisible(false);
-        ui->menuOpen->deleteLater();
-        ui->actionOpenRemote2->setVisible(true);
-    }
-    ui->actionUpgrade->setVisible(false);
+    QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));
+    ui->actionAdministrator->setEnabled(QKxVer::instance()->isFullFeather());
+
 }
 
 void QWoMainWindow::initToolBar()
@@ -744,20 +739,15 @@ void QWoMainWindow::initToolBar()
         tool->addWidget(btn);
     }
 
-    if(QKxVer::instance()->isFullFeather()){
-        QPushButton *btn = new QPushButton(QIcon("../private/skins/black/nodes.png"), tr("Open"), tool);
-        btn->setFlat(true);
-        btn->setMaximumWidth(90);
-        QKxButtonAssist *btnAssist = new QKxButtonAssist("../private/skins/black/arrowdown.png", btn);
-        QObject::connect(btnAssist, SIGNAL(pressed(QToolButton*)), this, SLOT(onButtonAssistClicked(QToolButton*)));
-        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onOpenRemoteSession()));
-        tool->addWidget(btn);
-    }else{
-        QPushButton *btn = new QPushButton(QIcon("../private/skins/black/nodes.png"), tr("Open"), tool);
-        btn->setFlat(true);
-        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onOpenRemoteSession()));
-        tool->addWidget(btn);
-    }
+
+    QPushButton *btn = new QPushButton(QIcon("../private/skins/black/nodes.png"), tr("Open"), tool);
+    btn->setFlat(true);
+    btn->setMaximumWidth(90);
+    QKxButtonAssist *btnAssist = new QKxButtonAssist("../private/skins/black/arrowdown.png", btn);
+    QObject::connect(btnAssist, SIGNAL(pressed(QToolButton*)), this, SLOT(onButtonAssistClicked(QToolButton*)));
+    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onOpenRemoteSession()));
+    tool->addWidget(btn);
+
     {
         QPushButton *btn = new QPushButton(QIcon("../private/skins/black/add2.png"), tr("New"), tool);
         btn->setFlat(true);
@@ -770,7 +760,8 @@ void QWoMainWindow::initToolBar()
         QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onLayout()));
         tool->addWidget(btn);
     }
-    if(QKxVer::instance()->isFullFeather()){
+
+    {
         QPushButton *btn = new QPushButton(QIcon("../private/skins/black/merge.png"), tr("Merge"), tool);
         btn->setFlat(true);
         QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onTabMergeButtonClicked()));
@@ -778,14 +769,14 @@ void QWoMainWindow::initToolBar()
         m_btnTabMerge = btn;
     }
 
-    if(QKxVer::instance()->isFullFeather()){
+    {
         QPushButton *btn = new QPushButton(QIcon("../private/skins/black/js.png"), tr("Playbooks"), tool);
         btn->setFlat(true);
         QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onPlaybookButtonClicked()));
         tool->addWidget(btn);
     }
 
-    if(QKxVer::instance()->isFullFeather()){
+    {
         QLineEdit *input = new QKxFilterLineEdit(tool);        
         input->setMaximumWidth(250);
         input->setPlaceholderText(tr("Enter keyword to search"));

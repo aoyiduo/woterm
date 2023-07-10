@@ -159,14 +159,6 @@ void QWoLicenseActivateDialog::onRedeemButtonClicked()
             if(retval != QMessageBox::Yes) {
                 return;
             }
-        }else if(ver->isSchoolVersion()){
-            int retval = QKxMessageBox::information(this,
-                                                    tr("License upgrade information"),
-                                                    tr("There are currently %1 days left to expire, but a valid code will replace it for one year. Do you want to continue redeeming?").arg(daysLeft),
-                                                    QMessageBox::Yes|QMessageBox::No);
-            if(retval != QMessageBox::Yes) {
-                return;
-            }
         }
     }
     QString mid = ver->machineID();

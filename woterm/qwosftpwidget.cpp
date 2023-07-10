@@ -55,7 +55,7 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
     : QWidget(parent)
     , ui(new Ui::QWoSftpWidget)
     , m_gid(gid)
-    , m_isUltimate(QKxVer::instance()->isFullFeather())
+    , m_isUltimate(true)
     , m_target(target)
     , m_savePassword(false)
     , m_bexit(false)

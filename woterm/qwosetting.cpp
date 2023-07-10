@@ -310,6 +310,16 @@ void QWoSetting::setIgnoreTodayReportLicense()
     setValue("license/report", dt);
 }
 
+bool QWoSetting::isAlwayFreeVersion()
+{
+    return value("upgrade/alwayFreeVersion", false).toBool();
+}
+
+void QWoSetting::setAlwayFreeVersion(bool on)
+{
+    setValue("upgrade/alwayFreeVersion", on);
+}
+
 bool QWoSetting::shouldPopupUpgradeUltimate()
 {
     QDate dt = value("upgrade/ultimate").toDate();

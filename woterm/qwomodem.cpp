@@ -217,7 +217,6 @@ bool QWoModem::ZSendFiles(const QStringList &files, Protocol protocol)
     if(isRunning()) {
        return false;
     }
-    m_bWaitForExit = false;
     m_bSend = true;
     m_protocol = protocol;
     m_files = files;
@@ -235,7 +234,6 @@ bool QWoModem::ZReceive(const QString &path, Protocol protocol)
     if(isRunning()) {
        return false;
     }
-    m_bWaitForExit = false;
     m_bSend = false;
     m_protocol = protocol;
     m_path = path;
@@ -249,18 +247,14 @@ bool QWoModem::onReceive(const QByteArray &buf)
 {
     if(!isRunning()) {
         return false;
-    }
-    if(m_bWaitForExit) {
-        exitLater();
-        return false;
-    }
+    }    
     push(MT_DATA, buf);
     return true;
 }
 
-void QWoModem::stop()
+void QWoModem::abort()
 {
-    m_stop = true;
+    m_abort = true;
     push(MT_EXIT);
     qDebug() << "left" << left;
 }
@@ -272,6 +266,9 @@ int QWoModem::ZXmitChr(uchar c)
 
 int QWoModem::ZXmitStr(uchar *str, int len)
 {
+    if(m_remoteRZSZHasExit) {
+        return ZmErrCancel;
+    }
     QByteArray buf((const char*)str, len);
     emit dataArrived(buf);
     return 0;
@@ -329,6 +326,7 @@ FILE *QWoModem::ZOpenFile(char *name, ulong crc)
     if(QFile::exists(path)) {
         return nullptr;
     }
+    m_lastFile = path;
     return fopen(path.toLocal8Bit(), "wb");
 }
 
@@ -339,8 +337,10 @@ int QWoModem::ZWriteFile(uchar *buffer, int len, FILE *file)
 
 int QWoModem::ZCloseFile()
 {
-    fclose(m_zmodem->file);
-    m_zmodem->file = nullptr;
+    if(m_zmodem->file != nullptr) {
+        fclose(m_zmodem->file);
+        m_zmodem->file = nullptr;
+    }
     return 0;
 }
 
@@ -406,20 +406,17 @@ void QWoModem::_ZIdleStr(unsigned char *buf, int len, QWoModem *that)
 
 void QWoModem::run()
 {
-    m_bWaitForExit = false;
-    m_stop = false;
+    m_abort = false;
     emit status("\033[?25l");
     if(m_bSend) {
         sending();
     }else {
         receiving();
     }
-    QMutexLocker lock(&m_mutex);
-    m_bWaitForExit = true;
-    // make sure had the last input string can reach onReceive
-    emit dataArrived("\r\n");
-    m_sigal.wait(&m_mutex, 60 * 1000);
-    m_bWaitForExit = false;
+    if(!m_abort) {
+        mysleep(1);
+    }
+    qDebug() << "run: exit" << QTime::currentTime();
     cleanup();
 }
 
@@ -430,7 +427,11 @@ int QWoModem::sending()
     m_zmodem->windowsize = 4096 ;
     m_zmodem->ifd = m_zmodem->ofd = -1;
     m_zmodem->telnet = m_bTelnet ? 1 : 0;
-    //m_zmodem->zsinitflags = TESCCTL; // will cause transfer slowly.
+    m_letter24CharCount = m_letter8Count = m_zeroCharCount = 0;
+    m_remoteRZSZHasExit = false;
+    m_isFileSend = true;
+    m_lastFile.clear();
+    m_zmodem->zsinitflags = TESCCTL; // will cause transfer slowly.
     int done = InitXmit();
     if(done != ZmDone) {
         formatError(done, "");
@@ -453,6 +454,11 @@ int QWoModem::receiving()
     m_zmodem->windowsize = 4096 ;
     m_zmodem->bufsize = 0;
     m_zmodem->telnet = m_bTelnet ? 1 : 0;
+    m_zmodem->zsinitflags = ESCCTL; // will cause transfer slowly.
+    m_letter24CharCount = m_letter8Count = m_zeroCharCount = 0;
+    m_remoteRZSZHasExit = false;
+    m_isFileSend = false;
+    m_lastFile.clear();
     int done = 0;
     if(m_protocol == PT_XModem || m_protocol == PT_YModem) {
         done = YmodemRInit(m_zmodem);
@@ -460,7 +466,7 @@ int QWoModem::receiving()
         done = ZmodemRInit(m_zmodem);
     }
     if(!done) {
-        done = doIO();
+        done = processWithTimeout();
     }
     return done;
 }
@@ -476,16 +482,16 @@ void QWoModem::status(const QString &msg, bool newLine)
     emit statusArrived(buf);
 }
 
-int QWoModem::doIO()
+int QWoModem::processWithTimeout(int timeout)
 {    
     fd_set rfds;
     int done = 0;
-    QByteArray buf(1024*10, Qt::Uninitialized);   
+    QByteArray buf(1024*10, Qt::Uninitialized);
     while(!done) {
         timeval tm={10,0};
         FD_ZERO(&rfds);
         FD_SET(m_prv->rfd, &rfds);
-        tm.tv_sec = m_zmodem->timeout;
+        tm.tv_sec = qMin<int>(m_zmodem->timeout, timeout);
         int n = select(m_prv->rfd+1, &rfds, nullptr, nullptr, &tm);
         if(n < 0) {
             return ZmErrInt;
@@ -500,23 +506,34 @@ int QWoModem::doIO()
                 char type;
                 QByteArray data;
                 while(pop(type, data)) {
-                    if(type == MT_EXIT) {
-                        qDebug() << "runing: recevie exit" << QTime::currentTime();
+                    if(type == MT_EXIT) {                        
                         ZmodemAbort(m_zmodem);
+                        if(m_isFileSend){
+                            return ZmErrCancel;
+                        }
                     } else if(type == MT_DATA) {
-#if 0
-                        QFile f("raw.log");
-                        f.open(QFile::Append);
-                        f.write(data);
-                        f.write("\r\n--------------------------------\r\n");
-                        f.close();
-#endif
+                        QByteArray canStr;
+                        int pos = findExitFlags(data, canStr);
+                        if(pos > 0) {
+                            data = data.left(pos);
+                        }
+
+//                        int cnt = findZeroData(data);
+//                        if(cnt > 128) {
+//                            qDebug() << "findZeroData" << cnt;
+//                        }
+
                         done = ZmodemRcv((uchar*)data.data(), data.length(), m_zmodem);
-                        //qDebug() << "MT_DATA" << done;
                         if(done != 0) {
                             return done;
                         }
-
+                        if(!canStr.isEmpty()) {
+                            m_remoteRZSZHasExit = true;
+                            done = ZmodemRcv((uchar*)canStr.data(), canStr.length(), m_zmodem);
+                            if(done != 0) {
+                                return done;
+                            }
+                        }
                     }
                 }
             }
@@ -616,7 +633,7 @@ void QWoModem::formatStatus(int type, int value, char *msg)
         break;
 
     case SndTimeout:
-        status(QString("%1 send timeouts").arg(value));
+        status(QString("Remote send timeout count: %1").arg(value));
         break;
 
     case RmtCancel:
@@ -669,14 +686,12 @@ void QWoModem::cleanup()
 {
     if(m_zmodem->file) {
         fclose(m_zmodem->file);
-        if(!m_bSend) {
-            if(m_zmodem->filename){
-                QByteArray path = QDir::toNativeSeparators(QDir::cleanPath(m_path + "/" + m_zmodem->filename)).toLocal8Bit();
-                qDebug() << path;
-                QFile::remove(path);
-            }
-        }
         m_zmodem->file = nullptr;
+    }
+    if(m_abort && !m_bSend) {
+        if(!m_lastFile.isEmpty()){
+            QFile::remove(m_lastFile);
+        }
     }
     if(m_zmodem->filename) {
         free(m_zmodem->filename);
@@ -699,14 +714,65 @@ void QWoModem::cleanup()
     m_path.clear();
     m_queue.clear();
     clearsocket(m_prv->rfd);
-    m_bWaitForExit = false;
     qDebug() << "clean: zmodem exit" << QTime::currentTime();
+}
+
+int QWoModem::findExitFlags(const QByteArray &buf, QByteArray& out)
+{
+    for(int i = 0; i < buf.length(); i++) {
+        char c = buf.at(i);
+        if(c == 24) {
+            m_letter24CharCount++;
+            m_letter8Count = 0;
+        }else if(c == 8) {
+            m_letter8Count++;
+            if(m_letter24CharCount >= 5 && m_letter8Count >= 3) {
+                for(i=i+1;i < buf.length(); i++) {
+                    char c = buf.at(i);
+                    if(c == 8) {
+                        m_letter8Count++;
+                    }else{
+                        break;
+                    }
+                }
+                int j = i - m_letter24CharCount - m_letter8Count;
+                out = buf.mid(j, m_letter24CharCount+m_letter8Count);
+                return j;
+            }
+        }else{
+            m_letter8Count = 0;
+            m_letter24CharCount = 0;
+        }
+    }
+    return -1;
+}
+
+int QWoModem::findZeroData(const QByteArray &buf)
+{
+    for(int i = 0; i < buf.length(); i++) {
+        char c = buf.at(i);
+        if(c == '\0') {
+            m_zeroCharCount++;
+        }else {
+            m_zeroCharCount = 0;
+        }
+    }
+    return m_zeroCharCount;
+}
+
+void QWoModem::mysleep(int second)
+{
+    fd_set rfds;
+    timeval tm={1,0};
+    FD_ZERO(&rfds);
+    FD_SET(m_prv->rfd, &rfds);
+    tm.tv_sec = second;
+    select(m_prv->rfd+1, &rfds, nullptr, nullptr, &tm);
 }
 
 void QWoModem::onTickerTimeout()
 {
     m_ticker.stop();
-    m_sigal.wakeAll();
 }
 
 void QWoModem::push(char type, const QByteArray &data)
@@ -716,7 +782,6 @@ void QWoModem::push(char type, const QByteArray &data)
     msg.type = type;
     msg.data = data;
     m_queue.push_back(msg);
-    //qDebug() << "push" << m_queue.length();
     ::send(m_prv->wfd, (char*)&type, 1, 0);
 }
 
@@ -729,7 +794,6 @@ bool QWoModem::pop(char &type, QByteArray &data)
     ZMsg tmp = m_queue.takeFirst();
     type = tmp.type;
     data = tmp.data;
-    //qDebug() << "pop" << m_queue.length();
     return true;
 }
 
@@ -744,7 +808,7 @@ int QWoModem::InitXmit()
         done = ZmodemTInit(m_zmodem);
     }
     if(!done) {
-        done = doIO();
+        done = processWithTimeout();
     }
     return done;
 }
@@ -756,10 +820,10 @@ int QWoModem::XmitFile(const QString &file)
     // path : for local file open.
     QByteArray path = fi.absoluteFilePath().toLocal8Bit();
     // name : has to send to remote, so utf8 chars
-    QByteArray name = fi.fileName().toUtf8();    
+    QByteArray name = fi.fileName().toUtf8();
     done = ZmodemTFile(path, name, 0, 0, 0, 0, 0, 0, m_zmodem);
     if(done == 0){
-        done = doIO();
+        done = processWithTimeout();
     }
     formatError(done, name);
     return done;
@@ -770,8 +834,8 @@ int QWoModem::FinishXmit()
     int	done ;
 
     done = ZmodemTFinish(m_zmodem);
-    if( !done )
-        done = doIO();
+    if( !done && ! m_remoteRZSZHasExit)
+        done = processWithTimeout(30);
     return done;
 }
 
@@ -805,7 +869,7 @@ void QWoModemFactory::release(QWoModem *obj)
         obj->deleteLater();
         return;
     }
-    obj->stop();
+    obj->abort();
     m_dels.append(obj);
 }
 
@@ -832,7 +896,7 @@ void QWoModemFactory::cleanup()
             iter = m_dels.erase(iter);
             continue;
         }
-        obj->stop();
+        obj->abort();
         iter++;
     }
 }

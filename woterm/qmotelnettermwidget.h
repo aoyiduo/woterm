@@ -57,7 +57,7 @@ private slots:
     void onTitleChanged(const QString& title);
 protected:
     int isZmodemCommand(const QByteArray &data);
-    bool checkProgram(const QByteArray &name);
+    bool checkZmodemInstall();
 private:
     Q_INVOKABLE void reconnect();
 private:

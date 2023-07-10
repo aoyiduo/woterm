@@ -167,11 +167,9 @@ bool QWoTermWidgetImpl::handleTabMouseEvent(QMouseEvent *ev)
 
 void QWoTermWidgetImpl::handleTabContextMenu(QMenu *menu)
 {
-    if(QKxVer::instance()->isFullFeather()){
-        menu->addAction(QIcon("../private/skins/black/merge.png"), tr("Merge the right tab"), this, SLOT(onMergeTheRightTabTriggered()));
-        if(m_terms.length() > 1) {
-            menu->addAction(QIcon("../private/skins/black/seperate.png"), tr("Seperate the child window"), this, SLOT(onSeperateChildWindowTriggered()));
-        }
+    menu->addAction(QIcon("../private/skins/black/merge.png"), tr("Merge the right tab"), this, SLOT(onMergeTheRightTabTriggered()));
+    if(m_terms.length() > 1) {
+        menu->addAction(QIcon("../private/skins/black/seperate.png"), tr("Seperate the child window"), this, SLOT(onSeperateChildWindowTriggered()));
     }
 }
 

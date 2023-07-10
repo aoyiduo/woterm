@@ -48,6 +48,8 @@ QWoDbBackupDialog::QWoDbBackupDialog(QWidget *parent) :
 
     QString lastFile = QWoSetting::value("DBBackup/lastLocalFile").toString();
     ui->pathLocal->setText(lastFile);
+    ui->pathLocal->setReadOnly(true);
+
     QString cryptType = QWoSetting::value("DBBackup/lastCryptType").toString();
     if(cryptType.isEmpty()) {
         ui->cryptType->setCurrentIndex(0);
@@ -132,9 +134,12 @@ void QWoDbBackupDialog::onFileUploadClicked()
 void QWoDbBackupDialog::onFileBrowserClicked()
 {
     QString path = ui->pathLocal->text();
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Local file"), path, tr("SQLite (*.db)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save database file"), path, tr("SQLite (*.db)"));
     if(fileName.isEmpty()) {
         return;
+    }
+    if(!fileName.endsWith(".db")) {
+        fileName += ".db";
     }
     ui->pathLocal->setText(fileName);
 }

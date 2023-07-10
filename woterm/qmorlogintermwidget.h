@@ -55,7 +55,7 @@ private slots:
 protected:
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     int isZmodemCommand(const QByteArray &data);
-    bool checkProgram(const QByteArray &name);
+    bool checkZmodemInstall();
 private:
     Q_INVOKABLE void reconnect();
 private:

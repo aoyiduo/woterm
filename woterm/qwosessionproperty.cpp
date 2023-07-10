@@ -222,7 +222,7 @@ void QWoSessionProperty::init()
         ui->portTip->setVisible(false);
         QObject::connect(ui->port, SIGNAL(textChanged(QString)), this, SLOT(onPortTextChanged(QString)));
         ui->password->setEchoMode(QLineEdit::Password);
-        if(QKxVer::instance()->isFullFeather()) {
+        {
             QKxButtonAssist *assist = new QKxButtonAssist("../private/skins/black/eye.png", ui->password);
             QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
         }
@@ -470,6 +470,9 @@ void QWoSessionProperty::onPortTextChanged(const QString &txt)
 
 void QWoSessionProperty::onAssistButtonClicked(int idx)
 {
+    if(!QWoUtils::isUltimateVersion(this)) {
+        return;
+    }
     QLineEdit::EchoMode mode = ui->password->echoMode();
     if(mode == QLineEdit::Normal) {
         ui->password->setEchoMode(QLineEdit::Password);
@@ -713,7 +716,7 @@ bool QWoSessionProperty::saveConfig()
             int cntMax = ver->maxSessionCount();
             int cntNow = QWoSshConf::instance()->hostCount();
             if(cntNow >= cntMax) {
-                QKxMessageBox::information(this, tr("Version restrictions"), tr("The session's count has reached the limit."));
+                QKxMessageBox::information(this, tr("Version restrictions"), tr("The number of sessions has exceeded the limit. Please purchase a ultimate license or delete infrequent sessions."));
                 return false;
             }
         }

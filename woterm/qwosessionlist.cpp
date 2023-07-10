@@ -81,7 +81,7 @@ QWoSessionList::QWoSessionList(QWidget *parent)
     m_proxyModel = new QWoSortFilterProxyModel(1, this);
     m_proxyModel->setRecursiveFilteringEnabled(true);
 
-    if(QWoSetting::isListModel("docker") || !QKxVer::instance()->isFullFeather()) {
+    if(QWoSetting::isListModel("docker")) {
         m_btnModel->setIcon(QIcon("../private/skins/black/list.png"));
         m_proxyModel->setSourceModel(m_listModel);
         m_model = m_listModel;
@@ -90,13 +90,13 @@ QWoSessionList::QWoSessionList(QWidget *parent)
         m_proxyModel->setSourceModel(m_treeModel);
         m_model = m_treeModel;
     }    
-    m_btnModel->setVisible(QKxVer::instance()->isFullFeather());
+    m_btnModel->setVisible(true);
     m_tree->setModel(m_proxyModel);
 
     QObject::connect(m_input, SIGNAL(returnPressed()), this, SLOT(onEditReturnPressed()));
-    QObject::connect(m_input, SIGNAL(textChanged(const QString&)), this, SLOT(onEditTextChanged(const QString&)));
-    QObject::connect(m_tree, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onListItemDoubleClicked(const QModelIndex&)));
-    QObject::connect(m_tree, SIGNAL(itemChanged(const QModelIndex&)), this, SLOT(onListCurrentItemChanged(const QModelIndex&)));
+    QObject::connect(m_input, SIGNAL(textChanged(QString)), this, SLOT(onEditTextChanged(QString)));
+    QObject::connect(m_tree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onListItemDoubleClicked(QModelIndex)));
+    QObject::connect(m_tree, SIGNAL(itemChanged(QModelIndex)), this, SLOT(onListCurrentItemChanged(QModelIndex)));
     QObject::connect(m_tree, SIGNAL(returnKeyPressed()), this, SLOT(onListReturnKeyPressed()));
 
     QTimer *timer = new QTimer(this);
@@ -414,9 +414,6 @@ void QWoSessionList::onListViewItemDelete()
 
 void QWoSessionList::onListViewGroupLayout()
 {
-    if(!QWoUtils::isUltimateVersion(this)) {
-        return;
-    }
     if(m_model == m_listModel) {
         m_btnModel->setIcon(QIcon("../private/skins/black/tree.png"));
         m_proxyModel->setSourceModel(m_treeModel);
@@ -474,7 +471,7 @@ bool QWoSessionList::handleListViewContextMenu(QContextMenuEvent *ev)
         menu.addAction(QIcon("../private/skins/black/ftp.png"), tr("Copy"), this, SLOT(onListViewItemCopy()));
         menu.addAction(tr("Delete"), this, SLOT(onListViewItemDelete()));
     }
-    if(QKxVer::instance()->isFullFeather()) {
+    {
         if(m_model == m_listModel) {
             menu.addAction(tr("Show tree mode"), this, SLOT(onListViewGroupLayout()));
         }else{

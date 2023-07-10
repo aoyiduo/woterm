@@ -764,7 +764,7 @@ QByteArray QWoUtils::aesDecrypt(const QByteArray &all, const QByteArray &pass)
 bool QWoUtils::isUltimateVersion(QWidget *parent)
 {
     if(!QKxVer::instance()->isFullFeather()) {
-        QKxMessageBox::information(parent, QObject::tr("Ultimate version"), QObject::tr("this is the feature of the ultimate version, please upgrade to latest version."));
+        QKxMessageBox::information(parent, QObject::tr("Ultimate version"), QObject::tr("this is the ultimate version feature, please purchase the conrresponding license."));
         return false;
     }
     return true;

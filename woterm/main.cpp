@@ -120,6 +120,7 @@ int main_pc(int argc, char *argv[])
     QWoApplication app(argc, argv);
 #endif
 
+    test();
     setDebugMessageToFile("trace.log", true);
 
     QWoTheme::instance();

@@ -166,9 +166,11 @@ public:
     bool appMode();
     QString plainText(const QPoint& start, const QPoint& end);
 
-    // trapCommand
-    bool trapCommand(const QString& cmd, QString& content, int &code, int timeout=3000);
-    void waitInput();
+    bool tryToCheckIdleState();
+    // code: >= 0, command result.
+    // code: < 0, custom result.
+    bool executeCommand(const QString& cmd, QString& content, QString& reason, int timeout = 3000);
+    int lastCommandExitCode();
 
     // simulate
     void simulateKeyPress(QKeyEvent *ev);
@@ -268,8 +270,7 @@ private:
     bool isLineVisible(int y);
     // -1: timeout.
     //  1: title changed.
-    int wait(int timeout=3000);
-    int lastExitCode();
+    int wait(int timeout=3000);    
     void initTitle();
     void resetTitlePosition(bool byCursor = false);
     void resetTouchPointPosition();
