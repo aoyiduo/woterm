@@ -73,13 +73,6 @@ QMoMainWindow *QMoApplication::mainWindow()
     return QMoApplication::instance()->m_main;
 }
 
-qint64 QMoApplication::elapse()
-{
-    qint64 tmStart = QMoApplication::instance()->m_timeStart;
-    qint64 tmNow = QDateTime::currentSecsSinceEpoch();
-    return tmNow - tmStart;
-}
-
 void QMoApplication::qmlCopyText(const QString &txt)
 {
     QGuiApplication::clipboard()->setText(txt);

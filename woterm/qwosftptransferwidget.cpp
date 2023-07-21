@@ -18,6 +18,7 @@
 #include "qwotreeview.h"
 #include "qkxmessagebox.h"
 #include "qwoutils.h"
+#include "qkxlabelassist.h"
 
 #include <QMouseEvent>
 #include <QPainter>
@@ -202,6 +203,8 @@ QWoSftpTransferWidget::QWoSftpTransferWidget(const QString &target, int gid, boo
     QObject::connect(m_taskModel, SIGNAL(modelReset()), this, SLOT(onModelReset()), Qt::QueuedConnection);
     QObject::connect(m_tree, SIGNAL(pressed(QModelIndex)), SLOT(onTreeItemPressed(QModelIndex)));
 
+    m_progressLabel = new QKxLabelAssist(ui->fileProgress);
+
     resetAll();
 }
 
@@ -372,6 +375,26 @@ void QWoSftpTransferWidget::onTransferCommandFinish(int type, const QVariantMap&
 void QWoSftpTransferWidget::onTransferProgress(int type, int v, const QVariantMap& userData)
 {
     ui->fileProgress->setValue(v);
+    if(userData.contains("speed")) {
+        m_progressLabel->setVisible(true);
+        double speed = userData.value("speed").toDouble();
+        QString out;
+        if(speed > 1024 * 1024) {
+            double fval = speed / 1024 / 1024;
+            out = QString::number(fval, 'f', 1);
+            out.append("MB/s");
+        }else if(speed > 1024){
+            double fval = speed / 1024;
+            out = QString::number(fval, 'f', 1);
+            out.append("KB/s");
+        }else{
+            out = QString::number(speed, 'f', 0);
+            out.append("B/s");
+        }
+        m_progressLabel->setText(out);
+    }else{
+        m_progressLabel->setVisible(false);
+    }
 }
 
 void QWoSftpTransferWidget::onFinishArrived(int code)

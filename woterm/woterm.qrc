@@ -44,5 +44,7 @@
         <file>resource/images/ssh2.png</file>
         <file>resource/images/telnet.png</file>
         <file>resource/images/vnc2.png</file>
+        <file>resource/images/tunnel.png</file>
+        <file>resource/images/exit.png</file>
     </qresource>
 </RCC>

@@ -44,6 +44,9 @@
 #define REPAINT_TIMEOUT2 (40)
 #define BLINK_MAX_COUNT (9)
 
+//#define TEXT_DRAW_FLAGS     (Qt::AlignBaseline|Qt::TextDontClip)
+#define TEXT_DRAW_FLAGS     (Qt::AlignBottom|Qt::TextDontClip)
+
 QKxTermItem::QKxTermItem(QWidget* parent)
     : QWidget(parent)
     , m_rows(40)
@@ -1109,7 +1112,7 @@ void QKxTermItem::paint(QPainter *p)
     if(!m_preeditText.isEmpty()){
         p->fillRect(m_preeditRect, m_colorSchema->foreground());
         p->setPen(m_colorSchema->background());
-        p->drawText(m_preeditRect, Qt::AlignBaseline|Qt::TextDontClip, m_preeditText);
+        p->drawText(m_preeditRect, TEXT_DRAW_FLAGS, m_preeditText);
     }
     p->restore();
 }
@@ -1901,8 +1904,7 @@ void QKxTermItem::drawLine(QPainter *p, int row,  const TermLine &line)
 
         //qDebug() << "drawLine" << graphic << out;
         //QRect ort;
-        p->drawText(rt, Qt::AlignBaseline|Qt::TextDontClip, LTR_OVERRIDE_CHAR + out);
-        //p->drawText(rt, Qt::AlignBottom|Qt::TextDontClip, LTR_OVERRIDE_CHAR + out);
+        p->drawText(rt, TEXT_DRAW_FLAGS, LTR_OVERRIDE_CHAR + out);
         //p->drawText(rt.x(), rt.bottom(), LTR_OVERRIDE_CHAR + out);
         //p->drawRect(rt);
         //p->drawRect(ort);

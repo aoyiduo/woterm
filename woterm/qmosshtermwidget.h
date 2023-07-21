@@ -75,6 +75,7 @@ protected:
 private:
     Q_INVOKABLE void reconnect(bool restore=false);
     Q_INVOKABLE void executeCommand(const QByteArray& cmd);
+    bool validProxyJumper();
 private:
     virtual void resizeEvent(QResizeEvent *ev);
     virtual void contextMenuEvent(QContextMenuEvent *ev);

@@ -152,6 +152,8 @@ bool QWoShower::openSsh(const QString &target, int gid)
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/ssh2.png");
     emit floatChanged(impl, false);
     m_implCount++;
+
+    QWoMainWindow::instance()->updateHistory(target, EOT_SSH);
     return true;
 }
 
@@ -187,6 +189,8 @@ bool QWoShower::openSftp(const QString &target, int gid)
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/sftp.png");
     emit floatChanged(impl, false);
     m_implCount++;
+
+    QWoMainWindow::instance()->updateHistory(target, EOT_SFTP);
     return true;
 }
 
@@ -204,6 +208,8 @@ bool QWoShower::openTelnet(const QString &target)
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/telnet.png");
     emit floatChanged(impl, false);
     m_implCount++;
+
+    QWoMainWindow::instance()->updateHistory(target, EOT_TELNET);
     return true;
 }
 
@@ -237,6 +243,8 @@ bool QWoShower::openRLogin(const QString &target)
         impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/rlogin.png");
         emit floatChanged(impl, false);
         m_implCount++;
+
+        QWoMainWindow::instance()->updateHistory(target, EOT_RLOGIN);
         return true;
     }
     QWoBindPortPermissionDialog dlg(target, this);
@@ -275,6 +283,8 @@ bool QWoShower::openMstsc(const QString &target)
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/mstsc2.png");
     emit floatChanged(impl, false);
     m_implCount++;
+
+    QWoMainWindow::instance()->updateHistory(target, EOT_MSTSC);
     return true;
 }
 
@@ -292,6 +302,8 @@ bool QWoShower::openVnc(const QString &target)
     impl->setProperty(FLOAT_WINDOW_ICON, ":/woterm/resource/images/vnc2.png");
     emit floatChanged(impl, false);
     m_implCount++;
+
+    QWoMainWindow::instance()->updateHistory(target, EOT_VNC);
     return true;
 }
 

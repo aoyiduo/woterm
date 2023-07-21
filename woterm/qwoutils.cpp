@@ -71,6 +71,15 @@ QWoUtils::~QWoUtils()
 
 }
 
+bool QWoUtils::isDebugVersion()
+{
+#ifdef QT_DEBUG
+    return true;
+#else
+    return false;
+#endif
+}
+
 void QWoUtils::injectJS(QQmlEngine *engine, QStringList files)
 {
     for(auto it = files.begin(); it != files.end(); it++) {
@@ -790,18 +799,26 @@ QString QWoUtils::getPassword(QWidget *parent, const QString &label)
 
 bool QWoUtils::removeDirectory(const QString &path)
 {
-    QDir d(path);
-    QFileInfoList lsFiles = d.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot);
-    for(auto it = lsFiles.begin(); it != lsFiles.end(); it++) {
-        const QFileInfo& fi = *it;
-        if(fi.isDir()) {
-            QString subPath = fi.absoluteFilePath();
-            removeDirectory(subPath);
-        }else{
-            QFile::remove(fi.absoluteFilePath());
+    {
+        QDir d(path);
+        QFileInfoList lsFiles = d.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot);
+        for(auto it = lsFiles.begin(); it != lsFiles.end(); it++) {
+            const QFileInfo& fi = *it;
+            if(fi.isDir()) {
+                QString subPath = fi.absoluteFilePath();
+                removeDirectory(subPath);
+            }else{
+                QFile::remove(fi.absoluteFilePath());
+            }
         }
     }
-    return d.rmdir(".");
+    {
+        QDir d;
+        if(!d.rmdir(path)) {
+            return false;
+        }
+        return true;
+    }
 }
 
 void QWoUtils::copyDirectory(const QString &src, const QString &dst)

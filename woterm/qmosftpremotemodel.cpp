@@ -168,7 +168,7 @@ QVariant QMoSftpRemoteModel::data(const QModelIndex &index, int role) const
         return "qrc../private/skins/black/file.png";
     }
     if(role == ROLE_SHORT_STRING) {
-        return QString("%1 %2 %3:%4 %5").arg(fi.permission).arg(fi.size).arg(fi.owner).arg(fi.group).arg(fi.date);
+        return QString("%1 %2 %3:%4 %5").arg(fi.permission).arg(fi.size).arg(fi.owner).arg(fi.group).arg(fi.date.toString());
     }
     if(role == ROLE_SELECTED) {
         return fi.selected;
@@ -229,7 +229,8 @@ void QMoSftpRemoteModel::onDirOpen(const QString &path, const QVariantList &v, c
         fi.owner = mdata.value("owner").toString();
         fi.group = mdata.value("group").toString();
         fi.size = mdata.value("size").toLongLong();
-        fi.date = mdata.value("date").toString();
+        QString date = mdata.value("date").toString();
+        fi.date = QDateTime::fromSecsSinceEpoch(date.toInt());
         fi.permission = mdata.value("permission").toString();
         m_fileInfos.append(fi);
     }

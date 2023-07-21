@@ -14,6 +14,7 @@
 #include <QObject>
 #include <QUuid>
 #include <QVariantMap>
+#include <QDateTime>
 
 enum EHostType{
     SshWithSftp = 1,
@@ -60,6 +61,7 @@ enum EHostType{
 #define ROLE_PATH_LOCAL         (Qt::UserRole+22)
 #define ROLE_PATH_REMOTE        (Qt::UserRole+23)
 #define ROLE_MENUID             (Qt::UserRole+24)
+#define ROLE_MYSORT             (Qt::UserRole+25)
 
 
 struct GroupInfo {
@@ -146,7 +148,7 @@ struct FileInfo {
     QString owner;
     QString group;
     qint64 size;
-    QString date;
+    QDateTime date;
     QString label;
     QString permission;
 
@@ -256,12 +258,27 @@ struct MergeInfo {
     }
 };
 
+struct TunnelInfo {
+    qint64 id;
+    QString sessionName;
+    bool isPortmapping;
+    QString hostRemote;
+    int portRemote;
+    QString hostLocal;
+    int portLocal;
+
+    TunnelInfo() {
+        id = portLocal = portRemote = 0;
+    }
+};
+
 Q_DECLARE_METATYPE(MergeInfo)
 Q_DECLARE_METATYPE(TaskInfo)
 Q_DECLARE_METATYPE(GroupInfo)
 Q_DECLARE_METATYPE(HostInfo)
 Q_DECLARE_METATYPE(HistoryCommand)
 Q_DECLARE_METATYPE(FileInfo)
+Q_DECLARE_METATYPE(TunnelInfo)
 
 #define DEFAULT_HISTORY_LINE_LENGTH  (1000)
 

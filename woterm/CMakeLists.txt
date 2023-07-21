@@ -34,6 +34,7 @@ set(SOURCE_FILES
     qkxscriptremotecommand.cpp
     qkxscriptcommand.cpp    
     qkxdockwidget.cpp
+    qkxlabelassist.cpp
     qkxbuttonassist.cpp
     qkxdirassist.cpp
     qkxfileassist.cpp
@@ -151,6 +152,11 @@ set(SOURCE_FILES
     qwoplaybookwidgetimpl.cpp
     qwoplaybookconsoleproxy.cpp
     qwoplaybookconsole.cpp
+    qwotunneldialog.cpp
+    qwotunneladddialog.cpp
+    qwotunnelmodifydialog.cpp
+    qwotunnelmodel.cpp
+    qwotunnelserver.cpp
     qwotelnet.cpp
     qwoutils.cpp
     qwowidget.cpp
@@ -202,6 +208,7 @@ set(HEADER_FILES
     qkxscriptremotecommand.h
     qkxscriptcommand.h
     qkxdockwidget.h
+    qkxlabelassist.h
     qkxbuttonassist.h
     qkxdirassist.h
     qkxfileassist.h
@@ -319,6 +326,11 @@ set(HEADER_FILES
     qwoplaybookwidgetimpl.h
     qwoplaybookconsoleproxy.h
     qwoplaybookconsole.h
+    qwotunneldialog.h
+    qwotunneladddialog.h
+    qwotunnelmodifydialog.h
+    qwotunnelmodel.h
+    qwotunnelserver.h
     qwotelnet.h
     qwoutils.h
     qwowidget.h
@@ -417,6 +429,8 @@ set(OTHER_FILES
     qwolicenseactivatedialog.ui
     qwoversionupgradetipdialog.ui
     qwolicensetrialapplydialog.ui
+    qwotunneldialog.ui
+    qwotunneladddialog.ui
 
     #mobile object
     qmomainwindow.ui

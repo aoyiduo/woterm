@@ -24,6 +24,8 @@ class QKxButtonAssist : public QObject
 public:
     explicit QKxButtonAssist(const QString& icon, bool frame, QWidget *parent = nullptr);
     explicit QKxButtonAssist(const QString& icon, QWidget *parent = nullptr);
+    void setMargins(int n);
+    void setSpacing(int n);
     QToolButton *append(const QString &icon, bool frame);
     QToolButton *button(int idx);
     void appendSeperator();
@@ -36,8 +38,12 @@ signals:
 public slots:
     void onClicked();
 private:
-    QPointer<QHBoxLayout> m_layout;
+    bool eventFilter(QObject *watched, QEvent *event);
+    Q_INVOKABLE void resetPosition();
+private:
+    QList<QPointer<QWidget>> m_childs;
     QList<QPointer<QToolButton>> m_btns;
+    int m_margins, m_spacing, m_frameWidth;
 };
 
 #endif // QKXBUTTONASSIST_H

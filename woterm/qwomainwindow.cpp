@@ -48,10 +48,12 @@
 #include "qwoversionupgradetipdialog.h"
 #include "qwolicensetrialapplydialog.h"
 #include "qwoplaybookmanagedialog.h"
+#include "qwotunneldialog.h"
 #include "qwotheme.h"
 #include "qkxdockwidget.h"
 #include "qkxver.h"
 #include "version.h"
+#include "qwotunnelserver.h"
 
 #include "qwotermwidgetimpl.h"
 
@@ -163,16 +165,24 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
 QWoMainWindow::~QWoMainWindow()
 {
     delete ui;
+    if(m_dlgTunnel) {
+        delete m_dlgTunnel;
+    }
 }
 
 QWoMainWindow *QWoMainWindow::instance()
 {
-    return QWoApplication::mainWindow();
+    return qobject_cast<QWoMainWindow*>(QWoApplication::instance()->mainWindow());
 }
 
 QWoShower *QWoMainWindow::shower()
 {
     return QWoMainWindow::instance()->m_shower;
+}
+
+void QWoMainWindow::updateHistory(const QString &target, int type)
+{
+    m_recent->update(target, type);
 }
 
 void QWoMainWindow::closeEvent(QCloseEvent *event)
@@ -237,7 +247,6 @@ void QWoMainWindow::onEditConfig()
 
 void QWoMainWindow::onSessionReadyToConnect(const QString &target, int type)
 {
-    m_recent->update(target, type);
     switch (type) {
     case EOT_SSH:
         m_shower->openSsh(target);        
@@ -356,6 +365,10 @@ void QWoMainWindow::onAppStart()
             }
         }
     }
+
+    if(QWoSetting::localTerminalOnAppStart()) {
+        QMetaObject::invokeMethod(this, "onOpenLocalSession", Qt::QueuedConnection);
+    }
 }
 
 
@@ -459,6 +472,29 @@ void QWoMainWindow::onPlaybookAssistButtonClicked(QToolButton* btn)
     menu.addAction(QIcon("../private/skins/black/console.png"), tr("Open local session"), this, SLOT(onOpenLocalSession()));
     menu.addAction(QIcon("../private/skins/black/serialport.png"), tr("Open serialport session"), this, SLOT(onOpenSerialPort()));
     menu.exec(pt);
+}
+
+void QWoMainWindow::onTunnelButtonClicked()
+{
+    if(QWoSetting::tunnelRunAsDaemon()) {
+        if(m_dlgTunnel) {
+            m_dlgTunnel->deleteLater();
+        }
+        QWoTunnelFactory::instance()->releaseAll();
+        QString pathApp = QCoreApplication::applicationFilePath();
+        QString cmd = QString("\"%1\" --tunnel").arg(pathApp);
+        QProcess::startDetached(cmd);
+    }else{
+        if(m_dlgTunnel == nullptr) {
+            m_dlgTunnel = new QWoTunnelDialog(this);
+        }
+        m_dlgTunnel->exec();
+    }
+}
+
+void QWoMainWindow::onTunnelAssistButtonClicked(QToolButton *btn)
+{
+
 }
 
 void QWoMainWindow::onActionNewTriggered()
@@ -732,7 +768,7 @@ void QWoMainWindow::initToolBar()
     {
         QPushButton *btn = new QPushButton(QIcon("../private/skins/black/history.png"), tr("History"), tool);
         btn->setFlat(true);
-        btn->setMinimumWidth(90);
+        btn->setObjectName("btnHistory");
         QMenu *menu = new QMenu(btn);
         QObject::connect(menu, SIGNAL(aboutToShow()), this, SLOT(onRecentMenuAboutToShow()));
         btn->setMenu(menu);
@@ -742,11 +778,14 @@ void QWoMainWindow::initToolBar()
 
     QPushButton *btn = new QPushButton(QIcon("../private/skins/black/nodes.png"), tr("Open"), tool);
     btn->setFlat(true);
-    btn->setMaximumWidth(90);
-    QKxButtonAssist *btnAssist = new QKxButtonAssist("../private/skins/black/arrowdown.png", btn);
-    QObject::connect(btnAssist, SIGNAL(pressed(QToolButton*)), this, SLOT(onButtonAssistClicked(QToolButton*)));
-    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onOpenRemoteSession()));
-    tool->addWidget(btn);
+    btn->setObjectName("btnOpen");
+
+    {
+        QKxButtonAssist *btnAssist = new QKxButtonAssist("../private/skins/black/arrowdown.png", btn);
+        QObject::connect(btnAssist, SIGNAL(pressed(QToolButton*)), this, SLOT(onButtonAssistClicked(QToolButton*)));
+        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onOpenRemoteSession()));
+        tool->addWidget(btn);
+    }
 
     {
         QPushButton *btn = new QPushButton(QIcon("../private/skins/black/add2.png"), tr("New"), tool);
@@ -773,6 +812,13 @@ void QWoMainWindow::initToolBar()
         QPushButton *btn = new QPushButton(QIcon("../private/skins/black/js.png"), tr("Playbooks"), tool);
         btn->setFlat(true);
         QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onPlaybookButtonClicked()));
+        tool->addWidget(btn);
+    }
+
+    {
+        QPushButton *btn = new QPushButton(QIcon("../private/skins/black/magento.png"), tr("Tunnel"), tool);
+        btn->setFlat(true);
+        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onTunnelButtonClicked()));
         tool->addWidget(btn);
     }
 

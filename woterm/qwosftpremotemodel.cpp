@@ -23,9 +23,6 @@ QWoSftpRemoteModel::QWoSftpRemoteModel(QObject *parent)
     : QAbstractListModel (parent)
 {
     m_font = QGuiApplication::font();
-    m_dirIcon = QIcon(QPixmap("../private/skins/black/folder2.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_fileIcon = QIcon(QPixmap("../private/skins/black/file.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-    m_linkIcon = QIcon(QPixmap("../private/skins/black/link.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
 }
 
 QWoSftpRemoteModel::~QWoSftpRemoteModel()
@@ -77,6 +74,8 @@ QVariant QWoSftpRemoteModel::headerData(int section, Qt::Orientation orientation
 
 QVariant QWoSftpRemoteModel::data(const QModelIndex &index, int role) const
 {
+    int row = index.row();
+    int col = index.column();
     if (index.row() < 0 || index.row() >= m_fileInfos.size()) {
         return QVariant();
     }
@@ -108,6 +107,26 @@ QVariant QWoSftpRemoteModel::data(const QModelIndex &index, int role) const
         v.setValue(fi.name);
         return v;
     }
+    if(role == ROLE_MYSORT) {
+        if(col == 0) {
+            if(fi.isDir()) {
+                return "0"+fi.name;
+            }
+            return "1"+fi.name;
+        }else if(col == 4) {
+            return fi.size;
+        }else if(col == 2) {
+            return fi.date;
+        }else{
+            role = Qt::DisplayRole;
+        }
+    }
+    if(role == Qt::TextAlignmentRole) {
+        if(col == 4) {
+            return Qt::AlignRight;
+        }
+        return QVariant();
+    }
     if(role == Qt::SizeHintRole) {
         QFontMetrics fm(m_font);
         if(column == 0) {
@@ -127,11 +146,11 @@ QVariant QWoSftpRemoteModel::data(const QModelIndex &index, int role) const
             return QSize(w, 24);
         }
         if(column == 4) {
-            int w = fm.width(QString::number(fi.size)) + 10;
+            int w = fm.width(formatNumber(fi.size)) + 10;
             return QSize(w, 24);
         }
         if(column == 5) {
-            int w = fm.width(fi.date) + 10;
+            int w = fm.width(fi.date.toString()) + 10;
             return QSize(w, 24);
         }
     }
@@ -139,11 +158,11 @@ QVariant QWoSftpRemoteModel::data(const QModelIndex &index, int role) const
     if(column == 0) {
         if(role == Qt::DecorationRole) {
             if(fi.type == "d") {
-                return m_dirIcon;
+                return m_iconProvider.icon(QFileIconProvider::Folder);
             }else if(fi.type == "l") {
-                return m_linkIcon;
+                return m_iconProvider.icon(QFileIconProvider::File);
             }
-            return m_fileIcon;
+            return m_iconProvider.icon(QFileIconProvider::File);
         }else if(role == Qt::DisplayRole) {
             return fi.name;
         }
@@ -162,7 +181,7 @@ QVariant QWoSftpRemoteModel::data(const QModelIndex &index, int role) const
         return fi.group;
     }
     if(column == 4) {
-        return fi.size;
+        return formatNumber(fi.size);
     }
     if(column == 5) {
         return fi.date;
@@ -273,6 +292,17 @@ Qt::DropActions QWoSftpRemoteModel::supportedDropActions() const
     return QAbstractListModel::supportedDropActions();
 }
 
+QString QWoSftpRemoteModel::formatNumber(qint64 n) const
+{
+    QString out = QString::number(n);
+    int cnt = (out.length() + 2) / 3 - 1;
+    int length = out.length();
+    for(int i = 0; i < cnt; i++) {
+        out.insert(length - (i+1) * 3, ',');
+    }
+    return out;
+}
+
 static bool lessThan(const FileInfo &s1, const FileInfo &s2)
 {
     static QString type = "dl-";
@@ -302,9 +332,12 @@ void QWoSftpRemoteModel::onDirOpen(const QString &path, const QList<QVariant> &v
         fi.owner = mdata.value("owner").toString();
         fi.group = mdata.value("group").toString();
         fi.size = mdata.value("size").toLongLong();
-        fi.date = mdata.value("date").toString();
+        QString date = mdata.value("date").toString();
+        fi.date = QDateTime::fromSecsSinceEpoch(date.toInt());
         fi.permission = mdata.value("permission").toString();
         m_fileInfos.append(fi);
+
+
     }
     std::sort(m_fileInfos.begin(), m_fileInfos.end(), lessThan);
     endResetModel();

@@ -27,6 +27,7 @@ class QWoCommandHistoryForm;
 class QToolButton;
 class QWoRecentHistory;
 class QPushButton;
+class QWoTunnelDialog;
 
 namespace Ui {
 class QWoMainWindow;
@@ -41,6 +42,8 @@ public:
     virtual ~QWoMainWindow();
     static QWoMainWindow *instance();
     static QWoShower *shower();
+
+    void updateHistory(const QString& target, int type);
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -67,6 +70,9 @@ private slots:
 
     void onPlaybookButtonClicked();
     void onPlaybookAssistButtonClicked(QToolButton* btn);
+
+    void onTunnelButtonClicked();
+    void onTunnelAssistButtonClicked(QToolButton* btn);
 
 private slots:
     void onActionNewTriggered();
@@ -118,4 +124,5 @@ private:
     QPointer<QWoShower> m_shower;
     QPointer<QWoRecentHistory> m_recent;
     QPointer<QPushButton> m_btnTabMerge;
+    QPointer<QWoTunnelDialog> m_dlgTunnel;
 };

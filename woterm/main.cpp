@@ -42,6 +42,7 @@
 #include "qmoapplication.h"
 #include "qmomainwindow.h"
 #include "qwotheme.h"
+#include "qkxlocalpeer.h"
 
 static QFile g_fileLog;
 static QMutex g_mutexFileLog;
@@ -107,17 +108,59 @@ void test()
 }
 
 
-int main_pc(int argc, char *argv[])
+int main_pc_tunnel(int argc, char *argv[])
 {
     QGuiApplication::setApplicationName("woterm");
     QGuiApplication::setOrganizationName("aoyiduo");
     QGuiApplication::setOrganizationDomain("aoyiduo.com");
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_DontUseNativeMenuBar);
+    QGuiApplication::setAttribute(Qt::AA_DisableWindowContextHelpButton);
 #ifdef Q_OS_WIN
-    static QWoApplication app(argc, argv);
+    static QWoTunnelApplication app(argc, argv);
 #else
-    QWoApplication app(argc, argv);
+    QWoTunnelApplication app(argc, argv);
+#endif
+
+    if(!QWoSetting::tunnelRunAsDaemon()) {
+        return 0;
+    }
+
+    QKxLocalPeer peer("tunnel", &app);
+
+    if(peer.isClient()) {
+        peer.sendMessage("active");
+        return 0;
+    }
+
+    QObject::connect(&peer, SIGNAL(messageReceived(QString)), &app, SLOT(onMessageReceived(QString)));
+
+    test();
+    setDebugMessageToFile("tunnel.log", true);
+
+    QWoTheme::instance();
+
+    QTranslator translator;
+    QString lang = QWoSetting::absoluteLanguageFilePath();
+    if(!lang.isEmpty() && translator.load(lang)){
+        app.installTranslator(&translator);
+    }
+
+    return app.exec();
+}
+
+int main_pc_main(int argc, char *argv[])
+{
+    QGuiApplication::setApplicationName("woterm");
+    QGuiApplication::setOrganizationName("aoyiduo");
+    QGuiApplication::setOrganizationDomain("aoyiduo.com");
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_DontUseNativeMenuBar);
+    QGuiApplication::setAttribute(Qt::AA_DisableWindowContextHelpButton);
+#ifdef Q_OS_WIN
+    static QWoMainApplication app(argc, argv);
+#else
+    QWoMainApplication app(argc, argv);
 #endif
 
     test();
@@ -138,6 +181,18 @@ int main_pc(int argc, char *argv[])
     return app.exec();
 }
 
+
+
+int main_pc(int argc, char *argv[])
+{
+    for(int i = 0; i < argc; i++) {
+        if(qstricmp(argv[i], "--tunnel") == 0) {
+            return main_pc_tunnel(argc, argv);
+        }
+    }
+    return main_pc_main(argc, argv);
+}
+
 int main_qml(int argc, char *argv[])
 {
     //qInstallMessageHandler(myMessageOutput);
@@ -150,6 +205,7 @@ int main_qml(int argc, char *argv[])
     QGuiApplication::setOrganizationName("aoyiduo");
     QGuiApplication::setOrganizationDomain("aoyiduo.com");
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_DisableWindowContextHelpButton);
 #ifdef Q_OS_WIN
     static QMoApplication app(argc, argv);
 #else

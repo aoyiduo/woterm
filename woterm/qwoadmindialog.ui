@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>368</width>
+    <width>440</width>
     <height>283</height>
    </rect>
   </property>
@@ -57,7 +57,7 @@
            <string>save</string>
           </property>
           <property name="icon">
-           <iconset resource="woterm.qrc">
+           <iconset>
             <normaloff>../private/skins/black/save.png</normaloff>../private/skins/black/save.png</iconset>
           </property>
           <property name="iconSize">
@@ -84,14 +84,35 @@
         <item>
          <widget class="QCheckBox" name="chkStartup">
           <property name="text">
-           <string>Login when startup</string>
+           <string>Login when startup.</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QCheckBox" name="chkPassword">
           <property name="text">
-           <string>Look up password</string>
+           <string>Look up password.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="chkTunnelOpen">
+          <property name="text">
+           <string>Allow connections from the local area network.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="chkInitWindow">
+          <property name="text">
+           <string>Local terminal auto start on app start.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="chkTunnelDaemon">
+          <property name="text">
+           <string>Set tunnel function run in daemon mode.</string>
           </property>
          </widget>
         </item>
@@ -139,8 +160,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="woterm.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

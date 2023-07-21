@@ -30,6 +30,7 @@ class QWoTreeView;
 class QPushButton;
 class QWoSftpItemDelegate;
 class QKxMessageBox;
+class QKxLabelAssist;
 
 class QWoSftpItemDelegate : public QStyledItemDelegate
 {
@@ -145,6 +146,8 @@ private:
     QPointer<QWoSftpTask> m_task;
     QPointer<QWoSftpQueueModel> m_taskModel;
     QPointer<QWoSftpItemDelegate> m_delegate;
+
+    QPointer<QKxLabelAssist> m_progressLabel;
 };
 
 #endif // QWOSFTPTRANSFERWIDGET_H

@@ -70,7 +70,27 @@ QVariant QWoSftpLocalModel::data(const QModelIndex &index, int role) const
         v.setValue(fi);
         return v;
     }
-    if(role == Qt::DecorationRole) {
+    if(role == ROLE_MYSORT) {
+        if(col == 0) {
+            if(fi.isRoot()) {
+                return "0"+fi.filePath();
+            }
+            if(fi.isDir()) {
+                return "0"+fi.fileName();
+            }
+            return "1"+fi.fileName();
+        }else if(col == 1) {
+            return fi.size();
+        }else if(col == 2) {
+            return fi.created();
+        }
+    }
+    if(role == Qt::TextAlignmentRole) {
+        if(col == 1) {
+            return Qt::AlignRight;
+        }
+        return QVariant();
+    }else if(role == Qt::DecorationRole) {
         if(col == 0) {
             return m_iconProvider.icon(fi);
         }
@@ -86,7 +106,7 @@ QVariant QWoSftpLocalModel::data(const QModelIndex &index, int role) const
             return QSize(w, 24);
         }
         if(col == 1) {
-            int w = fm.width(QString::number(fi.size())) + 10;
+            int w = fm.width(formatNumber(fi.size())) + 10;
             return QSize(w, 24);
         }
         if(col == 2) {
@@ -100,10 +120,7 @@ QVariant QWoSftpLocalModel::data(const QModelIndex &index, int role) const
             }
             return fi.fileName();
         }else if(col == 1) {
-            if(fi.isFile()) {
-                return fi.size();
-            }
-            return QVariant();
+            return formatNumber(fi.size());
         }else if(col == 2) {
             return fi.created();
         }
@@ -202,6 +219,17 @@ void QWoSftpLocalModel::onFileListActive(const QList<QFileInfo> &fis)
     beginResetModel();
     m_fileInfos = fis;
     endResetModel();
+}
+
+QString QWoSftpLocalModel::formatNumber(qint64 n) const
+{
+    QString out = QString::number(n);
+    int cnt = (out.length() + 2) / 3 - 1;
+    int length = out.length();
+    for(int i = 0; i < cnt; i++) {
+        out.insert(length - (i+1) * 3, ',');
+    }
+    return out;
 }
 
 void QWoSftpLocalModel::setHome()

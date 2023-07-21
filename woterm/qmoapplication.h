@@ -24,7 +24,6 @@ public:
     explicit QMoApplication(int &argc, char **argv);
     static QMoApplication *instance();
     static QMoMainWindow *mainWindow();
-    static qint64 elapse();
 
     Q_INVOKABLE static void qmlCopyText(const QString& txt);
 signals:

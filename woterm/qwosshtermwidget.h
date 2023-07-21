@@ -77,6 +77,7 @@ protected:
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     int isZmodemCommand(const QByteArray &data);
     bool checkZmodemInstall();
+    bool validProxyJumper();
 private:
     Q_INVOKABLE void reconnect(bool restore=false);
     Q_INVOKABLE void executeCommand(const QByteArray& cmd);

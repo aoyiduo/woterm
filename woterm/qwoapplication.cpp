@@ -13,6 +13,7 @@
 #include "qwosetting.h"
 #include "qkxprocesslaunch.h"
 #include "qwomainwindow.h"
+#include "qwotunneldialog.h"
 #include "qkxmessagebox.h"
 #include "qwotheme.h"
 
@@ -27,6 +28,7 @@
 
 #include <QStyleFactory>
 #include <QDebug>
+#include <QMenu>
 #include <QFile>
 #include <QIcon>
 #include <QDir>
@@ -37,12 +39,12 @@
 #include <QQmlEngine>
 #include <QJSEngine>
 #include <QQuickStyle>
+#include <QProcess>
 
 QWoApplication::QWoApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
     setWindowIcon(QIcon(":/woterm/resource/images/woterm2.png"));
-    m_timeStart = QDateTime::currentSecsSinceEpoch();
 
     QString path = applicationDirPath();
     addLibraryPath(path);
@@ -51,10 +53,17 @@ QWoApplication::QWoApplication(int &argc, char **argv)
         addLibraryPath(libPath);
     }
 
-    QStringList libpaths = libraryPaths();
-    qDebug() << libpaths;
     QMetaObject::invokeMethod(this, "init", Qt::QueuedConnection);
+}
 
+QWoApplication *QWoApplication::instance()
+{
+    return qobject_cast<QWoApplication*>(QCoreApplication::instance());
+}
+
+QWoMainApplication::QWoMainApplication(int &argc, char **argv)
+    : QWoApplication(argc, argv)
+{
     qmlRegisterType<QKxScriptRemoteCommand>("RemoteCommand", 1,0, "RemoteCommand");
     qmlRegisterType<QKxScriptLocalCommand>("LocalCommand", 1,0, "LocalCommand");
     qmlRegisterType<QKxScriptFileTransferCommand>("FileTransferCommand", 1,0, "FileTransferCommand");
@@ -65,26 +74,106 @@ QWoApplication::QWoApplication(int &argc, char **argv)
     qmlRegisterType<QKxFileAssist>("LocalFile", 1,0, "LocalFile");
 }
 
-QWoApplication *QWoApplication::instance()
+QWidget *QWoMainApplication::mainWindow()
 {
-    return qobject_cast<QWoApplication*>(QCoreApplication::instance());
+    return m_main;
 }
 
-QWoMainWindow *QWoApplication::mainWindow()
-{
-    return QWoApplication::instance()->m_main;
-}
-
-qint64 QWoApplication::elapse()
-{
-    qint64 tmStart = QWoApplication::instance()->m_timeStart;
-    qint64 tmNow = QDateTime::currentSecsSinceEpoch();
-    return tmNow - tmStart;
-}
-
-void QWoApplication::init()
+void QWoMainApplication::init()
 {
     m_main = new QWoMainWindow();
     m_main->show();
     QMetaObject::invokeMethod(m_main, "onAppStart", Qt::QueuedConnection);
 }
+
+
+QWoTunnelApplication::QWoTunnelApplication(int &argc, char **argv)
+    : QWoApplication(argc, argv)
+{
+    setQuitOnLastWindowClosed(false);
+    QObject::connect(this, SIGNAL(aboutToQuit()), this, SLOT(onAboutToQuit()));
+}
+
+QWidget *QWoTunnelApplication::mainWindow()
+{
+    return m_main;
+}
+
+void QWoTunnelApplication::init()
+{
+    QMenu *menu = new QMenu();
+    menu->addAction(QIcon(":/woterm/resource/images/tunnel.png"), QObject::tr("Show tunnel window"), this, SLOT(onShowWindow()));
+    menu->addAction(QIcon(":/woterm/resource/images/woterm2.png"), QObject::tr("New session"), this, SLOT(onNewSessionWindow()));
+    menu->addAction(QIcon(":/woterm/resource/images/exit.png"), QObject::tr("Exit"), this, SLOT(onAboutToQuit()));
+    m_menu = menu;
+
+    m_tray.setIcon(QIcon(":/woterm/resource/images/tunnel.png"));
+    m_tray.setToolTip(QObject::tr("WoTerm tunnel daemon"));
+    m_tray.setContextMenu(menu);
+    m_tray.show();
+
+    QObject::connect(menu, SIGNAL(aboutToShow()), this, SLOT(onMenuAboutToShow()));
+    QObject::connect(&m_tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayActive(QSystemTrayIcon::ActivationReason)));
+
+    m_main = new QWoTunnelDialog();
+    m_main->show();
+}
+
+void QWoTunnelApplication::onTrayActive(QSystemTrayIcon::ActivationReason reason)
+{
+    if(reason == QSystemTrayIcon::DoubleClick/*|| reason == QSystemTrayIcon::Context || reason == QSystemTrayIcon::Trigger*/) {
+        onShowWindow();
+    }
+}
+
+void QWoTunnelApplication::onMenuAboutToShow()
+{
+
+}
+
+void QWoTunnelApplication::onShowWindow()
+{
+    if(m_main->isVisible()) {
+        return;
+    }
+    m_main->show();
+}
+
+void QWoTunnelApplication::onNewSessionWindow()
+{
+    QString pathApp = QCoreApplication::applicationFilePath();
+    QString cmd = QString("\"%1\"").arg(pathApp);
+    QProcess::startDetached(cmd);
+}
+
+void QWoTunnelApplication::onAboutToQuit()
+{
+    m_tray.setVisible(false);
+    QCoreApplication::quit();
+}
+
+void QWoTunnelApplication::onMessageReceived(const QString &msg)
+{
+    if(msg == "active") {
+        onDelayActiveWindow();
+        //QTimer::singleShot(1000, this, SLOT(onDelayActiveWindow()));
+    }
+}
+#ifdef Q_OS_WIN
+#include <Windows.h>
+void QWoTunnelApplication::onDelayActiveWindow()
+{
+    onShowWindow();
+    m_main->activateWindow();
+    m_main->raise();
+    WId wid = m_main->winId();
+    ::SetForegroundWindow(HWND(wid));
+}
+#else
+void QWoTunnelApplication::onDelayActiveWindow()
+{
+    onShowWindow();
+    m_main->activateWindow();
+    m_main->raise();
+}
+#endif

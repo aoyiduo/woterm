@@ -14,23 +14,66 @@
 
 #include <QPointer>
 #include <QApplication>
+#include <QSystemTrayIcon>
 
 class QWoMainWindow;
 class QWoApplication : public QApplication
 {
     Q_OBJECT
 public:
+    enum EAppType {
+        eTunnel,
+        eMain
+    };
+public:
     explicit QWoApplication(int &argc, char **argv);
     static QWoApplication *instance();
-    static QWoMainWindow *mainWindow();
-    static qint64 elapse();
+    virtual QWidget *mainWindow() = 0;
+    virtual EAppType type() = 0;
+protected:
+    Q_INVOKABLE virtual void init() = 0;
+};
 
-signals:
-private:
-    Q_INVOKABLE void init();
+class QWoMainApplication : public QWoApplication
+{
+    Q_OBJECT
+public:
+    explicit QWoMainApplication(int &argc, char **argv);
+protected:
+    QWidget *mainWindow();
+    virtual void init();
+    virtual EAppType type() {
+        return eMain;
+    }
 private:
     QPointer<QWoMainWindow> m_main;
-    qint64 m_timeStart;
+};
+
+class QWoTunnelDialog;
+class QWoTunnelApplication : public QWoApplication
+{
+    Q_OBJECT
+public:
+    explicit QWoTunnelApplication(int &argc, char **argv);
+protected:
+    QWidget *mainWindow();
+    virtual void init();
+    virtual EAppType type() {
+        return eTunnel;
+    }
+protected slots:
+    void onTrayActive(QSystemTrayIcon::ActivationReason reason);
+    void onMenuAboutToShow();
+    void onShowWindow();
+    void onNewSessionWindow();
+    void onAboutToQuit();
+
+    void onMessageReceived(const QString& msg);
+    void onDelayActiveWindow();
+private:
+    QPointer<QWoTunnelDialog> m_main;
+    QPointer<QMenu> m_menu;
+    QSystemTrayIcon m_tray;
 };
 
 #endif // QWOAPPLICATION_H

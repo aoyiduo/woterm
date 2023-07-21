@@ -1173,9 +1173,16 @@ QList<HostInfo> QWoSshConf::proxyJumpers(const QString& name, int max) const
         return his;
     }
     his.append(hi);
-    if(hi.hasProxyJump()) {
-        his.append(proxyJumpers(hi.proxyJump, max-1));
+    if(!hi.proxyJump.isEmpty()) {
+        QStringList names = hi.proxyJump.split(';');
+        for(auto it = names.begin(); it != names.end();it++) {
+            const HostInfo& hit = QWoSshConf::instance()->find(*it);
+            if(hit.isValid() && hit.type == SshWithSftp) {
+                his.append(hit);
+            }
+        }
     }
+
     return his;
 }
 

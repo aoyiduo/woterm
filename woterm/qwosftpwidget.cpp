@@ -102,10 +102,15 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
         m_local->setSelectionBehavior(QAbstractItemView::SelectRows);
         m_local->setSelectionMode(m_isUltimate ?  QAbstractItemView::MultiSelection : QAbstractItemView::SingleSelection);
         m_local->setIconSize(QSize(20, 20));
+        m_local->setSortingEnabled(true);
+        m_local->sortByColumn(0, Qt::AscendingOrder);
         layout->addWidget(m_local);
-        QWoSftpLocalModel* model = new QWoSftpLocalModel(m_local);
+        QWoSftpLocalModel* model = new QWoSftpLocalModel(this);
+        m_proxyLocal = new QSortFilterProxyModel(this);
+        m_proxyLocal->setSourceModel(model);
+        m_proxyLocal->setSortRole(ROLE_MYSORT);
         m_localModel = model;
-        m_local->setModel(model);
+        m_local->setModel(m_proxyLocal);
         QObject::connect(model, SIGNAL(modelReset()), this, SLOT(onLocalResetModel()), Qt::QueuedConnection);
         m_local->setContextMenuPolicy(Qt::CustomContextMenu);
         QObject::connect(m_local, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onLocalItemDoubleClicked(QModelIndex)));
@@ -136,8 +141,9 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
     }
 
     m_remoteModel = new QWoSftpRemoteModel(this);
-    m_proxyModel = new QSortFilterProxyModel(this);
-    m_proxyModel->setSourceModel(m_remoteModel);
+    m_proxyRemote = new QSortFilterProxyModel(this);
+    m_proxyRemote->setSourceModel(m_remoteModel);
+    m_proxyRemote->setSortRole(ROLE_MYSORT);
 
     QVBoxLayout *layout = new QVBoxLayout(ui->remoteFrame);
     ui->remoteFrame->setLayout(layout);
@@ -153,11 +159,13 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
     m_remote->viewport()->setObjectName("remoteViewPort");
     m_remote->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_remote->setSelectionMode(m_isUltimate ? QAbstractItemView::MultiSelection : QAbstractItemView::SingleSelection);
-    m_remote->setIconSize(QSize(24, 24));
+    m_remote->setIconSize(QSize(20, 20));
+    m_remote->setSortingEnabled(true);
+    m_remote->sortByColumn(0, Qt::AscendingOrder);
     m_remote->setContextMenuPolicy(Qt::CustomContextMenu);
     layout->addWidget(m_remote);
 
-    m_remote->setModel(m_proxyModel);
+    m_remote->setModel(m_proxyRemote);
     m_loading = new QWoLoadingWidget(QColor(qRgb(18,150,219)), m_remote);
 
     QObject::connect(m_remote, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onRemoteItemDoubleClicked(QModelIndex)));

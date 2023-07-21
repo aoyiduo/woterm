@@ -215,7 +215,7 @@ class QWoPowerSftp : public QWoSshFtp
     QFile m_lfile;
     sftp_file m_rfile;
     qint64 m_total;
-    int m_asyncRequest, m_percent;
+    int m_asyncRequest, m_percent, m_tickLast, m_speedPerSecond;
     QByteArray m_pathCurrent;
     bool m_abort;
     // for list file next.
@@ -545,8 +545,9 @@ private:
             if(mtime < 10) {
                 mtime = qMax(qint64(attr->atime), qint64(attr->atime64));
             }
-            QDateTime dt = QDateTime::fromMSecsSinceEpoch(mtime * 1000);
-            QByteArray date = dt.toString("dd.MM.yyyy hh:mm:ss").toLatin1();
+            QByteArray date = QByteArray::number(mtime);
+            //QDateTime dt = QDateTime::fromMSecsSinceEpoch(mtime * 1000);
+            //QByteArray date = dt.toString("dd.MM.yyyy hh:mm:ss").toLatin1();
             QByteArray name(attr->name);
             if(ownerMax < owner.length()) {
                 ownerMax = owner.length();
@@ -797,6 +798,8 @@ private:
 
         m_rfile = rf;
         m_percent = 0;
+        m_speedPerSecond = 0;
+        m_tickLast = QDateTime::currentSecsSinceEpoch();
         m_total = total;
         sftp_file_set_nonblocking(rf);
         m_asyncRequest = sftp_async_read_begin(rf, MAX_BUFFER);
@@ -816,10 +819,18 @@ private:
             return n;
         }
         m_lfile.write(buf, n);
+        m_speedPerSecond += n;
         m_asyncRequest = sftp_async_read_begin(m_rfile, MAX_BUFFER);
         if(m_total > 0) {
+            int now = QDateTime::currentSecsSinceEpoch();
             int v = m_lfile.size() * 100 / m_total;
-            if(v != m_percent) {
+            if(now != m_tickLast) {
+                m_percent = v;
+                m_userData.insert("speed", m_speedPerSecond);
+                m_speedPerSecond = 0;
+                m_tickLast = now;
+                emit progress(MT_FTP_DOWNLOAD, v, m_userData);
+            }else if(v != m_percent) {
                 m_percent = v;
                 emit progress(MT_FTP_DOWNLOAD, v, m_userData);
             }
@@ -896,6 +907,8 @@ private:
         m_rfile = wf;
         m_total = m_lfile.size();
         m_percent =  m_lfile.pos() * 100 / m_total;
+        m_speedPerSecond = 0;
+        m_tickLast = QDateTime::currentSecsSinceEpoch();
         emit progress(MT_FTP_UPLOAD, m_percent, m_userData);
         return uploadNext(user) ? 1 : 0;
     }
@@ -919,8 +932,16 @@ private:
         if(err != n) {
             return -2;
         }
+        m_speedPerSecond += n;
         int v =  m_lfile.pos() * 100 / m_total;
-        if(v != m_percent) {
+        int now = QDateTime::currentSecsSinceEpoch();
+        if(now != m_tickLast) {
+            m_percent = v;
+            m_userData.insert("speed", m_speedPerSecond);
+            m_speedPerSecond = 0;
+            m_tickLast = now;
+            emit progress(MT_FTP_UPLOAD, v, m_userData);
+        }else if(v != m_percent) {
             m_percent = v;
             emit progress(MT_FTP_UPLOAD, v, m_userData);
         }
@@ -959,8 +980,9 @@ private:
             if(mtime < 10) {
                 mtime = qMax(qint64(attr->atime), qint64(attr->atime64));
             }
-            QDateTime dt = QDateTime::fromMSecsSinceEpoch(mtime * 1000);
-            QByteArray date = dt.toString("dd.MM.yyyy hh:mm:ss").toLatin1();
+            //QDateTime dt = QDateTime::fromMSecsSinceEpoch(mtime * 1000);
+            //QByteArray date = dt.toString("dd.MM.yyyy hh:mm:ss").toLatin1();
+            QByteArray date = QByteArray::number(mtime);
             QByteArray name(attr->name);
             if(ownerMax < owner.length()) {
                 ownerMax = owner.length();
@@ -1591,6 +1613,10 @@ public:
         push(MT_REMOVE, QByteArray(), cli);
     }
 
+    void customWrite(QWoSshChannel *cli, const QByteArray& data) {
+        push(MT_CUSTOMDATA, data, cli);
+    }
+
     void shellWrite(QWoSshChannel *cli, const QByteArray& data) {
         push(MT_PTYDATA, data, cli);
     }
@@ -1872,7 +1898,9 @@ QString QWoSSHConnection::hostName() const
 
 void QWoSSHConnection::append(QWoSshChannel *cli)
 {
-    m_conn->append(cli);
+    if(m_conn) {
+        m_conn->append(cli);
+    }
 }
 
 void QWoSSHConnection::remove(QWoSshChannel *cli)
@@ -1939,6 +1967,13 @@ void QWoSSHConnection::setInputResult(const QString &pass)
     if(m_input) {
         m_input->setInputResult(pass);
         m_input = nullptr;
+    }
+}
+
+void QWoSSHConnection::customWrite(QWoSshChannel *cli, const QByteArray &buf)
+{
+    if(m_conn) {
+        m_conn->customWrite(cli, buf);
     }
 }
 
@@ -2349,6 +2384,8 @@ void QWoSshChannel::stop()
 {
     if(m_conn){
         m_conn->remove(this);
+    }else{
+        emit finishArrived(-1);
     }
 }
 
@@ -2678,6 +2715,12 @@ void QWoSshFactory::release(QWoSshChannel *obj)
     if(obj == nullptr || m_dels.contains(obj)) {
         return;
     }
+    //QObject *parent = obj->parent();
+    if(obj->parent() != this) {
+        obj->setParent(this);
+    }
+    //QObject *parent2 = obj->parent();
+    //qDebug() << "SshFactory::release" << qint64(parent) << qint64(parent2) << qint64(this);
     obj->disconnect();
     QObject::connect(obj, SIGNAL(finishArrived(int)), this, SLOT(onChannelFinishArrived(int)));
     if(!obj->hasRunning()) {

@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -31,6 +31,9 @@ private slots:
     void onTextChanged(const QString& txt);
     void onStartupClicked();
     void onLookupPasswordClicked();
+    void onAllowConnectTunnelClicked();
+    void onTerminalOnAppStartClicked();
+    void onTunnelDaemonClicked();
 private:
     Ui::QWoAdminDialog *ui;
 };

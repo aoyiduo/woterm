@@ -16,22 +16,30 @@
 #include <QVariant>
 #include <QFrame>
 #include <QSpacerItem>
+#include <QResizeEvent>
 
 QKxButtonAssist::QKxButtonAssist(const QString& icon, bool frame, QWidget *parent)
     : QObject(parent)
+    , m_margins(2)
+    , m_spacing(1)
+    , m_frameWidth(2)
 {
-    QHBoxLayout *layout = new QHBoxLayout(parent);
-    layout->setSpacing(0);
-    layout->setMargin(0);
-    layout->setContentsMargins(2, 2, 2, 2);
-    parent->setLayout(layout);
-    layout->addItem(new QSpacerItem(20, 20, QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
-    m_layout = layout;
+    parent->installEventFilter(this);
     append(icon, frame);
 }
 
 QKxButtonAssist::QKxButtonAssist(const QString &icon, QWidget *parent)
     : QKxButtonAssist(icon, true, parent)
+{
+
+}
+
+void QKxButtonAssist::setMargins(int n)
+{
+    m_margins = n;
+}
+
+void QKxButtonAssist::setSpacing(int n)
 {
 
 }
@@ -50,8 +58,9 @@ QToolButton *QKxButtonAssist::append(const QString &icon, bool frame)
         btn->setStyleSheet(style);
     }
     QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onClicked()));
-    m_layout->insertWidget(1, btn);
-    m_btns.append(btn);
+    m_btns.insert(0, btn);
+    m_childs.insert(0, btn);
+    QMetaObject::invokeMethod(this, "resetPosition", Qt::QueuedConnection);
     return btn;
 }
 
@@ -69,8 +78,9 @@ void QKxButtonAssist::appendSeperator()
     QFrame *seperator = new QFrame(p);
     seperator->setFrameShape(QFrame::VLine);
     seperator->setFrameShadow(QFrame::Sunken);
-    seperator->setObjectName("buttonAssistVLine");
-    m_layout->insertWidget(1, seperator);
+    seperator->setObjectName("buttonAssistVLine");    
+    m_childs.insert(0, seperator);
+    QMetaObject::invokeMethod(this, "resetPosition", Qt::QueuedConnection);
 }
 
 void QKxButtonAssist::setEnabled(int idx, bool on)
@@ -91,15 +101,44 @@ bool QKxButtonAssist::isEnabled(int idx)
     return btn->isEnabled();
 }
 
-void QKxButtonAssist::setIconMargins(int m)
-{
-    m_layout->setContentsMargins(m,m,m,m);
-}
-
 void QKxButtonAssist::onClicked()
 {
     QToolButton *btn = qobject_cast<QToolButton*>(sender());
     QVariant v = btn->property("index");
     emit clicked(v.toInt());
     emit pressed(btn);
+}
+
+bool QKxButtonAssist::eventFilter(QObject *watched, QEvent *event)
+{
+    if(event->type() == QEvent::Resize) {
+        QResizeEvent *ev = (QResizeEvent*)event;
+        QSize sz = ev->size();
+        QMetaObject::invokeMethod(this, "resetPosition", Qt::QueuedConnection);
+    }
+    return false;
+}
+
+void QKxButtonAssist::resetPosition()
+{
+    QWidget *widget = qobject_cast<QWidget*>(parent());
+    QSize sz = widget->size();
+    int bh = sz.height() - m_margins - m_margins;
+
+    int bx = sz.width() - bh * m_btns.length() - (m_childs.length() - m_btns.length()) * m_frameWidth - (m_childs.length() - 1) * m_spacing - m_margins;
+    for(int i = 0; i < m_childs.size(); i++) {
+        QWidget *w = m_childs.at(i);
+        QToolButton *btn = qobject_cast<QToolButton*>(w);
+        if(btn) {
+            QRect brt(bx, m_margins, bh, bh);
+            btn->setFixedSize(bh, bh);
+            btn->setGeometry(brt);
+            bx += bh;
+        }else{
+            QRect brt(bx, m_margins, m_frameWidth, bh);
+            w->setGeometry(brt);
+            bx += m_frameWidth;
+        }
+        bx += m_spacing;
+    }
 }

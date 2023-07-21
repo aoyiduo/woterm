@@ -98,6 +98,7 @@ QWoSessionProperty::QWoSessionProperty(QWidget *parent) :
     Qt::WindowFlags flags = windowFlags();
     setWindowFlags(flags &~Qt::WindowContextHelpButtonHint);
     setWindowTitle(tr("Session[New]"));
+    ui->proxyJump->setPlaceholderText(tr("Multiple jump-server are separated by commas."));
     init();
     resizeWidget();
 }
@@ -503,7 +504,14 @@ void QWoSessionProperty::onProxyJumpeBrowser()
     if(!dlg.result(&hi)) {
         return;
     }
-    ui->proxyJump->setText(hi.name);
+    QString jumpers = ui->proxyJump->text();
+    if(jumpers.isEmpty()) {
+        ui->proxyJump->setText(hi.name);
+    }else{
+        jumpers.append(";");
+        jumpers.append(hi.name);
+        ui->proxyJump->setText(jumpers);
+    }
 }
 
 void QWoSessionProperty::onIdentifyFileBrowser()
@@ -597,7 +605,7 @@ bool QWoSessionProperty::saveConfig()
         }else{
             hi.identityFile = ui->identify->text();
             if(hi.identityFile.isEmpty()) {
-                QKxMessageBox::warning(this, tr("Info"), tr("The identity file can't be empty"));
+                QKxMessageBox::warning(this, tr("Parameter information"), tr("The identity file can't be empty"));
                 return false;
             }
         }
@@ -605,11 +613,11 @@ bool QWoSessionProperty::saveConfig()
         hi.memo = ui->memo->toPlainText();
         hi.script = ui->command->text();
         if(!hi.name.isEmpty() && hi.name == hi.proxyJump) {
-            QKxMessageBox::warning(this, tr("Info"), tr("ProxyJump can't be same with name, change to another one."));
+            QKxMessageBox::warning(this, tr("Parameter information"), tr("ProxyJump can't be same with name, change to another one."));
             return false;
         }
         if(hi.user.isEmpty()) {
-            QKxMessageBox::warning(this, tr("Info"), tr("The userName can't be empty"));
+            QKxMessageBox::warning(this, tr("Parameter information"), tr("The userName can't be empty"));
             return false;
         }
     }else if(type == "SftpOnly") {
@@ -623,12 +631,12 @@ bool QWoSessionProperty::saveConfig()
         }else{
             hi.identityFile = QWoUtils::nameToPath(ui->identify->text());
             if(hi.identityFile.isEmpty()) {
-                QKxMessageBox::warning(this, tr("Info"), tr("The identify file can't be empty"));
+                QKxMessageBox::warning(this, tr("Parameter information"), tr("The identify file can't be empty"));
                 return false;
             }
             QString identify = QWoSetting::identityFilePath() + "/" + hi.identityFile;
             if(!QFileInfo::exists(identify)) {
-                QKxMessageBox::warning(this, tr("Info"), tr("failed to find the identify file"));
+                QKxMessageBox::warning(this, tr("Parameter information"), tr("failed to find the identify file"));
                 return false;
             }
             hi.identityFile.insert(0, "woterm:");
@@ -636,11 +644,11 @@ bool QWoSessionProperty::saveConfig()
         hi.proxyJump = ui->proxyJump->text();
         hi.memo = ui->memo->toPlainText();
         if(!hi.name.isEmpty() && hi.name == hi.proxyJump) {
-            QKxMessageBox::warning(this, tr("Info"), tr("ProxyJump can't be same with name, change to another one."));
+            QKxMessageBox::warning(this, tr("Parameter information"), tr("ProxyJump can't be same with name, change to another one."));
             return false;
         }
         if(hi.user.isEmpty()) {
-            QKxMessageBox::warning(this, tr("Info"), tr("The userName can't be empty"));
+            QKxMessageBox::warning(this, tr("Parameter information"), tr("The userName can't be empty"));
             return false;
         }
     }else if(type == "Telnet") {
@@ -692,23 +700,27 @@ bool QWoSessionProperty::saveConfig()
         }
     }
     if(hi.name.isEmpty()) {
-        QKxMessageBox::warning(this, tr("Info"), tr("The name can't be empty"));
+        QKxMessageBox::warning(this, tr("Parameter information"), tr("The name can't be empty"));
         return false;
     }
     if(hi.type != SerialPort) {
         if(hi.host.isEmpty()) {
-            QKxMessageBox::warning(this, tr("Info"), tr("The host can't be empty"));
+            QKxMessageBox::warning(this, tr("Parameter information"), tr("The host can't be empty"));
             return false;
         }
 
         if(hi.port < 10 || hi.port > 65535) {
-            QKxMessageBox::warning(this, tr("Info"), tr("The port should be at [10,65535]"));
+            QKxMessageBox::warning(this, tr("Parameter information"), tr("The port should be at [10,65535]"));
             return false;
         }
     }
+    if(hi.name.contains(';')) {
+        QKxMessageBox::warning(this, tr("Parameter information"), tr("The session name can not contain comma symbol."));
+        return false;
+    }
     if(m_name != hi.name) {
         if(!m_name.isEmpty() && QWoHostListModel::instance()->exists(hi.name)) {
-            QKxMessageBox::warning(this, tr("Info"), tr("The session name had been used, Change to another name."));
+            QKxMessageBox::warning(this, tr("Parameter information"), tr("The session name had been used, Change to another name."));
             return false;
         }
         QKxVer *ver = QKxVer::instance();

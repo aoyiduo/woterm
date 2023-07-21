@@ -60,6 +60,7 @@ public:
     bool start(const HostInfo& hi);
     void stop();
     void setInputResult(const QString& pass);
+    void customWrite(QWoSshChannel *cli, const QByteArray& buf);
     void shellWrite(QWoSshChannel *cli, const QByteArray& buf);
     void shellSize(QWoSshChannel *cli, int cols, int rows);
     void shellSignal(QWoSshChannel *cli, const QByteArray& sig);
@@ -118,7 +119,7 @@ public:
     virtual ~QWoSshChannel();
     bool start(const QString& host, int gid);
     bool start(const HostInfo& hi, int gid);
-    void stop();
+    virtual void stop();
     void setInputResult(const QString& pass);
     bool hasRunning();
     inline QString targetHost() const {
@@ -230,7 +231,7 @@ public:
     virtual ~QWoSshFactory();
     static QWoSshFactory *instance();
     QWoSshShell *createShell(bool cmd = false);
-    QWoSshFtp *createSftp();
+    QWoSshFtp *createSftp();    
     void release(QWoSshChannel *obj);
     QWoSSHConnection *get(int gid, bool *pcreated);
     int groudId(const QString& name);

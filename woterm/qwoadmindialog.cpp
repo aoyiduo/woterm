@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -30,7 +30,9 @@ QWoAdminDialog::QWoAdminDialog(QWidget *parent) :
     QObject::connect(ui->btnPassReset, SIGNAL(clicked()), this, SLOT(onPasswordResetClicked()));
     QObject::connect(ui->btnOk, SIGNAL(clicked()), this, SLOT(close()));
     QObject::connect(ui->chkStartup, SIGNAL(clicked()), this, SLOT(onStartupClicked()));
-    QObject::connect(ui->chkPassword, SIGNAL(clicked()), this, SLOT(onLookupPasswordClicked()));
+    QObject::connect(ui->chkTunnelOpen, SIGNAL(clicked()), this, SLOT(onAllowConnectTunnelClicked()));
+    QObject::connect(ui->chkInitWindow, SIGNAL(clicked()), this, SLOT(onTerminalOnAppStartClicked()));
+    QObject::connect(ui->chkTunnelDaemon, SIGNAL(clicked()), this, SLOT(onTunnelDaemonClicked()));
 
     ui->pass->setEchoMode(QLineEdit::Password);
     QString pass = QWoSetting::adminPassword();
@@ -38,6 +40,9 @@ QWoAdminDialog::QWoAdminDialog(QWidget *parent) :
 
     ui->chkStartup->setChecked(QWoSetting::startupByAdmin());
     ui->chkPassword->setChecked(QWoSetting::lookupPasswordByAdmin());
+    ui->chkTunnelOpen->setChecked(QWoSetting::allowOtherHostConnectToTunnel());
+    ui->chkTunnelDaemon->setChecked(QWoSetting::tunnelRunAsDaemon());
+    ui->chkInitWindow->setChecked(QWoSetting::localTerminalOnAppStart());
 
     adjustSize();
 }
@@ -82,4 +87,19 @@ void QWoAdminDialog::onStartupClicked()
 void QWoAdminDialog::onLookupPasswordClicked()
 {
     QWoSetting::setLookupPasswordByAdmin(ui->chkPassword->isChecked());
+}
+
+void QWoAdminDialog::onAllowConnectTunnelClicked()
+{
+    QWoSetting::setAllowOtherHostConnectToTunnel(ui->chkTunnelOpen->isChecked());
+}
+
+void QWoAdminDialog::onTerminalOnAppStartClicked()
+{
+    QWoSetting::setLocalTerminalOnAppStart(ui->chkInitWindow->isChecked());
+}
+
+void QWoAdminDialog::onTunnelDaemonClicked()
+{
+    QWoSetting::setTunnelRunAsDaemon(ui->chkTunnelDaemon->isChecked());
 }

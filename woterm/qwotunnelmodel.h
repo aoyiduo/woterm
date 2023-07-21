@@ -1,6 +1,6 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
-* Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
+* Copyright (C) 2023 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
 * Contact: http://www.aoyiduo.com
 *
@@ -9,31 +9,27 @@
 *
 *******************************************************************************************/
 
-#pragma once
+#ifndef QWOTUNNELMODEL_H
+#define QWOTUNNELMODEL_H
 
 #include "qwoglobal.h"
 
 #include <QAbstractListModel>
+#include <QPointer>
+#include <QList>
 #include <QFont>
 #include <QIcon>
-#include <QPointer>
-#include <QFileIconProvider>
 
-class QQuickItem;
-
-class QWoSftpRemoteModel : public QAbstractListModel
+class QWoTunnelModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit QWoSftpRemoteModel(QObject *parent = nullptr);
-    virtual ~QWoSftpRemoteModel();
-public:
-    QString path() const;
-    bool exist(const QString& fileName);
-signals:
-    void pathChanged(const QString& path);
-private slots:
-    void onDirOpen(const QString& path, const QList<QVariant>& data, const QVariantMap& userData);
+    explicit QWoTunnelModel(QObject *parent = nullptr);
+    virtual ~QWoTunnelModel();
+
+    bool add(const TunnelInfo& ti);
+    void modify(const TunnelInfo& ti);
+    void remove(qint64 id);
 private:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
@@ -52,15 +48,14 @@ private:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
     Qt::DropActions supportedDropActions() const override;
-
 private:
-    QString formatNumber(qint64 n) const;
+    Q_INVOKABLE void load();
+    void save();
 private:
-    Q_DISABLE_COPY(QWoSftpRemoteModel)
-    QList<FileInfo> m_fileInfos;
-    QMap<QString, QIcon> m_icons;
-
-    QFileIconProvider m_iconProvider;
-    QString m_path;
+    Q_DISABLE_COPY(QWoTunnelModel)
+    QList<TunnelInfo> m_tunnelInfos;
     QFont m_font;
+    QIcon m_icoRunning;
 };
+
+#endif // QWOTUNNELMODEL_H

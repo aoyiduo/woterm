@@ -397,6 +397,9 @@ bool QMoSshTermWidget::checkZmodemInstall()
 
 void QMoSshTermWidget::reconnect(bool restore)
 {
+    if(!validProxyJumper()) {
+        return;
+    }
     if(m_passInput) {
         m_passInput->deleteLater();
     }
@@ -416,7 +419,6 @@ void QMoSshTermWidget::reconnect(bool restore)
     QSize sz = m_term->termSize();
     m_ssh->updateSize(sz.width(), sz.height());
     showLoading(true);
-
 
     if(restore) {
         qDebug() << "path";
@@ -446,6 +448,28 @@ void QMoSshTermWidget::executeCommand(const QByteArray &cmd)
     QSize sz = m_term->termSize();
     m_cmd->updateSize(sz.width(), sz.height());
     m_cmd->write(cmd);
+}
+
+bool QMoSshTermWidget::validProxyJumper()
+{
+    const HostInfo& hi = QWoSshConf::instance()->find(m_target);
+    if(hi.proxyJump.isEmpty()) {
+        return true;
+    }
+    QStringList names = hi.proxyJump.split(';');
+    for(auto it = names.begin(); it != names.end();) {
+        const HostInfo& hit = QWoSshConf::instance()->find(m_target);
+        if(!hit.isValid() || hit.type != SshWithSftp) {
+            it++;
+        }else{
+            it = names.erase(it);
+        }
+    }
+    if(names.isEmpty()) {
+        return true;
+    }
+    QKxMessageBox::information(this, tr("Configure error"), tr("The session proxy had been removed."));
+    return false;
 }
 
 void QMoSshTermWidget::resizeEvent(QResizeEvent *ev)

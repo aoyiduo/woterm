@@ -51,6 +51,8 @@ protected:
 private slots:
     void onFileListActive(const QList<QFileInfo>& fis);
 private:
+    QString formatNumber(qint64 n) const;
+private:
     QString m_path;
     QList<QFileInfo> m_fileInfos;
     QFileIconProvider m_iconProvider;

@@ -81,8 +81,17 @@ public:
     static bool startupByAdmin();
     static void setStartupByAdmin(bool on);
 
+    static bool allowOtherHostConnectToTunnel();
+    static void setAllowOtherHostConnectToTunnel(bool on);
+
+    static bool tunnelRunAsDaemon();
+    static void setTunnelRunAsDaemon(bool on);
+
     static bool lookupPasswordByAdmin();
     static void setLookupPasswordByAdmin(bool on);
+
+    static bool localTerminalOnAppStart();
+    static void setLocalTerminalOnAppStart(bool on);
 
     static QVariantMap localShell();
     static void setLocalShell(const QVariantMap& dm);

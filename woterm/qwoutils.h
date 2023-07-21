@@ -29,6 +29,8 @@ public:
     explicit QWoUtils(QObject* parent = nullptr);
     ~QWoUtils();
 
+    static bool isDebugVersion();
+
     static void injectJS(QQmlEngine *engine, QStringList files);
     static void setLayoutVisible(QLayout* layout, bool visible);
     static QString qVariantToBase64(const QVariant& v);

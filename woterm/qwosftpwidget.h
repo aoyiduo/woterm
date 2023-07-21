@@ -164,7 +164,8 @@ private:
 
     QPointer<QWoSftpRemoteModel> m_remoteModel;
     QPointer<QWoSftpLocalModel> m_localModel;
-    QPointer<QSortFilterProxyModel> m_proxyModel;
+    QPointer<QSortFilterProxyModel> m_proxyRemote;
+    QPointer<QSortFilterProxyModel> m_proxyLocal;
     QPointer<QWoSshFtp> m_sftp;
     QPointer<QWoPasswordInput> m_passInput;
     QPointer<QWoTermMask> m_mask;

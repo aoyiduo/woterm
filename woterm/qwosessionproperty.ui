@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>509</width>
-    <height>568</height>
+    <height>643</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -174,7 +174,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="woterm.qrc">
+          <iconset>
            <normaloff>../private/skins/black/pattern2.png</normaloff>../private/skins/black/pattern2.png</iconset>
          </property>
         </widget>
@@ -199,7 +199,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="woterm.qrc">
+          <iconset>
            <normaloff>../private/skins/black/linkcfg.png</normaloff>../private/skins/black/linkcfg.png</iconset>
          </property>
         </widget>
@@ -349,7 +349,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="woterm.qrc">
+        <iconset>
          <normaloff>../private/skins/black/add2.png</normaloff>../private/skins/black/add2.png</iconset>
        </property>
       </widget>
@@ -439,8 +439,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="woterm.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

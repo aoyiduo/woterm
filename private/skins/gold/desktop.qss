@@ -50,7 +50,7 @@ QToolBar {
     background-color: #8B6914;
     border-top: 0;
     border-bottom: 1px solid #8B6914;
-    spacing: 5px; /* spacing between items in the tool bar */
+    spacing: 3px; /* spacing between items in the tool bar */
     max-height: 26px;
     min-height: 26px;
 }
@@ -58,6 +58,30 @@ QToolBar {
 QToolBar QPushButton {
     max-height: 24px;
     min-height: 24px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+QToolBar QPushButton#btnOpen{
+    max-height: 24px;
+    min-height: 24px;
+    padding-left: 4px;
+    padding-right: 20px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    max-width: 50px;
+}
+
+QToolBar QPushButton#btnHistory{
+    max-height: 24px;
+    min-height: 24px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    min-width: 70px;
 }
 
 QToolBar QPushButton:hover {

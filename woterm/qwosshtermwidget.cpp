@@ -453,8 +453,33 @@ bool QWoSshTermWidget::checkZmodemInstall()
     return result.contains(yes);
 }
 
+bool QWoSshTermWidget::validProxyJumper()
+{
+    const HostInfo& hi = QWoSshConf::instance()->find(m_target);
+    if(hi.proxyJump.isEmpty()) {
+        return true;
+    }
+    QStringList names = hi.proxyJump.split(';');
+    for(auto it = names.begin(); it != names.end();) {
+        const HostInfo& hit = QWoSshConf::instance()->find(*it);
+        if(!hit.isValid() || hit.type != SshWithSftp) {
+            it++;
+        }else{
+            it = names.erase(it);
+        }
+    }
+    if(names.isEmpty()) {
+        return true;
+    }
+    QKxMessageBox::information(this, tr("Configure error"), tr("The session proxy had been removed."));
+    return false;
+}
+
 void QWoSshTermWidget::reconnect(bool restore)
 {
+    if(!validProxyJumper()) {
+        return;
+    }
     if(m_passInput) {
         m_passInput->deleteLater();
     }

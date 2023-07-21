@@ -416,6 +416,26 @@ void QWoSetting::setStartupByAdmin(bool on)
     setValue("admin/startup", on);
 }
 
+bool QWoSetting::allowOtherHostConnectToTunnel()
+{
+    return value("admin/connectToTunnel", false).toBool();
+}
+
+void QWoSetting::setAllowOtherHostConnectToTunnel(bool on)
+{
+    setValue("admin/connectToTunnel", on);
+}
+
+bool QWoSetting::tunnelRunAsDaemon()
+{
+    return value("admin/tunnelAsDaemon", false).toBool();
+}
+
+void QWoSetting::setTunnelRunAsDaemon(bool on)
+{
+    setValue("admin/tunnelAsDaemon", on);
+}
+
 bool QWoSetting::lookupPasswordByAdmin()
 {
     return value("admin/lookupPassword", false).toBool();
@@ -424,6 +444,16 @@ bool QWoSetting::lookupPasswordByAdmin()
 void QWoSetting::setLookupPasswordByAdmin(bool on)
 {
     setValue("admin/lookupPassword", on);
+}
+
+bool QWoSetting::localTerminalOnAppStart()
+{
+    return value("admin/terminalAutoStart", false).toBool();
+}
+
+void QWoSetting::setLocalTerminalOnAppStart(bool on)
+{
+    setValue("admin/terminalAutoStart", on);
 }
 
 QVariantMap QWoSetting::localShell()
