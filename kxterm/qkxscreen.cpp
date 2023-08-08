@@ -60,11 +60,18 @@ void QKxScreen::cleanHistory()
     m_history->clear();
 }
 
+bool QKxScreen::hasHistoryFile() const
+{
+    return m_historyFile != nullptr;
+}
+
 void QKxScreen::clearAll()
 {
     m_history->clear();
     m_image.clear();
     clearSelection();
+    m_cursorNow.reset();
+    m_cursorSave.reset();
 }
 
 void QKxScreen::clearScreen()
@@ -75,6 +82,8 @@ void QKxScreen::clearScreen()
         outputToHistoryFile(line);
     }
     clearSelection();
+    m_cursorNow.reset();
+    m_cursorSave.reset();
 }
 
 void QKxScreen::resize(int row, int column)
@@ -167,6 +176,12 @@ void QKxScreen::setSelectionToView(const QPoint &start, const QPoint &end)
 void QKxScreen::setSelectionToView(const QMap<QPoint, QPoint> &find)
 {
     m_selection = find;
+}
+
+void QKxScreen::setCursorPosition(int r, int c)
+{
+    m_cursorNow.x = c;
+    m_cursorNow.y = r;
 }
 
 void QKxScreen::clearCapture()

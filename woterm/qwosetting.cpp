@@ -456,6 +456,46 @@ void QWoSetting::setLocalTerminalOnAppStart(bool on)
     setValue("admin/terminalAutoStart", on);
 }
 
+int QWoSetting::windownOpacity()
+{
+    return value("window/opacity", 80).toInt();
+}
+
+void QWoSetting::setWindowOpacity(int level)
+{
+    setValue("window/opacity", level);
+}
+
+bool QWoSetting::windownOpacityEnable()
+{
+    return value("window/opacityEnable", false).toBool();
+}
+
+void QWoSetting::setWindowOpacityEnable(bool on)
+{
+    setValue("window/opacityEnable", on);
+}
+
+bool QWoSetting::allowToSetWindowOpacity()
+{
+    return value("admin/allowOpacity", false).toBool();
+}
+
+void QWoSetting::setAllowToSetWindowOpacity(bool on)
+{
+    setValue("admin/allowOpacity", on);
+}
+
+bool QWoSetting::serialportOnAppStart()
+{
+    return value("admin/serialportAutoStart", false).toBool();
+}
+
+void QWoSetting::setSerialportOnAppStart(bool on)
+{
+    setValue("admin/serialportAutoStart", on);
+}
+
 QVariantMap QWoSetting::localShell()
 {
     QString val = QWoSetting::value("property/localShell").toString();

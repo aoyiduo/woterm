@@ -38,11 +38,11 @@
      <bool>true</bool>
     </property>
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <widget class="QMenu" name="menuOpen">
      <property name="title">
-      <string>Open</string>
+      <string>&amp;Open</string>
      </property>
      <addaction name="actionOpenRemote"/>
      <addaction name="actionOpenLocal"/>
@@ -54,6 +54,16 @@
      </property>
      <addaction name="actionClear"/>
     </widget>
+    <widget class="QMenu" name="menuLog">
+     <property name="title">
+      <string>Log</string>
+     </property>
+     <addaction name="actionLogToFile"/>
+     <addaction name="actionStopLogFile"/>
+     <addaction name="actionStopAllLogFile"/>
+     <addaction name="actionOpenLogFile"/>
+     <addaction name="actionOpenLogDirectory"/>
+    </widget>
     <addaction name="actionSessionNew"/>
     <addaction name="menuOpen"/>
     <addaction name="menuRecent"/>
@@ -61,20 +71,25 @@
     <addaction name="actionRestore"/>
     <addaction name="actionBackup"/>
     <addaction name="separator"/>
+    <addaction name="actionStopSession"/>
+    <addaction name="actionReconnectSession"/>
+    <addaction name="actionReconnectAllSession"/>
+    <addaction name="separator"/>
+    <addaction name="menuLog"/>
+    <addaction name="separator"/>
     <addaction name="actionRestart"/>
     <addaction name="actionExit"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>View</string>
+     <string>&amp;View</string>
     </property>
     <addaction name="actionToolBar"/>
     <addaction name="actionSessionList"/>
    </widget>
    <widget class="QMenu" name="menuTool">
     <property name="title">
-     <string>Tool</string>
+     <string>&amp;Tool</string>
     </property>
     <widget class="QMenu" name="menuGlobal_option">
      <property name="title">
@@ -85,6 +100,7 @@
      <addaction name="actionRDPOptions"/>
      <addaction name="actionToolOptions"/>
     </widget>
+    <addaction name="actionTunnel"/>
     <addaction name="actionPlaybooks"/>
     <addaction name="actionIdentityManage"/>
     <addaction name="actionAdministrator"/>
@@ -93,7 +109,7 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionWetsite"/>
     <addaction name="actionDocument"/>
@@ -102,9 +118,51 @@
     <addaction name="actionPurchaseLicense"/>
     <addaction name="actionUpgrade"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="actionCopy"/>
+    <addaction name="actionPaste"/>
+    <addaction name="actionPasteSelectionText"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelectAll"/>
+    <addaction name="separator"/>
+    <addaction name="actionFind"/>
+    <addaction name="actionFindNext"/>
+    <addaction name="actionFindPrevious"/>
+    <addaction name="actionFindAll"/>
+    <addaction name="separator"/>
+    <addaction name="actionClearScreen"/>
+    <addaction name="actionClearHistory"/>
+    <addaction name="actionClearAll"/>
+    <addaction name="separator"/>
+    <addaction name="actionResetWindowSize"/>
+   </widget>
+   <widget class="QMenu" name="menuTab">
+    <property name="title">
+     <string>Ta&amp;b</string>
+    </property>
+    <addaction name="actionTabClose"/>
+    <addaction name="actionLeftTabClose"/>
+    <addaction name="actionRightTabClose"/>
+    <addaction name="actionOtherTabClose"/>
+    <addaction name="actionAllTabClose"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>&amp;Window</string>
+    </property>
+    <addaction name="actionTopAlway"/>
+    <addaction name="actionTrayMode"/>
+    <addaction name="actionTranslucent"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuTool"/>
+   <addaction name="menuTab"/>
+   <addaction name="menuWindow"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -134,7 +192,7 @@
      <normaloff>../private/skins/black/stop2.png</normaloff>../private/skins/black/stop2.png</iconset>
    </property>
    <property name="text">
-    <string>Exit</string>
+    <string>&amp;Exit</string>
    </property>
   </action>
   <action name="actionToolBar">
@@ -159,6 +217,15 @@
    <property name="text">
     <string>New</string>
    </property>
+   <property name="shortcut">
+    <string notr="true">Alt+N</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+   <property name="priority">
+    <enum>QAction::HighPriority</enum>
+   </property>
   </action>
   <action name="actionIdentityManage">
    <property name="icon">
@@ -181,7 +248,7 @@
      <normaloff>../private/skins/black/about.png</normaloff>../private/skins/black/about.png</iconset>
    </property>
    <property name="text">
-    <string>About</string>
+    <string>&amp;About</string>
    </property>
   </action>
   <action name="actionDocument">
@@ -200,7 +267,10 @@
   </action>
   <action name="actionBackup">
    <property name="text">
-    <string>Backup</string>
+    <string>&amp;Backup</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetShortcut</enum>
    </property>
   </action>
   <action name="actionRestore">
@@ -209,7 +279,13 @@
      <normaloff>../private/skins/black/import.png</normaloff>../private/skins/black/import.png</iconset>
    </property>
    <property name="text">
+    <string>&amp;Restore</string>
+   </property>
+   <property name="iconText">
     <string>Restore</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetShortcut</enum>
    </property>
   </action>
   <action name="actionAdministrator">
@@ -229,6 +305,9 @@
    <property name="text">
     <string>Open remote session</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+O</string>
+   </property>
   </action>
   <action name="actionOpenLocal">
    <property name="icon">
@@ -237,6 +316,9 @@
    </property>
    <property name="text">
     <string>Open local session</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+L</string>
    </property>
   </action>
   <action name="actionOpenSerialport">
@@ -304,6 +386,10 @@
    </property>
   </action>
   <action name="actionPlaybooks">
+   <property name="icon">
+    <iconset>
+     <normaloff>../private/skins/black/js.png</normaloff>../private/skins/black/js.png</iconset>
+   </property>
    <property name="text">
     <string>Playbooks</string>
    </property>
@@ -311,6 +397,165 @@
   <action name="actionPurchaseLicense">
    <property name="text">
     <string>Purchase license</string>
+   </property>
+  </action>
+  <action name="actionLogToFile">
+   <property name="text">
+    <string>&amp;Output history to file</string>
+   </property>
+  </action>
+  <action name="actionOpenLogDirectory">
+   <property name="text">
+    <string>Open last history file &amp;directory</string>
+   </property>
+  </action>
+  <action name="actionStopLogFile">
+   <property name="text">
+    <string>Stop history to file</string>
+   </property>
+  </action>
+  <action name="actionStopSession">
+   <property name="text">
+    <string>Stop session</string>
+   </property>
+  </action>
+  <action name="actionReconnectSession">
+   <property name="text">
+    <string>Reconnect session</string>
+   </property>
+  </action>
+  <action name="actionReconnectAllSession">
+   <property name="text">
+    <string>Reconnect all session</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>&amp;Copy</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="text">
+    <string>&amp;Paste</string>
+   </property>
+  </action>
+  <action name="actionPasteSelectionText">
+   <property name="text">
+    <string>Paste selection text</string>
+   </property>
+  </action>
+  <action name="actionSelectAll">
+   <property name="text">
+    <string>Select &amp;all</string>
+   </property>
+  </action>
+  <action name="actionFind">
+   <property name="text">
+    <string>&amp;Find</string>
+   </property>
+  </action>
+  <action name="actionFindNext">
+   <property name="text">
+    <string>Find &amp;next</string>
+   </property>
+  </action>
+  <action name="actionFindPrevious">
+   <property name="text">
+    <string>Find &amp;previous</string>
+   </property>
+  </action>
+  <action name="actionClearScreen">
+   <property name="text">
+    <string>Clear screen</string>
+   </property>
+  </action>
+  <action name="actionClearHistory">
+   <property name="text">
+    <string>Clear scroll cache</string>
+   </property>
+  </action>
+  <action name="actionClearAll">
+   <property name="text">
+    <string>Clear screen and scroll cache</string>
+   </property>
+  </action>
+  <action name="actionResetCusorPostion">
+   <property name="text">
+    <string>reset cursor postion</string>
+   </property>
+  </action>
+  <action name="actionResetWindowSize">
+   <property name="text">
+    <string>reset window size</string>
+   </property>
+  </action>
+  <action name="actionTabClose">
+   <property name="text">
+    <string>Close tab</string>
+   </property>
+  </action>
+  <action name="actionRightTabClose">
+   <property name="text">
+    <string>Close right tabs</string>
+   </property>
+  </action>
+  <action name="actionOtherTabClose">
+   <property name="text">
+    <string>Close other tabs</string>
+   </property>
+  </action>
+  <action name="actionAllTabClose">
+   <property name="text">
+    <string>Close all tabs</string>
+   </property>
+  </action>
+  <action name="actionTopmost">
+   <property name="text">
+    <string>Topmost</string>
+   </property>
+  </action>
+  <action name="actionTopAlway">
+   <property name="text">
+    <string>Window stay on top</string>
+   </property>
+  </action>
+  <action name="actionTrayMode">
+   <property name="text">
+    <string>Window show on tray</string>
+   </property>
+  </action>
+  <action name="actionTranslucent">
+   <property name="text">
+    <string>Window translucent</string>
+   </property>
+  </action>
+  <action name="actionStopAllLogFile">
+   <property name="text">
+    <string>&amp;Stop all history to file</string>
+   </property>
+  </action>
+  <action name="actionOpenLogFile">
+   <property name="text">
+    <string>Open last history &amp;file</string>
+   </property>
+  </action>
+  <action name="actionFindAll">
+   <property name="text">
+    <string>Find all</string>
+   </property>
+  </action>
+  <action name="actionTunnel">
+   <property name="icon">
+    <iconset>
+     <normaloff>../private/skins/black/magento.png</normaloff>../private/skins/black/magento.png</iconset>
+   </property>
+   <property name="text">
+    <string>Tunnel</string>
+   </property>
+  </action>
+  <action name="actionLeftTabClose">
+   <property name="text">
+    <string>Close left tabs</string>
    </property>
   </action>
  </widget>

@@ -11,6 +11,7 @@
 
 #include "qwoserialwidgetimpl.h"
 #include "qwoserialinput.h"
+#include "qwoserialtermwidget.h"
 #include "qwoglobal.h"
 #include "qwoshower.h"
 #include "qwosshconf.h"
@@ -21,6 +22,7 @@
 #include "qwosessionttyproperty.h"
 #include "qkxmessagebox.h"
 #include "qwosetting.h"
+#include "qwomodem.h"
 
 #include <QCloseEvent>
 #include <QApplication>
@@ -32,11 +34,13 @@
 #include <QClipboard>
 #include <QSerialPort>
 #include <QTimer>
+#include <QFileDialog>
+#include <QDebug>
 
 #define INPUT_MINI_HEIGHT   (160)
 
 QWoSerialWidgetImpl::QWoSerialWidgetImpl(const QString& target, int gid, QTabBar *tab, QWidget *parent)
-    : QWoShowerWidget(target, parent)
+    : QWoShowerWidget(target, eSerialport, parent)
     , m_gid(gid)
     , m_tab(tab)
 {
@@ -45,10 +49,11 @@ QWoSerialWidgetImpl::QWoSerialWidgetImpl(const QString& target, int gid, QTabBar
     layout->setSpacing(0);
     setLayout(layout);
     m_root = new QSplitter(this);
-    m_root->setOrientation(Qt::Vertical);
+    m_root->setOrientation(Qt::Horizontal);
     m_root->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     layout->addWidget(m_root);
     m_term = new QWoSerialTermWidget(target, this);
+    m_term->setImplementWidget(this);
     m_root->addWidget(m_term);
     m_input = new QWoSerialInput(m_term, this);
     m_input->setMinimumHeight(INPUT_MINI_HEIGHT);
@@ -104,6 +109,33 @@ bool QWoSerialWidgetImpl::handleCustomProperties()
 void QWoSerialWidgetImpl::updateEnable(bool on)
 {
 
+}
+
+QWoShowerWidget::EHistoryFileState QWoSerialWidgetImpl::historyFileState()
+{
+    QWoSerialTermWidget *term = qobject_cast<QWoSerialTermWidget*>(lastFocusWidget());
+    if(term == nullptr || !term->hasHistoryFile()) {
+        return eNoFile;
+    }
+    return eAllHasFiles;
+}
+
+void QWoSerialWidgetImpl::outputHistoryToFile()
+{
+    QWoSerialTermWidget *term = qobject_cast<QWoSerialTermWidget*>(lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->outputHistoryToFile();
+}
+
+void QWoSerialWidgetImpl::stopOutputHistoryToFile(bool all)
+{
+    QWoSerialTermWidget *term = qobject_cast<QWoSerialTermWidget*>(lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->stopOutputHistoryFile();
 }
 
 void QWoSerialWidgetImpl::onDestroyReady()
@@ -243,60 +275,4 @@ void QWoSerialWidgetImpl::setTabText(const QString &title)
             m_tab->setTabText(i, title);
         }
     }
-}
-
-QWoSerialTermWidget::QWoSerialTermWidget(const QString &target, QWidget *parent)
-    : QWoTermWidget(target, 0, ETTSerialPort, parent)
-{
-    m_term->setReadyOnly(true);
-   // m_term->parse("\x1B[?25l\x1B[?25h\x1B[93mdi\x1B[?25l\x1B[m\x1B[?25h\x1B[?25l\x1B[93m\bdi\x1B[?25hr\x1B[?25l\x1B[m\x1B[?25h\x1B[?25l\x1B[93m\x1B[40;61Hdir\x1B[?25h");
-}
-
-QWoSerialTermWidget::~QWoSerialTermWidget()
-{
-
-}
-
-void QWoSerialTermWidget::contextMenuEvent(QContextMenuEvent *ev)
-{
-    if(m_menu == nullptr) {
-        m_menu = new QMenu(this);
-        m_copy = m_menu->addAction(tr("Copy"));
-        QObject::connect(m_copy, SIGNAL(triggered()), this, SLOT(onCopyToClipboard()));
-        m_menu->addAction(QIcon("../private/skins/black/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
-        m_menu->addAction(tr("Clean history"), this, SLOT(onCleanThisSession()));
-    }
-    QKxTermItem *term = termItem();
-    QString selTxt = term->selectedText();
-    //qDebug() << "selectText" << selTxt;
-    m_copy->setDisabled(selTxt.isEmpty());
-    m_menu->exec(QCursor::pos());
-}
-
-QList<QString> QWoSerialTermWidget::collectUnsafeCloseMessage()
-{
-    return QList<QString>();
-}
-
-void QWoSerialTermWidget::onCopyToClipboard()
-{
-    termItem()->tryToCopy();
-}
-
-void QWoSerialTermWidget::onModifyThisSession()
-{
-    QVariantMap prop = QWoSetting::serialPort();
-    QWoSessionTTYProperty dlg(QWoSessionTTYProperty::ETTY_SerialPort, this);
-    dlg.setCustom(prop);
-    dlg.exec();
-    QVariantMap result = dlg.result();
-    if(!result.isEmpty()) {
-        QWoSetting::setSerialPort(result);
-        initCustom();
-    }
-}
-
-void QWoSerialTermWidget::onCleanThisSession()
-{
-    m_term->clearAll();
 }

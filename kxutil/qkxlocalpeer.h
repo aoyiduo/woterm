@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -27,6 +27,7 @@ public:
     ~QKxLocalPeer();
     bool isClient();
     bool sendMessage(const QString& msg, int timeout = 500);
+    void close();
 signals:
     void messageReceived(const QString &message);
 private slots:

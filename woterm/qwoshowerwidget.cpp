@@ -17,13 +17,24 @@
 #include "qwofloatwindow.h"
 #include "qwoshower.h"
 
-QWoShowerWidget::QWoShowerWidget(const QString &target, QWidget *parent)
+QWoShowerWidget::QWoShowerWidget(const QString &target, EShowerType type, QWidget *parent)
     : QWoWidget (parent)
     , m_id(0)
     , m_target(target)
+    , m_typeShower(type)
 {
     setAttribute(Qt::WA_StyledBackground);
     setAttribute(Qt::WA_DeleteOnClose);
+}
+
+QWidget *QWoShowerWidget::lastFocusWidget()
+{
+    return m_lastFocusWidget;
+}
+
+void QWoShowerWidget::setLastFocusWidget(QWidget *w)
+{
+    m_lastFocusWidget = w;
 }
 
 bool QWoShowerWidget::handleCustomProperties()

@@ -152,6 +152,7 @@ void QWoVncWidget::reconnect()
     QKxVncWidget::start(hi.host, hi.port, passwd, fmt, ver, encs);
     QKxVncWidget::setViewOnly(viewOnly);
 
+    m_mask->hide();
     m_loading->show();
 }
 

@@ -36,6 +36,7 @@ public:
     void setHistoryFile(const QString& file);
     void stopHistoryFile();
     void cleanHistory();
+    bool hasHistoryFile() const;
     void clearAll();
     void clearScreen();
     void resize(int rows, int cols);
@@ -49,7 +50,7 @@ public:
     QMap<QPoint,QPoint> selectionToView() const;
     void setSelectionToView(const QPoint& start, const QPoint& end);
     void setSelectionToView(const QMap<QPoint,QPoint>& find);
-
+    void setCursorPosition(int r, int c);
     // capture point.
     void clearCapture();
     int setCapture(const QPoint& pt);

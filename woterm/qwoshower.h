@@ -74,7 +74,14 @@ public:
     bool openVnc(const QString& target);
     bool openSerialPort();
     void setBackgroundColor(const QColor& clr);
-    void openFindDialog();
+
+    void closeSession(int idx, bool force);
+    void closeTab(int idx);
+    void closeOtherTabs(int idx);
+    void closeLeftTabs(int idx);
+    void closeRightTabs(int idx);
+    void closeAllTabs();
+    //
 
     Q_INVOKABLE void mergeFromRightTab();
     Q_INVOKABLE void seperateToRightTab();
@@ -98,7 +105,6 @@ protected:
 
 
 private:
-    void closeSession(int idx);
     void createTab(QWoShowerWidget *widget, const QIcon& icon, const QString& tabName, int idx = -1);
     bool tabMouseButtonPress(QMouseEvent *ev);
     bool tabMouseButtonMove(QMouseEvent *ev);

@@ -28,6 +28,8 @@ class QToolButton;
 class QWoRecentHistory;
 class QPushButton;
 class QWoTunnelDialog;
+class QWoShowerWidget;
+class QWoTermWidget;
 
 namespace Ui {
 class QWoMainWindow;
@@ -90,8 +92,7 @@ private slots:
     void onActionToolOptionsTriggered();
     void onActionSystemOptionsTriggered();
     void onActionRestartOptionsTriggered();
-    void onActionSettingTriggered();
-    void onActionFindTriggered();
+    void onActionSettingTriggered();    
     void onActionAboutTriggered();
     void onActionHelpTriggered();
     void onActionWebsiteTriggered();
@@ -106,6 +107,53 @@ private slots:
     void onFilterCreateArrived(const QString& name);
 
 
+    // file
+    void onActionStopSessionTriggered();
+    void onActionReconnectSessionTriggered();
+    void onActionReconnectAllSessionTriggered();
+    void onActionLogToFileTriggered();
+    void onActionStopLogFileTriggered();
+    void onActionStopAllLogFileTriggered();
+    void onActionOpenLogFileTriggered();
+    void onActionOpenLogDirectoryTriggered();
+    // edit
+    void onActionCopyTriggered();
+    void onActionPasteTriggered();
+    void onActionPasteSelectionTextTriggered();
+    void onActionSelectAllTriggered();
+    void onActionFindTriggered();
+    void onActionFindNextTriggered();
+    void onActionFindPreviousTriggered();
+    void onActionFindAllTriggered();
+    void onActionClearScreenTriggered();
+    void onActionClearHistoryTriggered();
+    void onActionClearAllTriggered();
+    void onActionResetWindowSizeTriggered();
+    // tab
+    void onActionTabCloseTriggered();
+    void onActionLeftTabCloseTriggered();
+    void onActionRightTabCloseTriggered();
+    void onActionOtherTabCloseTriggered();
+    void onActionAllTabCloseTriggered();
+
+    // tool
+    void onActionTunnelTriggered();
+
+    // window
+    void onActionTopAlwayTriggered();
+    void onActionTrayModeTriggered();
+    void onActionTranslucentTriggered();
+
+    // menu show.
+    void onMenuFileAboutToShow();
+    void onMenuLogAboutToShow();
+    void onMenuEditAboutToShow();
+    void onMenuViewAboutToShow();
+    void onMenuToolAboutToShow();
+    void onMenuTabAboutToShow();
+    void onMenuWindowAboutToShow();
+    void onMenuHelpAboutToShow();
+
 
 private:
     void initMenuBar();
@@ -114,8 +162,14 @@ private:
     void restoreLastState();
     void saveLastState();
 
+    void resetWindowOpacity(bool on, int v);
+
     bool checkAdminLogin();
     Q_INVOKABLE void tryToMakeLicenseTrial();
+
+    // QWoShowWidget
+    QWoShowerWidget *activeShowerWidget();
+    QWoTermWidget *focusTermWidget();
 private:
     Ui::QWoMainWindow *ui;
     QPointer<QTabBar> m_tab;

@@ -35,6 +35,10 @@ public:
     explicit QWoSshTermWidget(const QString& target, int gid, QWidget *parent=nullptr);
     virtual ~QWoSshTermWidget();
 
+    bool isConnected();
+    void stop();
+    Q_INVOKABLE void reconnect(bool restore=false);
+    Q_INVOKABLE void executeCommand(const QByteArray& cmd);
 signals:
     void sftpAssistant();
     void sessionMultiplex(const QString& target, int gid);
@@ -77,10 +81,7 @@ protected:
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     int isZmodemCommand(const QByteArray &data);
     bool checkZmodemInstall();
-    bool validProxyJumper();
-private:
-    Q_INVOKABLE void reconnect(bool restore=false);
-    Q_INVOKABLE void executeCommand(const QByteArray& cmd);
+    bool validProxyJumper();    
 private:
     virtual void resizeEvent(QResizeEvent *ev);
     virtual void contextMenuEvent(QContextMenuEvent *ev);

@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -31,8 +31,11 @@ protected:
     virtual bool handleTabMouseEvent(QMouseEvent *ev);
     virtual void handleTabContextMenu(QMenu *menu);
     virtual QMap<QString, QString> collectUnsafeCloseMessage();
+    virtual ESessionState sessionState();
+    virtual void stopSession();
+    virtual void reconnectSession(bool all);
 private slots:
     void onRootDestroy();
 private:
-    QPointer<QWoVncPlayWidget> m_rdp;
+    QPointer<QWoVncPlayWidget> m_vnc;
 };

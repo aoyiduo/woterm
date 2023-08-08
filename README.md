@@ -53,6 +53,7 @@ The client code has been completely open source, and the third-party code which 
 
 ## UI preview:
 <div>Main UI<br><img src="doc/main.png"/></div>
+<div>Serial port<br><img src="doc/serialport1.png"><img src="doc/serialport2.png"></div>
 <div>Multiple skins<br><img src="doc/skins.png"></div>
 <div>Playbook<br><img src="doc/playbook.gif"></div>
 <div>Merge and seperate<br><img src="doc/merge.gif"></div>

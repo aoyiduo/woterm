@@ -39,17 +39,20 @@
 #include <QProcess>
 #include <QDebug>
 #include <QResizeEvent>
+#include <QPushButton>
 
 QWoRLoginTermWidget::QWoRLoginTermWidget(const QString& target, int gid, QWidget *parent)
     : QWoTermWidget(target, gid, ETTRemoteTarget, parent)
     , m_savePassword(false)
+    , m_stateConnected(ESC_Ready)
 {
     QObject::connect(m_term, SIGNAL(termSizeChanged(int,int)), this, SLOT(onTermSizeChanged(int,int)));
-    QObject::connect(m_term, SIGNAL(sendData(const QByteArray&)), this, SLOT(onSendData(const QByteArray&)));
-    QObject::connect(m_term, SIGNAL(titleChanged(const QString&)), this, SLOT(onTitleChanged(const QString&)));
+    QObject::connect(m_term, SIGNAL(sendData(QByteArray)), this, SLOT(onSendData(QByteArray)));
+    QObject::connect(m_term, SIGNAL(activePathArrived(QString)), this, SLOT(onActivePathArrived(QString)));
+    QObject::connect(m_term, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChanged(QString)));
     m_modem = QWoModemFactory::instance()->create(false);
-    QObject::connect(m_modem, SIGNAL(dataArrived(const QByteArray&)), this, SLOT(onZmodemDataArrived(const QByteArray&)));
-    QObject::connect(m_modem, SIGNAL(statusArrived(const QByteArray&)), this, SLOT(onZmodemStatusArrived(const QByteArray&)));
+    QObject::connect(m_modem, SIGNAL(dataArrived(QByteArray)), this, SLOT(onZmodemDataArrived(QByteArray)));
+    QObject::connect(m_modem, SIGNAL(statusArrived(QByteArray)), this, SLOT(onZmodemStatusArrived(QByteArray)));
     QObject::connect(m_modem, SIGNAL(finished()), this, SLOT(onZmodemFinished()));
 
     QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);
@@ -61,10 +64,27 @@ QWoRLoginTermWidget::~QWoRLoginTermWidget()
     QWoModemFactory::instance()->release(m_modem);
 }
 
+bool QWoRLoginTermWidget::isConnected()
+{
+    return m_rlogin != nullptr && m_stateConnected != ESC_Disconnected;
+}
+
+void QWoRLoginTermWidget::stop()
+{
+    if(m_rlogin) {
+        m_rlogin->stop();
+    }
+}
+
 void QWoRLoginTermWidget::onFinishArrived(int code)
 {
     //qDebug() << "exitcode" << code;
     showLoading(false);
+    if(m_stateConnected != ESC_Disconnected) {
+        m_stateConnected = ESC_Disconnected;
+        m_term->parseError("\r\nthe session is closed");
+        m_term->parseError("\r\npress any key to popup selection dialog.");
+    }
 }
 
 void QWoRLoginTermWidget::onDataArrived(const QByteArray &buf)
@@ -73,30 +93,28 @@ void QWoRLoginTermWidget::onDataArrived(const QByteArray &buf)
     static QRegExp rgxPwd(".*Password: $");
 
     showLoading(false);
+    m_stateConnected = ESC_Connected;
     if(m_modem->isRunning()) {
         if(!m_modem->onReceive(buf)) {
             //qDebug() << "onDataArrived" << buf;
         }
     }else{
+//        if(m_restoreLastActivePath) {
+//            m_rlogin->write("\r\ncd " + m_lastActivePath.toUtf8() + "\r\n");
+//            m_restoreLastActivePath = false;
+//        }
         if(m_term->appMode()) {
             m_term->parse(buf);
         }else{
             if(m_loginCount == 0) {
                 if(rgxUser.exactMatch(buf)) {
-                    HostInfo hi = QWoSshConf::instance()->find(m_target);
-                    m_rlogin->write(hi.user.toUtf8() + "\r\n");
-                    m_loginCount = 1;
+                    QTimer::singleShot(500, this, SLOT(onTimeoutToInputUserName()));
                 }else if(rgxPwd.exactMatch(buf)) {
-                    HostInfo hi = QWoSshConf::instance()->find(m_target);
-                    QByteArray pass = hi.password.toUtf8();
-                    m_rlogin->write(pass + "\r\n");
-                    m_loginCount = 2;
+                    QTimer::singleShot(500, this, SLOT(onTimeoutToInputUserPassword()));
                 }
             }else if(m_loginCount == 1) {
                 if(rgxPwd.exactMatch(buf)) {
-                    HostInfo hi = QWoSshConf::instance()->find(m_target);
-                    m_rlogin->write(hi.password.toUtf8() + "\r\n");
-                    m_loginCount = 2;
+                    QTimer::singleShot(500, this, SLOT(onTimeoutToInputUserPassword()));
                 }
             }
 
@@ -139,7 +157,19 @@ void QWoRLoginTermWidget::onTermSizeChanged(int lines, int columns)
 
 void QWoRLoginTermWidget::onSendData(const QByteArray &buf)
 {
-    if(m_rlogin) {
+    if(m_stateConnected == ESC_Disconnected) {
+        if(m_dlgConfirm == nullptr) {
+            m_dlgConfirm = new QKxMessageBox(QMessageBox::Question, tr("Reconnection confirmation"), tr("Continue to connect to the server?"), QMessageBox::Yes|QMessageBox::No, this);
+           // QPushButton *btn = new QPushButton(tr("Restore"), m_dlgConfirm);
+            //QObject::connect(btn, SIGNAL(clicked()), this, SLOT(onRestoreLastPath()));
+            //m_dlgConfirm->addButton(btn, QMessageBox::ActionRole);
+            int code = m_dlgConfirm->exec();
+            if(code == QMessageBox::Yes) {
+                QMetaObject::invokeMethod(this, "reconnect", Qt::QueuedConnection);
+            }
+            m_dlgConfirm->deleteLater();
+        }
+    }else if(m_rlogin) {
         m_term->scrollToEnd();
         if(!m_modem->isRunning()) {
             m_rlogin->write(buf);
@@ -154,6 +184,14 @@ void QWoRLoginTermWidget::onSendData(const QByteArray &buf)
 void QWoRLoginTermWidget::onCopyToClipboard()
 {
     termItem()->tryToCopy();
+}
+
+void QWoRLoginTermWidget::onRestoreLastPath()
+{
+    if(m_dlgConfirm) {
+        m_dlgConfirm->done(QMessageBox::LastButton + 1);
+        reconnect(false);
+    }
 }
 
 void QWoRLoginTermWidget::onPasteFromClipboard()
@@ -335,11 +373,36 @@ void QWoRLoginTermWidget::onAdjustPosition()
     }
 }
 
+void QWoRLoginTermWidget::onActivePathArrived(const QString &path)
+{
+    m_lastActivePath = path;
+}
+
+void QWoRLoginTermWidget::onTimeoutToInputUserName()
+{
+    HostInfo hi = QWoSshConf::instance()->find(m_target);
+    QByteArray user = hi.user.toUtf8();
+    if(!user.isEmpty()) {        
+        m_rlogin->write(user + "\r\n");
+        m_loginCount = 1;
+    }
+}
+
+void QWoRLoginTermWidget::onTimeoutToInputUserPassword()
+{
+    HostInfo hi = QWoSshConf::instance()->find(m_target);
+    QByteArray pass = hi.password.toUtf8();
+    if(!pass.isEmpty()) {
+        m_rlogin->write(pass + "\r\n");
+        m_loginCount = 2;
+    }
+}
+
 void QWoRLoginTermWidget::showPasswordInput(const QString &title, const QString &prompt, bool echo)
 {
     if(m_passInput == nullptr) {
         m_passInput = new QWoPasswordInput(this);
-        QObject::connect(m_passInput, SIGNAL(result(const QString&,bool)), this, SLOT(onPasswordInputResult(const QString&,bool)));
+        QObject::connect(m_passInput, SIGNAL(result(QString,bool)), this, SLOT(onPasswordInputResult(QString,bool)));
     }
     if(m_passInput->isVisible()) {
         return;
@@ -397,7 +460,8 @@ bool QWoRLoginTermWidget::checkZmodemInstall()
     }
     return result.contains(yes);
 }
-void QWoRLoginTermWidget::reconnect()
+
+void QWoRLoginTermWidget::reconnect(bool restore)
 {
     if(m_passInput) {
         m_passInput->deleteLater();
@@ -412,10 +476,21 @@ void QWoRLoginTermWidget::reconnect()
     m_rlogin = QWoRLoginFactory::instance()->create();
     m_rlogin->start(m_target, sz.width(), sz.height());
     QObject::connect(m_rlogin, SIGNAL(finishArrived(int)), this, SLOT(onFinishArrived(int)));
-    QObject::connect(m_rlogin, SIGNAL(dataArrived(const QByteArray&)), this, SLOT(onDataArrived(const QByteArray&)));
-    QObject::connect(m_rlogin, SIGNAL(errorArrived(const QByteArray&)), this, SLOT(onErrorArrived(const QByteArray&)));
-    QObject::connect(m_rlogin, SIGNAL(passwordArrived(const QString&,const QByteArray&)), this, SLOT(onPasswordArrived(const QString&,const QByteArray&)));
-    QObject::connect(m_rlogin, SIGNAL(inputArrived(const QString&,const QString&,bool)), this, SLOT(onInputArrived(const QString&,const QString&,bool)));  
+    QObject::connect(m_rlogin, SIGNAL(dataArrived(QByteArray)), this, SLOT(onDataArrived(QByteArray)));
+    QObject::connect(m_rlogin, SIGNAL(errorArrived(QByteArray)), this, SLOT(onErrorArrived(QByteArray)));
+    QObject::connect(m_rlogin, SIGNAL(passwordArrived(QString,QByteArray)), this, SLOT(onPasswordArrived(QString,QByteArray)));
+    QObject::connect(m_rlogin, SIGNAL(inputArrived(QString,QString,bool)), this, SLOT(onInputArrived(QString,QString,bool)));
+
+//    if(restore) {
+//        m_restoreLastActivePath = true;
+//    }else{
+//        m_restoreLastActivePath = false;
+//    }
+    /*
+     * For password input by manual, so can not implement the restore function.
+    */
+    m_restoreLastActivePath = false;
+    m_stateConnected = ESC_Connecting;
 }
 
 void QWoRLoginTermWidget::resizeEvent(QResizeEvent *ev)
@@ -478,8 +553,8 @@ void QWoRLoginTermWidget::contextMenuEvent(QContextMenuEvent *ev)
     QString selTxt = term->selectedText();
     //qDebug() << "selectText" << selTxt;
     m_copy->setDisabled(selTxt.isEmpty());
-    m_output->setVisible(m_historyFile.isEmpty());
-    m_stop->setVisible(!m_historyFile.isEmpty());
+    m_output->setVisible(!hasHistoryFile());
+    m_stop->setVisible(hasHistoryFile());
 
     QClipboard *clip = QGuiApplication::clipboard();
     QString clipTxt = clip->text();

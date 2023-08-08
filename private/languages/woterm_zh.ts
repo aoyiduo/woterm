@@ -1611,12 +1611,12 @@
 <context>
     <name>QKxTermItem</name>
     <message>
-        <location filename="../../kxterm/qkxtermitem.cpp" line="531"/>
+        <location filename="../../kxterm/qkxtermitem.cpp" line="568"/>
         <source>In read-only mode, no commands can be executed.</source>
         <translation>在只读模式下，不能执行任何命令。</translation>
     </message>
     <message>
-        <location filename="../../kxterm/qkxtermitem.cpp" line="535"/>
+        <location filename="../../kxterm/qkxtermitem.cpp" line="572"/>
         <source>There are no conditions for executing commands in the current state.</source>
         <translation>在当前状态下不存在执行命令的条件。</translation>
     </message>
@@ -2474,22 +2474,27 @@
         <translation>相同的记录数量：%1</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoapplication.cpp" line="105"/>
+        <location filename="../../woterm/qwoapplication.cpp" line="133"/>
         <source>Show tunnel window</source>
         <translation>显示隧道窗口</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoapplication.cpp" line="106"/>
+        <location filename="../../woterm/qwoapplication.cpp" line="134"/>
         <source>New session</source>
         <translation>新建会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoapplication.cpp" line="107"/>
+        <location filename="../../woterm/qwoapplication.cpp" line="135"/>
+        <source>Restart application</source>
+        <translation>重启应用</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoapplication.cpp" line="136"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoapplication.cpp" line="111"/>
+        <location filename="../../woterm/qwoapplication.cpp" line="140"/>
         <source>WoTerm tunnel daemon</source>
         <translation>WoTerm隧道守护</translation>
     </message>
@@ -2505,17 +2510,17 @@
 <context>
     <name>QRLoginPtyClient</name>
     <message>
-        <location filename="../../woterm/qworlogin.cpp" line="356"/>
+        <location filename="../../woterm/qworlogin.cpp" line="357"/>
         <source>Failed to bind to local port for no permission, switch to root user and try it again?</source>
         <translation>没有权限绑定本地端口，请切换至超级用户权限</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogin.cpp" line="358"/>
+        <location filename="../../woterm/qworlogin.cpp" line="359"/>
         <source>Failed to bind to local port for unknow reasion</source>
         <translation>无法绑定本地端口，原因未知。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogin.cpp" line="360"/>
+        <location filename="../../woterm/qworlogin.cpp" line="361"/>
         <source>Failed to connect to remote server</source>
         <translation>无法连接远程服务器</translation>
     </message>
@@ -2550,6 +2555,11 @@
         <translation>最新版本：</translation>
     </message>
     <message>
+        <location filename="../../woterm/qwoaboutdialog.ui" line="207"/>
+        <source>C</source>
+        <translation>C</translation>
+    </message>
+    <message>
         <source>Ultimate version day left:</source>
         <translation type="vanished">旗舰版剩余天数：</translation>
     </message>
@@ -2559,7 +2569,12 @@
         <translation>官网：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoaboutdialog.ui" line="194"/>
+        <location filename="../../woterm/qwoaboutdialog.ui" line="197"/>
+        <source>OfficeWeb</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoaboutdialog.ui" line="204"/>
         <source>Check Version</source>
         <translation>检查版本</translation>
     </message>
@@ -2584,32 +2599,32 @@
         <translation type="vanished">标签</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoaboutdialog.cpp" line="38"/>
+        <location filename="../../woterm/qwoaboutdialog.cpp" line="39"/>
         <source>Unknow version</source>
         <translation>未知版本</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoaboutdialog.cpp" line="40"/>
+        <location filename="../../woterm/qwoaboutdialog.cpp" line="41"/>
         <source>Free version</source>
         <translation>免费版本</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoaboutdialog.cpp" line="42"/>
+        <location filename="../../woterm/qwoaboutdialog.cpp" line="43"/>
         <source>Trial version</source>
         <translation>试用版</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoaboutdialog.cpp" line="44"/>
+        <location filename="../../woterm/qwoaboutdialog.cpp" line="45"/>
         <source>School version</source>
         <translation>校园版</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoaboutdialog.cpp" line="46"/>
+        <location filename="../../woterm/qwoaboutdialog.cpp" line="47"/>
         <source>Ultimate version</source>
         <translation>旗舰版</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoaboutdialog.cpp" line="49"/>
+        <location filename="../../woterm/qwoaboutdialog.cpp" line="50"/>
         <source>expired</source>
         <translation>已过期</translation>
     </message>
@@ -2653,16 +2668,26 @@
     </message>
     <message>
         <location filename="../../woterm/qwoadmindialog.ui" line="108"/>
-        <source>Local terminal auto start on app start.</source>
-        <translation>启动时自动打开本地终端。</translation>
+        <source>Local shell tab auto start on app start.</source>
+        <translation>本地shell选项卡随应用程序启动时自动启动。</translation>
     </message>
     <message>
         <location filename="../../woterm/qwoadmindialog.ui" line="115"/>
+        <source>Serialport tab auto start on app start.</source>
+        <translation>串口选项卡随应用程序启动时自动启动。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoadmindialog.ui" line="122"/>
         <source>Set tunnel function run in daemon mode.</source>
         <translation>设置隧道功能为守护程序模式。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoadmindialog.ui" line="142"/>
+        <location filename="../../woterm/qwoadmindialog.ui" line="129"/>
+        <source>Allow to set main window opacity.</source>
+        <translation>允许设置主窗口的透明度。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoadmindialog.ui" line="156"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
@@ -2672,12 +2697,12 @@
         <translation>管理员</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoadmindialog.cpp" line="69"/>
+        <location filename="../../woterm/qwoadmindialog.cpp" line="73"/>
         <source>Parameter error</source>
         <translation>参数错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoadmindialog.cpp" line="69"/>
+        <location filename="../../woterm/qwoadmindialog.cpp" line="73"/>
         <source>The password should not empty.</source>
         <translation>密码不能为空。</translation>
     </message>
@@ -4671,9 +4696,8 @@
         <translation>QWoMainWindow</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="41"/>
         <source>File</source>
-        <translation>文件</translation>
+        <translation type="vanished">文件</translation>
     </message>
     <message>
         <location filename="../../woterm/qwomainwindow.ui" line="53"/>
@@ -4681,17 +4705,17 @@
         <translation>最近历史</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="81"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="96"/>
         <source>Terminal options</source>
         <translation>终端选项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="142"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="200"/>
         <source>Tool Bar</source>
         <translation>工具栏</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="151"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="209"/>
         <source>Session List</source>
         <translation>会话列表</translation>
     </message>
@@ -4700,161 +4724,351 @@
         <translation type="vanished">选项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="169"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="236"/>
         <source>Identity manage</source>
         <translation>证书管理</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="203"/>
         <source>Backup</source>
-        <translation>备份</translation>
+        <translation type="vanished">备份</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="212"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="285"/>
         <source>Restore</source>
         <translation>恢复</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="221"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="297"/>
         <source>Administrator</source>
         <translation>管理员</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="347"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="350"/>
         <source>Upgrade to ultimate version</source>
         <translation>升级至旗舰版</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="230"/>
-        <location filename="../../woterm/qwomainwindow.ui" line="273"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="388"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="471"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="270"/>
+        <source>&amp;Backup</source>
+        <translation>备份(&amp;B)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="282"/>
+        <source>&amp;Restore</source>
+        <translation>恢复(&amp;R)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="306"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="355"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="400"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="483"/>
         <source>Open remote session</source>
         <translation>打开远程会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="239"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="389"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="472"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="309"/>
+        <source>Alt+O</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="318"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="401"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="484"/>
         <source>Open local session</source>
         <translation>打开本地会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="248"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="390"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="473"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="321"/>
+        <source>Alt+L</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="330"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="402"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="485"/>
         <source>Open serialport session</source>
         <translation>打开串口会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="253"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="335"/>
         <source>TTY options</source>
         <translation>TTY选项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="258"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="340"/>
         <source>VNC options</source>
         <translation>VNC选项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="263"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="345"/>
         <source>RDP options</source>
         <translation>RDP选项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="268"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="350"/>
         <source>System options</source>
         <translation>系统选项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="278"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="360"/>
         <source>License...</source>
         <translation>许可证...</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="288"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="370"/>
         <source>Upgrade check...</source>
         <translation>升级检查...</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="293"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="375"/>
         <source>Tool options</source>
         <translation>工具选项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="298"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="380"/>
         <source>Restart application</source>
         <translation>重启应用</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="303"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="385"/>
         <source>Playbook...</source>
         <translation>剧本...</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="308"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="812"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="394"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1354"/>
         <source>Playbooks</source>
         <translation>剧本</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="313"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="399"/>
         <source>Purchase license</source>
         <translation>购买许可证</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="283"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="398"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="404"/>
+        <source>&amp;Output history to file</source>
+        <translation>历史输出至文件(&amp;O)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="409"/>
+        <source>Open last history file &amp;directory</source>
+        <translation>打开最近的历史文件夹(&amp;D)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="414"/>
+        <source>Stop history to file</source>
+        <translation>停止输出历史文件</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="419"/>
+        <source>Stop session</source>
+        <translation>停止会话</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="424"/>
+        <source>Reconnect session</source>
+        <translation>重新连接会话</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="429"/>
+        <source>Reconnect all session</source>
+        <translation>重新连接所有会话</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="434"/>
+        <source>&amp;Copy</source>
+        <translation>复制(&amp;C)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="439"/>
+        <source>&amp;Paste</source>
+        <translation>粘贴(&amp;P)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="444"/>
+        <source>Paste selection text</source>
+        <translation>粘贴选中的文本</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="449"/>
+        <source>Select &amp;all</source>
+        <translation>选中所有文本(&amp;A)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="454"/>
+        <source>&amp;Find</source>
+        <translation>搜索(&amp;F)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="459"/>
+        <source>Find &amp;next</source>
+        <translation>搜索下一个(&amp;N)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="464"/>
+        <source>Find &amp;previous</source>
+        <translation>搜索前一个(&amp;P)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="469"/>
+        <source>Clear screen</source>
+        <translation>清除屏幕</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="474"/>
+        <source>Clear scroll cache</source>
+        <translation>清除缓存</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="479"/>
+        <source>Clear screen and scroll cache</source>
+        <translation>清除屏幕及缓存</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="484"/>
+        <source>reset cursor postion</source>
+        <translation>重置光标位置</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="489"/>
+        <source>reset window size</source>
+        <translation>重置窗口大小</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="494"/>
+        <source>Close tab</source>
+        <translation>关闭选项卡</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="499"/>
+        <source>Close right tabs</source>
+        <translation>关闭右边选项卡</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="504"/>
+        <source>Close other tabs</source>
+        <translation>关闭其它选项卡</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="509"/>
+        <source>Close all tabs</source>
+        <translation>关闭所有选项卡</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="514"/>
+        <source>Topmost</source>
+        <translation>窗口总是最前面</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="519"/>
+        <source>Window stay on top</source>
+        <translation>窗口总是最前面</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="524"/>
+        <source>Window show on tray</source>
+        <translation>在托盘区显示</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="529"/>
+        <source>Window translucent</source>
+        <translation>窗口半透明</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="534"/>
+        <source>&amp;Stop all history to file</source>
+        <translation>停止输出至文件(&amp;S)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="539"/>
+        <source>Open last history &amp;file</source>
+        <translation>打开最近的历史文件(&amp;F)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="544"/>
+        <source>Find all</source>
+        <translation>查找所有</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="558"/>
+        <source>Close left tabs</source>
+        <translation>关闭左边选项卡</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="365"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="410"/>
         <source>Clear all</source>
         <translation>清空所有</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="193"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="41"/>
+        <source>&amp;File</source>
+        <translation>文件(&amp;F)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="45"/>
+        <source>&amp;Open</source>
+        <translation>打开(&amp;O)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="85"/>
+        <source>&amp;View</source>
+        <translation>视图(&amp;V)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="92"/>
+        <source>&amp;Tool</source>
+        <translation>工具(&amp;T)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="112"/>
+        <source>&amp;Help</source>
+        <translation>帮助(&amp;H)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="123"/>
+        <source>&amp;Edit</source>
+        <translation>编辑(&amp;E)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="144"/>
+        <source>Ta&amp;b</source>
+        <translation>选项卡(&amp;B)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="154"/>
+        <source>&amp;Window</source>
+        <translation>窗口(&amp;W)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="195"/>
+        <source>&amp;Exit</source>
+        <translation>退出(&amp;E)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="251"/>
+        <source>&amp;About</source>
+        <translation>关于(&amp;A)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="260"/>
         <source>Online Document</source>
         <translation>在线文档</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="198"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="265"/>
         <source>Office Wetsite</source>
         <translation>官网</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="70"/>
-        <source>View</source>
-        <translation>查看</translation>
-    </message>
-    <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="77"/>
-        <source>Tool</source>
-        <translation>工具</translation>
-    </message>
-    <message>
-        <source>Tab</source>
-        <translation type="vanished">选项卡</translation>
-    </message>
-    <message>
-        <source>Window</source>
-        <translation type="vanished">窗口</translation>
-    </message>
-    <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="96"/>
-        <source>Help</source>
-        <translation>帮助</translation>
-    </message>
-    <message>
-        <source>New...</source>
-        <translation type="vanished">新建...</translation>
-    </message>
-    <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="45"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="779"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1321"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="137"/>
         <source>Exit</source>
-        <translation>退出</translation>
+        <translation type="vanished">退出</translation>
     </message>
     <message>
         <source>Import</source>
@@ -4865,47 +5079,12 @@
         <translation type="vanished">导出</translation>
     </message>
     <message>
+        <location filename="../../woterm/qwomainwindow.ui" line="59"/>
         <source>Log</source>
-        <translation type="vanished">日志</translation>
+        <translation>日志</translation>
     </message>
     <message>
-        <source>Transfer</source>
-        <translation type="vanished">传输</translation>
-    </message>
-    <message>
-        <source>Save</source>
-        <translation type="vanished">保存</translation>
-    </message>
-    <message>
-        <source>Disconnect</source>
-        <translation type="vanished">断开</translation>
-    </message>
-    <message>
-        <source>Reconnect</source>
-        <translation type="vanished">重新连接</translation>
-    </message>
-    <message>
-        <source>Reconnect All</source>
-        <translation type="vanished">全部重新连接</translation>
-    </message>
-    <message>
-        <source>Default Property</source>
-        <translation type="vanished">默认属性</translation>
-    </message>
-    <message>
-        <source>Find..</source>
-        <translation type="vanished">查找...</translation>
-    </message>
-    <message>
-        <source>version check</source>
-        <translation type="vanished">版本检查</translation>
-    </message>
-    <message>
-        <source>Found New Version: %1,Try To Download?</source>
-        <translation type="vanished">发现新版本：%1，现在去下载？</translation>
-    </message>
-    <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="114"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="117"/>
         <source>WoTerm</source>
         <translation>WoTerm</translation>
     </message>
@@ -4918,46 +5097,38 @@
         <translation type="vanished">WoTerm 免费版</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="123"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="126"/>
         <source>Session Manager</source>
         <translation>会话管理</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="192"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="195"/>
         <source>Confirm</source>
         <translation>确认</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="192"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="195"/>
         <source>Exit Or Not?</source>
         <translation>退出或取消</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="347"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="350"/>
         <source>The current version is free. It is recommended to upgrade to the ultimate version.</source>
         <translation>当前版本是免费版本，建议升级至旗舰版。</translation>
     </message>
     <message>
-        <source>Version check</source>
-        <translation type="vanished">版本检查</translation>
-    </message>
-    <message>
-        <source>a new version of %1 is found, do you want to update it?</source>
-        <translation type="vanished">发现新版本%1，是否需要更新？</translation>
-    </message>
-    <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="110"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="113"/>
         <source>Free</source>
         <translation>免费版</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="95"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="98"/>
         <source>Trial</source>
         <translation>试用版</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="97"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="105"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="100"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="108"/>
         <source>[expired]</source>
         <translation>[已过期]</translation>
     </message>
@@ -4966,7 +5137,7 @@
         <translation type="vanished">校园版</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="103"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="106"/>
         <source>Ultimate</source>
         <translation>舰舰版</translation>
     </message>
@@ -4975,52 +5146,52 @@
         <translation type="vanished">未知</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="350"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="353"/>
         <source>Evalute ultimate</source>
         <translation>评估旗舰版</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="354"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="357"/>
         <source>No</source>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="358"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="361"/>
         <source>Yes</source>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="423"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="435"/>
         <source>Error Information</source>
         <translation>错误信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="423"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="435"/>
         <source>The license code has been invalidated as follow reason</source>
         <translation>许可证代码已失效，原因如下</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="432"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="444"/>
         <source>Merge information</source>
         <translation>合并信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="432"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="444"/>
         <source>No tabs to merge.</source>
         <translation>没有可合并的选项。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="527"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="539"/>
         <source>Backup Session Database</source>
         <translation>备份数据库</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="539"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="551"/>
         <source>Failure</source>
         <translation>失败</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="539"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="551"/>
         <source>failed to backup the session list.</source>
         <translation>备份数据库失败。</translation>
     </message>
@@ -5033,100 +5204,101 @@
         <translation type="vanished">语言已经被修改，需要重启才能生效，是否立即重启？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="99"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="107"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="112"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="102"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="110"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="115"/>
         <source>Please purchase the license to support us</source>
         <translation>请购买许可证支持我们</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="606"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="618"/>
         <source>Configure information</source>
         <translation>配置信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="606"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="618"/>
         <source>The configure has been changed, restart application to take effect right now.</source>
         <translation>配置已更改，请立即重新启动应用程序以生效。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="666"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="673"/>
         <source>Password input</source>
         <translation>密码输入</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="667"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="674"/>
         <source>Login to the configuration of administrator for the first time, Please input password to activate it.</source>
         <translation>首次使用管理员配置需要输入新密码激活它。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="667"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="674"/>
         <source>Please input password to verify.</source>
         <translation>请输入密码进行验证。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="676"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="683"/>
         <source>Password error</source>
         <translation>参数错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="676"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="683"/>
         <source>the password is not right.</source>
         <translation>密码不正确。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="767"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1309"/>
         <source>Toolbar</source>
         <translation>工具栏</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="769"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1311"/>
         <source>History</source>
         <translation>历史</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="804"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1346"/>
         <source>Merge</source>
         <translation>合并</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="819"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="553"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1361"/>
         <source>Tunnel</source>
         <translation>隧道</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="828"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1370"/>
         <source>Enter keyword to search</source>
         <translation>关键字搜索</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="829"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1371"/>
         <source>filterBox</source>
         <translation>过滤框</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="882"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1435"/>
         <source>Administrator login</source>
         <translation>管理员登录</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="883"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1436"/>
         <source>Please input password to login application.</source>
         <translation>请输入密码登录应用</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="893"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1446"/>
         <source>Login failure</source>
         <translation>登录失败</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="893"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1446"/>
         <source>The password is wrong, %1 times left to try.</source>
         <translation>密码错误，剩余%1次尝试机会。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="160"/>
-        <location filename="../../woterm/qwomainwindow.cpp" line="791"/>
+        <location filename="../../woterm/qwomainwindow.ui" line="218"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1333"/>
         <source>New</source>
         <translation>新建</translation>
     </message>
@@ -5135,7 +5307,7 @@
         <translation type="vanished">管理</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.cpp" line="797"/>
+        <location filename="../../woterm/qwomainwindow.cpp" line="1339"/>
         <source>List</source>
         <translation>列表</translation>
     </message>
@@ -5148,9 +5320,8 @@
         <translation type="vanished">证书管理</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwomainwindow.ui" line="184"/>
         <source>About</source>
-        <translation>关于...</translation>
+        <translation type="vanished">关于...</translation>
     </message>
 </context>
 <context>
@@ -5177,6 +5348,44 @@
         <location filename="../../woterm/qwomessagequeuewidget.ui" line="37"/>
         <source>Message box</source>
         <translation>消息列表</translation>
+    </message>
+</context>
+<context>
+    <name>QWoOpacitySettingDialog</name>
+    <message>
+        <location filename="../../woterm/qwoopacitysettingdialog.ui" line="14"/>
+        <source>Dialog</source>
+        <translation>对话框</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoopacitysettingdialog.ui" line="20"/>
+        <source>Turn on translucency in the main window</source>
+        <translation>开启主窗口的半透明度</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoopacitysettingdialog.ui" line="49"/>
+        <source>Apply</source>
+        <translation>应用</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoopacitysettingdialog.ui" line="56"/>
+        <source>Close</source>
+        <translation>关闭</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoopacitysettingdialog.cpp" line="23"/>
+        <source>Main window Opacity setting</source>
+        <translation>主窗口透明度设置</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoopacitysettingdialog.cpp" line="63"/>
+        <source>Permission restrictions</source>
+        <translation>权限限制</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoopacitysettingdialog.cpp" line="63"/>
+        <source>Please enable allow to set the window opacity in the administrator dialog.</source>
+        <translation>请在管理员的对话框中开启窗口半透明度设置。</translation>
     </message>
 </context>
 <context>
@@ -5571,59 +5780,64 @@
         <translation>是否继续连接本会话？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoptytermwidget.cpp" line="252"/>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="257"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoptytermwidget.cpp" line="254"/>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="259"/>
         <source>Paste</source>
         <translation>粘贴</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoptytermwidget.cpp" line="255"/>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="260"/>
         <source>Force reload</source>
         <translation>强制重新加载</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoptytermwidget.cpp" line="257"/>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="262"/>
         <source>Split vertical</source>
         <translation>垂直分割</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoptytermwidget.cpp" line="259"/>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="264"/>
         <source>Split horizontal</source>
         <translation>水平分割</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoptytermwidget.cpp" line="262"/>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="267"/>
         <source>Close session</source>
         <translation>关闭会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoptytermwidget.cpp" line="266"/>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="271"/>
         <source>Float this tab</source>
         <translation>浮动此选项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoptytermwidget.cpp" line="269"/>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="274"/>
         <source>Find...</source>
         <translation>查找...</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoptytermwidget.cpp" line="270"/>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="275"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoptytermwidget.cpp" line="271"/>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="276"/>
         <source>Output history to file</source>
         <translation>将历史输出至文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoptytermwidget.cpp" line="272"/>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="277"/>
         <source>Stop history to file</source>
         <translation>停止输出历史文件</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoptytermwidget.cpp" line="280"/>
+        <source>Test font</source>
+        <translation>测试字体</translation>
     </message>
 </context>
 <context>
@@ -5637,113 +5851,123 @@
 <context>
     <name>QWoRLoginTermWidget</name>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="196"/>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="207"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="234"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="245"/>
         <source>session list</source>
         <translation>会话列表</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="238"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="276"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="238"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="276"/>
         <source>can&apos;t find the session, maybe it had been delete ago</source>
         <translation>会话信息已经不存在</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="258"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="296"/>
         <source>Select Files</source>
         <translation>选择文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="277"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="315"/>
         <source>Open Directory</source>
         <translation>打开文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="443"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="518"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="445"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="520"/>
         <source>Paste</source>
         <translation>粘贴</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="447"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="522"/>
         <source>Force Reconnect</source>
         <translation>强制重新联网</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="448"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="523"/>
         <source>Split Vertical</source>
         <translation>垂直分割</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="450"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="525"/>
         <source>Split Horizontal</source>
         <translation>水平分割</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="456"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="531"/>
         <source>Close Session</source>
         <translation>关闭会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="461"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="536"/>
         <source>Float This Tab</source>
         <translation>浮动此选项卡</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="464"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="539"/>
         <source>Find...</source>
         <translation>查找...</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="465"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="540"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="472"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="547"/>
         <source>Zmodem upload</source>
         <translation>Zmodem上传</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="473"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="548"/>
         <source>Zmodem receive</source>
         <translation>Zmodem下载</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="474"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="549"/>
         <source>Zmodem abort</source>
         <translation>ZModem中止传输</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="495"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="570"/>
         <source>Files are transfering...</source>
         <translation>文件正在传输中...</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="468"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="543"/>
         <source>Clean history</source>
         <translation>清空历史</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="467"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="162"/>
+        <source>Reconnection confirmation</source>
+        <translation>重新连接</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="162"/>
+        <source>Continue to connect to the server?</source>
+        <translation>继续连接至服务器？</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="542"/>
         <source>Duplicate in new window</source>
         <translation>在新窗口中打开</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="469"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="544"/>
         <source>Output history to file</source>
         <translation>将历史输出至文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qworlogintermwidget.cpp" line="470"/>
+        <location filename="../../woterm/qworlogintermwidget.cpp" line="545"/>
         <source>Stop history to file</source>
         <translation>停止输出历史文件</translation>
     </message>
@@ -5805,128 +6029,180 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="58"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="64"/>
         <source>SerialPort:</source>
         <translation>串口号：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="117"/>
-        <location filename="../../woterm/qwoserialinput.ui" line="213"/>
-        <location filename="../../woterm/qwoserialinput.ui" line="423"/>
-        <location filename="../../woterm/qwoserialinput.ui" line="516"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="123"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="219"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="429"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="522"/>
         <source>Host:</source>
         <translation>主机名：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="127"/>
-        <location filename="../../woterm/qwoserialinput.ui" line="223"/>
-        <location filename="../../woterm/qwoserialinput.ui" line="433"/>
-        <location filename="../../woterm/qwoserialinput.ui" line="526"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="133"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="229"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="439"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="532"/>
         <source>Port:</source>
         <translation>端口：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="144"/>
-        <location filename="../../woterm/qwoserialinput.ui" line="450"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="421"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="451"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="150"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="456"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="516"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="548"/>
         <source>Listen</source>
         <translation>监听</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="165"/>
-        <location filename="../../woterm/qwoserialinput.ui" line="461"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="171"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="467"/>
         <source>Client:</source>
         <translation>客户端：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="240"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="466"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="246"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="564"/>
         <source>Start</source>
         <translation>开始</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="285"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="291"/>
         <source>BaudRate:</source>
         <translation>比特率：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="302"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="308"/>
         <source>DataBits:</source>
         <translation>数据位：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="323"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="329"/>
         <source>StopBits:</source>
         <translation>停止位：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="340"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="346"/>
         <source>FlowControl:</source>
         <translation>流控协议：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="361"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="367"/>
         <source>Parity:</source>
         <translation>校验位：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="483"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="489"/>
         <source>TextLabel</source>
         <translation>标签</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="543"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="549"/>
         <source>Conntect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="616"/>
-        <source>Output as hex mode</source>
-        <translation>十六进制输出模式</translation>
+        <location filename="../../woterm/qwoserialinput.ui" line="581"/>
+        <source>Terminal</source>
+        <translation>SSH终端</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="623"/>
-        <source>Input as hex mode</source>
-        <translation>十六进制输入模式</translation>
+        <location filename="../../woterm/qwoserialinput.ui" line="587"/>
+        <source>Terminal interactive mode</source>
+        <translation>终端交互模式</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="630"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="640"/>
+        <source>Output</source>
+        <translation>输出</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.ui" line="648"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="725"/>
+        <source>filter:</source>
+        <translation>过滤器:</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.ui" line="714"/>
+        <source>Line split</source>
+        <translation>行分割</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.ui" line="765"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="888"/>
+        <source>Please enter a hexadecimal string</source>
+        <translation>请输入十六进制的字符串</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.ui" line="768"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="891"/>
+        <source>Hex string: 0D0A</source>
+        <translation>十六进制字符串:0D0A</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.ui" line="675"/>
         <source>Show data source</source>
         <translation>显示数据源</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="644"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="695"/>
         <source>Unread buffer length:</source>
         <translation>可读取缓冲区长度：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="651"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="702"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="675"/>
         <source>Split by special string</source>
-        <translation>根据特殊字符串分割</translation>
+        <translation type="vanished">根据特殊字符串分割</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="692"/>
         <source>Split output only after timeout</source>
-        <translation>超时才分割输出字符串</translation>
+        <translation type="vanished">超时才分割输出字符串</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="709"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="812"/>
         <source>ms</source>
         <translation>毫秒</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="758"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="840"/>
+        <source>Input</source>
+        <translation>输入</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.ui" line="848"/>
+        <source>Mode:</source>
+        <translation>模式:</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.ui" line="875"/>
+        <source>Auto end with special hex string</source>
+        <translation>自动以特殊的十六进制字符串结尾</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.ui" line="910"/>
+        <source>Echo input content</source>
+        <translation>回显输入的内容</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.ui" line="919"/>
+        <source>Send file</source>
+        <translation>发送文件</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.ui" line="939"/>
         <source>Clear</source>
         <translation>清空</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="765"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="946"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="1005"/>
         <source>Send</source>
         <translation>发送</translation>
     </message>
@@ -5947,15 +6223,15 @@
         <translation type="vanished">刷新</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="378"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="249"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="436"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="483"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="384"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="376"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="532"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="580"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.ui" line="81"/>
+        <location filename="../../woterm/qwoserialinput.ui" line="87"/>
         <source>More</source>
         <translation>更多</translation>
     </message>
@@ -5972,110 +6248,305 @@
         <translation type="vanished">发送</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="419"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="425"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="434"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="440"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="449"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="455"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="464"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="470"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="481"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="487"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="514"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="520"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="530"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="536"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="546"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="552"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="562"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="568"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="578"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="584"/>
         <source>Stop</source>
         <translation>停止</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="500"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="505"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="913"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="490"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="595"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="604"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="609"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1075"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="500"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="165"/>
+        <source>Print string</source>
+        <translation>打印字符串</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="166"/>
+        <source>Hex string</source>
+        <translation>十六进制字符串</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="193"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="220"/>
+        <source>No filter</source>
+        <translation>透传</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="194"/>
+        <source>Split by timeout</source>
+        <translation>按超时分割</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="195"/>
+        <source>Split by hex string</source>
+        <translation>按十六进制字符串分割</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="221"/>
+        <source>Latin1 hex string</source>
+        <translation>Latin1十六进制字符串</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="222"/>
+        <source>Unicode hex string</source>
+        <translation>Unicode十六进制字符串</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="462"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="658"/>
+        <source>File send error</source>
+        <translation>文件发送错误</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="462"/>
+        <source>Abnormal error, terminating sending.</source>
+        <translation>异常错误，正在终止发送。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="490"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="595"/>
+        <source>The current file content has not been sent yet.</source>
+        <translation>当前文件内容尚未发送。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="604"/>
         <source>make sure all string are hex code.</source>
         <translation>确保所有字符串是十六进制编码。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="505"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="609"/>
         <source>the hex code is not completed.</source>
         <translation>十六进制编码不完整。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="647"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="651"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="656"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="701"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="705"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="710"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="759"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="763"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="768"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="820"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="824"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="829"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="620"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="624"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="785"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="789"/>
+        <source>Suffix information</source>
+        <translation>后缀信息</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="620"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="785"/>
+        <source>The input suffix string should not be empty.</source>
+        <translation>后缀字符串不能为空。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="624"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="789"/>
+        <source>The input suffix string must be hex string.</source>
+        <translation>后缀字符串必须是十六进制字符串。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="636"/>
+        <source>File sending information</source>
+        <translation>文件发送信息</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="636"/>
+        <source>Sending files is a dangerous behavior. Please carefully confirm whether the content of the file will damage the target device or cause other unpredictable events. Do you want to continue the operation.</source>
+        <translation>发送文件是一种高风险的行为。请仔细确认文件的内容是否会损坏目标设备或导致其他不可预测的事件。是否要继续执行操作。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="641"/>
+        <source>Please select a file to send.</source>
+        <translation>请选择一个文件去发送。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="648"/>
+        <source>File open error</source>
+        <translation>文件打开错误</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="648"/>
+        <source>Failed to open file:</source>
+        <translation>无法打开文件</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="652"/>
+        <source>File size limitation</source>
+        <translation>文件大小限制</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="652"/>
+        <source>The size of the sent file cannot exceed 5M bytes.</source>
+        <translation>发送文件的字符数量不能超过5M字节。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="658"/>
+        <source>Unknow error and terminat the file sending.</source>
+        <translation>未知错误或终止文件发送。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="805"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="809"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="814"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="859"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="863"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="868"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="918"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="922"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="927"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="980"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="984"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="989"/>
         <source>Parameter errors</source>
         <translation>参数错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="647"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="701"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="759"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="820"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="805"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="859"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="918"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="980"/>
         <source>Host parameter should not be empty.</source>
         <translation>主机参数不能为空。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="651"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="705"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="763"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="824"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="809"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="863"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="922"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="984"/>
         <source>Port parameter should not be empty.</source>
         <translation>端口参数不能为空。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="656"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="710"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="768"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="829"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="814"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="868"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="927"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="989"/>
         <source>Port parameter should not range between 0 and 65535.</source>
         <translation>端口参数应该在0至65535的范围内。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="667"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="790"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="825"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="950"/>
         <source>Listen errors</source>
         <translation>监听错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="667"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="790"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="825"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="950"/>
         <source>Failed to listen for errors</source>
         <translation>监听失败</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="913"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1075"/>
         <source>Failed to open device.</source>
         <translation>没有打开设备</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1181"/>
+        <source>Connection error</source>
+        <translation>连接错误</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1181"/>
+        <source>Please confirm if there is currently a valid device connection.</source>
+        <translation>请确认当前是否存在有效的设备连接。</translation>
     </message>
 </context>
 <context>
     <name>QWoSerialTermWidget</name>
     <message>
-        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="264"/>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="62"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="266"/>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="64"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="267"/>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="66"/>
         <source>Clean history</source>
         <translation>清空历史</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="68"/>
+        <source>Output history to file</source>
+        <translation>将历史输出至文件</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="70"/>
+        <source>Stop history to file</source>
+        <translation>停止输出历史文件</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="74"/>
+        <source>Open interactive mode</source>
+        <translation>开启交互模式</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="76"/>
+        <source>Close interactive mode</source>
+        <translation>关闭交互模式</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="78"/>
+        <source>Find...</source>
+        <translation>查找...</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="81"/>
+        <source>Zmodem upload</source>
+        <translation>Zmodem上传</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="82"/>
+        <source>Zmodem receive</source>
+        <translation>Zmodem下载</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="83"/>
+        <source>Zmodem abort</source>
+        <translation>Zmodem终止</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="189"/>
+        <source>Interactive mode</source>
+        <translation>交互模式</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="189"/>
+        <source>The current terminal is in read-only mode. Do you need to temporarily set it to interactive mode.</source>
+        <translation>当前终端处于只读模式。你需要临时将其设置为交互式模式吗。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="206"/>
+        <source>warning</source>
+        <translation>警告</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="206"/>
+        <source>failed to find rz program, please install lrzsz.</source>
+        <translation>找不到rz程序，请安装lrzsz。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="212"/>
+        <source>Select Files</source>
+        <translation>选择文件</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialtermwidget.cpp" line="231"/>
+        <source>Open Directory</source>
+        <translation>打开文件夹</translation>
     </message>
     <message>
         <source>Error</source>
@@ -6089,23 +6560,23 @@
 <context>
     <name>QWoSerialWidgetImpl</name>
     <message>
-        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="131"/>
-        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="175"/>
+        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="163"/>
+        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="207"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="131"/>
+        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="163"/>
         <source>can&apos;t find the session, maybe it had been delete</source>
         <translation>没有找到对应的会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="175"/>
+        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="207"/>
         <source>Failed to open device.</source>
         <translation>没有打开设备</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="217"/>
+        <location filename="../../woterm/qwoserialwidgetimpl.cpp" line="249"/>
         <source>An I/O error occurred from port %1, error: %2</source>
         <translation>在串口%1发生输入输出错误：%2</translation>
     </message>
@@ -8319,12 +8790,12 @@
         <translation>本地串口</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="385"/>
+        <location filename="../../woterm/qwoshower.cpp" line="375"/>
         <source>The number of merging has exceeded 8 and cannot be continued.</source>
         <translation>合并项已经超过8个，无法继续合并。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="520"/>
+        <location filename="../../woterm/qwoshower.cpp" line="511"/>
         <source>Close Or Not</source>
         <translation>是否关闭</translation>
     </message>
@@ -8341,17 +8812,17 @@ Continue To Close It?</source>
         <translation type="vanished">继续关闭</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="522"/>
+        <location filename="../../woterm/qwoshower.cpp" line="513"/>
         <source>The follow event will be stop before close this session.</source>
         <translation>关闭会话的同时，也停止以下相应行为。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="528"/>
+        <location filename="../../woterm/qwoshower.cpp" line="519"/>
         <source>Continue To Close It?</source>
         <translation>是否继续关闭它？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="530"/>
+        <location filename="../../woterm/qwoshower.cpp" line="521"/>
         <source>CloseSession</source>
         <translation>关闭会话</translation>
     </message>
@@ -8377,7 +8848,7 @@ Continue To Close It?</source>
         <location filename="../../woterm/qwoshower.cpp" line="275"/>
         <location filename="../../woterm/qwoshower.cpp" line="294"/>
         <location filename="../../woterm/qwoshower.cpp" line="313"/>
-        <location filename="../../woterm/qwoshower.cpp" line="422"/>
+        <location filename="../../woterm/qwoshower.cpp" line="412"/>
         <source>Version restrictions</source>
         <translation>版本限制</translation>
     </message>
@@ -8400,26 +8871,26 @@ Continue To Close It?</source>
         <translation>PB</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="366"/>
-        <location filename="../../woterm/qwoshower.cpp" line="373"/>
-        <location filename="../../woterm/qwoshower.cpp" line="380"/>
-        <location filename="../../woterm/qwoshower.cpp" line="385"/>
+        <location filename="../../woterm/qwoshower.cpp" line="356"/>
+        <location filename="../../woterm/qwoshower.cpp" line="363"/>
+        <location filename="../../woterm/qwoshower.cpp" line="370"/>
+        <location filename="../../woterm/qwoshower.cpp" line="375"/>
         <source>Merge information</source>
         <translation>合并信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="366"/>
+        <location filename="../../woterm/qwoshower.cpp" line="356"/>
         <source>There are no right tab to merge.</source>
         <translation>该右则没有可合并的选项。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="373"/>
-        <location filename="../../woterm/qwoshower.cpp" line="412"/>
+        <location filename="../../woterm/qwoshower.cpp" line="363"/>
+        <location filename="../../woterm/qwoshower.cpp" line="402"/>
         <source>Current tab is not a text terminal tab.</source>
         <translation>当前选项不是一个文本终端。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="380"/>
+        <location filename="../../woterm/qwoshower.cpp" line="370"/>
         <source>Cannot merge because the right tab is not a text terminal.</source>
         <translation>右则不是文本终端，故无法合并。</translation>
     </message>
@@ -8428,75 +8899,75 @@ Continue To Close It?</source>
         <translation type="vanished">合并项已经超过6个，无法继续合并。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="412"/>
-        <location filename="../../woterm/qwoshower.cpp" line="417"/>
+        <location filename="../../woterm/qwoshower.cpp" line="402"/>
+        <location filename="../../woterm/qwoshower.cpp" line="407"/>
         <source>Seperation information</source>
         <translation>分离信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="417"/>
+        <location filename="../../woterm/qwoshower.cpp" line="407"/>
         <source>Current tab has only one window, not need to seperate.</source>
         <translation>当前选项只有一个子窗口，不需要分离。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="422"/>
+        <location filename="../../woterm/qwoshower.cpp" line="412"/>
         <source>The remaining number of tabs is not enough to seperate.</source>
         <translation>没有足够数量的选项卡去进行分离。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="565"/>
+        <location filename="../../woterm/qwoshower.cpp" line="610"/>
         <source>Close this tab</source>
         <translation>关闭这选项卡</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="566"/>
+        <location filename="../../woterm/qwoshower.cpp" line="611"/>
         <source>Close other tab</source>
         <translation>关闭其它选项卡</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="568"/>
+        <location filename="../../woterm/qwoshower.cpp" line="613"/>
         <source>New same session</source>
         <translation>新建同名会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="569"/>
+        <location filename="../../woterm/qwoshower.cpp" line="614"/>
         <source>Copy host address</source>
         <translation>复制主机地址</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="571"/>
+        <location filename="../../woterm/qwoshower.cpp" line="616"/>
         <source>Edit this session</source>
         <translation>编辑会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="572"/>
+        <location filename="../../woterm/qwoshower.cpp" line="617"/>
         <source>Float this tab</source>
         <translation>浮动此选项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="573"/>
+        <location filename="../../woterm/qwoshower.cpp" line="618"/>
         <source>Show full screen</source>
         <translation>全屏显示</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="646"/>
-        <location filename="../../woterm/qwoshower.cpp" line="660"/>
+        <location filename="../../woterm/qwoshower.cpp" line="691"/>
+        <location filename="../../woterm/qwoshower.cpp" line="705"/>
         <source>alert</source>
         <translation>告警</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="646"/>
-        <location filename="../../woterm/qwoshower.cpp" line="660"/>
+        <location filename="../../woterm/qwoshower.cpp" line="691"/>
+        <location filename="../../woterm/qwoshower.cpp" line="705"/>
         <source>failed to find impl infomation</source>
         <translation>无法查找目标信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="798"/>
+        <location filename="../../woterm/qwoshower.cpp" line="843"/>
         <source>Open remote session</source>
         <translation>打开远程会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshower.cpp" line="799"/>
+        <location filename="../../woterm/qwoshower.cpp" line="844"/>
         <source>Open local session</source>
         <translation>打开本地会话</translation>
     </message>
@@ -8504,12 +8975,12 @@ Continue To Close It?</source>
 <context>
     <name>QWoShowerWidget</name>
     <message>
-        <location filename="../../woterm/qwoshowerwidget.cpp" line="32"/>
+        <location filename="../../woterm/qwoshowerwidget.cpp" line="43"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoshowerwidget.cpp" line="32"/>
+        <location filename="../../woterm/qwoshowerwidget.cpp" line="43"/>
         <source>can&apos;t find the session, maybe it had been delete ago</source>
         <translation>没有查找到会话，也许已经被删除。</translation>
     </message>
@@ -8517,88 +8988,88 @@ Continue To Close It?</source>
 <context>
     <name>QWoSshTermWidget</name>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="163"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="175"/>
         <source>Reconnection confirmation</source>
         <translation>重连确认</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="163"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="175"/>
         <source>Continue to connect to the server?</source>
         <translation>继续连接远程服务器？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="164"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="176"/>
         <source>Restore</source>
         <translation>恢复</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="235"/>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="246"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="247"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="258"/>
         <source>session list</source>
         <translation>会话列表</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="288"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="300"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="288"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="300"/>
         <source>can&apos;t find the session, maybe it had been delete ago</source>
         <translation>无法找到相应会话信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="306"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="318"/>
         <source>warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="306"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="318"/>
         <source>failed to find rz program, please install lrzsz.</source>
         <translation>找不到rz程序，请安装lrzsz。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="312"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="324"/>
         <source>Select Files</source>
         <translation>选择文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="331"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="343"/>
         <source>Open Directory</source>
         <translation>打开文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="474"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="486"/>
         <source>Configure error</source>
         <translation>配置错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="474"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="486"/>
         <source>The session proxy had been removed.</source>
         <translation>会话代理已经被删除。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="562"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="574"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="565"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="577"/>
         <source>Paste</source>
         <translation>粘贴</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="568"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="580"/>
         <source>Force Reconnect</source>
         <translation>强制重新联网</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="569"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="581"/>
         <source>Split Vertical</source>
         <translation>垂直分割</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="571"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="583"/>
         <source>Split Horizontal</source>
         <translation>水平分割</translation>
     </message>
@@ -8611,22 +9082,22 @@ Continue To Close It?</source>
         <translation type="vanished">创建水平窗口</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="574"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="586"/>
         <source>Sftp Assistant</source>
         <translation>SFTP助手</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="575"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="587"/>
         <source>Find...</source>
         <translation>查找...</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="576"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="588"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="590"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="602"/>
         <source>Zmodem abort</source>
         <translation>Zmodem中止传输</translation>
     </message>
@@ -8635,17 +9106,17 @@ Continue To Close It?</source>
         <translation type="vanished">新建连接复用</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="581"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="593"/>
         <source>Clean history</source>
         <translation>清空历史</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="583"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="595"/>
         <source>Output history to file</source>
         <translation>将历史输出至文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="585"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="597"/>
         <source>Stop history to file</source>
         <translation>停止输出历史文件</translation>
     </message>
@@ -8662,42 +9133,42 @@ Continue To Close It?</source>
         <translation type="vanished">ZModem中断传输</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="596"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="608"/>
         <source>Close Session</source>
         <translation>关闭会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="594"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="606"/>
         <source>Float This Tab</source>
         <translation>浮动此选项卡</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="577"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="589"/>
         <source>Duplicate in new window</source>
         <translation>在新窗口中打开</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="578"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="590"/>
         <source>New session multiplex</source>
         <translation>新建连接复用</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="588"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="600"/>
         <source>Zmodem upload</source>
         <translation>Zmodem上传</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="589"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="601"/>
         <source>Zmodem receive</source>
         <translation>Zmodem下载</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="598"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="610"/>
         <source>Test font</source>
         <translation>测试字体</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidget.cpp" line="607"/>
+        <location filename="../../woterm/qwosshtermwidget.cpp" line="619"/>
         <source>Files are transfering...</source>
         <translation>文件正在传输中...</translation>
     </message>
@@ -8710,22 +9181,22 @@ Continue To Close It?</source>
         <translation>%1:%2</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidgetimpl.cpp" line="51"/>
+        <location filename="../../woterm/qwosshtermwidgetimpl.cpp" line="52"/>
         <source>Open sftp assistant</source>
         <translation>打开SFTP助手</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidgetimpl.cpp" line="53"/>
+        <location filename="../../woterm/qwosshtermwidgetimpl.cpp" line="54"/>
         <source>Close sftp assistant</source>
         <translation>关闭SFTP助手</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidgetimpl.cpp" line="55"/>
+        <location filename="../../woterm/qwosshtermwidgetimpl.cpp" line="56"/>
         <source>Multiplexing sftp sessions</source>
         <translation>复用SFTP会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosshtermwidgetimpl.cpp" line="56"/>
+        <location filename="../../woterm/qwosshtermwidgetimpl.cpp" line="57"/>
         <source>Multiplexing ssh sessions</source>
         <translation>复用SSH会话</translation>
     </message>
@@ -8771,118 +9242,118 @@ Continue To Close It?</source>
 <context>
     <name>QWoTelnetTermWidget</name>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="138"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="148"/>
         <source>Reconnection confirmation</source>
         <translation>连接确认</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="138"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="148"/>
         <source>Continue to connect to the server?</source>
         <translation>继续连接服务器？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="193"/>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="204"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="203"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="214"/>
         <source>session list</source>
         <translation>会话列表</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="235"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="245"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="235"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="245"/>
         <source>can&apos;t find the session, maybe it had been delete ago</source>
         <translation>无法查找相应会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="255"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="265"/>
         <source>Select Files</source>
         <translation>选择文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="274"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="284"/>
         <source>Open Directory</source>
         <translation>打开文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="401"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="411"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="403"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="413"/>
         <source>Paste</source>
         <translation>粘贴</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="404"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="414"/>
         <source>Force Reconnect</source>
         <translation>强制重新联网</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="406"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="416"/>
         <source>Split Vertical</source>
         <translation>垂直分割</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="408"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="418"/>
         <source>Split Horizontal</source>
         <translation>水平分割</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="415"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="425"/>
         <source>Close Session</source>
         <translation>关闭会话</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="419"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="429"/>
         <source>Float This Tab</source>
         <translation>浮动此选项卡</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="422"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="432"/>
         <source>Find...</source>
         <translation>查找...</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="423"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="433"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="425"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="435"/>
         <source>Duplicate in new window</source>
         <translation>在新窗口中打开</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="430"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="440"/>
         <source>Zmodem upload</source>
         <translation>Zmodem上传</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="431"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="441"/>
         <source>Zmodem receive</source>
         <translation>Zmodem下载</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="432"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="442"/>
         <source>Zmodem abort</source>
         <translation>Zmodem中止传输</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="426"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="436"/>
         <source>Clean history</source>
         <translation>清空历史</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="427"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="437"/>
         <source>Output history to file</source>
         <translation>将历史输出至文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="428"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="438"/>
         <source>Stop history to file</source>
         <translation>停止输出历史文件</translation>
     </message>
@@ -8895,7 +9366,7 @@ Continue To Close It?</source>
         <translation type="vanished">ZModem下载</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotelnettermwidget.cpp" line="453"/>
+        <location filename="../../woterm/qwotelnettermwidget.cpp" line="463"/>
         <source>Files are transfering...</source>
         <translation>文件正在传输中...</translation>
     </message>
@@ -8929,22 +9400,22 @@ Continue To Close It?</source>
 <context>
     <name>QWoTermWidget</name>
     <message>
-        <location filename="../../woterm/qwotermwidget.cpp" line="197"/>
+        <location filename="../../woterm/qwotermwidget.cpp" line="239"/>
         <source>Save history to file</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotermwidget.cpp" line="197"/>
+        <location filename="../../woterm/qwotermwidget.cpp" line="239"/>
         <source>log (*.log)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotermwidget.cpp" line="203"/>
+        <location filename="../../woterm/qwotermwidget.cpp" line="245"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwotermwidget.cpp" line="203"/>
+        <location filename="../../woterm/qwotermwidget.cpp" line="245"/>
         <source>Failed to create file.</source>
         <translation></translation>
     </message>
@@ -9441,12 +9912,12 @@ Continue To Close It?</source>
 <context>
     <name>QWoVncWidget</name>
     <message>
-        <location filename="../../woterm/qwovncwidget.cpp" line="243"/>
+        <location filename="../../woterm/qwovncwidget.cpp" line="244"/>
         <source>Password</source>
         <translation>密码</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwovncwidget.cpp" line="243"/>
+        <location filename="../../woterm/qwovncwidget.cpp" line="244"/>
         <source>Please input the right password.</source>
         <translation>请输入正确的密码</translation>
     </message>

@@ -73,6 +73,18 @@ QWoSshTermWidget::~QWoSshTermWidget()
     }
 }
 
+bool QWoSshTermWidget::isConnected()
+{
+    return m_ssh != nullptr && m_stateConnected != ESC_Disconnected;
+}
+
+void QWoSshTermWidget::stop()
+{
+    if(m_ssh) {
+        m_ssh->stop();
+    }
+}
+
 void QWoSshTermWidget::onConnectionFinished(bool ok)
 {
     if(!ok) {
@@ -579,7 +591,7 @@ void QWoSshTermWidget::contextMenuEvent(QContextMenuEvent *ev)
     //menu.addAction(tr("Reset terminal size"), this, SLOT(onResetTermSize()));
     menu.addSeparator();
     menu.addAction(tr("Clean history"), this, SLOT(onCleanHistory()));
-    if(m_historyFile.isEmpty()) {
+    if(!hasHistoryFile()) {
         menu.addAction(tr("Output history to file"), this, SLOT(onOutputHistoryToFile()));
     }else{
         menu.addAction(tr("Stop history to file"), this, SLOT(onStopOutputHistoryFile()));

@@ -61,6 +61,16 @@ QWoTelnetTermWidget::~QWoTelnetTermWidget()
     QWoModemFactory::instance()->release(m_modem);
 }
 
+bool QWoTelnetTermWidget::isConnected()
+{
+    return m_telnet != nullptr && m_stateConnected != ESC_Disconnected;
+}
+
+void QWoTelnetTermWidget::stop()
+{
+    m_telnet->stop();
+}
+
 void QWoTelnetTermWidget::onFinishArrived(int code)
 {
     //qDebug() << "exitcode" << code;
@@ -436,8 +446,8 @@ void QWoTelnetTermWidget::contextMenuEvent(QContextMenuEvent *ev)
     QString selTxt = term->selectedText();
     //qDebug() << "selectText" << selTxt;
     m_copy->setDisabled(selTxt.isEmpty());
-    m_output->setVisible(m_historyFile.isEmpty());
-    m_stop->setVisible(!m_historyFile.isEmpty());
+    m_output->setVisible(!hasHistoryFile());
+    m_stop->setVisible(hasHistoryFile());
 
     QClipboard *clip = QGuiApplication::clipboard();
     QString clipTxt = clip->text();

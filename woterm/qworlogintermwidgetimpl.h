@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -28,4 +28,10 @@ public:
     virtual ~QWoRLoginTermWidgetImpl();
 protected:
     virtual QWoTermWidget *createTermWidget(const QString& target, int gid, QWidget *parent);
+    virtual ESessionState sessionState();
+    virtual void stopSession();
+    virtual void reconnectSession(bool all);
+    virtual EHistoryFileState historyFileState();
+    virtual void outputHistoryToFile();
+    virtual void stopOutputHistoryToFile(bool all);
 };

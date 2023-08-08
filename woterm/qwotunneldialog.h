@@ -42,6 +42,8 @@ private slots:
 private:
     Q_INVOKABLE void appendLog(const QString& sessionName, const QString& msg);
     Q_INVOKABLE void resetState();
+    virtual void showEvent(QShowEvent* ev);
+    virtual void hideEvent(QHideEvent* ev);
 private:
     Ui::QWoTunnelDialog *ui;
     QPointer<QWoTunnelModel> m_model;

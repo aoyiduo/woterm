@@ -42,6 +42,7 @@ public:
     void setTextCodec(const QString& code);
 
     void process(const QByteArray& data);
+    void unicodeProcess(const QString& data);
     QKxScreen *screen();
     bool appMode();
 
@@ -51,8 +52,12 @@ public:
     void setHistorySize(int s);
     void setHistoryFile(const QString& file);
     void stopHistoryFile();
-    void cleanHistory();
+    bool hasHistoryFile() const;
     void resetState();
+
+    void cleanHistory();
+    void cleanScreen();
+    void cleanAll();
 signals:
     void sendData(const QByteArray& data);
     void screenChanged();

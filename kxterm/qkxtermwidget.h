@@ -29,6 +29,9 @@ public:
     QKxTermItem *termItem();
     QWidget *findBar();
     void setFindBarVisible(bool on);
+    void findNext();
+    void findPreview();
+    void findAll();
 
     QString termName() const;
     void setTermName(const QString& name);
@@ -36,12 +39,35 @@ public:
     void sendInput(const QByteArray& cmd);
 
     void setFindShortCut(QKeySequence key);
+
+    QString textCodec() const;
+    void setTextCodec(const QString& codec);
+
+    bool readOnly() const;
+    void setReadOnly(bool on);
+
+
+    bool canCopy() const;
+    bool canPaste() const;
+    Q_INVOKABLE void tryToCopy();
+    Q_INVOKABLE void tryToPaste();
+    Q_INVOKABLE void pastePlainText(const QString& txt);
+
+    QString selectedText() const;
+    void selectAllText();
+
+    void clearScreen();
+    void clearHistory();
+    void clearAll();
+
+    void resetTermSize();
 signals:
+    void readOnlyChanged();
     void sendData(const QByteArray& buf);
     void activePathArrived(const QString& path);
 protected:
-    void resizeEvent(QResizeEvent *ev);
-    bool eventFilter(QObject *watched, QEvent *event);
+    virtual void resizeEvent(QResizeEvent *ev);
+    virtual bool eventFilter(QObject *watched, QEvent *event);
 private slots:
     void onTermScrollValueChanged(int lines, int position);
     void onScrollValueChanged(int position);

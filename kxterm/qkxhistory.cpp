@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -12,6 +12,7 @@
 #include "qkxhistory.h"
 
 #include <QDebug>
+#include <QTimer>
 
 QKxHistoryBuffer::QKxHistoryBuffer(QObject *parent)
     : QKxHistory(parent)
@@ -67,8 +68,10 @@ QKxHistoryFile::QKxHistoryFile(const QString &file, QObject *parent)
     : QKxHistory(parent)
 {
     m_file.setFileName(file);
-    bool ok = m_file.open(QFile::WriteOnly);
-    qDebug() << "openHistoryFile" << ok;
+    m_file.open(QIODevice::WriteOnly | QIODevice::Append);
+    QTimer *timer = new QTimer(this);
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(onFlushTimeout()));
+    timer->start(1000);
 }
 
 QKxHistoryFile::~QKxHistoryFile()
@@ -133,4 +136,11 @@ TermLine QKxHistoryFile::lineAt(int y) const
 TermLine QKxHistoryFile::takeLast()
 {
     return TermLine();
+}
+
+void QKxHistoryFile::onFlushTimeout()
+{
+    if(m_file.isOpen()) {
+        m_file.flush();
+    }
 }

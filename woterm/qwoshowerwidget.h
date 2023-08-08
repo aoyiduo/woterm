@@ -21,10 +21,65 @@ class QWoShowerWidget : public QWoWidget
 {
     Q_OBJECT
 public:
-    explicit QWoShowerWidget(const QString& target, QWidget *parent=nullptr);
+    enum EShowerType {
+        eTerm,
+        eMstsc,
+        eRdp,
+        eSftp,
+        eSerialport, //
+        eVnc,
+        ePlaybook
+    };
+
+    enum ESessionState {
+        eUnknow,
+        eDisconnected,
+        eOtherDisconnected, // current focus is good.
+        eAllConnected
+    };
+
+    enum EHistoryFileState {
+        eNever,
+        eNoFile,
+        eOtherNoFile, // current has history but other no history.
+        eAllHasFiles
+    };
+
+public:
+    explicit QWoShowerWidget(const QString& target, EShowerType type, QWidget *parent=nullptr);
     inline QString targetName() const {
         return m_target;
     }
+
+    inline EShowerType showerType() {
+        return m_typeShower;
+    }
+
+    QWidget *lastFocusWidget();
+    void setLastFocusWidget(QWidget *w);
+
+    virtual ESessionState sessionState(){
+        return eUnknow;
+    };
+    virtual void stopSession(){
+
+    };
+    virtual void reconnectSession(bool all) {
+
+    }
+
+    virtual EHistoryFileState historyFileState() {
+        return eNever;
+    }
+
+    virtual void outputHistoryToFile() {
+
+    }
+
+    virtual void stopOutputHistoryToFile(bool all) {
+
+    }
+
 protected:
     inline int increaseId() {
         return m_id++;
@@ -42,4 +97,6 @@ protected:
     friend class QWoShower;
     int m_id;
     QString m_target;
+    EShowerType m_typeShower;
+    QPointer<QWidget> m_lastFocusWidget;
 };

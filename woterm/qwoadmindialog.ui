@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>440</width>
-    <height>283</height>
+    <height>331</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -103,9 +103,16 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="chkInitWindow">
+         <widget class="QCheckBox" name="chkLocalshell">
           <property name="text">
-           <string>Local terminal auto start on app start.</string>
+           <string>Local shell tab auto start on app start.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="chkSerialport">
+          <property name="text">
+           <string>Serialport tab auto start on app start.</string>
           </property>
          </widget>
         </item>
@@ -113,6 +120,13 @@
          <widget class="QCheckBox" name="chkTunnelDaemon">
           <property name="text">
            <string>Set tunnel function run in daemon mode.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="chkOpacity">
+          <property name="text">
+           <string>Allow to set main window opacity.</string>
           </property>
          </widget>
         </item>

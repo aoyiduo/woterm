@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -85,6 +85,7 @@ private:
 
 class QKxHistoryFile : public QKxHistory
 {
+    Q_OBJECT
 public:
     explicit QKxHistoryFile(const QString& file, QObject *parent = nullptr);
     virtual ~QKxHistoryFile();
@@ -95,6 +96,8 @@ public:
     void clear();
     TermLine lineAt(int y) const;
     TermLine takeLast();
+private slots:
+    void onFlushTimeout();
 private:
     QFile m_file;
 };

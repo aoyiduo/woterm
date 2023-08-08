@@ -200,6 +200,11 @@ void QWoPtyTermWidget::onTitleChanged(const QString &title)
 
 }
 
+void QWoPtyTermWidget::onPasteTestFont()
+{
+    m_term->parseTest();
+}
+
 void QWoPtyTermWidget::reconnect()
 {
     showLoading(true);
@@ -270,13 +275,17 @@ void QWoPtyTermWidget::contextMenuEvent(QContextMenuEvent *ev)
         m_menu->addAction(QIcon("../private/skins/black/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
         m_output = m_menu->addAction(tr("Output history to file"), this, SLOT(onOutputHistoryToFile()));
         m_stop = m_menu->addAction(tr("Stop history to file"), this, SLOT(onStopOutputHistoryFile()));
+
+#ifdef QT_DEBUG
+        m_menu->addAction(tr("Test font"), this, SLOT(onPasteTestFont()));
+#endif
     }
     QKxTermItem *term = termItem();
     QString selTxt = term->selectedText();
     //qDebug() << "selectText" << selTxt;
     m_copy->setDisabled(selTxt.isEmpty());
-    m_output->setVisible(m_historyFile.isEmpty());
-    m_stop->setVisible(!m_historyFile.isEmpty());
+    m_output->setVisible(!hasHistoryFile());
+    m_stop->setVisible(hasHistoryFile());
 
     QClipboard *clip = QGuiApplication::clipboard();
     QString clipTxt = clip->text();

@@ -30,7 +30,7 @@
 
 
 QWoSftpWidgetImpl::QWoSftpWidgetImpl(const QString& target, int gid, QTabBar *tab, QWidget *parent)
-    : QWoShowerWidget(target, parent)
+    : QWoShowerWidget(target, eSftp, parent)
     , m_gid(gid)
     , m_tab(tab)
 {

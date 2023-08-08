@@ -25,6 +25,7 @@ class QLabel;
 class QWoTermWidget;
 class QWoLoadingWidget;
 class QKxBackgroundImageRender;
+class QWoShowerWidget;
 
 class QWoTermCreator
 {
@@ -56,11 +57,19 @@ public:
     explicit QWoTermWidget(const QString& target, int gid, ETermType ttype, QWidget *parent=nullptr);
     virtual ~QWoTermWidget();
 
+    static QWoTermWidget *lastFocusTermWidget();
+    static QList<QPointer<QWoTermWidget>> termsAll();
+
+    void setImplementWidget(QWoShowerWidget* impl);
+    QWoShowerWidget *implementWidget();
+
     void closeAndDelete();
 
     void splitWidget(const QString& target, int gid, bool vertical);
     bool attachWidget(QWoTermWidget *w, bool vertical);
     void detachWidget();
+
+    ETermType termType() const;
 
     void triggerPropertyCheck();
 
@@ -70,6 +79,10 @@ public:
 
     void showLoading(bool on);
     void reloadProperty();
+
+    bool hasHistoryFile() const;
+    void outputHistoryToFile();
+    void stopOutputHistoryFile();
 signals:
     void aboutToClose(QCloseEvent* event);
 
@@ -98,14 +111,18 @@ private:
     void onBroadcastMessage(int type, QVariant msg);
     bool handleWoEvent(QEvent *ev);
 protected:
+    virtual bool eventFilter(QObject *obj, QEvent *ev);
+protected:
     friend class QWoTermWidgetImpl;
+    QPointer<QWoShowerWidget> m_implementWidget;
     QPointer<QWoLoadingWidget> m_loading;
     QString m_target;
     int m_gid;
     bool m_bexit;
     bool m_rkeyPaste;
-    QString m_historyFile;
     ETermType m_ttype;
 
+    static QList<QPointer<QWoTermWidget>> m_gsTermsAll;
+    static QPointer<QWoTermWidget> m_gsTermWidget;
     static QPointer<QKxBackgroundImageRender> m_bkImageRender;
 };

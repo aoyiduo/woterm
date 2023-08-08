@@ -96,6 +96,13 @@ void QKxVncWidget::start(const QString& host, int port, const QString& passwd, Q
     m_vnc->start(host.toLatin1(), port, passwd.toLatin1(), fmt, proto, enc);
 }
 
+void QKxVncWidget::stop()
+{
+    if(m_vnc) {
+        m_vnc->stop();
+    }
+}
+
 void QKxVncWidget::setViewOnly(bool on)
 {
     m_viewOnly = on;

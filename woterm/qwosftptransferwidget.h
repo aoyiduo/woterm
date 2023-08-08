@@ -114,7 +114,7 @@ private:
     bool downloadFile(const QString &remote, const QString &local, bool append, int tid);
     QString logFilePath();
     int localTaskId();
-    void resetAll();
+    Q_INVOKABLE void resetAll();
     void outputFileList();
     Q_INVOKABLE void listFile(const QString& path);
     void setTaskLabel(const QString& local, const QString& remote);

@@ -33,7 +33,7 @@
 
 
 QWoTermWidgetImpl::QWoTermWidgetImpl(const QString& target, int gid, QTabBar *tab, QWidget *parent)
-    : QWoShowerWidget(target, parent)
+    : QWoShowerWidget(target, eTerm, parent)
     , m_gid(gid)
     , m_tab(tab)
 {
@@ -205,6 +205,50 @@ bool QWoTermWidgetImpl::eventFilter(QObject *watched, QEvent *ev)
         }
     }
     return QWoShowerWidget::eventFilter(watched, ev);
+}
+
+QWoShowerWidget::EHistoryFileState QWoTermWidgetImpl::historyFileState()
+{
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(lastFocusWidget());
+    if(term == nullptr || !term->hasHistoryFile()) {
+        return eNoFile;
+    }
+
+    for(auto it = m_terms.begin(); it != m_terms.end(); it++) {
+        QWoTermWidget *term = qobject_cast<QWoTermWidget*>(*it);
+        if(term == nullptr || !term->hasHistoryFile()) {
+            return eOtherNoFile;
+        }
+    }
+    return eAllHasFiles;
+}
+
+void QWoTermWidgetImpl::outputHistoryToFile()
+{
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->outputHistoryToFile();
+}
+
+void QWoTermWidgetImpl::stopOutputHistoryToFile(bool all)
+{
+    if(!all) {
+        QWoTermWidget *term = qobject_cast<QWoTermWidget*>(lastFocusWidget());
+        if(term == nullptr) {
+            return;
+        }
+        term->stopOutputHistoryFile();
+        return;
+    }
+    for(auto it = m_terms.begin(); it != m_terms.end(); it++) {
+        QWoTermWidget *term = qobject_cast<QWoTermWidget*>(*it);
+        if(term == nullptr) {
+            continue;
+        }
+        term->stopOutputHistoryFile();
+    }
 }
 
 void QWoTermWidgetImpl::addAssistant(QWidget *w, bool first)

@@ -19,7 +19,7 @@
 #include <QMenu>
 
 QWoPlaybookWidgetImpl::QWoPlaybookWidgetImpl(const QString &path, const QString& name, QTabBar *tab, QWidget *parent)
-    : QWoShowerWidget(name, parent)
+    : QWoShowerWidget(name, ePlaybook, parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     setLayout(layout);

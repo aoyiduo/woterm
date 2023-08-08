@@ -32,6 +32,9 @@ protected:
     virtual bool handleTabMouseEvent(QMouseEvent *ev);
     virtual void handleTabContextMenu(QMenu *menu);
     virtual QMap<QString, QString> collectUnsafeCloseMessage();
+    virtual ESessionState sessionState();
+    virtual void stopSession();
+    virtual void reconnectSession(bool all);
 private slots:
     void onRootDestroy();
     void onSmartResize();

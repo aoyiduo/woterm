@@ -68,6 +68,18 @@ void QWoRdpWidget::setSmartResize(bool on)
     QMetaObject::invokeMethod(this, "resizeRdpWidget", Qt::QueuedConnection);
 }
 
+bool QWoRdpWidget::isConnected()
+{
+    return m_rdp->connectionStatus() == QRdpWidget::eConnected;
+}
+
+void QWoRdpWidget::stop()
+{
+    if(m_rdp) {
+        m_rdp->stop();
+    }
+}
+
 void QWoRdpWidget::closeEvent(QCloseEvent *event)
 {
     emit aboutToClose(event);
@@ -193,6 +205,8 @@ void QWoRdpWidget::reconnect()
     m_rdp->setDesktopSize(width, height);
     m_rdp->start(hi.host, hi.port, hi.user, hi.password);
     resizeRdpWidget();
+
+    m_mask->hide();
 }
 
 void QWoRdpWidget::resizeRdpWidget()

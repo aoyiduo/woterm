@@ -38,6 +38,7 @@ QWoTermWidget *QWoSshTermWidgetImpl::createTermWidget(const QString &target, int
     QString name = tr("%1:%2").arg(increaseId()).arg(target);
     w->setTermName(name);
     w->setObjectName(name);
+    w->setImplementWidget(this);
 
     QObject::connect(w, SIGNAL(activePathArrived(QString)), this, SLOT(onActivePathArrived(QString)));
     QObject::connect(w, SIGNAL(sftpAssistant()), this, SLOT(onSftpAssistOpen()));
@@ -54,6 +55,98 @@ void QWoSshTermWidgetImpl::handleTabContextMenu(QMenu *menu)
     }
     menu->addAction(tr("Multiplexing sftp sessions"), this, SLOT(onNewSftpSession()));
     menu->addAction(tr("Multiplexing ssh sessions"), this, SLOT(onNewSshSession()));
+}
+
+QWoShowerWidget::ESessionState QWoSshTermWidgetImpl::sessionState()
+{
+    QWoSshTermWidget *term = qobject_cast<QWoSshTermWidget*>(lastFocusWidget());
+    if(term == nullptr || !term->isConnected()) {
+        return eDisconnected;
+    }
+
+    for(auto it = m_terms.begin(); it != m_terms.end(); it++) {
+        QWoSshTermWidget *term = qobject_cast<QWoSshTermWidget*>(*it);
+        if(term == nullptr || !term->isConnected()) {
+            return eOtherDisconnected;
+        }
+    }
+    return eAllConnected;
+}
+
+void QWoSshTermWidgetImpl::stopSession()
+{
+    QWoSshTermWidget *term = qobject_cast<QWoSshTermWidget*>(lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->stop();
+}
+
+void QWoSshTermWidgetImpl::reconnectSession(bool all)
+{
+    if(!all) {
+        QWoSshTermWidget *term = qobject_cast<QWoSshTermWidget*>(lastFocusWidget());
+        if(term == nullptr) {
+            return;
+        }
+        term->reconnect(true);
+        return;
+    }
+    for(auto it = m_terms.begin(); it != m_terms.end(); it++) {
+        QWoSshTermWidget *term = qobject_cast<QWoSshTermWidget*>(*it);
+        if(term == nullptr) {
+            continue;
+        }
+        if(!term->isConnected()) {
+            term->reconnect(true);
+        }
+    }
+}
+
+QWoShowerWidget::EHistoryFileState QWoSshTermWidgetImpl::historyFileState()
+{
+    QWoSshTermWidget *term = qobject_cast<QWoSshTermWidget*>(lastFocusWidget());
+    if(term == nullptr || !term->hasHistoryFile()) {
+        return eNoFile;
+    }
+
+    for(auto it = m_terms.begin(); it != m_terms.end(); it++) {
+        QWoSshTermWidget *term = qobject_cast<QWoSshTermWidget*>(*it);
+        if(term == nullptr || !term->hasHistoryFile()) {
+            return eOtherNoFile;
+        }
+    }
+    return eAllHasFiles;
+}
+
+void QWoSshTermWidgetImpl::outputHistoryToFile()
+{
+    QWoSshTermWidget *term = qobject_cast<QWoSshTermWidget*>(lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->outputHistoryToFile();
+}
+
+void QWoSshTermWidgetImpl::stopOutputHistoryToFile(bool all)
+{
+    if(!all) {
+        QWoSshTermWidget *term = qobject_cast<QWoSshTermWidget*>(lastFocusWidget());
+        if(term == nullptr) {
+            return;
+        }
+        term->stopOutputHistoryFile();
+        return;
+    }
+    for(auto it = m_terms.begin(); it != m_terms.end(); it++) {
+        QWoSshTermWidget *term = qobject_cast<QWoSshTermWidget*>(*it);
+        if(term == nullptr) {
+            continue;
+        }
+        if(term->hasHistoryFile()) {
+            term->stopOutputHistoryFile();
+        }
+    }
 }
 
 void QWoSshTermWidgetImpl::onSftpAssistOpen()

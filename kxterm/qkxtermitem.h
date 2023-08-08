@@ -93,7 +93,7 @@ public:
     void setInputEnable(bool on);
 
     bool readOnly() const;
-    void setReadyOnly(bool on);
+    void setReadOnly(bool on);
 
     bool dragCopyAndPaste() const;
     void setDragCopyAndPaste(bool on);
@@ -161,7 +161,11 @@ public:
     void setHistorySize(int s);
     void setHistoryFile(const QString& file);
     void stopHistoryFile();
+    bool hasHistoryFile() const;
+
     void cleanHistory();
+    void cleanScreen();
+    void cleanAll();
 
     bool appMode();
     QString plainText(const QPoint& start, const QPoint& end);
@@ -187,9 +191,16 @@ public:
     Q_INVOKABLE void clearAll();
     Q_INVOKABLE void preview();
     // copy or paste.
+    bool canCopy() const;
+    bool canPaste() const;
     Q_INVOKABLE void tryToCopy();
     Q_INVOKABLE void tryToPaste();
+    Q_INVOKABLE void pastePlainText(const QString& txt);
+    Q_INVOKABLE void selectAll();
+
+    void resetTermSize();
 signals:
+    void readOnlyChanged();
     void sendData(const QByteArray& buf);
     void termSizeChanged(int lines, int columns);
     //void scrollValueChanged(qreal lines, qreal position);
@@ -212,6 +223,7 @@ public:
     Q_INVOKABLE void resetState();
     Q_INVOKABLE void echoInput(const QByteArray& data);
     Q_INVOKABLE void parse(const QByteArray& data);
+    Q_INVOKABLE void unicodeParse(const QString& data);
     Q_INVOKABLE void parseTest();
     Q_INVOKABLE void parseError(const QByteArray& data);
     Q_INVOKABLE void directSendData(const QByteArray& data);

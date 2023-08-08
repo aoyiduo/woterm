@@ -516,6 +516,7 @@ bool QWoSftpTransferWidget::runNexTask()
 {
     m_taskRun.clear();
     if(m_taskModel->isEmpty()) {
+        resetAll();
         return false;
     }
     const TaskInfo& ti = m_taskModel->takeFirst();
@@ -829,7 +830,6 @@ void QWoSftpTransferWidget::showEvent(QShowEvent *ev)
 void QWoSftpTransferWidget::hideEvent(QHideEvent *event)
 {
     QWidget::hideEvent(event);
-    resetAll();
 }
 
 void QWoSftpTransferWidget::mouseMoveEvent(QMouseEvent *event)

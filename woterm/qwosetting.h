@@ -93,6 +93,16 @@ public:
     static bool localTerminalOnAppStart();
     static void setLocalTerminalOnAppStart(bool on);
 
+    static int windownOpacity();
+    static void setWindowOpacity(int level);
+    static bool windownOpacityEnable();
+    static void setWindowOpacityEnable(bool on);
+    static bool allowToSetWindowOpacity();
+    static void setAllowToSetWindowOpacity(bool on);
+
+    static bool serialportOnAppStart();
+    static void setSerialportOnAppStart(bool on);
+
     static QVariantMap localShell();
     static void setLocalShell(const QVariantMap& dm);
 

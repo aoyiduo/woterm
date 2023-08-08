@@ -31,6 +31,12 @@ public:
 protected:
     virtual QWoTermWidget *createTermWidget(const QString& target, int gid, QWidget *parent);
     virtual void handleTabContextMenu(QMenu *menu);
+    virtual ESessionState sessionState();
+    virtual void stopSession();
+    virtual void reconnectSession(bool all);
+    virtual EHistoryFileState historyFileState();
+    virtual void outputHistoryToFile();
+    virtual void stopOutputHistoryToFile(bool all);
 private slots:
     void onSftpAssistOpen();
     void onNewSftpSession();

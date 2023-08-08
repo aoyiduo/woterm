@@ -19,7 +19,7 @@
 #include <QMenu>
 
 QWoRdpWidgetImpl::QWoRdpWidgetImpl(const QString& target, QTabBar *tab, QWidget *parent)
-    : QWoShowerWidget(target, parent)
+    : QWoShowerWidget(target, eRdp, parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     setLayout(layout);
@@ -55,6 +55,24 @@ void QWoRdpWidgetImpl::handleTabContextMenu(QMenu *menu)
 QMap<QString, QString> QWoRdpWidgetImpl::collectUnsafeCloseMessage()
 {
     return QMap<QString, QString>();
+}
+
+QWoShowerWidget::ESessionState QWoRdpWidgetImpl::sessionState()
+{
+    if(m_rdp == nullptr) {
+        return eDisconnected;
+    }
+    return m_rdp->isConnected() ? eAllConnected : eDisconnected;
+}
+
+void QWoRdpWidgetImpl::stopSession()
+{
+    m_rdp->stop();
+}
+
+void QWoRdpWidgetImpl::reconnectSession(bool all)
+{
+    m_rdp->reconnect();
 }
 
 void QWoRdpWidgetImpl::onRootDestroy()

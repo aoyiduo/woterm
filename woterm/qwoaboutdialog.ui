@@ -189,9 +189,22 @@
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="btnOfficeWeb">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>OfficeWeb</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btnVersion">
        <property name="text">
         <string>Check Version</string>
+       </property>
+       <property name="shortcut">
+        <string>C</string>
        </property>
       </widget>
      </item>

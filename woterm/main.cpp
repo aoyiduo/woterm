@@ -126,14 +126,10 @@ int main_pc_tunnel(int argc, char *argv[])
         return 0;
     }
 
-    QKxLocalPeer peer("tunnel", &app);
-
-    if(peer.isClient()) {
-        peer.sendMessage("active");
+    if(app.isClient()) {
+        app.sendMessage("active");
         return 0;
     }
-
-    QObject::connect(&peer, SIGNAL(messageReceived(QString)), &app, SLOT(onMessageReceived(QString)));
 
     test();
     setDebugMessageToFile("tunnel.log", true);

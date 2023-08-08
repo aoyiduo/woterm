@@ -128,10 +128,10 @@ public:
     }
 
     void handleClose(int code) {
-        m_lastCommandExitStatus = ssh_channel_get_exit_status(m_channel);
        // qDebug() << "handleClose" << "ssh_channel_get_exit_status" << m_lastCommandExitStatus;
         if(m_channel) {
             ssh_channel_close(m_channel);
+            m_lastCommandExitStatus = ssh_channel_get_exit_status(m_channel);
             ssh_channel_free(m_channel);
             m_channel = nullptr;
         }

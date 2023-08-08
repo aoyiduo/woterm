@@ -25,6 +25,8 @@
 #include "qkxscriptbigscriptcommand.h"
 #include "qkxdirassist.h"
 #include "qkxfileassist.h"
+#include "qkxlocalpeer.h"
+#include "qkxver.h"
 
 #include <QStyleFactory>
 #include <QDebug>
@@ -44,8 +46,8 @@
 QWoApplication::QWoApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
+    QKxVer::installQSettingCipher();
     setWindowIcon(QIcon(":/woterm/resource/images/woterm2.png"));
-
     QString path = applicationDirPath();
     addLibraryPath(path);
     QString libPath = QDir::cleanPath(path + "/../lib");
@@ -59,6 +61,20 @@ QWoApplication::QWoApplication(int &argc, char **argv)
 QWoApplication *QWoApplication::instance()
 {
     return qobject_cast<QWoApplication*>(QCoreApplication::instance());
+}
+
+void QWoApplication::setWindowOpacity(QWidget *w)
+{
+    qreal opacity = QWoSetting::windownOpacity();
+    opacity = 0.7;
+    opacity = qBound<qreal>(0.3, opacity, 1.0);
+    w->setAttribute(Qt::WA_TranslucentBackground, true);
+    w->setWindowOpacity(opacity);
+}
+
+bool QWoApplication::notify(QObject *receiver, QEvent *ev)
+{
+    return QApplication::notify(receiver, ev);
 }
 
 QWoMainApplication::QWoMainApplication(int &argc, char **argv)
@@ -92,6 +108,18 @@ QWoTunnelApplication::QWoTunnelApplication(int &argc, char **argv)
 {
     setQuitOnLastWindowClosed(false);
     QObject::connect(this, SIGNAL(aboutToQuit()), this, SLOT(onAboutToQuit()));
+    m_peer = new QKxLocalPeer("tunnel", this);
+    QObject::connect(m_peer, SIGNAL(messageReceived(QString)), this, SLOT(onMessageReceived(QString)));
+}
+
+bool QWoTunnelApplication::isClient()
+{
+    return m_peer->isClient();
+}
+
+void QWoTunnelApplication::sendMessage(const QString &msg)
+{
+    m_peer->sendMessage(msg);
 }
 
 QWidget *QWoTunnelApplication::mainWindow()
@@ -104,6 +132,7 @@ void QWoTunnelApplication::init()
     QMenu *menu = new QMenu();
     menu->addAction(QIcon(":/woterm/resource/images/tunnel.png"), QObject::tr("Show tunnel window"), this, SLOT(onShowWindow()));
     menu->addAction(QIcon(":/woterm/resource/images/woterm2.png"), QObject::tr("New session"), this, SLOT(onNewSessionWindow()));
+    menu->addAction(QIcon(":/woterm/resource/images/reload.png"), QObject::tr("Restart application"), this, SLOT(onRestartApplication()));
     menu->addAction(QIcon(":/woterm/resource/images/exit.png"), QObject::tr("Exit"), this, SLOT(onAboutToQuit()));
     m_menu = menu;
 
@@ -150,6 +179,15 @@ void QWoTunnelApplication::onAboutToQuit()
 {
     m_tray.setVisible(false);
     QCoreApplication::quit();
+}
+
+void QWoTunnelApplication::onRestartApplication()
+{
+    m_peer->close();
+    QString pathApp = QCoreApplication::applicationFilePath();
+    QString cmd = QString("\"%1\" --tunnel").arg(pathApp);
+    QProcess::startDetached(cmd);
+    onAboutToQuit();
 }
 
 void QWoTunnelApplication::onMessageReceived(const QString &msg)

@@ -235,3 +235,19 @@ void QWoTunnelDialog::resetState()
 
     ui->tunnelList->viewport()->update();
 }
+
+void QWoTunnelDialog::showEvent(QShowEvent *ev)
+{
+    QDialog::showEvent(ev);
+    if(QWoSetting::tunnelRunAsDaemon()) {
+        QWoUtils::setVisibleOnDock(true);
+    }
+}
+
+void QWoTunnelDialog::hideEvent(QHideEvent *ev)
+{
+    QDialog::hideEvent(ev);
+    if(QWoSetting::tunnelRunAsDaemon()) {
+        QWoUtils::setVisibleOnDock(false);
+    }
+}

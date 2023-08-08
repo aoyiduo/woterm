@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -91,6 +91,11 @@ public:
         return true;
     }
 
+    void close() {
+        m_server->close();
+        QLocalServer::removeServer(m_name);
+    }
+
     void onNewConnection() {
         while(m_server->hasPendingConnections()) {
             QLocalSocket *local = m_server->nextPendingConnection();
@@ -125,6 +130,11 @@ bool QKxLocalPeer::isClient()
 bool QKxLocalPeer::sendMessage(const QString &msg, int timeout)
 {
     return m_prv->sendMessage(msg, timeout);
+}
+
+void QKxLocalPeer::close()
+{
+    m_prv->close();
 }
 
 void QKxLocalPeer::onNewConnection()

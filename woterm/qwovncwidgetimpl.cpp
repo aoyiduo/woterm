@@ -19,15 +19,15 @@
 #include <QMenu>
 
 QWoVncWidgetImpl::QWoVncWidgetImpl(const QString& target, QTabBar *tab, QWidget *parent)
-    : QWoShowerWidget(target, parent)
+    : QWoShowerWidget(target, eVnc, parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     setLayout(layout);
     layout->setMargin(0);
     layout->setSpacing(0);
-    m_rdp = new QWoVncPlayWidget(target, this);
-    QObject::connect(m_rdp, SIGNAL(destroyed()), this, SLOT(onRootDestroy()));
-    layout->addWidget(m_rdp);
+    m_vnc = new QWoVncPlayWidget(target, this);
+    QObject::connect(m_vnc, SIGNAL(destroyed()), this, SLOT(onRootDestroy()));
+    layout->addWidget(m_vnc);
     setAutoFillBackground(true);
     QPalette pal;
     pal.setColor(QPalette::Background, Qt::black);
@@ -52,6 +52,24 @@ void QWoVncWidgetImpl::handleTabContextMenu(QMenu *menu)
 QMap<QString, QString> QWoVncWidgetImpl::collectUnsafeCloseMessage()
 {
     return QMap<QString, QString>();
+}
+
+QWoShowerWidget::ESessionState QWoVncWidgetImpl::sessionState()
+{
+    if(m_vnc == nullptr) {
+        return eDisconnected;
+    }
+    return m_vnc->isConnected() ? eAllConnected : eDisconnected;
+}
+
+void QWoVncWidgetImpl::stopSession()
+{
+    m_vnc->stop();
+}
+
+void QWoVncWidgetImpl::reconnectSession(bool all)
+{
+    m_vnc->reconnect();
 }
 
 void QWoVncWidgetImpl::onRootDestroy()

@@ -18,13 +18,24 @@
 class QWoRLoginTermWidgetImpl;
 class QWoRLogin;
 class QWoModem;
+class QMessageBox;
 
 class QWoRLoginTermWidget : public QWoTermWidget
 {
     Q_OBJECT
+private:
+    enum EStateConnect {
+        ESC_Ready = 0,
+        ESC_Connecting = 1,
+        ESC_Connected = 2,
+        ESC_Disconnected = 3
+    };
 public:
     explicit QWoRLoginTermWidget(const QString& target, int gid, QWidget *parent=nullptr);
     virtual ~QWoRLoginTermWidget();
+    bool isConnected();
+    void stop();
+    Q_INVOKABLE void reconnect(bool restore = false);
 private slots:
     void onFinishArrived(int code);
     void onDataArrived(const QByteArray& buf);
@@ -34,6 +45,7 @@ private slots:
     void onTermSizeChanged(int lines, int columns);
     void onSendData(const QByteArray& buf);
     void onCopyToClipboard();
+    void onRestoreLastPath();
     void onPasteFromClipboard();
     void onForceToReconnect();
     void onPasswordInputResult(const QString& pass, bool isSave);
@@ -56,12 +68,16 @@ private slots:
     void onSftpConnectReady();
     void onTitleChanged(const QString& title);
     void onAdjustPosition();
+
+    void onActivePathArrived(const QString &path);
+
+    // login
+    void onTimeoutToInputUserName();
+    void onTimeoutToInputUserPassword();
 protected:
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     int isZmodemCommand(const QByteArray &data);
     bool checkZmodemInstall();
-private:
-    Q_INVOKABLE void reconnect();
 private:
     virtual void resizeEvent(QResizeEvent *ev);
     virtual void contextMenuEvent(QContextMenuEvent *ev);
@@ -69,6 +85,7 @@ private:
 private:
     QPointer<QWoRLogin> m_rlogin;
     QPointer<QWoPasswordInput> m_passInput;
+    QPointer<QMessageBox> m_dlgConfirm;
     QPointer<QMenu> m_menu;
     QPointer<QAction> m_copy;
     QPointer<QAction> m_paste;
@@ -77,4 +94,8 @@ private:
     QPointer<QWoModem> m_modem;
     bool m_savePassword;
     int m_loginCount;
+
+    EStateConnect m_stateConnected;
+    QString m_lastActivePath;
+    bool m_restoreLastActivePath;
 };

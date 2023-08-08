@@ -122,7 +122,12 @@ void QVteImpl::process(const QByteArray &data)
     if(cnt > 0) {
         m_bufLeft = data.right(cnt);
     }
-    std::wstring unicodeText = utf16Text.toStdWString();
+    unicodeProcess(utf16Text);
+}
+
+void QVteImpl::unicodeProcess(const QString &data)
+{
+    std::wstring unicodeText = data.toStdWString();
     QVte::process(unicodeText.c_str(), int(unicodeText.length()));
     if(m_flags) {
         emit contentChanged(m_flags.testFlag(UF_FullScreen));
@@ -173,6 +178,21 @@ void QVteImpl::stopHistoryFile()
 void QVteImpl::cleanHistory()
 {
     m_cmdScreen->cleanHistory();
+}
+
+void QVteImpl::cleanScreen()
+{
+    m_cmdScreen->clearScreen();
+}
+
+void QVteImpl::cleanAll()
+{
+    m_cmdScreen->clearAll();
+}
+
+bool QVteImpl::hasHistoryFile() const
+{
+    return m_cmdScreen->hasHistoryFile();
 }
 
 void QVteImpl::resetState()

@@ -27,7 +27,7 @@
 #include "qwoptytermwidget.h"
 #include "qkxbackgroundimagerender.h"
 #include "qkxutils.h"
-
+#include "qwoshowerwidget.h"
 #include "qkxtermitem.h"
 
 #include <QApplication>
@@ -44,6 +44,8 @@
 #include <QFontDatabase>
 
 
+QList<QPointer<QWoTermWidget>> QWoTermWidget::m_gsTermsAll;
+QPointer<QWoTermWidget> QWoTermWidget::m_gsTermWidget;
 QPointer<QKxBackgroundImageRender> QWoTermWidget::m_bkImageRender;
 
 QWoTermWidget::QWoTermWidget(const QString& target, int gid, ETermType ttype, QWidget *parent)
@@ -78,11 +80,36 @@ QWoTermWidget::QWoTermWidget(const QString& target, int gid, ETermType ttype, QW
     m_term->bindShortCut(QKxTermItem::SCK_SelectDown, mdata.value("SCK_SelectDown", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectDown)).value<QKeySequence>());
     m_term->bindShortCut(QKxTermItem::SCK_SelectHome, mdata.value("SCK_SelectHome", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectHome)).value<QKeySequence>());
     m_term->bindShortCut(QKxTermItem::SCK_SelectEnd, mdata.value("SCK_SelectEnd", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectEnd)).value<QKeySequence>()); 
+
+    m_term->installEventFilter(this);
+    m_gsTermsAll.append(this);
 }
 
 QWoTermWidget::~QWoTermWidget()
 {
+    m_gsTermsAll.removeAll(this);
     removeFromTermImpl();
+}
+
+
+QWoTermWidget *QWoTermWidget::lastFocusTermWidget()
+{
+    return m_gsTermWidget;
+}
+
+QList<QPointer<QWoTermWidget> > QWoTermWidget::termsAll()
+{
+    return m_gsTermsAll;;
+}
+
+void QWoTermWidget::setImplementWidget(QWoShowerWidget *impl)
+{
+    m_implementWidget = impl;
+}
+
+QWoShowerWidget *QWoTermWidget::implementWidget()
+{
+    return m_implementWidget;
 }
 
 void QWoTermWidget::closeAndDelete()
@@ -140,6 +167,21 @@ void QWoTermWidget::reloadProperty()
     initCustom();
 }
 
+bool QWoTermWidget::hasHistoryFile() const
+{
+    return m_term->hasHistoryFile();
+}
+
+void QWoTermWidget::outputHistoryToFile()
+{
+    onOutputHistoryToFile();
+}
+
+void QWoTermWidget::stopOutputHistoryFile()
+{
+    onStopOutputHistoryFile();
+}
+
 void QWoTermWidget::closeEvent(QCloseEvent *event)
 {
     emit aboutToClose(event);
@@ -193,7 +235,7 @@ void QWoTermWidget::onCleanHistory()
 
 void QWoTermWidget::onOutputHistoryToFile()
 {
-    QString pathLast = QWoSetting::value("zmodem/lastPath").toString();
+    QString pathLast = QWoSetting::value("histroy/lastSavePath").toString();
     QString file = QFileDialog::getSaveFileName(this, tr("Save history to file"), pathLast, tr("log (*.log)"));
     if(file.isEmpty()) {
         return;
@@ -205,18 +247,11 @@ void QWoTermWidget::onOutputHistoryToFile()
     }
     hit.close();
     m_term->setHistoryFile(file);
-    QString path = file;
-    int idx = path.lastIndexOf('/');
-    if(idx > 0) {
-        path = path.left(idx);
-        QWoSetting::setValue("zmodem/lastPath", path);
-    }
-    m_historyFile = file;
+    QWoSetting::setValue("histroy/lastSavePath", file);
 }
 
 void QWoTermWidget::onStopOutputHistoryFile()
 {
-    m_historyFile.clear();
     m_term->stopHistoryFile();
 }
 
@@ -387,6 +422,11 @@ void QWoTermWidget::detachWidget()
     setParent(nullptr);
 }
 
+QWoTermWidget::ETermType QWoTermWidget::termType() const
+{
+    return m_ttype;
+}
+
 QWoTermWidgetImpl *QWoTermWidget::findTermImpl()
 {
     QWidget *widgetParent = parentWidget();
@@ -434,4 +474,18 @@ bool QWoTermWidget::handleWoEvent(QEvent *ev)
     }
 
     return false;
+}
+
+bool QWoTermWidget::eventFilter(QObject *obj, QEvent *ev)
+{
+    QEvent::Type type = ev->type();
+    if(type == QEvent::FocusIn) {
+        if(obj == m_term) {
+            m_gsTermWidget = this;
+            if(m_implementWidget) {
+                m_implementWidget->setLastFocusWidget(this);
+            }
+        }
+    }
+    return QKxTermWidget::eventFilter(obj, ev);
 }

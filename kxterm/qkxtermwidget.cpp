@@ -115,6 +115,7 @@ QKxTermWidget::QKxTermWidget(QWidget* parent)
     QObject::connect(m_term, SIGNAL(scrollValueChanged(int,int)), this, SLOT(onTermScrollValueChanged(int,int)));
     QObject::connect(m_term, SIGNAL(activePathArrived(QString)), this, SIGNAL(activePathArrived(QString)));
     QObject::connect(m_term, SIGNAL(sendData(QByteArray)), this, SIGNAL(sendData(QByteArray)));
+    QObject::connect(m_term, SIGNAL(readOnlyChanged()), this, SIGNAL(readOnlyChanged()));
     QObject::connect(m_vscroll, SIGNAL(valueChanged(int)), this, SLOT(onScrollValueChanged(int)));
     m_term->installEventFilter(this);
     m_keyFind = QKeySequence(Qt::CTRL + Qt::Key_F);
@@ -148,6 +149,21 @@ void QKxTermWidget::setFindBarVisible(bool on)
     m_find->setVisible(on);
 }
 
+void QKxTermWidget::findNext()
+{
+    QMetaObject::invokeMethod(m_find, "onFindNext");
+}
+
+void QKxTermWidget::findPreview()
+{
+    QMetaObject::invokeMethod(m_find, "onFindPrev");
+}
+
+void QKxTermWidget::findAll()
+{
+    QMetaObject::invokeMethod(m_find, "onFindAll");
+}
+
 QString QKxTermWidget::termName() const
 {
     return m_term->termName();
@@ -160,12 +176,93 @@ void QKxTermWidget::setTermName(const QString &name)
 
 void QKxTermWidget::sendInput(const QByteArray &cmd)
 {
-    m_term->sendData(cmd);
+    emit m_term->sendData(cmd);
 }
 
 void QKxTermWidget::setFindShortCut(QKeySequence key)
 {
     m_keyFind = key;
+}
+
+QString QKxTermWidget::textCodec() const
+{
+    return m_term->textCodec();
+}
+
+void QKxTermWidget::setTextCodec(const QString &codec)
+{
+    m_term->setTextCodec(codec);
+}
+
+bool QKxTermWidget::readOnly() const
+{
+    return m_term->readOnly();
+}
+
+void QKxTermWidget::setReadOnly(bool on)
+{
+    m_term->setReadOnly(on);
+}
+
+bool QKxTermWidget::canCopy() const
+{
+    return m_term->canCopy();
+}
+
+bool QKxTermWidget::canPaste() const
+{
+    return m_term->canPaste();
+}
+
+void QKxTermWidget::tryToCopy()
+{
+    m_term->tryToCopy();
+}
+
+void QKxTermWidget::tryToPaste()
+{
+    m_term->tryToPaste();
+}
+
+void QKxTermWidget::pastePlainText(const QString &txt)
+{
+    m_term->pastePlainText(txt);
+}
+
+QString QKxTermWidget::selectedText() const
+{
+    return m_term->selectedText();
+}
+
+void QKxTermWidget::selectAllText()
+{
+    m_term->selectAll();
+}
+
+void QKxTermWidget::clearScreen()
+{
+    m_term->cleanScreen();
+    m_term->scrollToEnd();
+    QMetaObject::invokeMethod(m_term, "update", Qt::QueuedConnection);
+}
+
+void QKxTermWidget::clearHistory()
+{
+    m_term->cleanHistory();
+    m_term->scrollToEnd();
+    QMetaObject::invokeMethod(m_term, "update", Qt::QueuedConnection);
+}
+
+void QKxTermWidget::clearAll()
+{
+    m_term->cleanAll();
+    m_term->scrollToEnd();
+    QMetaObject::invokeMethod(m_term, "update", Qt::QueuedConnection);
+}
+
+void QKxTermWidget::resetTermSize()
+{
+    m_term->resetTermSize();
 }
 
 void QKxTermWidget::resizeEvent(QResizeEvent *ev)

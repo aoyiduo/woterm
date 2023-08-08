@@ -31,6 +31,10 @@ class QWoPtyTermWidget : public QWoTermWidget
 public:
     explicit QWoPtyTermWidget(const QString& target, int gid, QWidget *parent=nullptr);
     virtual ~QWoPtyTermWidget();
+
+    bool isConnected() {
+        return true;
+    }
 private slots:
     void onFinishArrived(int code);
     void onConnectionFinished(bool ok);
@@ -51,6 +55,8 @@ private slots:
     void onShowFindBar();
     void onModifyThisSession();
     void onTitleChanged(const QString& title);
+
+    void onPasteTestFont();
 private:
     Q_INVOKABLE void reconnect();
     QString shellPath() const;

@@ -36,6 +36,7 @@ protected:
     virtual void handleTabContextMenu(QMenu *menu);
     virtual bool handleCustomProperties();
     virtual void updateEnable(bool on);
+
 private slots:
     void onDestroyReady();
     void onNewSshSession();

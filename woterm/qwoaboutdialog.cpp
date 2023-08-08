@@ -32,6 +32,7 @@ QWoAboutDialog::QWoAboutDialog(QWidget *parent) :
     setWindowFlags(flags &~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
 
+
     ui->verNow->setText(WOTERM_VERSION);
     QKxVer *ver = QKxVer::instance();
     QKxVer::ELicenseType type = ver->licenseType();
@@ -62,6 +63,13 @@ QWoAboutDialog::QWoAboutDialog(QWidget *parent) :
     QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
     http->get("http://down.woterm.com/.ver");
     adjustSize();
+
+#ifdef QT_DEBUG
+    ui->btnOfficeWeb->setEnabled(false);
+#else
+    ui->btnOfficeWeb->deleteLater();
+#endif
+
 }
 
 QWoAboutDialog::~QWoAboutDialog()

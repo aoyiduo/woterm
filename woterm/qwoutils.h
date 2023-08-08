@@ -93,4 +93,6 @@ public:
     static QString findShellPath();
 
     Q_INVOKABLE static QString qmlCleanPath(const QString& path);
+
+    static void setVisibleOnDock(bool yes);
 };

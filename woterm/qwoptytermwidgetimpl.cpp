@@ -32,6 +32,7 @@ QWoTermWidget *QWoPtyTermWidgetImpl::createTermWidget(const QString &target, int
     QString name = tr("%1:%2").arg(increaseId()).arg(target);
     w->setTermName(name);
     w->setObjectName(name);
+    w->setImplementWidget(this);
     return w;
 }
 

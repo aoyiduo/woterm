@@ -863,3 +863,37 @@ QString QWoUtils::qmlCleanPath(const QString &path)
     return QDir::cleanPath(path);
 }
 
+
+#ifdef Q_OS_MAC
+#include <CoreFoundation/CoreFoundation.h>
+#include <mach-o/dyld.h>
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1050
+# include <objc/runtime.h>
+# include <objc/message.h>
+#else
+# include <objc/objc-runtime.h>
+#endif
+
+
+#include <dispatch/dispatch.h>
+#include <IOKit/IOKitLib.h>
+#include <IOSurface/IOSurface.h>
+#include <CoreVideo/CoreVideo.h>
+#include <CoreGraphics/CoreGraphics.h>
+
+extern id NSApp;
+constexpr int NSApplicationActivationPolicyRegular = 0;
+constexpr int NSApplicationActivationPolicyAccessory = 1;
+constexpr int NSApplicationActivationPolicyProhibited = 2;
+void QWoUtils::setVisibleOnDock(bool yes)
+{
+    ProcessSerialNumber psn = { 0, kCurrentProcess };
+    OSStatus err = TransformProcessType(&psn, yes ? kProcessTransformToForegroundApplication : kProcessTransformToBackgroundApplication);
+    qDebug() << "setVisibleOnDock" << (int)err << yes;
+}
+#else
+void QWoUtils::setVisibleOnDock(bool yes)
+{
+
+}
+#endif

@@ -14,6 +14,7 @@
 #include "qwosetting.h"
 #include "qwoshower.h"
 #include "qwowidget.h"
+#include "qkxtermitem.h"
 #include "qwotermwidget.h"
 #include "qwosessionlist.h"
 #include "ui_qwomainwindow.h"
@@ -34,6 +35,7 @@
 #include "qwosessionvncproperty.h"
 #include "qwosystemoptiondialog.h"
 #include "qwosessiontoolconfiguredialog.h"
+#include "qwoopacitysettingdialog.h"
 #include "qwosshconf.h"
 #include "qwodbbackupdialog.h"
 #include "qwodbrestoredialog.h"
@@ -77,6 +79,7 @@
 #include <QToolButton>
 #include <QSslSocket>
 #include <QSpacerItem>
+#include <QWindow>
 
 QWoMainWindow::QWoMainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -369,6 +372,15 @@ void QWoMainWindow::onAppStart()
     if(QWoSetting::localTerminalOnAppStart()) {
         QMetaObject::invokeMethod(this, "onOpenLocalSession", Qt::QueuedConnection);
     }
+    if(QWoSetting::serialportOnAppStart()) {
+        QMetaObject::invokeMethod(this, "onOpenSerialPort", Qt::QueuedConnection);
+    }
+
+    if(QWoSetting::allowToSetWindowOpacity()) {
+        bool turnOn = QWoSetting::windownOpacityEnable();
+        int level = QWoSetting::windownOpacity();
+        resetWindowOpacity(turnOn, level);
+    }
 }
 
 
@@ -476,7 +488,7 @@ void QWoMainWindow::onPlaybookAssistButtonClicked(QToolButton* btn)
 
 void QWoMainWindow::onTunnelButtonClicked()
 {
-    if(QWoSetting::tunnelRunAsDaemon()) {
+    if(QWoSetting::tunnelRunAsDaemon() && QKxVer::instance()->isFullFeather()) {
         if(m_dlgTunnel) {
             m_dlgTunnel->deleteLater();
         }
@@ -628,11 +640,6 @@ void QWoMainWindow::onActionSettingTriggered()
     dlg.exec();
 }
 
-void QWoMainWindow::onActionFindTriggered()
-{
-    m_shower->openFindDialog();
-}
-
 void QWoMainWindow::onActionAboutTriggered()
 {
     QWoAboutDialog dlg(this);
@@ -726,9 +733,499 @@ void QWoMainWindow::onFilterCreateArrived(const QString &name)
     }
 }
 
+void QWoMainWindow::onActionStopSessionTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+
+    shower->stopSession();
+}
+
+void QWoMainWindow::onActionReconnectSessionTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+
+    shower->reconnectSession(false);
+}
+
+void QWoMainWindow::onActionReconnectAllSessionTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+
+    shower->reconnectSession(true);
+}
+
+void QWoMainWindow::onActionLogToFileTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    shower->outputHistoryToFile();
+}
+
+void QWoMainWindow::onActionStopLogFileTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    shower->stopOutputHistoryToFile(false);
+}
+
+void QWoMainWindow::onActionStopAllLogFileTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    shower->stopOutputHistoryToFile(true);
+}
+
+void QWoMainWindow::onActionOpenLogFileTriggered()
+{
+    QString pathLast = QWoSetting::value("histroy/lastSavePath").toString();
+    QDesktopServices::openUrl(QUrl::fromLocalFile(pathLast));
+}
+
+void QWoMainWindow::onActionOpenLogDirectoryTriggered()
+{
+    QString pathLast = QWoSetting::value("histroy/lastSavePath").toString();
+    if(!pathLast.isEmpty()) {
+        QFileInfo fi(pathLast);
+        if(fi.isDir()) {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(pathLast));
+        }else{
+            QString path = fi.absolutePath();
+            QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+        }
+    }
+}
+
+void QWoMainWindow::onActionCopyTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->tryToCopy();
+}
+
+void QWoMainWindow::onActionPasteTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->tryToPaste();
+}
+
+void QWoMainWindow::onActionPasteSelectionTextTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    QString selTxt = term->selectedText();
+    term->pastePlainText(selTxt);
+}
+
+void QWoMainWindow::onActionSelectAllTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->selectAllText();
+}
+
+void QWoMainWindow::onActionFindTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->setFindBarVisible(true);
+}
+
+void QWoMainWindow::onActionFindNextTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->findNext();
+}
+
+void QWoMainWindow::onActionFindPreviousTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->findPreview();
+}
+
+void QWoMainWindow::onActionFindAllTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->findAll();
+}
+
+void QWoMainWindow::onActionClearScreenTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+
+    term->clearScreen();
+}
+
+void QWoMainWindow::onActionClearHistoryTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+
+    term->clearHistory();
+}
+
+void QWoMainWindow::onActionClearAllTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+
+    term->clearAll();
+}
+
+void QWoMainWindow::onActionResetWindowSizeTriggered()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        return;
+    }
+    QWoTermWidget *term = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->resetTermSize();
+}
+
+void QWoMainWindow::onActionTabCloseTriggered()
+{
+    int idx = m_tab->currentIndex();
+    m_shower->closeTab(idx);
+}
+
+void QWoMainWindow::onActionLeftTabCloseTriggered()
+{
+    int idx = m_tab->currentIndex();
+    m_shower->closeLeftTabs(idx);
+}
+
+void QWoMainWindow::onActionRightTabCloseTriggered()
+{
+    int idx = m_tab->currentIndex();
+    m_shower->closeRightTabs(idx);
+}
+
+void QWoMainWindow::onActionOtherTabCloseTriggered()
+{
+    int idx = m_tab->currentIndex();
+    m_shower->closeOtherTabs(idx);
+}
+
+void QWoMainWindow::onActionAllTabCloseTriggered()
+{
+    m_shower->closeAllTabs();
+}
+
+void QWoMainWindow::onActionTunnelTriggered()
+{
+    onTunnelButtonClicked();
+}
+
+void QWoMainWindow::onActionTopAlwayTriggered()
+{
+    Qt::WindowFlags flags = windowFlags();
+    bool topAlway = flags.testFlag(Qt::WindowStaysOnTopHint);
+    flags = flags.setFlag(Qt::BypassWindowManagerHint, !topAlway);
+    flags = flags.setFlag(Qt::WindowStaysOnTopHint, !topAlway);
+    setWindowFlags(flags);
+    show();
+}
+
+void QWoMainWindow::onActionTrayModeTriggered()
+{
+
+}
+
+void QWoMainWindow::onActionTranslucentTriggered()
+{
+    int level = QWoSetting::windownOpacity();
+    bool turnOn = QWoSetting::windownOpacityEnable();
+    QWoOpacitySettingDialog dlg(turnOn, level, this);
+    QObject::connect(&dlg, &QWoOpacitySettingDialog::opacityChanged, this, [=](bool on, int alpha){
+        resetWindowOpacity(on, alpha);
+    });
+    if(dlg.exec() == QDialog::Accepted+1) {
+        QWoSetting::setWindowOpacity(dlg.opacityValue());
+        QWoSetting::setWindowOpacityEnable(dlg.opacityTurnOn());
+        resetWindowOpacity(dlg.opacityTurnOn(), dlg.opacityValue());
+    }else{
+        resetWindowOpacity(turnOn, level);
+    }
+}
+
+void QWoMainWindow::onMenuFileAboutToShow()
+{
+    QWoShowerWidget *shower = activeShowerWidget();    
+
+    if(shower == nullptr) {
+        ui->actionStopSession->setEnabled(false);
+        ui->actionReconnectSession->setEnabled(false);
+        ui->actionReconnectAllSession->setEnabled(false);
+        return;
+    }
+    QWoShowerWidget::ESessionState state = shower->sessionState();
+    if(state == QWoShowerWidget::eUnknow) {
+        ui->actionStopSession->setEnabled(false);
+        ui->actionReconnectSession->setEnabled(false);
+        ui->actionReconnectAllSession->setEnabled(false);
+    }else if(state == QWoShowerWidget::eDisconnected) {
+        ui->actionStopSession->setEnabled(false);
+        ui->actionReconnectSession->setEnabled(true);
+        ui->actionReconnectAllSession->setEnabled(true);
+    }else if(state == QWoShowerWidget::eOtherDisconnected) {
+        ui->actionStopSession->setEnabled(true);
+        ui->actionReconnectSession->setEnabled(false);
+        ui->actionReconnectAllSession->setEnabled(true);
+    }else if(state == QWoShowerWidget::eAllConnected) {
+        ui->actionStopSession->setEnabled(true);
+        ui->actionReconnectSession->setEnabled(false);
+        ui->actionReconnectAllSession->setEnabled(false);
+    }
+}
+
+void QWoMainWindow::onMenuLogAboutToShow()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        ui->actionLogToFile->setEnabled(false);
+        ui->actionStopLogFile->setEnabled(false);
+        ui->actionStopAllLogFile->setEnabled(false);
+        return;
+    }
+
+    QString pathLast = QWoSetting::value("histroy/lastSavePath").toString();
+    ui->actionOpenLogFile->setDisabled(pathLast.isEmpty());
+    ui->actionOpenLogDirectory->setDisabled(pathLast.isEmpty());
+
+    QWoTermWidget *widget = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+    if(widget == nullptr) {
+        ui->actionLogToFile->setEnabled(false);
+        ui->actionStopLogFile->setEnabled(false);
+        ui->actionStopAllLogFile->setEnabled(false);
+        return;
+    }
+    QWoShowerWidget::EHistoryFileState state = shower->historyFileState();
+    if(state == QWoShowerWidget::eNever) {
+        ui->actionLogToFile->setEnabled(false);
+        ui->actionStopLogFile->setEnabled(false);
+        ui->actionStopAllLogFile->setEnabled(false);
+    }else if(state == QWoShowerWidget::eNoFile) {
+        ui->actionLogToFile->setEnabled(true);
+        ui->actionStopLogFile->setEnabled(false);
+        ui->actionStopAllLogFile->setEnabled(false);
+    }else if(state == QWoShowerWidget::eOtherNoFile) {
+        ui->actionStopLogFile->setEnabled(true);
+        ui->actionLogToFile->setEnabled(false);
+        ui->actionStopAllLogFile->setEnabled(true);
+    }else if(state == QWoShowerWidget::eAllHasFiles) {
+        ui->actionLogToFile->setEnabled(false);
+        ui->actionStopLogFile->setEnabled(true);
+        ui->actionStopAllLogFile->setEnabled(true);
+    }
+}
+
+void QWoMainWindow::onMenuEditAboutToShow()
+{
+    QWoShowerWidget *shower = activeShowerWidget();
+    if(shower == nullptr) {
+        ui->actionCopy->setEnabled(false);
+        ui->actionPaste->setEnabled(false);
+        ui->actionPasteSelectionText->setEnabled(false);
+
+        ui->actionSelectAll->setEnabled(false);
+        ui->actionFind->setEnabled(false);
+        ui->actionFindNext->setEnabled(false);
+        ui->actionFindPrevious->setEnabled(false);
+        ui->actionFindAll->setEnabled(false);
+
+        ui->actionClear->setEnabled(false);
+        ui->actionClearHistory->setEnabled(false);
+        ui->actionClearScreen->setEnabled(false);
+        ui->actionClearAll->setEnabled(false);
+
+        ui->actionResetWindowSize->setEnabled(false);
+        return;
+    }
+    QWoTermWidget *widget = qobject_cast<QWoTermWidget*>(shower->lastFocusWidget());
+
+    if(widget == nullptr) {
+        ui->actionCopy->setEnabled(false);
+        ui->actionPaste->setEnabled(false);
+        ui->actionPasteSelectionText->setEnabled(false);
+
+        ui->actionSelectAll->setEnabled(false);
+        ui->actionFind->setEnabled(false);
+        ui->actionFindNext->setEnabled(false);
+        ui->actionFindPrevious->setEnabled(false);
+        ui->actionFindAll->setEnabled(false);
+
+        ui->actionClear->setEnabled(false);
+        ui->actionClearHistory->setEnabled(false);
+        ui->actionClearScreen->setEnabled(false);
+        ui->actionClearAll->setEnabled(false);
+
+        ui->actionResetWindowSize->setEnabled(false);
+        return;
+    }
+    ui->actionCopy->setEnabled(widget->canCopy());
+    ui->actionPaste->setEnabled(widget->canPaste());
+    ui->actionPasteSelectionText->setEnabled(widget->canCopy() && !widget->readOnly());
+
+    ui->actionSelectAll->setEnabled(true);
+    ui->actionFind->setEnabled(true);
+    ui->actionFindNext->setEnabled(true);
+    ui->actionFindPrevious->setEnabled(true);
+    ui->actionFindAll->setEnabled(true);
+
+    ui->actionClear->setEnabled(true);
+    ui->actionClearHistory->setEnabled(true);
+    ui->actionClearScreen->setEnabled(true);
+    ui->actionClearAll->setEnabled(true);
+
+    ui->actionResetWindowSize->setEnabled(true);
+}
+
+void QWoMainWindow::onMenuViewAboutToShow()
+{
+
+}
+
+void QWoMainWindow::onMenuToolAboutToShow()
+{
+
+}
+
+void QWoMainWindow::onMenuTabAboutToShow()
+{
+    int idx = m_tab->currentIndex();
+    if(idx < 0) {
+        ui->actionTabClose->setEnabled(false);
+        ui->actionLeftTabClose->setEnabled(false);
+        ui->actionRightTabClose->setEnabled(false);
+        ui->actionOtherTabClose->setEnabled(false);
+        ui->actionAllTabClose->setEnabled(false);
+        return;
+    }
+    int tabCount = m_tab->count();
+    ui->actionTabClose->setEnabled(true);
+    ui->actionAllTabClose->setEnabled(true);
+    ui->actionRightTabClose->setEnabled(idx != tabCount - 1);
+    ui->actionLeftTabClose->setEnabled(idx != 0);
+    ui->actionOtherTabClose->setEnabled(tabCount != 1);
+}
+
+void QWoMainWindow::onMenuWindowAboutToShow()
+{
+    Qt::WindowFlags flags = windowFlags();
+    ui->actionTopAlway->setCheckable(true);
+    ui->actionTopAlway->setChecked(flags.testFlag(Qt::WindowStaysOnTopHint));
+    ui->actionTrayMode->setVisible(false);
+
+#ifdef Q_OS_LINUX
+    ui->actionTopAlway->setEnabled(false);
+#endif
+}
+
+void QWoMainWindow::onMenuHelpAboutToShow()
+{
+
+}
+
 void QWoMainWindow::initMenuBar()
 {
     ui->menuBar->setNativeMenuBar(false);
+    QObject::connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(onMenuFileAboutToShow()));
+    QObject::connect(ui->menuLog, SIGNAL(aboutToShow()), this, SLOT(onMenuLogAboutToShow()));
+    QObject::connect(ui->menuEdit, SIGNAL(aboutToShow()), this, SLOT(onMenuEditAboutToShow()));
+    QObject::connect(ui->menuView, SIGNAL(aboutToShow()), this, SLOT(onMenuViewAboutToShow()));
+    QObject::connect(ui->menuTool, SIGNAL(aboutToShow()), this, SLOT(onMenuToolAboutToShow()));
+    QObject::connect(ui->menuTab, SIGNAL(aboutToShow()), this, SLOT(onMenuTabAboutToShow()));
+    QObject::connect(ui->menuWindow, SIGNAL(aboutToShow()), this, SLOT(onMenuWindowAboutToShow()));
+    QObject::connect(ui->menuHelp, SIGNAL(aboutToShow()), this, SLOT(onMenuHelpAboutToShow()));
+
     QObject::connect(ui->menuRecent, SIGNAL(aboutToShow()), this, SLOT(onRecentMenuAboutToShow()));
     QObject::connect(ui->actionSessionNew, SIGNAL(triggered()), this, SLOT(onActionNewTriggered()));
     QObject::connect(ui->actionOpenRemote, SIGNAL(triggered()), this, SLOT(onActionOpenRemoteTriggered()));
@@ -759,6 +1256,44 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionAdministrator, SIGNAL(triggered()), this, SLOT(onActionAdminTriggered()));
     ui->actionAdministrator->setEnabled(QKxVer::instance()->isFullFeather());
 
+    //File
+    QObject::connect(ui->actionStopSession, SIGNAL(triggered()), this, SLOT(onActionStopSessionTriggered()));
+    QObject::connect(ui->actionReconnectSession, SIGNAL(triggered()), this, SLOT(onActionReconnectSessionTriggered()));
+    QObject::connect(ui->actionReconnectAllSession, SIGNAL(triggered()), this, SLOT(onActionReconnectAllSessionTriggered()));
+    QObject::connect(ui->actionLogToFile, SIGNAL(triggered()), this, SLOT(onActionLogToFileTriggered()));
+    QObject::connect(ui->actionStopLogFile, SIGNAL(triggered()), this, SLOT(onActionStopLogFileTriggered()));
+    QObject::connect(ui->actionStopAllLogFile, SIGNAL(triggered()), this, SLOT(onActionStopAllLogFileTriggered()));
+    QObject::connect(ui->actionOpenLogFile, SIGNAL(triggered()), this, SLOT(onActionOpenLogFileTriggered()));
+    QObject::connect(ui->actionOpenLogDirectory, SIGNAL(triggered()), this, SLOT(onActionOpenLogDirectoryTriggered()));
+
+    //Edit
+    QObject::connect(ui->actionCopy, SIGNAL(triggered()), this, SLOT(onActionCopyTriggered()));
+    QObject::connect(ui->actionPaste, SIGNAL(triggered()), this, SLOT(onActionPasteTriggered()));
+    QObject::connect(ui->actionPasteSelectionText, SIGNAL(triggered()), this, SLOT(onActionPasteSelectionTextTriggered()));
+    QObject::connect(ui->actionSelectAll, SIGNAL(triggered()), this, SLOT(onActionSelectAllTriggered()));
+    QObject::connect(ui->actionFind, SIGNAL(triggered()), this, SLOT(onActionFindTriggered()));
+    QObject::connect(ui->actionFindNext, SIGNAL(triggered()), this, SLOT(onActionFindNextTriggered()));
+    QObject::connect(ui->actionFindPrevious, SIGNAL(triggered()), this, SLOT(onActionFindPreviousTriggered()));
+    QObject::connect(ui->actionFindAll, SIGNAL(triggered()), this, SLOT(onActionFindAllTriggered()));
+    QObject::connect(ui->actionClearScreen, SIGNAL(triggered()), this, SLOT(onActionClearScreenTriggered()));
+    QObject::connect(ui->actionClearHistory, SIGNAL(triggered()), this, SLOT(onActionClearHistoryTriggered()));
+    QObject::connect(ui->actionClearAll, SIGNAL(triggered()), this, SLOT(onActionClearAllTriggered()));    
+    QObject::connect(ui->actionResetWindowSize, SIGNAL(triggered()), this, SLOT(onActionResetWindowSizeTriggered()));
+
+    //Tab
+    QObject::connect(ui->actionTabClose, SIGNAL(triggered()), this, SLOT(onActionTabCloseTriggered()));
+    QObject::connect(ui->actionLeftTabClose, SIGNAL(triggered()), this, SLOT(onActionLeftTabCloseTriggered()));
+    QObject::connect(ui->actionRightTabClose, SIGNAL(triggered()), this, SLOT(onActionRightTabCloseTriggered()));
+    QObject::connect(ui->actionOtherTabClose, SIGNAL(triggered()), this, SLOT(onActionOtherTabCloseTriggered()));
+    QObject::connect(ui->actionAllTabClose, SIGNAL(triggered()), this, SLOT(onActionAllTabCloseTriggered()));
+
+    // Tool
+    QObject::connect(ui->actionTunnel, SIGNAL(triggered()), this, SLOT(onActionTunnelTriggered()));
+
+    //Window
+    QObject::connect(ui->actionTopAlway, SIGNAL(triggered()), this, SLOT(onActionTopAlwayTriggered()));
+    QObject::connect(ui->actionTrayMode, SIGNAL(triggered()), this, SLOT(onActionTrayModeTriggered()));
+    QObject::connect(ui->actionTranslucent, SIGNAL(triggered()), this, SLOT(onActionTranslucentTriggered()));
 }
 
 void QWoMainWindow::initToolBar()
@@ -862,6 +1397,17 @@ void QWoMainWindow::saveLastState()
     QWoSetting::setValue("mainwindow/geometry", geom);
 }
 
+void QWoMainWindow::resetWindowOpacity(bool on, int v)
+{
+    if(on) {
+        setAttribute(Qt::WA_TranslucentBackground, true);
+        setWindowOpacity(v / 100.0);
+    }else{
+        setAttribute(Qt::WA_TranslucentBackground, false);
+        setWindowOpacity(1.0);
+    }
+}
+
 bool QWoMainWindow::checkAdminLogin()
 {
     if(!QKxVer::instance()->isFullFeather()) {
@@ -899,4 +1445,20 @@ void QWoMainWindow::tryToMakeLicenseTrial()
 {
     QWoLicenseTrialApplyDialog dlg(this);
     dlg.exec();
+}
+
+QWoShowerWidget *QWoMainWindow::activeShowerWidget()
+{
+    int idx = m_tab->currentIndex();
+    if(idx < 0) {
+        return nullptr;
+    }
+    QVariant v = m_tab->tabData(idx);
+    QWoShowerWidget *impl = v.value<QWoShowerWidget*>();
+    return impl;
+}
+
+QWoTermWidget *QWoMainWindow::focusTermWidget()
+{
+    return nullptr;
 }

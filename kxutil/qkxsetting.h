@@ -25,6 +25,7 @@ public:
     Q_INVOKABLE static QVariant value(const QString& key, const QVariant& defval=QVariant());
     static void remove(const QString& key);
     static void sync();
+    static void resetFormat(int fmt);
 
     // application
     static QString applicationName();

@@ -25,7 +25,8 @@
 
 #define APPLICATION_DATA_PATH ("APP_DATA_PATH")
 
-Q_GLOBAL_STATIC_WITH_ARGS(QSettings, gSettings, (QKxSetting::applicationConfigPath(), QSettings::IniFormat))
+static QSettings::Format myFormat = QSettings::IniFormat;
+Q_GLOBAL_STATIC_WITH_ARGS(QSettings, gSettings, (QKxSetting::applicationConfigPath(), myFormat))
 
 QKxSetting::QKxSetting(QObject *parent)
     : QObject(parent)
@@ -53,6 +54,11 @@ void QKxSetting::remove(const QString &key)
 void QKxSetting::sync()
 {
     gSettings->sync();
+}
+
+void QKxSetting::resetFormat(int fmt)
+{
+    myFormat = (QSettings::Format)fmt;
 }
 
 QString QKxSetting::applicationName()
@@ -215,7 +221,12 @@ QString QKxSetting::ensurePath(const QString &id)
 QString QKxSetting::applicationConfigPath()
 {
     QString appName = applicationName();
-    static QString path = QDir::cleanPath(QString("%1/%2.ini").arg(QKxSetting::applicationDataPath()).arg(appName));
+    static QString path = QDir::cleanPath(QString("%1/%2.cfg").arg(QKxSetting::applicationDataPath()).arg(appName));
+    if(!QFile::exists(path)) {
+        QFile f(path);
+        f.open(QIODevice::WriteOnly);
+        f.write("1");
+    }
     return path;
 }
 
@@ -262,6 +273,9 @@ QString QKxSetting::applicationDataPath()
                 }
                 userDataPath = QDir::cleanPath(dataPath);
             }
+#ifdef QT_DEBUG
+            userDataPath += "d";
+#endif
         }else{
             userDataPath = wap;
         }

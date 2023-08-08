@@ -38,7 +38,7 @@
 
 #define INVALID_POINT_VALUE     (-0x7FFFFF)
 
-#define REPCHAR   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefgjijklmnopqrstuvwxyz0123456789./+@"
+#define REPCHAR   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefgjijklmnopqrstuvwxyz0123456789~^_./+@"
 const QChar LTR_OVERRIDE_CHAR( 0x202D );
 
 const int CharsetTableSize = 4;

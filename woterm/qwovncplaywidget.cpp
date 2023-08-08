@@ -60,6 +60,25 @@ QWoVncPlayWidget::~QWoVncPlayWidget()
 
 }
 
+bool QWoVncPlayWidget::isConnected()
+{
+    return m_player->isConnected();
+}
+
+void QWoVncPlayWidget::stop()
+{
+    if(m_player) {
+        m_player->stop();
+    }
+}
+
+void QWoVncPlayWidget::reconnect()
+{
+    if(m_player) {
+        m_player->reconnect();
+    }
+}
+
 void QWoVncPlayWidget::onToolEnter()
 {
     QRect rt = m_tool->geometry();

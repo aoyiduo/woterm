@@ -29,6 +29,9 @@ public:
     bool smartResize() const;
     void setSmartResize(bool on);
 
+    bool isConnected();
+    void stop();
+    Q_INVOKABLE void reconnect();
 signals:
     void aboutToClose(QCloseEvent* event);
 private:
@@ -44,8 +47,7 @@ private slots:
     void onConnectedArrived();
     void onDisconnectedArrived();
 
-private:
-    Q_INVOKABLE void reconnect();
+private:    
     Q_INVOKABLE void resizeRdpWidget();
 private:
     const QString m_target;

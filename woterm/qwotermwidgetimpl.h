@@ -62,6 +62,10 @@ protected:
     virtual bool handleCustomProperties();
     virtual void updateEnable(bool on);
     virtual bool eventFilter(QObject *watched, QEvent *event);
+
+    virtual EHistoryFileState historyFileState();
+    virtual void outputHistoryToFile();
+    virtual void stopOutputHistoryToFile(bool all);
 protected:
     void addAssistant(QWidget *w, bool first);
 private:

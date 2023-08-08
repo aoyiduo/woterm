@@ -16,6 +16,7 @@
 #include <QApplication>
 #include <QSystemTrayIcon>
 
+class QKxCryptFileEngine;
 class QWoMainWindow;
 class QWoApplication : public QApplication
 {
@@ -32,6 +33,8 @@ public:
     virtual EAppType type() = 0;
 protected:
     Q_INVOKABLE virtual void init() = 0;
+    Q_INVOKABLE void setWindowOpacity(QWidget* w);
+    virtual bool notify(QObject *receiver, QEvent *ev);
 };
 
 class QWoMainApplication : public QWoApplication
@@ -44,17 +47,20 @@ protected:
     virtual void init();
     virtual EAppType type() {
         return eMain;
-    }
+    }    
 private:
     QPointer<QWoMainWindow> m_main;
 };
 
 class QWoTunnelDialog;
+class QKxLocalPeer;
 class QWoTunnelApplication : public QWoApplication
 {
     Q_OBJECT
 public:
     explicit QWoTunnelApplication(int &argc, char **argv);
+    bool isClient();
+    void sendMessage(const QString& msg);
 protected:
     QWidget *mainWindow();
     virtual void init();
@@ -67,13 +73,15 @@ protected slots:
     void onShowWindow();
     void onNewSessionWindow();
     void onAboutToQuit();
+    void onRestartApplication();
 
     void onMessageReceived(const QString& msg);
     void onDelayActiveWindow();
 private:
     QPointer<QWoTunnelDialog> m_main;
+    QPointer<QKxLocalPeer> m_peer;
     QPointer<QMenu> m_menu;
-    QSystemTrayIcon m_tray;
+    QSystemTrayIcon m_tray;    
 };
 
 #endif // QWOAPPLICATION_H

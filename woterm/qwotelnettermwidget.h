@@ -32,6 +32,10 @@ class QWoTelnetTermWidget : public QWoTermWidget
 public:
     explicit QWoTelnetTermWidget(const QString& target, int gid, QWidget *parent=nullptr);
     virtual ~QWoTelnetTermWidget();
+
+    bool isConnected();
+    void stop();
+    Q_INVOKABLE void reconnect();
 private slots:
     void onFinishArrived(int code);
     void onDataArrived(const QByteArray& buf);
@@ -62,8 +66,7 @@ private slots:
 protected:
     int isZmodemCommand(const QByteArray &data);
     bool checkZmodemInstall();
-private:
-    Q_INVOKABLE void reconnect();
+
 private:
     virtual void resizeEvent(QResizeEvent *ev);
     virtual void contextMenuEvent(QContextMenuEvent *ev);

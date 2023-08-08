@@ -31,8 +31,10 @@ QWoAdminDialog::QWoAdminDialog(QWidget *parent) :
     QObject::connect(ui->btnOk, SIGNAL(clicked()), this, SLOT(close()));
     QObject::connect(ui->chkStartup, SIGNAL(clicked()), this, SLOT(onStartupClicked()));
     QObject::connect(ui->chkTunnelOpen, SIGNAL(clicked()), this, SLOT(onAllowConnectTunnelClicked()));
-    QObject::connect(ui->chkInitWindow, SIGNAL(clicked()), this, SLOT(onTerminalOnAppStartClicked()));
+    QObject::connect(ui->chkLocalshell, SIGNAL(clicked()), this, SLOT(onLocalTerminalOnAppStartClicked()));
+    QObject::connect(ui->chkSerialport, SIGNAL(clicked()), this, SLOT(onSerialportOnAppStartClicked()));
     QObject::connect(ui->chkTunnelDaemon, SIGNAL(clicked()), this, SLOT(onTunnelDaemonClicked()));
+    QObject::connect(ui->chkOpacity, SIGNAL(clicked()), this, SLOT(onAllowMainOpacityClicked()));
 
     ui->pass->setEchoMode(QLineEdit::Password);
     QString pass = QWoSetting::adminPassword();
@@ -42,7 +44,9 @@ QWoAdminDialog::QWoAdminDialog(QWidget *parent) :
     ui->chkPassword->setChecked(QWoSetting::lookupPasswordByAdmin());
     ui->chkTunnelOpen->setChecked(QWoSetting::allowOtherHostConnectToTunnel());
     ui->chkTunnelDaemon->setChecked(QWoSetting::tunnelRunAsDaemon());
-    ui->chkInitWindow->setChecked(QWoSetting::localTerminalOnAppStart());
+    ui->chkLocalshell->setChecked(QWoSetting::localTerminalOnAppStart());
+    ui->chkSerialport->setChecked(QWoSetting::serialportOnAppStart());
+    ui->chkOpacity->setChecked(QWoSetting::allowToSetWindowOpacity());
 
     adjustSize();
 }
@@ -94,12 +98,22 @@ void QWoAdminDialog::onAllowConnectTunnelClicked()
     QWoSetting::setAllowOtherHostConnectToTunnel(ui->chkTunnelOpen->isChecked());
 }
 
-void QWoAdminDialog::onTerminalOnAppStartClicked()
+void QWoAdminDialog::onLocalTerminalOnAppStartClicked()
 {
-    QWoSetting::setLocalTerminalOnAppStart(ui->chkInitWindow->isChecked());
+    QWoSetting::setLocalTerminalOnAppStart(ui->chkLocalshell->isChecked());
+}
+
+void QWoAdminDialog::onSerialportOnAppStartClicked()
+{
+    QWoSetting::setSerialportOnAppStart(ui->chkSerialport->isChecked());
 }
 
 void QWoAdminDialog::onTunnelDaemonClicked()
 {
     QWoSetting::setTunnelRunAsDaemon(ui->chkTunnelDaemon->isChecked());
+}
+
+void QWoAdminDialog::onAllowMainOpacityClicked()
+{
+    QWoSetting::setAllowToSetWindowOpacity(ui->chkOpacity->isChecked());
 }

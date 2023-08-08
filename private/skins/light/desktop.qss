@@ -38,13 +38,17 @@ QMenu::item {
  /* sets background of menu item. set this to something non-transparent
      if you want menu color and menu item color to be different */
     background-color: transparent;
-    padding: 5px 30px 5px 30px;
+    padding: 5px 20px 5px 10px;
     margin: 0;
 }
 
 QMenu::item:selected { /* when user selects item using mouse or keyboard */
     background-color: rgb(0, 46, 128);
     color: rgb(234,234,234);
+}
+
+QMenu::item:disabled {
+    color: gray;
 }
 
 QToolBar {
@@ -157,6 +161,11 @@ QLineEdit[readOnly="false"]{
 QPushButton {
     max-height: 26px;
     min-height: 26px;
+}
+
+QPushButton:disabled {
+    background:  gray;
+    color: lightGray;
 }
 
 QComboBox {
@@ -305,6 +314,20 @@ QSlider::handle:horizontal {
 QSlider::sub-page:horizontal {
     border: 1px solid #999999;
     background: rgb(0, 46, 128);    
+    border-radius: 5px;
+} 
+
+QSlider::handle:horizontal:disabled {
+    background: gray;
+    border: 1px solid #5c5c5c;   
+    width: 18px;
+    margin: -2px 0px;
+    border-radius: 5px;
+}
+
+QSlider::sub-page:horizontal:disabled {
+    border: 1px solid #999999;
+    background: gray;    
     border-radius: 5px;
 } 
 

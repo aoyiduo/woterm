@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 * Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
@@ -252,6 +252,7 @@ public:
     void start(int cols, int rows) {
         m_colsLast = cols;
         m_rowsLast = rows;
+        m_queue.clear();
         QThread::start();
     }
 
@@ -317,8 +318,8 @@ private:
         qint64 seed = QDateTime::currentSecsSinceEpoch();
         qDebug() << "make random seed" << seed;
         qsrand(seed);
-        int rid = qAbs(qrand()) % 512;
-        rid = rid + 511;
+        int rid = qAbs(qrand()) % 500;
+        rid = rid + 520;
         for (int i = rid; i >= rid - 3; i--) {
             char local_port[10];
             struct addrinfo hints = {0};
@@ -377,7 +378,7 @@ private:
 
     void run() {
         m_codeExit = running();
-        qDebug() << "run exit now" << m_ti.name << m_ti.host;
+        qDebug() << "run exit now" << m_codeExit << m_ti.name << m_ti.host;
         cleanup();
     }
 
@@ -413,6 +414,7 @@ private:
         rlogin_init();
         bool canResize = false;
         int byteCount = 0;
+        int tryCountWhenException = 0;
         while(!m_flagExit) {
             timeval tm={3,0};
             FD_ZERO(&rfds);
@@ -451,8 +453,11 @@ private:
                          * Switch to "cooked" mode (handle XON/XOFF locally)
                          */
                     }
+                }else if(tryCountWhenException < 3){
+                    tryCountWhenException++;
+                    continue;
                 }else{
-                    return -1;
+                    return -4;
                 }
             }
             if(FD_ISSET(m_msgRead, &rfds)) {
@@ -489,7 +494,7 @@ private:
                         }
                     }
                 }else{
-                    return -1;
+                    return -5;
                 }
             }
 
@@ -507,8 +512,10 @@ private:
                     }
                     buf.resize(cnt);
                     handleRead(buf);
+
+                    tryCountWhenException = 0;
                 }else{
-                    return -1;
+                    return -6;
                 }
             }
         }

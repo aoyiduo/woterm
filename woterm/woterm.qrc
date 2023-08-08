@@ -46,5 +46,6 @@
         <file>resource/images/vnc2.png</file>
         <file>resource/images/tunnel.png</file>
         <file>resource/images/exit.png</file>
+        <file>resource/images/reload.png</file>
     </qresource>
 </RCC>

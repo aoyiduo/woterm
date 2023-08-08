@@ -26,6 +26,7 @@ public:
     explicit QKxVncWidget(QWidget*parent=nullptr);
     ~QKxVncWidget();
     Q_INVOKABLE void start(const QString& host, int port, const QString& passwd, QKxVNC::EPixelFormat fmt = QKxVNC::RGB16_565, QKxVNC::EProtoVersion proto = QKxVNC::RFB_38, QVector<QKxVNC::EEncodingType> enc = QVector<QKxVNC::EEncodingType>());
+    void stop();
     void setViewOnly(bool on);
     void setLocalCursorVisible(bool on);
     void setInputResult(const QString& passwd);

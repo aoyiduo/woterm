@@ -31,5 +31,98 @@ QWoTermWidget *QWoRLoginTermWidgetImpl::createTermWidget(const QString &target, 
     QString name = tr("%1:%2").arg(increaseId()).arg(target);
     w->setTermName(name);
     w->setObjectName(name);
+    w->setImplementWidget(this);
     return w;
+}
+
+QWoShowerWidget::ESessionState QWoRLoginTermWidgetImpl::sessionState()
+{
+    QWoRLoginTermWidget *term = qobject_cast<QWoRLoginTermWidget*>(lastFocusWidget());
+    if(term == nullptr || !term->isConnected()) {
+        return eDisconnected;
+    }
+
+    for(auto it = m_terms.begin(); it != m_terms.end(); it++) {
+        QWoRLoginTermWidget *term = qobject_cast<QWoRLoginTermWidget*>(*it);
+        if(term == nullptr || !term->isConnected()) {
+            return eOtherDisconnected;
+        }
+    }
+    return eAllConnected;
+}
+
+void QWoRLoginTermWidgetImpl::stopSession()
+{
+    QWoRLoginTermWidget *term = qobject_cast<QWoRLoginTermWidget*>(lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->stop();
+}
+
+void QWoRLoginTermWidgetImpl::reconnectSession(bool all)
+{
+    if(!all) {
+        QWoRLoginTermWidget *term = qobject_cast<QWoRLoginTermWidget*>(lastFocusWidget());
+        if(term == nullptr) {
+            return;
+        }
+        term->reconnect(true);
+        return;
+    }
+    for(auto it = m_terms.begin(); it != m_terms.end(); it++) {
+        QWoRLoginTermWidget *term = qobject_cast<QWoRLoginTermWidget*>(*it);
+        if(term == nullptr) {
+            continue;
+        }
+        if(!term->isConnected()) {
+            term->reconnect(true);
+        }
+    }
+}
+
+QWoShowerWidget::EHistoryFileState QWoRLoginTermWidgetImpl::historyFileState()
+{
+    QWoRLoginTermWidget *term = qobject_cast<QWoRLoginTermWidget*>(lastFocusWidget());
+    if(term == nullptr || !term->hasHistoryFile()) {
+        return eNoFile;
+    }
+
+    for(auto it = m_terms.begin(); it != m_terms.end(); it++) {
+        QWoRLoginTermWidget *term = qobject_cast<QWoRLoginTermWidget*>(*it);
+        if(term == nullptr || !term->hasHistoryFile()) {
+            return eOtherNoFile;
+        }
+    }
+    return eAllHasFiles;
+}
+
+void QWoRLoginTermWidgetImpl::outputHistoryToFile()
+{
+    QWoRLoginTermWidget *term = qobject_cast<QWoRLoginTermWidget*>(lastFocusWidget());
+    if(term == nullptr) {
+        return;
+    }
+    term->outputHistoryToFile();
+}
+
+void QWoRLoginTermWidgetImpl::stopOutputHistoryToFile(bool all)
+{
+    if(!all) {
+        QWoRLoginTermWidget *term = qobject_cast<QWoRLoginTermWidget*>(lastFocusWidget());
+        if(term == nullptr) {
+            return;
+        }
+        term->stopOutputHistoryFile();
+        return;
+    }
+    for(auto it = m_terms.begin(); it != m_terms.end(); it++) {
+        QWoRLoginTermWidget *term = qobject_cast<QWoRLoginTermWidget*>(*it);
+        if(term == nullptr) {
+            continue;
+        }
+        if(term->hasHistoryFile()) {
+            term->stopOutputHistoryFile();
+        }
+    }
 }

@@ -32,8 +32,10 @@ private slots:
     void onStartupClicked();
     void onLookupPasswordClicked();
     void onAllowConnectTunnelClicked();
-    void onTerminalOnAppStartClicked();
+    void onLocalTerminalOnAppStartClicked();
+    void onSerialportOnAppStartClicked();
     void onTunnelDaemonClicked();
+    void onAllowMainOpacityClicked();
 private:
     Ui::QWoAdminDialog *ui;
 };

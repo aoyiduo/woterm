@@ -8,8 +8,8 @@
 * more information follow the website: https://www.gnu.org/licenses/gpl-3.0.en.html
 *
 *******************************************************************************************/
-
-#pragma once
+#ifndef QWOSERIALWIDGETIMPL_H
+#define QWOSERIALWIDGETIMPL_H
 
 #include "qwoshowerwidget.h"
 #include "qwotermwidget.h"
@@ -21,24 +21,7 @@ class QMenu;
 class QTabBar;
 class QWoCommandLineInput;
 class QSerialPort;
-
-class QWoSerialTermWidget : public QWoTermWidget
-{
-    Q_OBJECT
-public:
-    explicit QWoSerialTermWidget(const QString& target, QWidget* parent=nullptr);
-    ~QWoSerialTermWidget();
-protected:
-    virtual void contextMenuEvent(QContextMenuEvent *ev);
-    virtual QList<QString> collectUnsafeCloseMessage();
-private slots:
-    void onCopyToClipboard();
-    void onModifyThisSession();
-    void onCleanThisSession();
-private:
-    QPointer<QMenu> m_menu;
-    QPointer<QAction> m_copy;
-};
+class QWoModem;
 
 class QWoSerialWidgetImpl : public QWoShowerWidget
 {
@@ -55,6 +38,10 @@ protected:
     virtual void handleTabContextMenu(QMenu *menu);
     virtual bool handleCustomProperties();
     virtual void updateEnable(bool on);
+
+    virtual EHistoryFileState historyFileState();
+    virtual void outputHistoryToFile();
+    virtual void stopOutputHistoryToFile(bool all);
 private slots:
     void onDestroyReady();
     void onNewSessionMultplex();
@@ -76,3 +63,5 @@ private:
     QPointer<QMenu> m_menu;
     QPointer<QSerialPort> m_serial;
 };
+
+#endif

@@ -346,16 +346,6 @@ void QWoShower::setBackgroundColor(const QColor &clr)
     setPalette(pal);
 }
 
-void QWoShower::openFindDialog()
-{
-    int idx = m_tab->currentIndex();
-    if (idx < 0 || idx >= m_tab->count()) {
-        return;
-    }
-    QVariant v = m_tab->tabData(idx);
-    QWoShowerWidget *target = v.value<QWoShowerWidget*>();
-}
-
 void QWoShower::mergeFromRightTab()
 {
     int idx = m_tab->currentIndex();
@@ -509,29 +499,84 @@ bool QWoShower::eventFilter(QObject *obj, QEvent *ev)
     return false;
 }
 
-void QWoShower::closeSession(int idx)
+void QWoShower::closeSession(int idx, bool force)
 {
     if(idx >= m_tab->count()) {
         return;
     }
     QVariant v = m_tab->tabData(idx);
     QWoShowerWidget *target = v.value<QWoShowerWidget*>();
-    QMap<QString, QString> wmsg = target->collectUnsafeCloseMessage();
-    QString msg = tr("Close Or Not");
-    if(!wmsg.isEmpty()) {
-        msg.append(tr("The follow event will be stop before close this session."));
-        msg.append("\r\n");
-        for(QMap<QString, QString>::iterator iter = wmsg.begin(); iter != wmsg.end(); iter++) {
-            msg.append(QString("%1: %2").arg(iter.key()).arg(iter.value()));
+    if(!force) {
+        QMap<QString, QString> wmsg = target->collectUnsafeCloseMessage();
+        QString msg = tr("Close Or Not");
+        if(!wmsg.isEmpty()) {
+            msg.append(tr("The follow event will be stop before close this session."));
+            msg.append("\r\n");
+            for(QMap<QString, QString>::iterator iter = wmsg.begin(); iter != wmsg.end(); iter++) {
+                msg.append(QString("%1: %2").arg(iter.key()).arg(iter.value()));
+            }
+            msg.append("\r\n");
+            msg.append(tr("Continue To Close It?"));
         }
-        msg.append("\r\n");
-        msg.append(tr("Continue To Close It?"));
-    }
-    QMessageBox::StandardButton btn = QKxMessageBox::warning(this, tr("CloseSession"), msg, QMessageBox::Ok|QMessageBox::No);
-    if(btn == QMessageBox::No) {
-        return ;
+        QMessageBox::StandardButton btn = QKxMessageBox::warning(this, tr("CloseSession"), msg, QMessageBox::Ok|QMessageBox::No);
+        if(btn == QMessageBox::No) {
+            return ;
+        }
     }
     target->deleteLater();
+}
+
+void QWoShower::closeTab(int idx)
+{
+    closeSession(idx, false);
+}
+
+void QWoShower::closeOtherTabs(int idx)
+{
+    if(idx < 0 || idx >= m_tab->count()) {
+        return;
+    }
+    for(int i = 0; i < m_tab->count(); i++) {
+        if(idx == i) {
+            continue;
+        }
+        QVariant v = m_tab->tabData(i);
+        QWoShowerWidget *target = v.value<QWoShowerWidget*>();
+        target->deleteLater();
+    }
+}
+
+void QWoShower::closeLeftTabs(int idx)
+{
+    if(idx < 0 || idx >= m_tab->count()) {
+        return;
+    }
+    for(int i = 0; i < idx; i++) {
+        QVariant v = m_tab->tabData(i);
+        QWoShowerWidget *target = v.value<QWoShowerWidget*>();
+        target->deleteLater();
+    }
+}
+
+void QWoShower::closeRightTabs(int idx)
+{
+    if(idx < 0 || idx >= m_tab->count()) {
+        return;
+    }
+    for(int i = idx+1; i < m_tab->count(); i++) {
+        QVariant v = m_tab->tabData(i);
+        QWoShowerWidget *target = v.value<QWoShowerWidget*>();
+        target->deleteLater();
+    }
+}
+
+void QWoShower::closeAllTabs()
+{
+    for(int i = 0; i < m_tab->count(); i++) {
+        QVariant v = m_tab->tabData(i);
+        QWoShowerWidget *target = v.value<QWoShowerWidget*>();
+        target->deleteLater();
+    }
 }
 
 void QWoShower::createTab(QWoShowerWidget *impl, const QIcon&icon, const QString& tabName, int pos)
@@ -596,7 +641,7 @@ bool QWoShower::tabMouseButtonMove(QMouseEvent *ev)
 
 void QWoShower::onTabCloseRequested(int idx)
 {
-    closeSession(idx);
+    closeSession(idx, false);
 }
 
 void QWoShower::onTabCurrentChanged(int idx)

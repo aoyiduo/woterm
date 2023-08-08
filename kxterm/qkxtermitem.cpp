@@ -44,8 +44,27 @@
 #define REPAINT_TIMEOUT2 (40)
 #define BLINK_MAX_COUNT (9)
 
-//#define TEXT_DRAW_FLAGS     (Qt::AlignBaseline|Qt::TextDontClip)
+/***
+ * Windows only AlignBaseline can be better.
+ * https://www.freesion.com/article/83151447592/
+ *
+ * neither cleartype or freetype are truetype.
+*/
+#ifdef Q_OS_WIN
+/* window defaut Qt::AlignTop,bold and simple has same ascent.
+ * Windows only AlignBaseline can be better.
+ * QTextEdit, it seem AlignTop.
+ *
+ * window cleartype, only alignbaseline is better than other.
+*/
+#define TEXT_DRAW_FLAGS     (Qt::AlignBaseline|Qt::TextDontClip)
+#else
+/***
+ * linux freetype, only AlignBottom is better than other.
+*/
 #define TEXT_DRAW_FLAGS     (Qt::AlignBottom|Qt::TextDontClip)
+#endif
+
 
 QKxTermItem::QKxTermItem(QWidget* parent)
     : QWidget(parent)
@@ -230,9 +249,12 @@ bool QKxTermItem::readOnly() const
     return m_readOnly;
 }
 
-void QKxTermItem::setReadyOnly(bool on)
+void QKxTermItem::setReadOnly(bool on)
 {
-    m_readOnly = on;
+    if(on != m_readOnly) {
+        m_readOnly = on;
+        emit readOnlyChanged();
+    }
 }
 
 bool QKxTermItem::dragCopyAndPaste() const
@@ -496,6 +518,21 @@ void QKxTermItem::cleanHistory()
     m_vte->cleanHistory();
 }
 
+void QKxTermItem::cleanScreen()
+{
+    m_vte->cleanScreen();
+}
+
+void QKxTermItem::cleanAll()
+{
+    m_vte->cleanAll();
+}
+
+bool QKxTermItem::hasHistoryFile() const
+{
+    return m_vte->hasHistoryFile();
+}
+
 bool QKxTermItem::appMode()
 {
     return m_vte->appMode();
@@ -689,6 +726,22 @@ void QKxTermItem::preview()
     parse(seqTxt);
 }
 
+bool QKxTermItem::canCopy() const
+{
+    QString selTxt = selectedText();
+    return !selTxt.isEmpty();
+}
+
+bool QKxTermItem::canPaste() const
+{
+    if(m_readOnly) {
+        return false;
+    }
+    QClipboard *clip = QGuiApplication::clipboard();
+    QString clipTxt = clip->text();
+    return !clipTxt.isEmpty();
+}
+
 void QKxTermItem::tryToCopy()
 {
     QClipboard *clip = QGuiApplication::clipboard();
@@ -706,15 +759,32 @@ void QKxTermItem::tryToPaste()
 
     QClipboard *clip = QGuiApplication::clipboard();
     QString clipTxt = clip->text();
+    pastePlainText(clipTxt);
+}
 
-    if(!clipTxt.isEmpty()){
+void QKxTermItem::pastePlainText(const QString &txt)
+{
+    if(!txt.isEmpty()){
         if(m_echoInput != nullptr && m_bEchoInputEnabled) {
-            m_echoInput->tryToPaste(clipTxt);
+            m_echoInput->tryToPaste(txt);
         }else{
-            QByteArray buf = clipTxt.toUtf8();
+            QByteArray buf = txt.toUtf8();
             handleSendData(buf);
         }
     }
+}
+
+void QKxTermItem::selectAll()
+{
+    m_selectStart = QPoint(0, 0);
+    m_selectEnd = QPoint(m_columns-1, m_view->lineCount());
+    qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
+    m_view->setSelection(m_selectStart, m_selectEnd);
+}
+
+void QKxTermItem::resetTermSize()
+{
+    updateTermSize();
 }
 
 void QKxTermItem::resetState()
@@ -822,14 +892,27 @@ void QKxTermItem::parse(const QByteArray &data)
     m_vte->process(data);
 }
 
+void QKxTermItem::unicodeParse(const QString &data)
+{
+    //qDebug() << data;
+    if(m_echoInput != nullptr) {
+        m_echoInput->updateCursor(true);
+    }
+    m_vte->unicodeProcess(data);
+}
+
 void QKxTermItem::parseTest()
 {
     QByteArray seqTxt;
-    seqTxt.append("\033[31mRed \033[32mGreen \033[33mYellow \033[34mBlue");
-    seqTxt.append("\033[35mMagenta \033[36mCyan \033[37mWhite \033[39mDefault");
-    seqTxt.append("\033[40mBlack \033[41mRed \033[42mGreen \033[43mYellow \033[44mBlue");
-    seqTxt.append("\033[45mMagenta \033[46mCyan \033[47mWhite \033[49mDefault");
-    seqTxt.append("\033[0m\033[01;31mThis is a simple test");
+    seqTxt.append("\033[0m\033[39mPassw");
+    seqTxt.append("\033[0m\033[01;31mw_^");
+    seqTxt.append("\033[0m\033[39mRed");
+    seqTxt.append("\033[0m\033[31mRed\033[01;31mRed");
+    seqTxt.append("\033[0m\033[31mRed \033[32mGreen \033[33mYellow \033[34mBlue");
+    seqTxt.append("\033[0m\033[01;31maAbBcCdDeEfFhHiIjJkKlLmMnNlLoOpPqQrRsStTuUvV");
+    seqTxt.append("\033[0m\033[35mMagenta \033[36mCyan \033[37mWhite \033[39mDefault");
+    seqTxt.append("\033[0m\033[40mBlack \033[41mRed \033[42mGreen \033[43mYellow \033[44mBlue");
+    seqTxt.append("\033[0m\033[45mMagenta \033[46mCyan \033[47mWhite \033[49mDefault");
     seqTxt.append("\033[0m\033[32mThis is a simple test");
     seqTxt.append("\033[0m\033[01;33mThis is a simple test");
     seqTxt.append("\033[0m\033[34mThis is a simple test");
@@ -1661,24 +1744,43 @@ void QKxTermItem::updateFontInfo()
     QFont ft = m_font;
     ft.setUnderline(true);
     ft.setOverline(true);
+    ft.setBold(true); // must use bold for bold font, the text will be higher than not bold.
     QFontMetrics fm(ft);
-#ifdef NOT_NEED_20230101
-    QSizeF sz = fm.size(Qt::TextSingleLine|Qt::TextDontClip, LTR_OVERRIDE_CHAR+QLatin1String(REPCHAR));
+    QSize sz = fm.size(TEXT_DRAW_FLAGS, LTR_OVERRIDE_CHAR+QLatin1String(REPCHAR));
     uint cnt = qstrlen(REPCHAR);
     int w = sz.width() / cnt;
     int h = sz.height();
     int n = fm.lineWidth();
-    if(n < 2) {
-        n = 2;
-    }
-    qreal i = fm.underlinePos();
-    qreal ascent = fm.ascent();
-    qreal descent = fm.descent();
-#else
-    int w = fm.horizontalAdvance(QLatin1Char('M'));
-    int h = fm.height();
-    int n = fm.lineWidth();
+
+    // the fact is that (ascent + descent) not equal height.
+    //int ascent = fm.ascent();
+    //int descent = fm.descent();
+    //Q_ASSERT((ascent + descent) == h);
+#ifdef QT_DEBUG2
+    ft.setBold(false);
+    QFontMetrics fontMetrics(ft);
+    qDebug() << "ascent" << fontMetrics.ascent();
+    qDebug()<<fontMetrics.boundingRect(LTR_OVERRIDE_CHAR+'A');
+    qDebug()<<fontMetrics.boundingRect(LTR_OVERRIDE_CHAR+'g');
+    qDebug()<<fontMetrics.boundingRect(LTR_OVERRIDE_CHAR+'8');
+    qDebug()<<fontMetrics.boundingRect(LTR_OVERRIDE_CHAR+QLatin1String("Ag8"));
+    qDebug()<<fontMetrics.boundingRect(0, 0, 100, h*2, Qt::AlignTop, LTR_OVERRIDE_CHAR+QLatin1String("Ag8"));
+    qDebug()<<fontMetrics.boundingRect(0, 0, 100, h*2, Qt::AlignBaseline, LTR_OVERRIDE_CHAR+QLatin1String("Ag8"));
+    qDebug()<<fontMetrics.boundingRect(0, 0, 100, h*2, Qt::AlignBottom, LTR_OVERRIDE_CHAR+QLatin1String("Ag8"));
+    qDebug()<<fontMetrics.boundingRect(0, 0, 100, h*2, Qt::AlignTop, LTR_OVERRIDE_CHAR+QLatin1String("Ag8"));
+    ft.setBold(true);
+    QFontMetrics fontMetrics2(ft);
+    qDebug()<<"-" << "ascent" << fontMetrics.ascent();
+    qDebug()<<"-" <<fontMetrics2.boundingRect('A');
+    qDebug()<<"-" <<fontMetrics2.boundingRect('g');
+    qDebug()<<"-" <<fontMetrics2.boundingRect('8');
+    qDebug()<<"-" <<fontMetrics2.boundingRect("Age");
+    qDebug()<<"-" <<fontMetrics2.boundingRect(0, 0, 100, h*2, Qt::AlignTop, LTR_OVERRIDE_CHAR+QLatin1String("aaa"));
+    qDebug()<<"-" <<fontMetrics2.boundingRect(0, 0, 100, h*2, Qt::AlignBaseline, LTR_OVERRIDE_CHAR+QLatin1String("aaa"));
+    qDebug()<<"-" <<fontMetrics2.boundingRect(0, 0, 100, h*2, Qt::AlignBottom, LTR_OVERRIDE_CHAR+QLatin1String("age"));
+    qDebug()<<"-" <<fontMetrics2.boundingRect(0, 0, 100, h*2, Qt::AlignTop, LTR_OVERRIDE_CHAR+QLatin1String("age"));
 #endif
+
     m_fontWidth = w;
     m_fontHeight = h;
     m_lineWidth = n; // the width of the underline and strikeout lines, adjusted for the point size of the font.
@@ -1872,7 +1974,7 @@ void QKxTermItem::drawLine(QPainter *p, int row,  const TermLine &line)
         if(bCursor) {
             drawCursor(p, brt, bg, fg, reverse);
         }
-        QFont ft = m_font;
+        QFont ft = m_font;        
         if(attr.flags & TermAttributes::AF_Invisible) {
             continue;
         }
@@ -1902,12 +2004,7 @@ void QKxTermItem::drawLine(QPainter *p, int row,  const TermLine &line)
             p->setPen(fg);
         }
 
-        //qDebug() << "drawLine" << graphic << out;
-        //QRect ort;
         p->drawText(rt, TEXT_DRAW_FLAGS, LTR_OVERRIDE_CHAR + out);
-        //p->drawText(rt.x(), rt.bottom(), LTR_OVERRIDE_CHAR + out);
-        //p->drawRect(rt);
-        //p->drawRect(ort);
     }
     p->setWorldTransform(textScale.inverted(), true);
 }

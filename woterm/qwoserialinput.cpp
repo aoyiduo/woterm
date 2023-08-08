@@ -24,23 +24,31 @@
 #include <QUdpSocket>
 #include <QSerialPort>
 #include <QNetworkDatagram>
+#include <QTextCodec>
+#include <QFile>
+#include <QFileDialog>
 
 // >202.201.120.120:65535|xx xx cc xx dd xx sskskskskkssksksk
 // <202.201.120.120:65535|xx xx cc xx dd xx sskskskskkssksksk
 #define NAME_SECTION_LENGTH     (23) // IP(15)+1+5
-#define HEX_TEXT_DISTANCE       (10)
+#define HEX_TEXT_DISTANCE       (3)
 
 static const QStringList gcsType={"TCPServer", "TCPClient", "UDPServer", "UDPClient"};
 QWoSerialInput::QWoSerialInput(QWoTermWidget *term, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::QWoSerialInput)
     , m_term(term)
+    , m_codec(nullptr)
+    , m_timeLastSplit(0)
+    , m_dlgExecInWriteData(false)
 {
     ui->setupUi(this);
-    ui->typeArea->setFixedWidth(350);
     QObject::connect(ui->btnMore, SIGNAL(clicked(bool)), this, SIGNAL(moreReady()));
     ui->btnConnect->setEnabled(true);
     setAttribute(Qt::WA_StyledBackground);
+
+    setStyleSheet("QWoSerialInput{min-height: 700px}");
+    QObject::connect(term, SIGNAL(sendData(QByteArray)), this, SLOT(onTermDataSend(QByteArray)));
     {
         QString hostLocal = QWoSetting::value("serialPort/hostTcpLocal", "0.0.0.0").toString();
         int portLocal = QWoSetting::value("serialPort/portTcpLocal", 2221).toInt();
@@ -142,24 +150,104 @@ QWoSerialInput::QWoSerialInput(QWoTermWidget *term, QWidget *parent)
     QObject::connect(ui->btnTcpConnect, SIGNAL(clicked()), this, SLOT(onTcpConnectButtonClicked()));
     QObject::connect(ui->btnUdpStart, SIGNAL(clicked()), this, SLOT(onUdpStartButtonClicked()));
     QObject::connect(ui->btnConnect, SIGNAL(clicked()), this, SLOT(onComxConnectButtonClicked()));
-    QObject::connect(ui->btnSend, SIGNAL(clicked()), this, SLOT(onTextSendButtonClicked()));
-    QObject::connect(ui->hexInput, SIGNAL(clicked()), this, SLOT(onInputAsHexClicked()));
-    QObject::connect(ui->hexOutput, SIGNAL(clicked()), this, SLOT(onOutputAsHexClicked()));
-    QObject::connect(ui->edit, SIGNAL(textChanged()), this, SLOT(onEditTextChanged()));
+    QObject::connect(ui->btnSend, SIGNAL(clicked()), this, SLOT(onTextSendButtonClicked()));    
+    QObject::connect(ui->edit, SIGNAL(textChanged()), this, SLOT(onPlainEditTextChanged()));
     QObject::connect(ui->btnClear, SIGNAL(clicked()), ui->edit, SLOT(clear()));
 
     ui->tcpServerTip->setVisible(false);
     ui->udpServerTip->setVisible(false);
     ui->tcpClientTip->setVisible(false);
-    ui->udpClientTip->setVisible(false);
+    ui->udpClientTip->setVisible(false);    
 
     {
-        bool checked = QWoSetting::value("serialPort/hexInput", true).toBool();
-        ui->hexInput->setChecked(checked);
+
+        QStringList items;
+        items.append(tr("Print string"));
+        items.append(tr("Hex string"));
+        ui->modeInput->setModel(new QStringListModel(items, ui->modeInput));
+        int type = QWoSetting::value("serialPort/inputType", 0).toInt();
+        ui->modeInput->setCurrentIndex(type);
+        QObject::connect(ui->modeInput, SIGNAL(currentIndexChanged(int)), this, SLOT(onModeInputIndexChanged(int)));
+        onModeInputIndexChanged(ui->modeInput->currentIndex());
+
+        bool yes = QWoSetting::value("serialPort/checkEchoInput", true).toBool();
+        ui->chkEchoInput->setChecked(yes);
+        QObject::connect(ui->chkEchoInput, &QCheckBox::clicked, this, [=](){
+            QWoSetting::setValue("serialPort/checkEchoInput", ui->chkEchoInput->isChecked());
+        });
+
+        bool checked = QWoSetting::value("serialPort/checkInputSuffix", true).toBool();
+        ui->chkInSuffix->setChecked(checked);
+        QObject::connect(ui->chkInSuffix, &QCheckBox::clicked, this, [=](){
+            QWoSetting::setValue("serialPort/checkInputSuffix", ui->chkInSuffix->isChecked());
+        });
+
+        QString suffix = QWoSetting::value("serialPort/inputSuffix").toString();
+        ui->hexInSuffix->setText(suffix);
+        QObject::connect(ui->hexInSuffix, &QLineEdit::editingFinished, this, [=](){
+            QWoSetting::setValue("serialPort/inputSuffix", ui->hexInSuffix->text());
+        });
     }
     {
-        bool checked = QWoSetting::value("serialPort/hexOutput", true).toBool();
-        ui->hexOutput->setChecked(checked);
+        QStringList items;
+        items.append(tr("No filter"));
+        items.append(tr("Split by timeout"));
+        items.append(tr("Split by hex string"));
+        ui->modeSplit->setModel(new QStringListModel(items, ui->modeSplit));
+        int type = QWoSetting::value("serialPort/splitType", 0).toInt();
+        ui->modeSplit->setCurrentIndex(type);
+        QObject::connect(ui->modeSplit, SIGNAL(currentIndexChanged(int)), this, SLOT(onModeSplitIndexChanged(int)));
+        onModeSplitIndexChanged(ui->modeSplit->currentIndex());
+
+        int ms = QWoSetting::value("serialPort/splitInterval", 300).toInt();
+        ui->splitInterval->setText(QString("%1").arg(ms));
+        ui->splitInterval->setValidator(new QIntValidator(1, 1000, ui->splitInterval));
+
+        QObject::connect(ui->splitInterval, &QLineEdit::editingFinished, this, [=](){
+            QWoSetting::setValue("serialPort/splitInterval", ui->splitInterval->text());
+        });
+
+        QString special = QWoSetting::value("serialPort/splitChars", "0D0A").toString();
+        ui->splitChars->setText(special);
+
+        QObject::connect(ui->splitChars, &QLineEdit::editingFinished, this, [=](){
+            QWoSetting::setValue("serialPort/splitChars", ui->splitChars->text());
+        });
+    }
+
+    {
+        QStringList items;
+        items.append(tr("No filter"));
+        items.append(tr("Latin1 hex string"));
+        items.append(tr("Unicode hex string"));
+        ui->modeOutput->setModel(new QStringListModel(items, ui->modeOutput));
+        int type = QWoSetting::value("serialPort/outputType", 0).toInt();
+        ui->modeOutput->setCurrentIndex(type);
+        QObject::connect(ui->modeOutput, SIGNAL(currentIndexChanged(int)), this, SLOT(onModeOutputIndexChanged(int)));
+        onModeOutputIndexChanged(ui->modeOutput->currentIndex());
+
+        bool checked = QWoSetting::value("serialPort/checkDataSource", true).toBool();
+        ui->chkDataSource->setChecked(checked);
+        QObject::connect(ui->chkDataSource, &QCheckBox::clicked, this, [=](){
+            QWoSetting::setValue("serialPort/checkDataSource", ui->chkDataSource->isChecked());
+        });
+
+    }
+    {
+        bool checked = QWoSetting::value("serialPort/chkTermInteractive", false).toBool();
+        m_term->setReadOnly(!checked);
+        ui->chkTermInteractive->setChecked(checked);
+        QObject::connect(ui->chkTermInteractive, &QCheckBox::clicked, this, [=](){
+            QWoSetting::setValue("serialPort/chkTermInteractive", ui->chkTermInteractive->isChecked());
+            m_term->setReadOnly(!ui->chkTermInteractive->isChecked());
+        });
+
+        QObject::connect((QWoTermWidget*)m_term, &QWoTermWidget::readOnlyChanged, this, [=](){
+            ui->chkTermInteractive->setChecked(!m_term->readOnly());
+        });
+    }
+    {
+        QObject::connect(ui->btnSendFile, SIGNAL(clicked()), this, SLOT(onButtonSendFileClicked()));
     }
 
     ui->edit->installEventFilter(this);
@@ -167,18 +255,29 @@ QWoSerialInput::QWoSerialInput(QWoTermWidget *term, QWidget *parent)
     m_outTimer = new QTimer(this);
     QObject::connect(m_outTimer, SIGNAL(timeout()), this, SLOT(onOutputTimeout()));
     m_outTimer->start(10);
-    int ms = QWoSetting::value("serialPort/splitTimeout", 300).toInt();
-    ui->msInput->setText(QString("%1").arg(ms));
-    ui->msInput->setValidator(new QIntValidator(1, 1000, ui->msInput));
-    bool checked = QWoSetting::value("serialPort/timeoutSplitChecked", true).toBool();
-    ui->msSplit->setChecked(checked);
-    bool checked2 = QWoSetting::value("serialPort/CharSplitChecked", true).toBool();
-    ui->msSplit->setChecked(checked);
-    ui->charSplit->setChecked(checked2);
-    QString txt = QWoSetting::value("serialPort/splitChar", "{").toString();
-    ui->specialChar->setText(txt);
-    QObject::connect(ui->msSplit, SIGNAL(clicked()), this, SLOT(onTimeoutSplitOutputButtonClicked()));
-    QObject::connect(ui->charSplit, SIGNAL(clicked()), this, SLOT(onCharSplitOutputButtonClicked()));
+
+
+#ifdef QT_DEBUG2
+    ui->simulateArea->show();
+    QObject::connect(ui->btnSimulateSend, SIGNAL(clicked()), this, SLOT(onSimulateSendButtonClicked()));
+    {
+        QString txt = QWoSetting::value("serialPort/simulateEdit").toString();
+        ui->simulateEdit->setPlainText(txt);
+        QObject::connect(ui->simulateEdit, &QPlainTextEdit::textChanged, this, [=](){
+            QWoSetting::setValue("serialPort/simulateEdit", ui->simulateEdit->toPlainText());
+        });
+    }
+    {
+        QString txt = QWoSetting::value("serialPort/editText").toString();
+        ui->edit->setPlainText(txt);
+        QObject::connect(ui->edit, &QPlainTextEdit::textChanged, this, [=](){
+            QWoSetting::setValue("serialPort/editText", ui->edit->toPlainText());
+        });
+    }
+#else
+    ui->simulateArea->hide();
+    ui->simulateArea->deleteLater();
+#endif
 }
 
 QWoSerialInput::~QWoSerialInput()
@@ -189,6 +288,34 @@ QWoSerialInput::~QWoSerialInput()
 void QWoSerialInput::reset()
 {
     ui->btnConnect->setEnabled(true);
+}
+
+bool QWoSerialInput::isConnected()
+{
+    QString portName = ui->comx->currentText();
+    if(portName == "TCPServer") {
+        if(m_tcpClient) {
+            return true;
+        }
+    }else if(portName == "TCPClient") {
+        if(m_tcpConnect) {
+            return true;
+        }
+    }else if(portName == "UDPServer") {
+        if(m_udpServer) {
+            return true;
+        }
+    }else if(portName == "UDPClient") {
+        if(m_udpConnect) {
+            return true;
+        }
+    }else{
+        // comx.
+        if(m_serialPort){
+            return true;
+        }
+    }
+    return false;
 }
 
 void QWoSerialInput::onSerialPortRefresh()
@@ -217,7 +344,7 @@ void QWoSerialInput::onServerTcpReadyRead()
     QTcpSocket *sock = qobject_cast<QTcpSocket*>(sender());
     QByteArray all = sock->readAll();
     QString who = socketName(sock);
-    handleDataRecv(who, all);
+    handleDataRecv(who, all);    
 }
 
 void QWoSerialInput::onServerTcpCleanup()
@@ -327,6 +454,19 @@ void QWoSerialInput::onComxReadyRead()
     handleDataRecv(who, all);
 }
 
+void QWoSerialInput::onDeviceBytesWritten(qint64 bytes)
+{
+    if(!m_fileSendBuffer.isEmpty()) {
+        int cnt = writeComxData(m_fileSendBuffer, false);
+        if(cnt < 0) {
+            QKxMessageBox::warning(this, tr("File send error"), tr("Abnormal error, terminating sending."));
+            m_fileSendBuffer.clear();
+        }else{
+            m_fileSendBuffer = m_fileSendBuffer.mid(cnt);
+        }
+    }
+}
+
 void QWoSerialInput::onComxError()
 {
     QString msg = m_serialPort->errorString();
@@ -336,67 +476,21 @@ void QWoSerialInput::onComxError()
 
 void QWoSerialInput::onOutputTimeout()
 {
-    qint64 elapse = 1;
-    QByteArray special;
-    bool timeSplit = ui->msSplit->isChecked();
-    bool charSplit = ui->charSplit->isChecked();
-    if(timeSplit) {
-        elapse = ui->msInput->text().toInt();
+    QList<LineOutput> lines;
+    handleSplitFilter(lines);
+    handleOutputFilter(leftArrow(), lines);
+}
+
+void QWoSerialInput::onTermDataSend(const QByteArray &data)
+{
+    if(!ui->chkTermInteractive->isChecked()) {
+        return;
     }
-    if(charSplit) {
-        special = ui->specialChar->text().toLatin1();
+    if(!m_fileSendBuffer.isEmpty()) {
+        QKxMessageBox::information(this, tr("Error"), tr("The current file content has not been sent yet."));
+        return;
     }
-    qint64 now = QDateTime::currentMSecsSinceEpoch();
-    qint64 bufLength = 0;
-    for(auto it = m_output.begin(); it != m_output.end();){
-        QString who = it.key();
-        TimeOutput& to = it.value();
-        if(to.buf.length() > 512*1024) {
-            QList<QByteArray> lines = formatText(to.buf);
-            parse("<", who.toUtf8(), lines);
-
-            it = m_output.erase(it);
-        }else if(timeSplit) {
-            if(now - to.tmLast > elapse) {
-                QList<QByteArray> lines = formatText(to.buf);
-                parse("<", who.toUtf8(), lines);
-
-                it = m_output.erase(it);
-            }else{
-                bufLength += to.buf.length();
-
-                it++;
-            }
-        }else if(charSplit && !special.isEmpty()) {
-            QByteArrayList lines;
-            int idx = to.buf.indexOf(special, 0);
-            while(idx > 0){
-                QByteArray tmp = to.buf.left(idx+special.length());
-                lines.append(tmp);
-                to.buf = to.buf.remove(0, tmp.length());
-                idx = to.buf.indexOf(special, 0);
-            }
-            for(int i = 0; i < lines.length(); i++) {
-                QByteArray buf = lines.at(i);
-                QList<QByteArray> lines = formatText(buf);
-                parse("<", who.toUtf8(), lines);
-            }
-            if(to.buf.isEmpty()){
-
-                it = m_output.erase(it);
-            }else{
-                bufLength += to.buf.length();
-
-                it++;
-            }
-        }else{
-            QList<QByteArray> lines = formatText(to.buf);
-            parse("<", who.toUtf8(), lines);
-
-            it = m_output.erase(it);
-        }
-    }
-    ui->bufLength->setText(QString::number(bufLength));
+    writeComxData(data);
 }
 
 void QWoSerialInput::onServerTcpNewConnection()
@@ -404,6 +498,7 @@ void QWoSerialInput::onServerTcpNewConnection()
     while(m_tcpServer->hasPendingConnections()) {
         QTcpSocket *client = m_tcpServer->nextPendingConnection();
         QObject::connect(client, SIGNAL(readyRead()), this, SLOT(onServerTcpReadyRead()));
+        QObject::connect(client, SIGNAL(bytesWritten(qint64)), this, SLOT(onDeviceBytesWritten(qint64)));
         QObject::connect(client, SIGNAL(disconnected()), this, SLOT(onServerTcpCleanup()));
         QObject::connect(client, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onServerTcpCleanup()));
         m_tcpClients.append(client);
@@ -425,6 +520,7 @@ void QWoSerialInput::onTcpListenButtonClicked()
             ui->btnTcpListen->setText(tr("Stop"));
         }
     }
+    m_fileSendBuffer.clear();
 }
 
 void QWoSerialInput::onTcpConnectButtonClicked()
@@ -440,6 +536,7 @@ void QWoSerialInput::onTcpConnectButtonClicked()
             ui->btnTcpConnect->setText(tr("Stop"));
         }
     }
+    m_fileSendBuffer.clear();
 }
 
 void QWoSerialInput::onUdpListenButtonClicked()
@@ -455,6 +552,7 @@ void QWoSerialInput::onUdpListenButtonClicked()
             ui->btnUdpListen->setText(tr("Stop"));
         }
     }
+    m_fileSendBuffer.clear();
 }
 
 void QWoSerialInput::onUdpStartButtonClicked()
@@ -470,9 +568,8 @@ void QWoSerialInput::onUdpStartButtonClicked()
             ui->btnUdpStart->setText(tr("Stop"));
         }
     }
+    m_fileSendBuffer.clear();
 }
-
-
 
 void QWoSerialInput::onComxConnectButtonClicked()
 {
@@ -487,15 +584,22 @@ void QWoSerialInput::onComxConnectButtonClicked()
             ui->btnConnect->setText(tr("Stop"));
         }
     }
+    m_fileSendBuffer.clear();
 }
 
 void QWoSerialInput::onTextSendButtonClicked()
 {
-    QString portName = ui->comx->currentText();
     QString msg = ui->edit->toPlainText();
-    QByteArray data = msg.toLatin1();
 
-    if(ui->hexInput->isChecked()) {
+    if(!m_fileSendBuffer.isEmpty()) {
+        QKxMessageBox::information(this, tr("Error"), tr("The current file content has not been sent yet."));
+        return;
+    }
+
+    recheckCodePage();
+
+    QByteArray data = m_codec->fromUnicode(msg);
+    if(ui->modeInput->currentIndex() == 1) {
         if(!isHexString(data)) {
             QKxMessageBox::information(this, tr("Error"), tr("make sure all string are hex code."));
             return;
@@ -508,44 +612,53 @@ void QWoSerialInput::onTextSendButtonClicked()
         data = QByteArray::fromHex(result);
     }
 
-    if(portName == "TCPServer") {
-        if(m_tcpClient) {
-            m_tcpClient->write(data);
-            handleDataSend(socketName(m_tcpClient), data);
+
+    QByteArray suffix;
+    if(ui->chkInSuffix->isChecked()){
+        suffix = ui->hexInSuffix->text().toLatin1();
+        if(suffix.isEmpty()) {
+            QKxMessageBox::information(this, tr("Suffix information"), tr("The input suffix string should not be empty."));
+            return;
         }
-    }else if(portName == "TCPClient") {
-        if(m_tcpConnect) {
-            m_tcpConnect->write(data);
-            handleDataSend(socketName(m_tcpConnect), data);
+        if(!isHexString(suffix)) {
+            QKxMessageBox::information(this, tr("Suffix information"), tr("The input suffix string must be hex string."));
+            return;
         }
-    }else if(portName == "UDPServer") {
-        if(m_udpServer) {
-            QString hostIPName = ui->udpClientBox->currentText();
-            if(hostIPName.isEmpty()) {
-                return;
-            }
-            QStringList hin = hostIPName.split(':');
-            QString host = hin.at(0);
-            QString port = hin.at(1);
-            int iport = port.toInt();
-            m_udpServer->writeDatagram(data, QHostAddress(host), quint16(iport));
-            handleDataSend(QString("%1:%2").arg(host).arg(port), data);
-        }
-    }else if(portName == "UDPClient") {
-        if(m_udpConnect) {
-            QString host = ui->hostUdpRemote->text();
-            QString port = ui->portUdpRemote->text();
-            int iport = port.toInt();
-            m_udpConnect->writeDatagram(data, QHostAddress(host), quint16(iport));
-            handleDataSend(QString("%1:%2").arg(host).arg(port), data);
-        }
+        suffix = QByteArray::fromHex(suffix.replace(" ", ""));
+    }
+    data.append(suffix);
+
+    writeComxData(data);
+}
+
+void QWoSerialInput::onButtonSendFileClicked()
+{
+    int type = QKxMessageBox::warning(this, tr("File sending information"), tr("Sending files is a dangerous behavior. Please carefully confirm whether the content of the file will damage the target device or cause other unpredictable events. Do you want to continue the operation."), QMessageBox::Yes|QMessageBox::No);
+    if(type != QMessageBox::Yes) {
+        return;
+    }
+    QString pathLast = QWoSetting::value("serialPort/lastFilePath", QDir::homePath()).toString();
+    QString pathFile = QFileDialog::getOpenFileName(this, tr("Please select a file to send."), pathLast);
+    if(pathFile.isEmpty()) {
+        return;
+    }
+    QWoSetting::setValue("serialPort/lastFilePath", pathFile);
+    QFile file(pathFile);
+    if(!file.open(QFile::ReadOnly)) {
+        QKxMessageBox::warning(this, tr("File open error"), tr("Failed to open file:")+pathFile);
+        return;
+    }
+    if(file.size() > 1024 * 1024 * 5) {
+        QKxMessageBox::warning(this, tr("File size limitation"), tr("The size of the sent file cannot exceed 5M bytes."));
+        return;
+    }
+    m_fileSendBuffer = file.readAll();
+    int cnt = writeComxData(m_fileSendBuffer, false);
+    if(cnt < 0) {
+        QKxMessageBox::warning(this, tr("File send error"), tr("Unknow error and terminat the file sending."));
+        m_fileSendBuffer.clear();
     }else{
-        // comx.
-        if(m_serialPort){
-            m_serialPort->write(data);
-            QString name = m_serialPort->portName();
-            handleDataSend(name, data);
-        }
+        m_fileSendBuffer = m_fileSendBuffer.mid(cnt);
     }
 }
 
@@ -586,20 +699,9 @@ void QWoSerialInput::onSerialPortCurrentTextChanged(const QString &portName)
     }
 }
 
-void QWoSerialInput::onInputAsHexClicked()
+void QWoSerialInput::onPlainEditTextChanged()
 {
-    ui->edit->clear();
-    QWoSetting::setValue("serialPort/hexInput", ui->hexInput->isChecked());
-}
-
-void QWoSerialInput::onOutputAsHexClicked()
-{
-    QWoSetting::setValue("serialPort/hexOutput", ui->hexOutput->isChecked());
-}
-
-void QWoSerialInput::onEditTextChanged()
-{
-    if(!ui->hexInput->isChecked()) {
+    if(ui->modeInput->currentIndex() != 1) {
         return;
     }
     QTextCursor tc = ui->edit->textCursor();
@@ -617,24 +719,80 @@ void QWoSerialInput::onEditTextChanged()
     ui->edit->setTextCursor(tc2);
 }
 
-void QWoSerialInput::onTimeoutSplitOutputButtonClicked()
+void QWoSerialInput::onModeInputIndexChanged(int idx)
 {
-    QWoSetting::setValue("serialPort/splitTimeout", ui->msInput->text());
-    QWoSetting::setValue("serialPort/timeoutSplitChecked", ui->msSplit->isChecked());
-    if(ui->msSplit->isChecked()) {
-        ui->charSplit->setChecked(false);
-        QWoSetting::setValue("serialPort/CharSplitChecked", false);
+    QWoSetting::setValue("serialPort/inputType", idx);
+
+    QString txt =  ui->edit->toPlainText();
+    if(txt.isEmpty()) {
+        return;
+    }
+
+    recheckCodePage();
+
+    if(idx == 0) {
+        // print string.
+        QByteArray hex = txt.toLatin1();
+        if(!isHexString(hex)) {
+            ui->edit->clear();
+            return;
+        }
+        hex = hex.replace(" ", "");
+        QByteArray codeTxt = QByteArray::fromHex(hex);
+        QString uTxt = m_codec->toUnicode(codeTxt);
+        ui->edit->setPlainText(uTxt);
+    }else{
+        // hex.
+        QByteArray codeTxt = m_codec->fromUnicode(txt);
+        QByteArray hex = codeTxt.toHex();
+        QString uHex = formatHexString(hex);
+        ui->edit->setPlainText(uHex);
     }
 }
 
-void QWoSerialInput::onCharSplitOutputButtonClicked()
+void QWoSerialInput::onModeSplitIndexChanged(int idx)
 {
-    QWoSetting::setValue("serialPort/splitChar", ui->specialChar->text());
-    QWoSetting::setValue("serialPort/CharSplitChecked", ui->charSplit->isChecked());
-    if(ui->charSplit->isChecked()) {
-        ui->msSplit->setChecked(false);
-        QWoSetting::setValue("serialPort/timeoutSplitChecked", false);
+    QWoSetting::setValue("serialPort/splitType", idx);
+    if(idx == 0) {
+        ui->splitCharsArea->hide();
+        ui->splitIntervalArea->hide();
+    }else if(idx == 1){
+        // timeout
+        ui->splitCharsArea->hide();
+        ui->splitIntervalArea->show();
+    }else{
+        ui->splitCharsArea->show();
+        ui->splitIntervalArea->hide();
     }
+    m_timeLastSplit = 0;
+}
+
+void QWoSerialInput::onModeOutputIndexChanged(int idx)
+{
+    QWoSetting::setValue("serialPort/outputType", idx);
+    m_whoBufferLeft.clear();    
+}
+
+void QWoSerialInput::onSimulateSendButtonClicked()
+{
+    QString msg = ui->simulateEdit->toPlainText();
+    recheckCodePage();
+    QByteArray data = m_codec->fromUnicode(msg);
+    QByteArray suffix;
+    if(ui->chkInSuffix->isChecked()){
+        suffix = ui->hexInSuffix->text().toLatin1();
+        if(suffix.isEmpty()) {
+            QKxMessageBox::information(this, tr("Suffix information"), tr("The input suffix string should not be empty."));
+            return;
+        }
+        if(!isHexString(suffix)) {
+            QKxMessageBox::information(this, tr("Suffix information"), tr("The input suffix string must be hex string."));
+            return;
+        }
+        suffix = QByteArray::fromHex(suffix.replace(" ", ""));
+    }
+    data.append(suffix);
+    handleDataRecv("simulate", data);
 }
 
 bool QWoSerialInput::handleTcpListen(bool start)
@@ -716,6 +874,7 @@ bool QWoSerialInput::handleTcpConnect(bool start)
 
         m_tcpConnect = new QTcpSocket(this);
         QObject::connect(m_tcpConnect, SIGNAL(readyRead()), this, SLOT(onClientTcpReadyRead()));
+        QObject::connect(m_tcpConnect, SIGNAL(bytesWritten(qint64)), this, SLOT(onDeviceBytesWritten(qint64)));
         QObject::connect(m_tcpConnect, SIGNAL(disconnected()), this, SLOT(onClientTcpCleanup()));
         QObject::connect(m_tcpConnect, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onClientTcpCleanup()));
         m_tcpConnect->connectToHost(host, quint16(iport));
@@ -785,6 +944,7 @@ bool QWoSerialInput::handleUdpListen(bool start)
         m_udpTimer->start(10000);
         m_udpServer = new QUdpSocket(this);
         QObject::connect(m_udpServer, SIGNAL(readyRead()), this, SLOT(onServerUdpReadyRead()));
+        QObject::connect(m_udpServer, SIGNAL(bytesWritten(qint64)), this, SLOT(onDeviceBytesWritten(qint64)));
         if(!m_udpServer->bind(QHostAddress(host), quint16(iport))) {
             QString szError = m_udpServer->errorString();
             QKxMessageBox::information(this, tr("Listen errors"), tr("Failed to listen for errors") + ":" + szError);
@@ -835,6 +995,7 @@ bool QWoSerialInput::handleUdpConnect(bool start)
 
         m_udpConnect = new QUdpSocket(this);
         QObject::connect(m_udpConnect, SIGNAL(readyRead()), this, SLOT(onClientUdpReadyRead()));
+        QObject::connect(m_udpConnect, SIGNAL(bytesWritten(qint64)), this, SLOT(onDeviceBytesWritten(qint64)));
         m_udpConnect->bind(QHostAddress(QHostAddress::Any), 0);
 
         return true;
@@ -869,8 +1030,9 @@ bool QWoSerialInput::handleComxConnect(bool start)
             m_serialPort->deleteLater();
         }
         m_serialPort = new QSerialPort(this);
-        connect(m_serialPort, SIGNAL(readyRead()), this, SLOT(onComxReadyRead()));
-        connect(m_serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onComxError()));
+        QObject::connect(m_serialPort, SIGNAL(readyRead()), this, SLOT(onComxReadyRead()));
+        QObject::connect(m_serialPort, SIGNAL(bytesWritten(qint64)), this, SLOT(onDeviceBytesWritten(qint64)));
+        QObject::connect(m_serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onComxError()));
         m_serialPort->setPortName(target);
         m_serialPort->setBaudRate(baudRate.toInt());
         if(stopBits == "2") {
@@ -932,75 +1094,98 @@ QString QWoSerialInput::socketName(const QAbstractSocket *socket) const
 
 void QWoSerialInput::handleDataRecv(const QString &who, const QByteArray &buf)
 {
+    if(buf.isEmpty()) {
+        return;
+    }
+
     TimeOutput out = m_output.take(who);
     out.tmLast = QDateTime::currentMSecsSinceEpoch();
     out.buf.append(buf);
     m_output.insert(who, out);
+
+    int idx = ui->modeSplit->currentIndex();
+    if(idx == 0) {
+        onOutputTimeout();
+    }
 }
 
 void QWoSerialInput::handleDataSend(const QString &who, const QByteArray &buf)
 {
-    QList<QByteArray> lines = formatText(buf);
-    parse(">", who.toUtf8(), lines);
-}
-
-void QWoSerialInput::parse(const QByteArray& arrow, const QByteArray &_who, const QList<QByteArray> &_lines)
-{
-    if(_lines.isEmpty()) {
+    if(!ui->chkEchoInput->isChecked()) {
         return;
     }
-    bool hexMode = ui->hexOutput->isChecked();
-    bool hasSource = ui->dataSource->isChecked();
-    bool hasSplit = ui->msSplit->isChecked() || ui->charSplit->isChecked();
-    QByteArray who;
-    if(hasSource) {
-        who=arrow+_who;
-        int nSpace = NAME_SECTION_LENGTH - who.length();
-        if(nSpace > 0) {
-            who = who.append(nSpace, arrow.at(0));
-        }else{
-            who.resize(NAME_SECTION_LENGTH);
-        }
-        who[NAME_SECTION_LENGTH-1] = '|';
-    }
-    QList<QByteArray> lines = _lines;
-    QByteArray result;
-    if(hasSource || hexMode) {
-        result += "\r\n" + who + lines.takeFirst();
-    }else if(hasSplit) {
-        result += "\r\n" + lines.takeFirst();
-    }else{
-        result += lines.takeFirst();
-    }
-
-    for(int i = 0; i < lines.length(); i++) {
-        QByteArray line;
-        if(hasSource){
-            QByteArray head(NAME_SECTION_LENGTH, QChar::Space);
-            head[NAME_SECTION_LENGTH-1] = '|';
-            line += head;
-        }
-        line += lines.at(i);
-        if(hexMode) {
-            result += "\r\n" + line;
-        }else{
-            result += line;
-        }
-    }
-    QKxTermItem *term = m_term->termItem();
-    term->scrollToEnd();
-    term->parse(result);
+    LineOutput lo;
+    lo.who = who.toUtf8();
+    lo.lines.append(buf);
+    QList<LineOutput> lines;
+    lines.append(lo);
+    handleOutputFilter(rightArrow(), lines);
 }
 
-QList<QByteArray> QWoSerialInput::formatText(const QByteArray &buf)
+int QWoSerialInput::writeComxData(const QByteArray &data, bool tryEcho)
 {
-    if(ui->hexOutput->isChecked()) {
-        return formatHexText(buf);
+    QString portName = ui->comx->currentText();
+    int nWrite = -1;
+    if(portName == "TCPServer") {
+        if(m_tcpClient) {
+            nWrite = m_tcpClient->write(data);
+            if(tryEcho) {
+                handleDataSend(socketName(m_tcpClient), data);
+            }
+        }
+    }else if(portName == "TCPClient") {
+        if(m_tcpConnect) {
+            nWrite = m_tcpConnect->write(data);
+            if(tryEcho) {
+                handleDataSend(socketName(m_tcpConnect), data);
+            }
+        }
+    }else if(portName == "UDPServer") {
+        if(m_udpServer) {
+            QString hostIPName = ui->udpClientBox->currentText();
+            if(hostIPName.isEmpty()) {
+                return -1;
+            }
+            QStringList hin = hostIPName.split(':');
+            QString host = hin.at(0);
+            QString port = hin.at(1);
+            int iport = port.toInt();
+            nWrite = m_udpServer->writeDatagram(data, QHostAddress(host), quint16(iport));
+            if(tryEcho) {
+                handleDataSend(QString("%1:%2").arg(host).arg(port), data);
+            }
+        }
+    }else if(portName == "UDPClient") {
+        if(m_udpConnect) {
+            QString host = ui->hostUdpRemote->text();
+            QString port = ui->portUdpRemote->text();
+            int iport = port.toInt();
+            nWrite = m_udpConnect->writeDatagram(data, QHostAddress(host), quint16(iport));
+            if(tryEcho) {
+                handleDataSend(QString("%1:%2").arg(host).arg(port), data);
+            }
+        }
+    }else{
+        // comx.
+        if(m_serialPort){
+            nWrite = m_serialPort->write(data);
+            QString name = m_serialPort->portName();
+            if(tryEcho) {
+                handleDataSend(name, data);
+            }
+        }
     }
-    return formatTextText(buf);
+
+    if(nWrite < 0 && !m_dlgExecInWriteData) {
+        m_dlgExecInWriteData = true;
+        QKxMessageBox::information(this, tr("Connection error"), tr("Please confirm if there is currently a valid device connection."));
+        m_dlgExecInWriteData = false;
+    }
+
+    return nWrite;
 }
 
-QList<QByteArray> QWoSerialInput::formatHexText(const QByteArray &buf)
+QByteArray QWoSerialInput::formatHexText(const QByteArray &buf)
 {
     QList<QByteArray> lines;
     int i, j;
@@ -1015,6 +1200,7 @@ QList<QByteArray> QWoSerialInput::formatHexText(const QByteArray &buf)
             sprintf(tmp, "%2.2x ", c);
             line.append(tmp);
         }
+        line = line.toUpper();
         for(; j < cnt; ++j){
             line.append("   ");
         }
@@ -1026,10 +1212,47 @@ QList<QByteArray> QWoSerialInput::formatHexText(const QByteArray &buf)
         line.append("|");
         lines.append(line);
     }
-    return lines;
+    return lines.join("\r\n");
 }
 
-QList<QByteArray> QWoSerialInput::formatTextText(const QByteArray &buf)
+QString QWoSerialInput::formatUnicodeHexText(const QString &buf)
+{
+    QList<QString> lines;
+    int i, j;
+    int len = buf.length();
+    int cnt = hexModeCharCount() / 2;
+    for(i = 0; i < len; i += cnt) {
+        QString line;
+        for(j = 0; j < cnt && i + j < len; j++) {
+            char tmp[15] = {0};
+            ushort uc = buf[i+j].unicode();
+            uchar *ptr = (uchar*)&uc;
+            sprintf(tmp, "%2.2x %2.2x ", ptr[0], ptr[1]);
+            line.append(tmp);
+        }
+        line = line.toUpper();
+        for(; j < cnt; ++j){
+            line.append("      ");
+        }
+        line.append("  |") ;
+        for(j=0; j < cnt && i+j<len; j++){
+            QChar c = buf[i+j];
+            if(c.isPrint()) {
+                line.append(c);
+                if((c.unicode() & 0xFF00) == 0) {
+                    line.append(".");
+                }
+            }else{
+                line.append("..");
+            }
+        }
+        line.append("|");
+        lines.append(line);
+    }
+    return lines.join("\r\n");
+}
+
+QByteArray QWoSerialInput::formatPrintText(const QByteArray &buf)
 {
     int cnt = textModelCharCount();
     QList<QByteArray> lines;
@@ -1044,21 +1267,7 @@ QList<QByteArray> QWoSerialInput::formatTextText(const QByteArray &buf)
         }
         lines.append(line);
     }
-    return lines;
-}
-
-int QWoSerialInput::hexModeCharCount() const
-{
-    QKxTermItem *term = m_term->termItem();
-    QSize sz = term->termSize();
-    int total = sz.width();
-    if(ui->dataSource->isChecked()) {
-        total -= NAME_SECTION_LENGTH;
-    }
-    if(ui->hexOutput->isChecked()) {
-        total -= HEX_TEXT_DISTANCE;
-    }
-    return total / 4;
+    return lines.join("\r\n");
 }
 
 int QWoSerialInput::textModelCharCount() const
@@ -1066,10 +1275,18 @@ int QWoSerialInput::textModelCharCount() const
     QKxTermItem *term = m_term->termItem();
     QSize sz = term->termSize();
     int total = sz.width();
-    if(ui->dataSource->isChecked()) {
-        total -= NAME_SECTION_LENGTH;
-    }
     return total;
+}
+
+int QWoSerialInput::hexModeCharCount() const
+{
+    QKxTermItem *term = m_term->termItem();
+    QSize sz = term->termSize();
+    int total = sz.width();
+    if(ui->modeOutput->currentIndex() > 0) {
+        total -= HEX_TEXT_DISTANCE;
+    }
+    return total / 4;
 }
 
 bool QWoSerialInput::isHexString(const QByteArray &hex)
@@ -1108,14 +1325,170 @@ QString QWoSerialInput::formatHexString(const QString &txtOld)
     return txtNew;
 }
 
+void QWoSerialInput::recheckCodePage()
+{
+    if(m_codec == nullptr || m_codec->name() != m_term->textCodec()) {
+        QString codeName = m_term->textCodec();
+        m_codec = QTextCodec::codecForName(codeName.toUtf8());
+    }
+}
+
+void QWoSerialInput::handleSplitFilter(QList<LineOutput> &lines)
+{
+    int idx = ui->modeSplit->currentIndex();
+    qint64 elapse = 0;
+    if(idx == 1) {
+        elapse = ui->splitInterval->text().toInt();
+    }
+    QByteArray special;
+    if(idx == 2) {
+        QByteArray txt = ui->splitChars->text().toLatin1();
+        if(isHexString(txt)) {
+            special = QByteArray::fromHex(txt);
+        }
+    }
+
+    QByteArrayList vdef;
+    vdef.append(QByteArray());
+    QMap<QString, QByteArrayList> whoLines;
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    qint64 bufLength = 0;
+    for(auto it = m_output.begin(); it != m_output.end();){
+        QString who = it.key();
+        TimeOutput& to = it.value();
+        if(to.buf.length() > 512*1024) {
+            // cache too many data.
+            QByteArrayList all = whoLines.value(who, vdef);
+            QByteArray& buf = all.first();
+            buf.append(to.buf);
+            whoLines.insert(who, all);
+            it = m_output.erase(it);
+        }else if(idx == 0){
+            // no split filter.
+            QByteArrayList all = whoLines.value(who, vdef);
+            QByteArray& buf = all.first();
+            buf.append(to.buf);
+            whoLines.insert(who, all);
+            it = m_output.erase(it);
+        }else if(idx == 1) {
+            // split by timeout.
+            if(now - to.tmLast > elapse) {
+                QByteArrayList all = whoLines.value(who, vdef);
+                QByteArray& buf = all.first();
+                buf.append(to.buf);
+                whoLines.insert(who, all);
+                it = m_output.erase(it);
+            }else{
+                bufLength += to.buf.length();
+                it++;
+            }
+        }else if(idx == 2 && !special.isEmpty()) {
+            // Split by special hex string
+            QByteArrayList all = whoLines.take(who);
+            int idx = to.buf.indexOf(special, 0);
+            while(idx >= 0){
+                QByteArray tmp = to.buf.left(idx+special.length());
+                all.append(tmp);
+                to.buf = to.buf.remove(0, tmp.length());
+                idx = to.buf.indexOf(special, 0);
+                m_timeLastSplit = now;
+            }
+            if(!to.buf.isEmpty() && m_timeLastSplit > 0 && (now - m_timeLastSplit) > 1000) {
+                all.append(to.buf);
+                to.buf.clear();
+            }
+            if(!all.isEmpty()) {
+                whoLines.insert(who, all);
+            }
+            if(to.buf.isEmpty()){
+                it = m_output.erase(it);
+            }else{
+                bufLength += to.buf.length();
+                it++;
+            }
+        }
+    }
+    for(auto it = whoLines.begin(); it != whoLines.end(); it++) {
+        LineOutput lo;
+        lo.who = it.key().toUtf8();
+        lo.lines = it.value();
+        lines.append(lo);
+    }
+    ui->bufLength->setText(QString::number(bufLength));
+}
+
+void QWoSerialInput::handleOutputFilter(const QByteArray &arrow, const QList<LineOutput> &lines)
+{
+    if(lines.isEmpty()) {
+        return;
+    }
+    QKxTermItem *term = m_term->termItem();
+    term->scrollToEnd();
+
+    int idx = ui->modeOutput->currentIndex();
+    if(idx == 0) {
+        // no filter.
+        for(auto it = lines.begin(); it != lines.end(); it++) {
+            const LineOutput& lo = *it;
+            QByteArray result;
+            if(ui->chkDataSource->isChecked()) {
+                result += "\r\n" + lo.who + arrow + ": \r\n";
+            }
+            for(auto jt = lo.lines.begin(); jt != lo.lines.end(); jt++) {
+                QByteArray tmp = *jt;
+                result += tmp;
+            }
+            term->parse(result);
+        }
+    }else if(idx == 1) {
+        // hex string.
+        for(auto it = lines.begin(); it != lines.end(); it++) {
+            const LineOutput& lo = *it;
+            QByteArray result;
+            if(ui->chkDataSource->isChecked()) {
+                result += "\r\n" + lo.who + arrow + ": ";
+            }
+            for(auto jt = lo.lines.begin(); jt != lo.lines.end(); jt++) {
+                const QByteArray& line = *jt;
+                result += "\r\n" + formatHexText(line);
+            }
+            term->parse(result);
+        }
+    }else{
+        // unicode hex string.
+        recheckCodePage();
+        for(auto it = lines.begin(); it != lines.end(); it++) {
+            const LineOutput& lo = *it;
+            QString result;
+            if(ui->chkDataSource->isChecked()) {
+                result += "\r\n" + lo.who + arrow + ": ";
+            }
+            for(auto jt = lo.lines.begin(); jt != lo.lines.end(); jt++) {
+                const QByteArray& line = *jt;
+                QByteArray bufLeft = m_whoBufferLeft.take(lo.who);
+                bufLeft.append(line);
+                QTextCodec::ConverterState left;
+                const QString& uLine = m_codec->toUnicode(bufLeft.data(), bufLeft.length(), &left);
+                int cnt = left.remainingChars;
+                if(cnt > 0) {
+                    bufLeft = bufLeft.right(cnt);
+                    m_whoBufferLeft.insert(lo.who, bufLeft);
+                }
+                result += "\r\n" + formatUnicodeHexText(uLine);
+            }
+            term->unicodeParse(result);
+        }
+    }
+}
+
 bool QWoSerialInput::eventFilter(QObject *obj, QEvent *ev)
 {
     QEvent::Type type = ev->type();
     if(obj == ui->edit) {
-
         if(type == QEvent::KeyPress || type == QEvent::KeyRelease) {
             QKeyEvent *ke = static_cast<QKeyEvent*>(ev);
-            if(ui->hexInput->isChecked()) {
+            Qt::KeyboardModifiers modifiers = ke->modifiers();
+            if(modifiers == Qt::NoModifier && ui->modeInput->currentIndex() == 1) {
                 int key = ke->key();
                 if(key >= Qt::Key_0 && key <= Qt::Key_9) {
                     return false;

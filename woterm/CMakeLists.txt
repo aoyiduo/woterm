@@ -113,6 +113,7 @@ set(SOURCE_FILES
     qwosftpmovefiledialog.cpp
     qwosftptreeview.cpp
     qwoserialinput.cpp
+    qwoserialtermwidget.cpp
     qwoserialwidgetimpl.cpp
     qwordpwidget.cpp
     qwordpwidgetimpl.cpp
@@ -143,6 +144,7 @@ set(SOURCE_FILES
     qworecenthistory.cpp
     qwolicensedialog.cpp
     qwolicenseactivatedialog.cpp
+    qwoopacitysettingdialog.cpp
     qwoversionupgradetipdialog.cpp
     qwolicensetrialapplydialog.cpp
     qwoplaybooktermwidget.cpp
@@ -287,6 +289,7 @@ set(HEADER_FILES
     qwosftpmovefiledialog.h
     qwosftptreeview.h
     qwoserialinput.h
+    qwoserialtermwidget.h
     qwoserialwidgetimpl.h
     qwordpwidget.h
     qwordpwidgetimpl.h
@@ -317,6 +320,7 @@ set(HEADER_FILES
     qworecenthistory.h
     qwolicensedialog.h
     qwolicenseactivatedialog.h
+    qwoopacitysettingdialog.h
     qwoversionupgradetipdialog.h
     qwolicensetrialapplydialog.h
     qwoplaybooktermwidget.h
@@ -427,6 +431,7 @@ set(OTHER_FILES
     qwogroupinputdialog.ui
     qwolicensedialog.ui
     qwolicenseactivatedialog.ui
+    qwoopacitysettingdialog.ui
     qwoversionupgradetipdialog.ui
     qwolicensetrialapplydialog.ui
     qwotunneldialog.ui

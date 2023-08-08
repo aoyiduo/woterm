@@ -31,6 +31,9 @@ public:
     explicit QWoVncPlayWidget(const QString& target, QWidget *parent = 0);
     ~QWoVncPlayWidget();
 
+    bool isConnected();
+    void stop();
+    void reconnect();
 private slots:
     // self
     void onToolEnter();
