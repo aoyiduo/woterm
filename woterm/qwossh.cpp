@@ -11,9 +11,11 @@
 
 #include "qwossh.h"
 #include "qwosshconf.h"
-
+#include "qkxver.h"
 #include "qwoutils.h"
 #include "qwosetting.h"
+#include "qwoidentify.h"
+#include "qwolocalsshagent.h"
 
 #include <qssh.h>
 #include <libssh/libssh.h>
@@ -62,6 +64,140 @@
 
 static ulong LOCAL_IP = inet_addr("127.0.0.1");
 
+
+static int connectToAgent(const QByteArray& host, int port) {
+    struct addrinfo *ai = nullptr;
+    struct addrinfo *itr = nullptr;
+
+    int err = QWoUtils::getAddrInfos(host, port, &ai);
+    if(err != 0) {
+        return 0;
+    }
+    int sockFd = -1;
+    for (itr = ai; itr != nullptr; itr = itr->ai_next) {
+        /* create socket */
+        socket_t fd = socket(itr->ai_family, itr->ai_socktype, itr->ai_protocol);
+        err = ::connect(fd, itr->ai_addr, itr->ai_addrlen);
+        if(err != 0){
+            myclosesocket(fd);
+            continue;
+        }
+        sockFd = fd;
+        break;
+    }
+    QWoUtils::freeAddrInfos(ai);
+    return sockFd;
+}
+
+static int handleAuthenticateByInternalKeys(ssh_session session, int method) {
+    if(method & SSH_AUTH_METHOD_PUBLICKEY) {
+        // inner
+        QMap<QString, IdentifyInfo> all = QWoIdentify::loadFromSqlite();
+        for(auto it = all.begin(); it != all.end(); it++) {
+            QString name = it.key();
+            IdentifyInfo ti = it.value();
+            QByteArray prvKey = ti.prvKey;
+            ssh_key key = nullptr;
+            int err = ssh_pki_import_privkey_base64(prvKey.data(), nullptr, nullptr, nullptr, &key);
+            if(err == SSH_OK) {
+                err = ssh_userauth_publickey(session, nullptr, key);
+                ssh_key_free(key);
+                if(err == SSH_AUTH_SUCCESS) {
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+static int handleAuthenticateByDotSshPath(ssh_session session, int method) {
+    if(method & SSH_AUTH_METHOD_PUBLICKEY) {
+        if(QWoSetting::enableUserHomeIdentityFiles()) {
+            QString path = QDir::cleanPath(QDir::homePath() + "/.ssh");
+            QDir d(path);
+            QFileInfoList fis = d.entryInfoList(QDir::Files);
+            for(auto it = fis.begin(); it != fis.end(); it++) {
+                QFileInfo fi = *it;
+                QString fileName = fi.fileName();
+                if(fileName.endsWith(".pub")) {
+                    continue;
+                }
+                QFile f(fi.absoluteFilePath());
+                if(!f.open(QFile::ReadOnly)) {
+                    continue;
+                }
+                QByteArray prvKey = f.readAll();
+                f.close();
+                ssh_key key = nullptr;
+                int err = ssh_pki_import_privkey_base64(prvKey.data(), nullptr, nullptr, nullptr, &key);
+                if(err == SSH_OK) {
+                    err = ssh_userauth_publickey(session, nullptr, key);
+                    ssh_key_free(key);
+                    if(err == SSH_AUTH_SUCCESS) {
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+static int handleAuthenticateBySshAgent(ssh_session session, int method) {
+    if(method & SSH_AUTH_METHOD_PUBLICKEY) {
+        if(QWoSetting::enableLocalSshAgent()) {
+            QString addr = QWoSetting::lastLocalSshAgentAddress();
+            if(addr.isEmpty()) {
+                addr = QWoSetting::sshAuthSockDefault();
+            }
+            if(addr[0] == "/") {
+                ssh_options_set(session, SSH_OPTIONS_IDENTITY_AGENT, addr.toLatin1());
+                int err = ssh_userauth_agent(session, nullptr);
+                if(err == SSH_AUTH_SUCCESS) {
+                    return 1;
+                }
+            }else{
+                QString host = QWoLocalSshAgentServer::instance()->host();
+                int port = QWoLocalSshAgentServer::instance()->port();
+                int fd = connectToAgent(host.toUtf8(), port);
+                if(fd > 0) {
+                    ssh_set_agent_socket(session, fd);
+                    int err = ssh_userauth_agent(session, nullptr);
+                    myclosesocket(fd);
+                    if(err == SSH_AUTH_SUCCESS) {
+                        return 1;
+                    }
+                }
+            }
+        }
+
+        if(QWoSetting::enableRemoteSshAgent()) {
+            QString addr = QWoSetting::remoteSshAgentAddress();
+            QStringList hp = addr.split(':');
+            if(hp.size() != 2) {
+                return 0;
+            }
+
+            QByteArray host = hp.at(0).toUtf8();
+            int port = hp.at(1).toInt();
+            int fd = connectToAgent(host, port);
+            if(fd < 0) {
+                return 0;
+            }
+            ssh_set_agent_socket(session, fd);
+            int err = ssh_userauth_agent(session, nullptr);
+            myclosesocket(fd);
+            if(err == SSH_AUTH_SUCCESS) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
 class QSshInteractiveClient : public QSshAuthClient
 {
 public:
@@ -71,6 +207,55 @@ public:
     }
 
     virtual bool open() = 0;
+private:
+    int authenticateThirdparty(ssh_session session, int method) {
+        int err = 0;
+        err = handleAuthenticateByInternalKeys(session, method);
+        if(err != 0) {
+            return err;
+        }
+        if(!QKxVer::instance()->isFullFeather() || !QWoSetting::allowToUseExternalIdentityFiles()) {
+            return 0;
+        }
+        err = handleAuthenticateByDotSshPath(session, method);
+        if(err != 0) {
+            return err;
+        }
+        err = handleAuthenticateBySshAgent(session, method);
+        if(err != 0) {
+            return err;
+        }
+        return 0;
+    }
+};
+
+class QPowerProxyClient : public QSshProxyClient {
+public:
+    explicit QPowerProxyClient(const TargetInfo& ti, QObject* parent)
+        : QSshProxyClient(ti, parent){
+
+    }
+
+private:
+    int authenticateThirdparty(ssh_session session, int method) {
+        int err = 0;
+        err = handleAuthenticateByInternalKeys(session, method);
+        if(err != 0) {
+            return err;
+        }
+        if(!QKxVer::instance()->isFullFeather() || !QWoSetting::allowToUseExternalIdentityFiles()) {
+            return 0;
+        }
+        err = handleAuthenticateByDotSshPath(session, method);
+        if(err != 0) {
+            return err;
+        }
+        err = handleAuthenticateBySshAgent(session, method);
+        if(err != 0) {
+            return err;
+        }
+        return 0;
+    }
 };
 
 class QWoPowerShell : public QWoSshShell
@@ -2201,6 +2386,8 @@ static QSshClient::TargetInfo qsshToTarget(const HostInfo &hi, bool forw)
 
 bool QWoSSHConnection::init(const QString &host)
 {
+    // it's danger to remove the follow line for mult thread.
+    static bool initSshAgent = QWoLocalSshAgentServer::instance();
     QList<HostInfo> his = QWoSshConf::instance()->proxyJumpers(host);
     if(his.isEmpty()) {
         return false;
@@ -2231,7 +2418,7 @@ bool QWoSSHConnection::init(const QString &host)
     for(int i = 0; i < his.length(); i++) {
         const HostInfo& hi = his[i];
         QSshClient::TargetInfo ti = qsshToTarget(hi, i < his.length() - 1);
-        QSshProxyClient *cli = new QSshProxyClient(ti, this);
+        QSshProxyClient *cli = new QPowerProxyClient(ti, this);
         if(!cli->init(m_listenSocket, m_listenPort)) {
             return false;
         }

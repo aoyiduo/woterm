@@ -23,6 +23,10 @@ class QWoTunnelChannel: public QWoSshChannel
 public:
     explicit QWoTunnelChannel(QTcpSocket *socket, const QString& sessionName, QObject *parent= nullptr);
     virtual ~QWoTunnelChannel();
+
+    static bool sessionReusable();
+    static void setSessionReusable(bool on);
+    static void setSessionMaxReuseCount(int cnt = 1000);
 signals:
     void dataArrived(const QByteArray& buf);
 private slots:
@@ -38,6 +42,8 @@ protected:
 protected:
     QPointer<QTcpSocket> m_socket;
     QString m_sessionName;
+    static int m_gsMaxSessionMultiplexCount;
+    static bool m_gsSessionResuable;
 };
 
 class QWoTunnelServer : public QObject
@@ -48,8 +54,7 @@ public:
     virtual ~QWoTunnelServer();
     virtual bool isPortmapping() = 0;
     bool isRunning();
-    void stop();
-    static void setMaxSessionMultiplexCount(int cnt = 1000);
+    void stop();    
     inline QString sessionName() {
         return m_sessionName;
     }

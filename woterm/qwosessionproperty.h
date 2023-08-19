@@ -47,7 +47,7 @@ private slots:
     void onTypeCurrentIndexChanged(const QString& txt);
     void onTypeConnect();
     void onTypeSave();
-    void onAuthCurrentIndexChanged(const QString& txt);
+    void onAuthCurrentIndexChanged(int idx);
     void onPortTextChanged(const QString& txt);
     void onAssistButtonClicked(int idx);
     void onProxyJumpeBrowser();

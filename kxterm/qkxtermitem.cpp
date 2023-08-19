@@ -39,6 +39,7 @@
 #include <QFontDatabase>
 #include <QInputMethod>
 #include <QDateTime>
+#include <QTextCodec>
 
 #define REPAINT_TIMEOUT1 (20)
 #define REPAINT_TIMEOUT2 (40)
@@ -2077,12 +2078,14 @@ void QKxTermItem::handleKeyEvent(QKeyEvent *ev)
         }else if(ev->key() == Qt::Key_PageDown) {
             buf.append("\033[6~");
         }else {
-            buf.append(ev->text().toUtf8());
+            QTextCodec *m_codec = m_vte->getTextCodec();
+            QByteArray tmp = m_codec->fromUnicode(ev->text());
+            buf.append(tmp);
         }
         if(!buf.isEmpty()) {
             char tmp[100];
             sprintf(tmp, "0x%x", ev->key());
-            qDebug() << "keyPressEvent" << tmp << ev->text();
+            qDebug() << "keyPressEvent key:" << tmp << " UnicodeText:" << ev->text() << " RemoteText:" << buf;
             handleSendData(buf);
         }
     }

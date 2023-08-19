@@ -34,7 +34,7 @@ public:
     static bool rename(const QString& nameOld, const QString& nameNew);
     Q_INVOKABLE static bool remove(const QString& name);
     static QMap<QString, IdentifyInfo> loadFromSqlite();
-    static QMap<QString, IdentifyInfo> loadFromFile();
+    static QMap<QString, IdentifyInfo> loadFromFile();    
     Q_INVOKABLE static QStringList qmlFileNames();
     Q_INVOKABLE static QVariantList qmlLoadFromSqlite();
     Q_INVOKABLE static QVariant qmlImport(const QString& file, const QString& nameSave);

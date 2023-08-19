@@ -40,6 +40,7 @@ public:
 
     QString textCodec() const;
     void setTextCodec(const QString& code);
+    QTextCodec *getTextCodec();
 
     void process(const QByteArray& data);
     void unicodeProcess(const QString& data);

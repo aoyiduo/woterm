@@ -36,6 +36,7 @@
 #include <QSortFilterProxyModel>
 #include <QContextMenuEvent>
 #include <QHeaderView>
+#include <QTimer>
 
 QWoSessionManage::QWoSessionManage(QWidget *parent)
     : QDialog(parent)
@@ -48,6 +49,10 @@ QWoSessionManage::QWoSessionManage(QWidget *parent)
 
     m_listModel = QWoHostListModel::instance();
     m_treeModel = QWoHostTreeModel::instance();
+
+    QObject::connect(m_treeModel.data(), &QAbstractItemModel::modelReset, this, [=](){
+        restoreSessionsExpandState();
+    });
 
     m_proxyModel = new QWoSortFilterProxyModel(4, this);
     m_proxyModel->setRecursiveFilteringEnabled(true);
@@ -117,7 +122,11 @@ void QWoSessionManage::onEditTextChanged(const QString &txt)
     regex.setPatternSyntax(QRegExp::RegExp2);
     m_proxyModel->setFilterRegExp(regex);
     m_proxyModel->setFilterRole(ROLE_REFILTER);
-    m_tree->expandAll();
+    if(txt.isEmpty()) {
+        restoreSessionsExpandState();
+    }else{
+        QMetaObject::invokeMethod(m_tree, "expandAll", Qt::QueuedConnection);
+    }
 }
 
 void QWoSessionManage::onSshConnectReady()
@@ -501,6 +510,11 @@ void QWoSessionManage::onTreeItemDoubleClicked(const QModelIndex &idx)
     }
     QVariant v = idx.data(ROLE_HOSTINFO);
     if(!v.isValid()) {
+        QVariant v = idx.data(ROLE_GROUP);
+        if(!v.isValid()) {
+            return;
+        }
+        saveSessionsExpandState();
         return;
     }
     HostInfo hi = v.value<HostInfo>();
@@ -537,6 +551,7 @@ void QWoSessionManage::onTreeModelSwitch()
         m_proxyModel->setSourceModel(m_treeModel);
         m_model = m_treeModel;
         QWoSetting::setListModel("manage", false);
+        restoreSessionsExpandState();
     }else{
         ui->btnModel->setIcon(QIcon("../private/skins/black/list.png"));
         m_proxyModel->setSourceModel(m_listModel);
@@ -560,6 +575,74 @@ void QWoSessionManage::resizeHeader()
     m_tree->setColumnWidth(1, 200);
     m_tree->setColumnWidth(2, 90);
 }
+
+void QWoSessionManage::restoreSessionsExpandState()
+{
+    if(!QKxVer::instance()->isFullFeather()) {
+        return;
+    }
+    if(!QWoSetting::sessionsGroupCanRestore()) {
+        return;
+    }
+    QPointer<QWoSessionManage> that = this;
+    QTimer::singleShot(100, this, [=](){
+        if(that == nullptr) {
+            return ;
+        }
+        QAbstractItemModel *model = m_tree->model();
+        if(model == nullptr) {
+            return;
+        }
+        QStringList expands = QWoSetting::sessionsGroupExpand("manage");
+        for(int i = 0; i < model->rowCount(); i++) {
+            QModelIndex idx = model->index(i, 0);
+            QVariant v = idx.data(ROLE_GROUP);
+            if(!v.isValid()) {
+                continue;
+            }
+            const GroupInfo& gi = v.value<GroupInfo>();
+            if(expands.contains(gi.name)) {
+                m_tree->expand(idx);
+            }else{
+                m_tree->collapse(idx);
+            }
+        }
+    });
+}
+
+void QWoSessionManage::saveSessionsExpandState()
+{
+    if(!QKxVer::instance()->isFullFeather()) {
+        return;
+    }
+    if(!QWoSetting::sessionsGroupCanRestore()) {
+        return;
+    }
+    QPointer<QWoSessionManage> that = this;
+    QTimer::singleShot(100, this, [=](){
+        if(that == nullptr) {
+            return ;
+        }
+        QAbstractItemModel *model = m_tree->model();
+        if(model == nullptr) {
+            return;
+        }
+        QStringList expands;
+        for(int i = 0; i < model->rowCount(); i++) {
+            QModelIndex idx = model->index(i, 0);
+            QVariant v = idx.data(ROLE_GROUP);
+            if(!v.isValid()) {
+                continue;
+            }
+            const GroupInfo& gi = v.value<GroupInfo>();
+            if(m_tree->isExpanded(idx)) {
+                expands.append(gi.name);
+            }
+        }
+        QWoSetting::setSessionsGroupExpand("manage", expands);
+    });
+}
+
 
 bool QWoSessionManage::handleTreeViewContextMenu(QContextMenuEvent *ev)
 {
@@ -612,6 +695,8 @@ bool QWoSessionManage::eventFilter(QObject *obj, QEvent *ev)
     if(obj == m_tree) {
         if(t == QEvent::ContextMenu) {
             return handleTreeViewContextMenu(dynamic_cast<QContextMenuEvent*>(ev));
+        }else if(t == QEvent::Show) {
+            restoreSessionsExpandState();
         }
     }
     return QDialog::eventFilter(obj, ev);

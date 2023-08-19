@@ -56,4 +56,5 @@ private:
     QPointer<QWoLoadingWidget> m_loading;
     QPointer<QWoTermMask> m_mask;    
     bool m_smartResize;
+    bool m_autoReconnect;
 };

@@ -78,6 +78,11 @@ public:
     static QString adminPassword();
     static void setAdminPassword(const QString& pass);
 
+    static bool sessionsGroupCanRestore();
+    static void setSessionsGroupCanRestore(bool on);
+    static QStringList sessionsGroupExpand(const QString& where);
+    static void setSessionsGroupExpand(const QString& where, const QStringList& expands);
+
     static bool startupByAdmin();
     static void setStartupByAdmin(bool on);
 
@@ -118,6 +123,11 @@ public:
     static QVariantMap ttyDefault();
     static void setTtyDefault(const QVariantMap& dm);
 
+    static bool tunnelMultiplex();
+    static void setTunnelMultiplex(bool on);
+    static int tunnelMultiplexMaxCount();
+    static void setTunnelMultipleMaxCount(int cnt);
+
     static QString terminalBackgroundImage();
     static void setTerminalBackgroundImage(const QString& path);
     static int terminalBackgroundImageAlpha();
@@ -126,6 +136,21 @@ public:
     static void setTerminalBackgroundImageEdgeSmooth(bool v);
     static QString terminalBackgroundImagePosition();
     static void setTerminalBackgroundImagePosition(const QString& pos);
+
+    // identity files
+    static bool allowToUseExternalIdentityFiles();
+    static void setAllowToUseExternalIdentityFiles(bool on);
+    static bool enableUserHomeIdentityFiles();
+    static void setEnableUserHomeIdentityFiles(bool on);
+    static bool enableLocalSshAgent();
+    static void setEnableLocalSshAgent(bool on);
+    static bool enableRemoteSshAgent();
+    static void setEnableRemoteSshAgent(bool on);
+    static QString remoteSshAgentAddress();
+    static void setRemoteSshAgentAddress(const QString& addr);
+    static QString lastLocalSshAgentAddress();
+    static void setLastLocalSshAgentAddress(const QString& addr);
+    static QByteArray sshAuthSockDefault();
 };
 
 #endif

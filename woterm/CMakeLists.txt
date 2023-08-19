@@ -154,6 +154,7 @@ set(SOURCE_FILES
     qwoplaybookwidgetimpl.cpp
     qwoplaybookconsoleproxy.cpp
     qwoplaybookconsole.cpp
+    qwolocalsshagent.cpp
     qwotunneldialog.cpp
     qwotunneladddialog.cpp
     qwotunnelmodifydialog.cpp
@@ -330,6 +331,7 @@ set(HEADER_FILES
     qwoplaybookwidgetimpl.h
     qwoplaybookconsoleproxy.h
     qwoplaybookconsole.h
+    qwolocalsshagent.h
     qwotunneldialog.h
     qwotunneladddialog.h
     qwotunnelmodifydialog.h

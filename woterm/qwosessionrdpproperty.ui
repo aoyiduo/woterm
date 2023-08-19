@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>518</width>
-    <height>372</height>
+    <height>578</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -198,6 +198,29 @@
        <widget class="QCheckBox" name="chkFontSmooth">
         <property name="text">
          <string>Disable font smooth</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chkSmartResize">
+        <property name="text">
+         <string>Disable smart resize</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_5">
+     <property name="title">
+      <string>Other</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="chkAutoReconnect">
+        <property name="text">
+         <string>Auto reconnect</string>
         </property>
        </widget>
       </item>

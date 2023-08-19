@@ -59,9 +59,12 @@ private slots:
     void onListViewItemCopy();
     void onListViewItemDelete();
     void onListViewGroupLayout();
+
 private:
     bool handleListViewContextMenu(QContextMenuEvent *ev);
     bool handleListViewMouseButtonPress(QMouseEvent *ev);
+    Q_INVOKABLE void restoreSessionsExpandState();
+    Q_INVOKABLE void saveSessionsExpandState();
 private:
     void closeEvent(QCloseEvent *event);
     bool eventFilter(QObject *obj, QEvent *ev);

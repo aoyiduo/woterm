@@ -50,6 +50,18 @@ QMenu::item:disabled {
     color: gray;
 }
 
+QLabel:disabled {
+    color: gray;
+}
+
+QLineEdit:disabled {
+    color: gray;
+}
+
+QCheckBox:disabled {
+    color: gray;
+}
+
 QToolBar {
     background-color: #8B6914;
     border-top: 0;
@@ -226,6 +238,19 @@ QTabBar::close-button:hover {
     image: url(../private/skins/black/tabclose.png);
     padding-top: 1px;
     padding-bottom: 1px;
+}
+
+QTabWidget > QTabBar::tab {
+    min-width:8px;
+    max-height: 30px;
+    min-height: 20px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border:1px solid rgb(100,100,100);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
 }
 
 QKxTermItem > QLabel {

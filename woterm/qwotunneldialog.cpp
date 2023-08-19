@@ -60,6 +60,30 @@ QWoTunnelDialog::QWoTunnelDialog(QWidget *parent) :
 
     QMetaObject::invokeMethod(this, "resetState", Qt::QueuedConnection);
 
+    bool on = QWoSetting::tunnelMultiplex();
+    ui->chkMultiplex->setChecked(on);
+    ui->multiplexCount->setEnabled(on);
+    QWoTunnelChannel::setSessionReusable(on);
+    QObject::connect(ui->chkMultiplex, &QCheckBox::clicked, this, [=](){
+        bool on = ui->chkMultiplex->isChecked();
+        QWoSetting::setTunnelMultiplex(on);
+        QWoTunnelChannel::setSessionReusable(on);
+        ui->multiplexCount->setEnabled(on);
+        QStyle *style = ui->multiplexCount->style();
+        style->polish(ui->multiplexCount);
+    });
+
+    int cnt = QWoSetting::tunnelMultiplexMaxCount();
+    ui->multiplexCount->setText(QString::number(cnt));
+    ui->multiplexCount->setValidator(new QIntValidator(1, 100));
+    QWoTunnelChannel::setSessionMaxReuseCount(cnt);
+    QObject::connect(ui->multiplexCount, &QLineEdit::textChanged, this, [=](){
+        int cnt = ui->multiplexCount->text().toInt();
+        if(cnt > 0) {
+            QWoSetting::setTunnelMultipleMaxCount(cnt);
+        }
+    });
+
     QWoSshConf::instance()->refresh();
 }
 

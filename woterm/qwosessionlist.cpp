@@ -78,6 +78,11 @@ QWoSessionList::QWoSessionList(QWidget *parent)
 
     m_listModel = QWoHostListModel::instance();
     m_treeModel = QWoHostTreeModel::instance();
+
+    QObject::connect(m_treeModel.data(), &QAbstractItemModel::modelReset, this, [=](){
+        restoreSessionsExpandState();
+    });
+
     m_proxyModel = new QWoSortFilterProxyModel(1, this);
     m_proxyModel->setRecursiveFilteringEnabled(true);
 
@@ -128,7 +133,7 @@ void QWoSessionList::refreshList()
     }else{
         m_treeModel->refreshList();
     }
-    QMetaObject::invokeMethod(m_tree, "expandAll", Qt::QueuedConnection);
+    restoreSessionsExpandState();
 }
 
 void QWoSessionList::onReloadSessionList()
@@ -157,13 +162,22 @@ void QWoSessionList::onEditTextChanged(const QString &txt)
         m_tree->clearSelection();
         m_tree->setCurrentIndex(idx);
     }
-    QMetaObject::invokeMethod(m_tree, "expandAll", Qt::QueuedConnection);
+    if(txt.isEmpty()) {
+        restoreSessionsExpandState();
+    }else{
+        QMetaObject::invokeMethod(m_tree, "expandAll", Qt::QueuedConnection);
+    }
 }
 
 void QWoSessionList::onListItemDoubleClicked(const QModelIndex &item)
 {
     HostInfo hi = item.data(ROLE_HOSTINFO).value<HostInfo>();
     if(!hi.isValid()) {
+        QVariant v = item.data(ROLE_GROUP);
+        if(!v.isValid()) {
+            return;
+        }
+        saveSessionsExpandState();
         return;
     }
     qDebug() << "server:" << hi.name;
@@ -419,6 +433,7 @@ void QWoSessionList::onListViewGroupLayout()
         m_proxyModel->setSourceModel(m_treeModel);
         m_model = m_treeModel;
         QWoSetting::setListModel("docker", false);
+        restoreSessionsExpandState();
     }else{
         m_btnModel->setIcon(QIcon("../private/skins/black/list.png"));
         m_proxyModel->setSourceModel(m_listModel);
@@ -482,6 +497,73 @@ bool QWoSessionList::handleListViewContextMenu(QContextMenuEvent *ev)
     return true;
 }
 
+void QWoSessionList::restoreSessionsExpandState()
+{
+    if(!QKxVer::instance()->isFullFeather()) {
+        return;
+    }
+    if(!QWoSetting::sessionsGroupCanRestore()) {
+        return;
+    }
+    QPointer<QWoSessionList> that = this;
+    QTimer::singleShot(100, this, [=](){
+        if(that == nullptr) {
+            return ;
+        }
+        QAbstractItemModel *model = m_tree->model();
+        if(model == nullptr) {
+            return;
+        }
+        QStringList expands = QWoSetting::sessionsGroupExpand("docker");
+        for(int i = 0; i < model->rowCount(); i++) {
+            QModelIndex idx = model->index(i, 0);
+            QVariant v = idx.data(ROLE_GROUP);
+            if(!v.isValid()) {
+                continue;
+            }
+            const GroupInfo& gi = v.value<GroupInfo>();
+            if(expands.contains(gi.name)) {
+                m_tree->expand(idx);
+            }else{
+                m_tree->collapse(idx);
+            }
+        }
+    });
+}
+
+void QWoSessionList::saveSessionsExpandState()
+{
+    if(!QKxVer::instance()->isFullFeather()) {
+        return;
+    }
+    if(!QWoSetting::sessionsGroupCanRestore()) {
+        return;
+    }
+    QPointer<QWoSessionList> that = this;
+    QTimer::singleShot(100, this, [=](){
+        if(that == nullptr) {
+            return ;
+        }
+        QAbstractItemModel *model = m_tree->model();
+        if(model == nullptr) {
+            return;
+        }
+        QStringList expands;
+        for(int i = 0; i < model->rowCount(); i++) {
+            QModelIndex idx = model->index(i, 0);
+            QVariant v = idx.data(ROLE_GROUP);
+            if(!v.isValid()) {
+                continue;
+            }
+            const GroupInfo& gi = v.value<GroupInfo>();
+            if(m_tree->isExpanded(idx)) {
+                expands.append(gi.name);
+            }
+        }
+        QWoSetting::setSessionsGroupExpand("docker", expands);
+    });
+}
+
 void QWoSessionList::closeEvent(QCloseEvent *event)
 {
     emit aboutToClose(event);
@@ -501,6 +583,8 @@ bool QWoSessionList::eventFilter(QObject *obj, QEvent *ev)
             if(!m_input->text().isEmpty()){
                 m_countLeft = MAX_TRY_LEFT;
             }
+        }else if(t == QEvent::Show) {
+            restoreSessionsExpandState();
         }
     }
     return QWidget::eventFilter(obj, ev);

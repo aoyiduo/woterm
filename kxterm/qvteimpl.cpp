@@ -108,6 +108,14 @@ void QVteImpl::setTextCodec(const QString &code)
     }
 }
 
+QTextCodec *QVteImpl::getTextCodec()
+{
+    if(m_codec == nullptr) {
+        m_codec = QTextCodec::codecForName(m_code.toUtf8());
+    }
+    return m_codec;
+}
+
 
 void QVteImpl::process(const QByteArray &data)
 {

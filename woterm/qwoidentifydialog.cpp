@@ -19,6 +19,7 @@
 #include "qwoidentify.h"
 #include "qkxmessagebox.h"
 #include "qkxver.h"
+#include "qkxbuttonassist.h"
 
 #include <QFileDialog>
 #include <QDebug>
@@ -28,6 +29,7 @@
 #include <QEventLoop>
 #include <QCryptographicHash>
 #include <QTreeWidget>
+#include <QProcessEnvironment>
 
 #define ROLE_IDENTIFY_PUBKEY (Qt::UserRole+1)
 #define ROLE_IDENTIFY_PRVKEY (Qt::UserRole+2)
@@ -52,19 +54,82 @@ QWoIdentifyDialog::QWoIdentifyDialog(bool noselect, QWidget *parent) :
     QObject::connect(ui->btnSelect, SIGNAL(clicked()), this, SLOT(onButtonSelectClicked()));
     QObject::connect(ui->btnView, SIGNAL(clicked()), this, SLOT(onButtonPublicViewClicked()));
     QObject::connect(ui->btnPrivate, SIGNAL(clicked()), this, SLOT(onButtonPrivateViewClicked()));
-    QObject::connect(ui->identify, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(onItemDoubleClicked(QTreeWidgetItem*, int)));
+    QObject::connect(ui->identify, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(onItemDoubleClicked(QTreeWidgetItem*,int)));
     QStringList items;
     items.append(tr("name"));
     items.append(tr("type"));
     items.append(tr("fingerprint"));
     ui->identify->setHeaderLabels(items);
 
+    {
+        QKxButtonAssist *assist = new QKxButtonAssist("../private/skins/black/edit.png", ui->agentFile);
+        ui->agentFile->setReadOnly(true);
+        QObject::connect(assist, &QKxButtonAssist::clicked, this, [=]{
+            ui->agentFile->setReadOnly(!ui->agentFile->isReadOnly());
+        });
+        QString tmp = QWoSetting::lastLocalSshAgentAddress();
+        ui->agentFile->setText(tmp);
+        QObject::connect(ui->agentFile, &QLineEdit::textChanged, this, [=](){
+            QWoSetting::setLastLocalSshAgentAddress(ui->agentFile->text());
+        });
+    }
+
+    QByteArray sshAuthSock = QWoSetting::sshAuthSockDefault();
+    ui->agentFile->setPlaceholderText(tr("Default:")+sshAuthSock);
 
     if(QKxVer::instance()->isFreeVersion()) {
         ui->btnPrivate->setVisible(false);
         ui->btnExport->setVisible(false);
     }
 
+    {
+        QString path = QDir::cleanPath(QDir::homePath() + "/.ssh");
+        ui->sshFilePath->setText(path);
+        bool on = QWoSetting::enableUserHomeIdentityFiles();
+        ui->chkLocalUser->setChecked(on);
+        QObject::connect(ui->chkLocalUser, &QCheckBox::clicked, this, [=](){
+            QWoSetting::setEnableUserHomeIdentityFiles(ui->chkLocalUser->isChecked());
+        });
+    }
+    {
+        bool on = QWoSetting::enableLocalSshAgent();
+        ui->chkLocalAgent->setChecked(on);
+        QObject::connect(ui->chkLocalAgent, &QCheckBox::clicked, this, [=](){
+            QWoSetting::setEnableLocalSshAgent(ui->chkLocalAgent->isChecked());
+        });
+    }
+    {
+        bool on = QWoSetting::enableRemoteSshAgent();
+        ui->chkRemoteAgent->setChecked(on);
+        ui->remoteAgentArea->setEnabled(on);
+        QObject::connect(ui->chkRemoteAgent, &QCheckBox::clicked, this, [=](){
+            QWoSetting::setEnableRemoteSshAgent(ui->chkRemoteAgent->isChecked());
+            ui->remoteAgentArea->setEnabled(ui->chkRemoteAgent->isChecked());
+        });
+
+        QString addr = QWoSetting::remoteSshAgentAddress();
+        QStringList hp = addr.split(':');
+        ui->host->setText(hp.at(0));
+        ui->port->setText(hp.at(1));
+        ui->port->setValidator(new QIntValidator(80, 65535));
+        QObject::connect(ui->host, &QLineEdit::textChanged, this, [=](){
+            QString host = ui->host->text();
+            QString port = ui->port->text();
+            QWoSetting::setRemoteSshAgentAddress(host+":"+port);
+        });
+        QObject::connect(ui->port, &QLineEdit::textChanged, this, [=](){
+            QString host = ui->host->text();
+            QString port = ui->port->text();
+            QWoSetting::setRemoteSshAgentAddress(host+":"+port);
+        });
+    }
+
+    ui->tabWidget->setCurrentIndex(0);
+    bool canUse = QWoSetting::allowToUseExternalIdentityFiles();
+    ui->remote->setEnabled(canUse);
+    ui->dirs->setEnabled(canUse);
+    QWoUtils::setLayoutVisible(ui->externalTip1, !canUse);
+    QWoUtils::setLayoutVisible(ui->externalTip2, !canUse);
     reload();
 }
 

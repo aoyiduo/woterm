@@ -122,9 +122,11 @@ bool QWoSessionProperty::setSession(const QString &name)
     ui->password->setText(hi.password);
     ui->identify->setText(hi.identityFile);
     if(!hi.password.isEmpty()) {
-        ui->loginType->setCurrentText(tr("Password"));
+        ui->loginType->setCurrentIndex(1);
+    }else if(!hi.identityFile.isEmpty()){
+        ui->loginType->setCurrentIndex(2);
     }else{
-        ui->loginType->setCurrentText(tr("Identify"));
+        ui->loginType->setCurrentIndex(0);
     }
     ui->memo->setPlainText(hi.memo);
     ui->command->setText(hi.script);
@@ -209,12 +211,13 @@ void QWoSessionProperty::init()
     //-----------------Remoe--------
     {
         QStringList ways;
-        ways.append(tr("Password"));
-        ways.append(tr("Identify"));
+        ways.append(tr("Auto select"));
+        ways.append(tr("Password first"));
+        ways.append(tr("Identify first"));
         ui->loginType->setModel(new QStringListModel(ways, this));
-        QObject::connect(ui->loginType, SIGNAL(currentIndexChanged(QString)), this, SLOT(onAuthCurrentIndexChanged(QString)));
+        QObject::connect(ui->loginType, SIGNAL(currentIndexChanged(int)), this, SLOT(onAuthCurrentIndexChanged(int)));
         ui->loginType->setCurrentIndex(0);
-        onAuthCurrentIndexChanged(ui->loginType->currentText());
+        onAuthCurrentIndexChanged(ui->loginType->currentIndex());
     }
     {
         ui->command->setPlaceholderText("ls && df");
@@ -329,7 +332,7 @@ void QWoSessionProperty::onTypeCurrentIndexChanged(const QString &type)
         QWoUtils::setLayoutVisible(ui->loginNameLayout, true);
         QWoUtils::setLayoutVisible(ui->passwordLayout, true);
         QWoUtils::setLayoutVisible(ui->identifyLayout, true);
-        onAuthCurrentIndexChanged(ui->loginType->currentText());
+        onAuthCurrentIndexChanged(ui->loginType->currentIndex());
         if(m_name.isEmpty() &&
                 (ui->port->text() == "23" ||
                  ui->port->text() == "513" ||
@@ -345,7 +348,7 @@ void QWoSessionProperty::onTypeCurrentIndexChanged(const QString &type)
         QWoUtils::setLayoutVisible(ui->loginNameLayout, true);
         QWoUtils::setLayoutVisible(ui->passwordLayout, true);
         QWoUtils::setLayoutVisible(ui->identifyLayout, false);
-        onAuthCurrentIndexChanged(ui->loginType->currentText());
+        onAuthCurrentIndexChanged(ui->loginType->currentIndex());
         if(m_name.isEmpty() &&
                 (ui->port->text() == "23" ||
                  ui->port->text() == "513" ||
@@ -457,11 +460,20 @@ void QWoSessionProperty::onTypeSave()
     done(Save);
 }
 
-void QWoSessionProperty::onAuthCurrentIndexChanged(const QString &type)
+void QWoSessionProperty::onAuthCurrentIndexChanged(int idx)
 {
-    bool isPassword = type == tr("Password");
-    QWoUtils::setLayoutVisible(ui->identifyLayout, !isPassword);
-    QWoUtils::setLayoutVisible(ui->passwordLayout, isPassword);
+    if(idx == 0) {
+        // auto select.
+        QWoUtils::setLayoutVisible(ui->identifyLayout, false);
+        QWoUtils::setLayoutVisible(ui->passwordLayout, false);
+    }else if(idx == 1) {
+        // password first
+        QWoUtils::setLayoutVisible(ui->identifyLayout, false);
+        QWoUtils::setLayoutVisible(ui->passwordLayout, true);
+    }else{
+        QWoUtils::setLayoutVisible(ui->identifyLayout, true);
+        QWoUtils::setLayoutVisible(ui->passwordLayout, false);
+    }
 }
 
 void QWoSessionProperty::onPortTextChanged(const QString &txt)
@@ -600,14 +612,10 @@ bool QWoSessionProperty::saveConfig()
         hi.host = ui->host->text();
         hi.port = ui->port->text().toInt();
         hi.user = ui->loginName->text();
-        if(ui->loginType->currentText() == tr("Password")) {
+        if(ui->loginType->currentIndex() == 1) {
             hi.password = ui->password->text();
-        }else{
-            hi.identityFile = ui->identify->text();
-            if(hi.identityFile.isEmpty()) {
-                QKxMessageBox::warning(this, tr("Parameter information"), tr("The identity file can't be empty"));
-                return false;
-            }
+        }else if(ui->loginType->currentIndex() == 2){
+            hi.identityFile = ui->identify->text();            
         }
         hi.proxyJump = ui->proxyJump->text();
         hi.memo = ui->memo->toPlainText();
@@ -626,9 +634,9 @@ bool QWoSessionProperty::saveConfig()
         hi.host = ui->host->text();
         hi.port = ui->port->text().toInt();
         hi.user = ui->loginName->text();
-        if(ui->loginType->currentText() == tr("Password")) {
+        if(ui->loginType->currentIndex() == 1) {
             hi.password = ui->password->text();
-        }else{
+        }else if(ui->loginType->currentIndex() == 2){
             hi.identityFile = QWoUtils::nameToPath(ui->identify->text());
             if(hi.identityFile.isEmpty()) {
                 QKxMessageBox::warning(this, tr("Parameter information"), tr("The identify file can't be empty"));

@@ -52,8 +52,10 @@ The client code has been completely open source, and the third-party code which 
 <a href="http://woterm.com">http://woterm.com</a>
 
 ## UI preview:
-<div>Main UI<br><img src="doc/main.png"/></div>
-<div>Serial port<br><img src="doc/serialport1.png"><img src="doc/serialport2.png"></div>
+<div>Main UI<br><img src="doc/main.gif"/></div>
+<div>SSH key manage<br><img src="doc/keymgr2.gif"></div>
+<div>Serial port<br><img src="doc/serialport.gif"></div>
+<div>Tunnel<br><img src="doc/tunnel.png"></div>
 <div>Multiple skins<br><img src="doc/skins.png"></div>
 <div>Playbook<br><img src="doc/playbook.gif"></div>
 <div>Merge and seperate<br><img src="doc/merge.gif"></div>

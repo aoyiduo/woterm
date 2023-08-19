@@ -27,7 +27,8 @@
 
 #define MAX_BUFFER   (1024*70)
 
-static int gMaxSessionMultiplexCount = 1000;
+int QWoTunnelChannel::m_gsMaxSessionMultiplexCount = 1000;
+bool QWoTunnelChannel::m_gsSessionResuable = false;
 
 QWoTunnelChannel::QWoTunnelChannel(QTcpSocket *socket, const QString& sessionName, QObject *parent)
     : QWoSshChannel(parent)
@@ -44,6 +45,21 @@ QWoTunnelChannel::QWoTunnelChannel(QTcpSocket *socket, const QString& sessionNam
 QWoTunnelChannel::~QWoTunnelChannel()
 {
     m_socket->deleteLater();
+}
+
+bool QWoTunnelChannel::sessionReusable()
+{
+    return m_gsSessionResuable;
+}
+
+void QWoTunnelChannel::setSessionReusable(bool on)
+{
+    m_gsSessionResuable = on;
+}
+
+void QWoTunnelChannel::setSessionMaxReuseCount(int cnt)
+{
+    m_gsMaxSessionMultiplexCount = cnt;
 }
 
 void QWoTunnelChannel::stop()
@@ -69,6 +85,10 @@ void QWoTunnelChannel::flushAndClose()
 
 int QWoTunnelChannel::mygid(const QString &host, int port)
 {
+    if(!m_gsSessionResuable) {
+        return QWoUtils::gid();
+    }
+
     struct SIDData {
         int gid;
         int count;
@@ -76,7 +96,7 @@ int QWoTunnelChannel::mygid(const QString &host, int port)
     static QMap<QString, SIDData> gids;
     QString key = host + QString::number(port);
     SIDData sid = gids.take(key);
-    if(sid.gid == 0 || sid.count > gMaxSessionMultiplexCount) {
+    if(sid.gid == 0 || sid.count > m_gsMaxSessionMultiplexCount) {
         sid.gid = QWoUtils::gid();
         //qDebug() << "==================================multiplex" << key << sid.count;
         sid.count = 0;
@@ -642,11 +662,6 @@ void QWoTunnelServer::stop()
         QWoSshFactory::instance()->release(chn);
     }
     m_channels.clear();
-}
-
-void QWoTunnelServer::setMaxSessionMultiplexCount(int cnt)
-{
-    gMaxSessionMultiplexCount = cnt;
 }
 
 void QWoTunnelServer::onConnectionFinished(bool ok)

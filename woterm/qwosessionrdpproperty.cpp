@@ -78,6 +78,8 @@ void QWoSessionRDPProperty::onButtonSaveClicked()
     mvar.insert("noWallpaper", ui->chkWallpaper->isChecked());
     mvar.insert("noTheme", ui->chkTheme->isChecked());
     mvar.insert("noFontSmooth", ui->chkFontSmooth->isChecked());
+    mvar.insert("noSmartResize", ui->chkSmartResize->isChecked());
+    mvar.insert("autoReconnect", ui->chkAutoReconnect->isChecked());
     if(ui->radPlayDisable->isChecked()) {
         mvar.insert("audioMode", 2);
     }else if(ui->radPlayLocal->isChecked()) {
@@ -150,4 +152,8 @@ void QWoSessionRDPProperty::resetProperty(const QVariantMap& mdata, bool force)
     ui->chkTheme->setChecked(noTheme);
     bool noSmooth = mdata.value("noFontSmooth", true).toBool();
     ui->chkFontSmooth->setChecked(noSmooth);
+    bool noResize = mdata.value("noSmartResize", true).toBool();
+    ui->chkSmartResize->setChecked(noResize);
+    bool autoReconnect = mdata.value("autoReconnect", false).toBool();
+    ui->chkAutoReconnect->setChecked(autoReconnect);
 }

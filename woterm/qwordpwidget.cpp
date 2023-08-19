@@ -32,6 +32,7 @@ QWoRdpWidget::QWoRdpWidget(const QString &target, QWidget *parent)
     : QWidget(parent)
     , m_target(target)
     , m_smartResize(true)
+    , m_autoReconnect(false)
 {
     m_area = new QScrollArea(this);
     m_area->setFrameShape(QFrame::NoFrame);
@@ -201,11 +202,16 @@ void QWoRdpWidget::reconnect()
     if(!noSmooth) {
         flags |= QRdpWidget::eENABLE_FONT_SMOOTHING;
     }
+
+    m_smartResize = !mdata.value("noSmartResize", true).toBool();
+    m_autoReconnect = mdata.value("autoReconnect", false).toBool();
+
     m_rdp->setPerformanceFlags(flags);
     m_rdp->setDesktopSize(width, height);
     m_rdp->start(hi.host, hi.port, hi.user, hi.password);
     resizeRdpWidget();
 
+    m_mask->setAutoReconnect(m_autoReconnect);
     m_mask->hide();
 }
 

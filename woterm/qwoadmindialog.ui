@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>440</width>
-    <height>331</height>
+    <width>512</width>
+    <height>454</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -124,9 +124,23 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="chkGroupExpand">
+          <property name="text">
+           <string>Allow session group auto restore last expanded state.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QCheckBox" name="chkOpacity">
           <property name="text">
            <string>Allow to set main window opacity.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="chkSshAgent">
+          <property name="text">
+           <string>Allow to use the external identity files such as ssh-agent or pageant.</string>
           </property>
          </widget>
         </item>

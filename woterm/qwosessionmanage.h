@@ -65,6 +65,8 @@ private slots:
 private:
     Q_INVOKABLE void refreshList();
     Q_INVOKABLE void resizeHeader();
+    Q_INVOKABLE void restoreSessionsExpandState();
+    Q_INVOKABLE void saveSessionsExpandState();
     bool handleTreeViewContextMenu(QContextMenuEvent *ev);
 protected:
     bool eventFilter(QObject *obj, QEvent *ev);

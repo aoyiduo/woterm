@@ -18,6 +18,7 @@ namespace Ui {
 class QWoTermMask;
 }
 
+class QTimer;
 class QWoTermMask : public QWoWidget
 {
     Q_OBJECT
@@ -26,18 +27,25 @@ public:
     explicit QWoTermMask(QWidget *parent = nullptr);
     ~QWoTermMask();
 
+    void setAutoReconnect(bool on);
 signals:
     void reconnect();
 
 private slots:
     void onReconnect();
+    void onTimeout();
 
 private:
-    void mousePressEvent(QMouseEvent *ev);
-    void contextMenuEvent(QContextMenuEvent *ev);
-    void showEvent(QShowEvent *ev);
+    virtual void mousePressEvent(QMouseEvent *ev);
+    virtual void contextMenuEvent(QContextMenuEvent *ev);
+    virtual void showEvent(QShowEvent *ev);
+    virtual void hideEvent(QHideEvent *ev);
 private:
     Ui::QWoTermMask *ui;
+    QString m_connectLabel;
+    bool m_autoReconnect;
+    QPointer<QTimer> m_timer;
+    int m_reconnectWaitCount;
 };
 
 #endif // QWOTERMMASK_H

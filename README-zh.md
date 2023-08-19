@@ -51,8 +51,10 @@
 <a href="http://woterm.com">http://woterm.com</a>
 
 ## 界面预览
-<div>主界面<br><img src="doc/main.png"/></div>
-<div>串口服务<br><img src="doc/serialport1.png"><img src="doc/serialport2.png"></div>
+<div>主界面<br><img src="doc/main.gif"/></div>
+<div>SSH密钥管理<br><img src="doc/keymgr.gif"></div>
+<div>串口服务<br><img src="doc/serialport.gif"></div>
+<div>隧道<br><img src="doc/tunnel.png"></div>
 <div>多皮肤<br><img src="doc/skins.png"></div>
 <div>剧本<br><img src="doc/playbook.gif"></div>
 <div>选项卡合并及分离<br><img src="doc/merge.gif"></div>

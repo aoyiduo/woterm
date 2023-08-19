@@ -161,12 +161,16 @@
        <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>   Identify:</string>
+          <string>   Identify file:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="identify"/>
+        <widget class="QLineEdit" name="identify">
+         <property name="placeholderText">
+          <string>Auto select identity file</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QToolButton" name="identifyBrowser">

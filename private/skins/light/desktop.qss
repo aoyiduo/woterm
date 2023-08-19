@@ -51,6 +51,18 @@ QMenu::item:disabled {
     color: gray;
 }
 
+QLabel:disabled {
+    color: gray;
+}
+
+QLineEdit:disabled {
+    color: gray;
+}
+
+QCheckBox:disabled {
+    color: gray;
+}
+
 QToolBar {
     background-color: rgb(243,243,243);
     border-top: 1px solid rgb(243,243,243);
@@ -229,6 +241,19 @@ QTabBar::close-button:hover {
     padding-bottom: 1px;
 }
 
+QTabWidget > QTabBar::tab {
+    min-width:8px;
+    max-height: 30px;
+    min-height: 20px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border:1px solid rgb(100,100,100);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
 QKxTermItem > QLabel {
     background-color: rgb(243,243,243);
     color: rgb(51,51,51);
@@ -360,4 +385,12 @@ QWidget#deskopTool {
     padding: 3px;
     min-width: 9ex;
     min-height: 20px;
+}
+
+QTabWidget {
+    border: 0px;   
+}
+
+QTabWidget > QWidget {
+    border: 1px solid #313131; 
 }

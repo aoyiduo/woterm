@@ -406,6 +406,26 @@ void QWoSetting::setAdminPassword(const QString &pass)
     setValue("admin/password", enkey);
 }
 
+bool QWoSetting::sessionsGroupCanRestore()
+{
+    return value("admin/sessionGroupCanRestore", true).toBool();
+}
+
+void QWoSetting::setSessionsGroupCanRestore(bool on)
+{
+    setValue("admin/sessionGroupCanRestore", on);
+}
+
+QStringList QWoSetting::sessionsGroupExpand(const QString& where)
+{
+    return value("admin/sessionGroupExpand"+where).toStringList();
+}
+
+void QWoSetting::setSessionsGroupExpand(const QString& where, const QStringList &expands)
+{
+    setValue("admin/sessionGroupExpand"+where, expands);
+}
+
 bool QWoSetting::startupByAdmin()
 {
     return value("admin/startup", false).toBool();
@@ -486,6 +506,77 @@ void QWoSetting::setAllowToSetWindowOpacity(bool on)
     setValue("admin/allowOpacity", on);
 }
 
+bool QWoSetting::allowToUseExternalIdentityFiles()
+{
+    return value("admin/allowExternalKeys", false).toBool();
+}
+
+void QWoSetting::setAllowToUseExternalIdentityFiles(bool on)
+{
+    setValue("admin/allowExternalKeys", on);
+}
+
+bool QWoSetting::enableUserHomeIdentityFiles()
+{
+    return value("admin/userHomeIdentityFiles", false).toBool();
+}
+
+void QWoSetting::setEnableUserHomeIdentityFiles(bool on)
+{
+    setValue("admin/userHomeIdentityFiles", on);
+}
+
+bool QWoSetting::enableLocalSshAgent()
+{
+    return value("admin/localSshAgent", false).toBool();
+}
+
+void QWoSetting::setEnableLocalSshAgent(bool on)
+{
+    setValue("admin/localSshAgent", on);
+}
+
+bool QWoSetting::enableRemoteSshAgent()
+{
+    return value("admin/remoteSshAgent", false).toBool();
+}
+
+void QWoSetting::setEnableRemoteSshAgent(bool on)
+{
+    setValue("admin/remoteSshAgent", on);
+}
+
+QString QWoSetting::remoteSshAgentAddress()
+{
+    return value("admin/remoteSshAgentAddress", "127.0.0.1:1200").toString();
+}
+
+void QWoSetting::setRemoteSshAgentAddress(const QString &addr)
+{
+    setValue("admin/remoteSshAgentAddress", addr);
+}
+
+QString QWoSetting::lastLocalSshAgentAddress()
+{
+    return value("admin/localSshAgentAddress", "").toString();
+}
+
+void QWoSetting::setLastLocalSshAgentAddress(const QString& addr)
+{
+    setValue("admin/localSshAgentAddress", addr);
+}
+
+QByteArray QWoSetting::sshAuthSockDefault()
+{
+#ifdef Q_OS_WIN
+    return "\\\\.\\pipe\\openssh-ssh-agent";
+    // windows like pipe: \\.\\pipe\\openssh-ssh-agent
+#else
+    return qgetenv("SSH_AUTH_SOCK");
+    // unix socket: **.sock.
+#endif
+}
+
 bool QWoSetting::serialportOnAppStart()
 {
     return value("admin/serialportAutoStart", false).toBool();
@@ -559,6 +650,26 @@ void QWoSetting::setTtyDefault(const QVariantMap &dm)
 {
     QString v = QWoUtils::qVariantToBase64(dm);
     QWoSetting::setValue("property/ttyDefault", v);
+}
+
+bool QWoSetting::tunnelMultiplex()
+{
+    return QWoSetting::value("tunnel/multiplexEnabled", true).toBool();
+}
+
+void QWoSetting::setTunnelMultiplex(bool on)
+{
+    QWoSetting::setValue("tunnel/multiplexEnabled", on);
+}
+
+int QWoSetting::tunnelMultiplexMaxCount()
+{
+    return QWoSetting::value("tunnel/multiplexCount", 1).toInt();
+}
+
+void QWoSetting::setTunnelMultipleMaxCount(int cnt)
+{
+    QWoSetting::setValue("tunnel/multiplexCount", cnt);
 }
 
 QString QWoSetting::terminalBackgroundImage()
