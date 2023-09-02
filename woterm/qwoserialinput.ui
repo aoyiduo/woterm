@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>510</width>
-    <height>1226</height>
+    <height>1228</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -653,6 +653,13 @@
             <widget class="QComboBox" name="modeOutput"/>
            </item>
            <item>
+            <widget class="QCheckBox" name="chkHexOutput">
+             <property name="text">
+              <string>Only hex string</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="horizontalSpacer_6">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -905,11 +912,26 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="chkEchoInput">
-           <property name="text">
-            <string>Echo input content</string>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout_20">
+           <item>
+            <widget class="QCheckBox" name="chkEchoInput">
+             <property name="text">
+              <string>Echo input content</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="btnMsgLibrary">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normaloff>../private/skins/black/time.png</normaloff>../private/skins/black/time.png</iconset>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_3">

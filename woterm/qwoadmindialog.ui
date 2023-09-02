@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>512</width>
+    <width>531</width>
     <height>454</height>
    </rect>
   </property>
@@ -141,6 +141,13 @@
          <widget class="QCheckBox" name="chkSshAgent">
           <property name="text">
            <string>Allow to use the external identity files such as ssh-agent or pageant.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="chkOpenLocalFile">
+          <property name="text">
+           <string>[SFTP]Allow to open the local file by double click.</string>
           </property>
          </widget>
         </item>

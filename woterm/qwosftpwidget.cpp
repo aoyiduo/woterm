@@ -782,6 +782,10 @@ void QWoSftpWidget::onLocalItemDoubleClicked(const QModelIndex &idx)
     if(fi.isDir()) {
         QString path = fi.absoluteFilePath();
         m_localModel->setPath(path);
+    }else if(fi.isFile()) {
+        if(QKxVer::instance()->isFullFeather() && QWoSetting::allowSftpToOpenLocalFile()){
+            QDesktopServices::openUrl(fi.absoluteFilePath());
+        }
     }
 }
 

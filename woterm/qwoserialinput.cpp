@@ -15,6 +15,7 @@
 #include "qkxmessagebox.h"
 #include "qwotermwidget.h"
 #include "qkxtermitem.h"
+#include "qwoserialinputhistorydialog.h"
 
 #include <QSerialPortInfo>
 #include <QStringListModel>
@@ -187,6 +188,12 @@ QWoSerialInput::QWoSerialInput(QWoTermWidget *term, QWidget *parent)
         QObject::connect(ui->hexInSuffix, &QLineEdit::editingFinished, this, [=](){
             QWoSetting::setValue("serialPort/inputSuffix", ui->hexInSuffix->text());
         });
+
+        QString msg = QWoSetting::value("serialPort/lastInput").toString();
+        ui->edit->setPlainText(msg);
+        QObject::connect(ui->edit, &QPlainTextEdit::textChanged, this, [=](){
+            QWoSetting::setValue("serialPort/lastInput", ui->edit->toPlainText());
+        });
     }
     {
         QStringList items;
@@ -256,6 +263,8 @@ QWoSerialInput::QWoSerialInput(QWoTermWidget *term, QWidget *parent)
     QObject::connect(m_outTimer, SIGNAL(timeout()), this, SLOT(onOutputTimeout()));
     m_outTimer->start(10);
 
+
+    QObject::connect(ui->btnMsgLibrary, SIGNAL(clicked()), this, SLOT(onMsgLibraryButtonClicked()));
 
 #ifdef QT_DEBUG2
     ui->simulateArea->show();
@@ -770,7 +779,8 @@ void QWoSerialInput::onModeSplitIndexChanged(int idx)
 void QWoSerialInput::onModeOutputIndexChanged(int idx)
 {
     QWoSetting::setValue("serialPort/outputType", idx);
-    m_whoBufferLeft.clear();    
+    m_whoBufferLeft.clear();
+    ui->chkHexOutput->setVisible(idx != 0);
 }
 
 void QWoSerialInput::onSimulateSendButtonClicked()
@@ -793,6 +803,22 @@ void QWoSerialInput::onSimulateSendButtonClicked()
     }
     data.append(suffix);
     handleDataRecv("simulate", data);
+}
+
+void QWoSerialInput::onMsgLibraryButtonClicked()
+{
+    QString txt = ui->edit->toPlainText();
+    QString msg = QString::number(ui->modeInput->currentIndex()) + ":" + txt;
+    QWoSerialInputHistoryDialog dlg(msg, this);
+    QObject::connect(&dlg, &QWoSerialInputHistoryDialog::messageArrived, this, [=](const QString& msg){
+        QString c = msg.at(0);
+        int idx = c.toInt();
+        if(idx == 0 || idx == 1) {
+            ui->modeInput->setCurrentIndex(idx);
+        }
+        ui->edit->setPlainText(msg.mid(2));
+    });
+    dlg.exec();
 }
 
 bool QWoSerialInput::handleTcpListen(bool start)
@@ -1204,12 +1230,14 @@ QByteArray QWoSerialInput::formatHexText(const QByteArray &buf)
         for(; j < cnt; ++j){
             line.append("   ");
         }
-        line.append("  |") ;
-        for(j=0; j < cnt && i+j<len; j++){
-            unsigned char c = buf[i+j];
-            line.append((c < 040 || c >= 0177) ? '.' : c ) ;
+        if(!ui->chkHexOutput->isChecked()) {
+            line.append("  |") ;
+            for(j=0; j < cnt && i+j<len; j++){
+                unsigned char c = buf[i+j];
+                line.append((c < 040 || c >= 0177) ? '.' : c ) ;
+            }
+            line.append("|");
         }
-        line.append("|");
         lines.append(line);
     }
     return lines.join("\r\n");
@@ -1234,19 +1262,21 @@ QString QWoSerialInput::formatUnicodeHexText(const QString &buf)
         for(; j < cnt; ++j){
             line.append("      ");
         }
-        line.append("  |") ;
-        for(j=0; j < cnt && i+j<len; j++){
-            QChar c = buf[i+j];
-            if(c.isPrint()) {
-                line.append(c);
-                if((c.unicode() & 0xFF00) == 0) {
-                    line.append(".");
+        if(!ui->chkHexOutput->isChecked()) {
+            line.append("  |") ;
+            for(j=0; j < cnt && i+j<len; j++){
+                QChar c = buf[i+j];
+                if(c.isPrint()) {
+                    line.append(c);
+                    if((c.unicode() & 0xFF00) == 0) {
+                        line.append(".");
+                    }
+                }else{
+                    line.append("..");
                 }
-            }else{
-                line.append("..");
             }
+            line.append("|");
         }
-        line.append("|");
         lines.append(line);
     }
     return lines.join("\r\n");
@@ -1286,7 +1316,7 @@ int QWoSerialInput::hexModeCharCount() const
     if(ui->modeOutput->currentIndex() > 0) {
         total -= HEX_TEXT_DISTANCE;
     }
-    return total / 4;
+    return ui->chkHexOutput->isChecked() ? total / 3 : total / 4;
 }
 
 bool QWoSerialInput::isHexString(const QByteArray &hex)
@@ -1438,6 +1468,7 @@ void QWoSerialInput::handleOutputFilter(const QByteArray &arrow, const QList<Lin
                 QByteArray tmp = *jt;
                 result += tmp;
             }
+
             term->parse(result);
         }
     }else if(idx == 1) {

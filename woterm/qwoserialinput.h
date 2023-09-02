@@ -87,6 +87,8 @@ private slots:
     void onModeOutputIndexChanged(int idx);
 
     void onSimulateSendButtonClicked();
+
+    void onMsgLibraryButtonClicked();
 private:
     bool handleTcpListen(bool start);
     void refleshTcpClients();

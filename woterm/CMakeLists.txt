@@ -115,6 +115,7 @@ set(SOURCE_FILES
     qwoserialinput.cpp
     qwoserialtermwidget.cpp
     qwoserialwidgetimpl.cpp
+    qwoserialinputhistorydialog.cpp
     qwordpwidget.cpp
     qwordpwidgetimpl.cpp
     qwovncwidget.cpp
@@ -292,6 +293,7 @@ set(HEADER_FILES
     qwoserialinput.h
     qwoserialtermwidget.h
     qwoserialwidgetimpl.h
+    qwoserialinputhistorydialog.h
     qwordpwidget.h
     qwordpwidgetimpl.h
     qwovncwidget.h
@@ -414,6 +416,7 @@ set(OTHER_FILES
     qwosettingdialog.ui
     qwotermmask.ui
     qwoserialinput.ui
+    qwoserialinputhistorydialog.ui
     qwounioninputitem.ui
     qwounioninputconfiguredialog.ui
     qwosftpwidget.ui

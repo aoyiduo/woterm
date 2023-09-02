@@ -20,7 +20,7 @@
 #include <QMenu>
 #include <QAction>
 
-#define MAX_COUNT   (5)
+#define MAX_COUNT   (20)
 
 QWoRecentHistory::QWoRecentHistory(QObject *parent)
     : QObject(parent)

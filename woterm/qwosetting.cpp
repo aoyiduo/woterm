@@ -577,6 +577,16 @@ QByteArray QWoSetting::sshAuthSockDefault()
 #endif
 }
 
+bool QWoSetting::allowSftpToOpenLocalFile()
+{
+    return value("admin/openLocalFile", true).toBool();
+}
+
+void QWoSetting::setAllowSftpToOpenLocalFile(bool on)
+{
+    setValue("admin/openLocalFile", on);
+}
+
 bool QWoSetting::serialportOnAppStart()
 {
     return value("admin/serialportAutoStart", false).toBool();

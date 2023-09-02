@@ -151,6 +151,10 @@ public:
     static QString lastLocalSshAgentAddress();
     static void setLastLocalSshAgentAddress(const QString& addr);
     static QByteArray sshAuthSockDefault();
+
+    static bool allowSftpToOpenLocalFile();
+    static void setAllowSftpToOpenLocalFile(bool on);
+
 };
 
 #endif

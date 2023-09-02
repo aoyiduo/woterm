@@ -35,6 +35,7 @@ QWoSessionToolConfigureDialog::QWoSessionToolConfigureDialog(QWidget *parent) :
         ui->textEditor->setText(dm.value("path").toString());
         ui->textArgs->setText(dm.value("arguments").toString());
     }
+    ui->tabWidget->removeTab(1);
     adjustSize();
 }
 
@@ -58,7 +59,7 @@ void QWoSessionToolConfigureDialog::onSaveButtonClicked()
     QVariantMap dm;
     dm.insert("path", path);
     dm.insert("arguments", params);
-    QWoSetting::setValue("sftpTool/textEditor", dm);
+    QWoSetting::setValue("sftpTool/textEditor", dm);    
     done(QDialog::Accepted);
 }
 

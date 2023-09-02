@@ -154,7 +154,7 @@ void QWoLicenseActivateDialog::onRedeemButtonClicked()
         if(ver->isUltimateVersion()) {
             int retval = QKxMessageBox::information(this,
                                                     tr("Ultimate redeem information"),
-                                                    tr("There are currently %1 days left to expire, and a valid code can increase the validity period by one year. Do you want to continue redeeming?").arg(daysLeft),
+                                                    tr("There is currently %1 day left to expire. A valid redemption code will be extended for at least one year beyond the original remaining days. Do you want to continue.").arg(daysLeft),
                                                     QMessageBox::Yes|QMessageBox::No);
             if(retval != QMessageBox::Yes) {
                 return;
