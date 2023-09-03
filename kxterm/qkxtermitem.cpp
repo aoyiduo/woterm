@@ -760,15 +760,20 @@ void QKxTermItem::tryToPaste()
 
     QClipboard *clip = QGuiApplication::clipboard();
     QString clipTxt = clip->text();
+    if(clipTxt.isEmpty()) {
+        return;
+    }
     clipTxt = clipTxt.replace("\r\n", "\n");
     clipTxt = clipTxt.replace("\r", "\n");
     QStringList lines = clipTxt.split("\n");
+    QString last = lines.takeLast();
     QKeyEvent ev(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier, "\r\n");
     for(int i = 0; i < lines.length(); i++) {
         QString line = lines.at(i);
         pastePlainText(line);
         handleKeyEvent(&ev);
     }
+    pastePlainText(last);
 }
 
 void QKxTermItem::pastePlainText(const QString &txt)
