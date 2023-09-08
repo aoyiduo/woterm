@@ -185,8 +185,21 @@ QWoSerialInput::QWoSerialInput(QWoTermWidget *term, QWidget *parent)
 
         QString suffix = QWoSetting::value("serialPort/inputSuffix").toString();
         ui->hexInSuffix->setText(suffix);
-        QObject::connect(ui->hexInSuffix, &QLineEdit::editingFinished, this, [=](){
+        QObject::connect(ui->hexInSuffix, &QLineEdit::textChanged, this, [=](){
             QWoSetting::setValue("serialPort/inputSuffix", ui->hexInSuffix->text());
+        });
+        QObject::connect(ui->hexInSuffix, &QLineEdit::editingFinished, this, [=](){
+            QByteArray hex = ui->hexInSuffix->text().toLatin1();
+            hex = hex.replace(" ", "");
+            if(!isHexString(hex)) {
+                if(QKxMessageBox::information(this, tr("Hex string"), tr("The current input string contains a non hexadecimal string. Do you want to convert it to a hexadecimal string."), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
+                    ui->hexInSuffix->setText(hex.toHex().toUpper());
+                    return ;
+                }
+            }
+            if(hex.length() % 2) {
+                QKxMessageBox::information(this, tr("Hex string"), tr("Hex string is not complete."));
+            }
         });
 
         QString msg = QWoSetting::value("serialPort/lastInput").toString();
@@ -217,8 +230,21 @@ QWoSerialInput::QWoSerialInput(QWoTermWidget *term, QWidget *parent)
         QString special = QWoSetting::value("serialPort/splitChars", "0D0A").toString();
         ui->splitChars->setText(special);
 
-        QObject::connect(ui->splitChars, &QLineEdit::editingFinished, this, [=](){
+        QObject::connect(ui->splitChars, &QLineEdit::textChanged, this, [=](){
             QWoSetting::setValue("serialPort/splitChars", ui->splitChars->text());
+        });
+        QObject::connect(ui->splitChars, &QLineEdit::editingFinished, this, [=](){
+            QByteArray hex = ui->splitChars->text().toLatin1();
+            hex = hex.replace(" ", "");
+            if(!isHexString(hex)) {
+                if(QKxMessageBox::information(this, tr("Hex string"), tr("The current input string contains a non hexadecimal string. Do you want to convert it to a hexadecimal string."), QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
+                    ui->splitChars->setText(hex.toHex().toUpper());
+                    return ;
+                }
+            }
+            if(hex.length() % 2) {
+                QKxMessageBox::information(this, tr("Hex string"), tr("Hex string is not complete."));
+            }
         });
     }
 
@@ -487,7 +513,7 @@ void QWoSerialInput::onOutputTimeout()
 {
     QList<LineOutput> lines;
     handleSplitFilter(lines);
-    handleOutputFilter(leftArrow(), lines);
+    handleOutputFilter(leftArrow(), lines);    
 }
 
 void QWoSerialInput::onTermDataSend(const QByteArray &data)
@@ -1436,6 +1462,8 @@ void QWoSerialInput::handleSplitFilter(QList<LineOutput> &lines)
                 bufLength += to.buf.length();
                 it++;
             }
+        }else{
+            it++;
         }
     }
     for(auto it = whoLines.begin(); it != whoLines.end(); it++) {
@@ -1458,18 +1486,23 @@ void QWoSerialInput::handleOutputFilter(const QByteArray &arrow, const QList<Lin
     int idx = ui->modeOutput->currentIndex();
     if(idx == 0) {
         // no filter.
+        int idxSplit = ui->modeSplit->currentIndex();
         for(auto it = lines.begin(); it != lines.end(); it++) {
             const LineOutput& lo = *it;
-            QByteArray result;
-            if(ui->chkDataSource->isChecked()) {
-                result += "\r\n" + lo.who + arrow + ": \r\n";
-            }
             for(auto jt = lo.lines.begin(); jt != lo.lines.end(); jt++) {
-                QByteArray tmp = *jt;
-                result += tmp;
+                if(ui->chkDataSource->isChecked()) {
+                    term->parse("\r\n" + lo.who + arrow + ": \r\n");
+                }
+                term->parse(*jt);
+                if(!ui->chkDataSource->isChecked()){
+                    if(idxSplit == 1 || idxSplit == 2) {
+                        if(!ui->chkDataSource->isChecked()) {
+                            QKxTermItem *term = m_term->termItem();
+                            term->parse("\r\n");
+                        }
+                    }
+                }
             }
-
-            term->parse(result);
         }
     }else if(idx == 1) {
         // hex string.

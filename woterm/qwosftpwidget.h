@@ -85,6 +85,7 @@ protected slots:
     void onLocalItemDoubleClicked(const QModelIndex& item);
     void onLocalContextMenuRequested(const QPoint &pos);
     void onLocalMenuDeselectAll();
+    void onLocalMenuFileRename();
     void onLocalMenuSelectAll();
     void onLocalMenuReturnTopDirectory();
     void onLocalMenuGoHomeDirectory();

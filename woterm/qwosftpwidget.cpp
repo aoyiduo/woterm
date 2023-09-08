@@ -653,21 +653,21 @@ void QWoSftpWidget::onRemoteContextMenuRequested(const QPoint& pos)
     QMenu menu(this);
     if(lsfi.isEmpty()) {
         menu.addAction(tr("Select all"), this, SLOT(onRemoteMenuSelectAll()));
-        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("Back"), this, SLOT(onRemoteMenuReturnTopDirectory()));
+        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("&Back"), this, SLOT(onRemoteMenuReturnTopDirectory()));
         menu.addAction(QIcon("../private/skins/black/reload.png"), tr("Refresh"), this, SLOT(onRemoteMenuReloadDirectory()));
         menu.addAction(QIcon("../private/skins/black/home.png"), tr("Home Directory"), this, SLOT(onRemoteMenuGoHomeDirectory()));
-        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("Create Directory"), this, SLOT(onRemoteMenuCreateDirectory()));
+        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("&Create Directory"), this, SLOT(onRemoteMenuCreateDirectory()));
         if(m_bAssist){
             menu.addAction(QIcon("../private/skins/black/upload2.png"), tr("Upload"), this, SLOT(onRemoteMenuUpload()));
         }
     }else{
         FileInfo fi = lsfi.at(0);
         menu.addAction(tr("Deselect all"), this, SLOT(onRemoteMenuDeselectAll()));
-        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("Back"), this, SLOT(onRemoteMenuReturnTopDirectory()));
+        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("&Back"), this, SLOT(onRemoteMenuReturnTopDirectory()));
         menu.addAction(QIcon("../private/skins/black/reload.png"), tr("Refresh"), this, SLOT(onRemoteMenuReloadDirectory()));
         menu.addAction(QIcon("../private/skins/black/home.png"), tr("Home Directory"), this, SLOT(onRemoteMenuGoHomeDirectory()));
-        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("Create Directory"), this, SLOT(onRemoteMenuCreateDirectory()));
-        menu.addAction(QIcon("../private/skins/black/rmfile.png"), tr("Remove selections"), this, SLOT(onRemoteMenuRemoveSelection()));
+        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("&Create Directory"), this, SLOT(onRemoteMenuCreateDirectory()));
+        menu.addAction(QIcon("../private/skins/black/rmfile.png"), tr("&Delete selections"), this, SLOT(onRemoteMenuRemoveSelection()));
         menu.addAction(QIcon("../private/skins/black/permission.png"), tr("Modify the permission"), this, SLOT(onRemoteModifyItemPermission()));
         if(lsfi.length() == 1) {
             menu.addAction(tr("Rename"), this, SLOT(onRemoteMenuRename()));
@@ -794,31 +794,30 @@ void QWoSftpWidget::onLocalContextMenuRequested(const QPoint &pos)
     QList<QFileInfo> lsfi = localSelections();
     QMenu menu(this);
     if(lsfi.isEmpty()) {
-        if(m_isUltimate){
-            menu.addAction(tr("Select all"), this, SLOT(onLocalMenuSelectAll()));
-        }
-        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("Back"), this, SLOT(onLocalMenuReturnTopDirectory()));
+        menu.addAction(tr("Select all"), this, SLOT(onLocalMenuSelectAll()));
+        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("&Back"), this, SLOT(onLocalMenuReturnTopDirectory()));
         menu.addAction(QIcon("../private/skins/black/reload.png"), tr("Refresh"), this, SLOT(onLocalMenuReloadDirectory()));
         menu.addAction(QIcon("../private/skins/black/home.png"), tr("Home directory"), this, SLOT(onLocalMenuGoHomeDirectory()));
-        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("Create directory"), this, SLOT(onLocalMenuCreateDirectory()));
+        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("&Create directory"), this, SLOT(onLocalMenuCreateDirectory()));
     }else{
         QFileInfo fi = lsfi.at(0);
-        if(m_isUltimate){
-            menu.addAction(tr("Deselect all"), this, SLOT(onLocalMenuDeselectAll()));
+
+        menu.addAction(tr("Deselect all"), this, SLOT(onLocalMenuDeselectAll()));
+        if(lsfi.size() == 1) {
+            menu.addAction(tr("Rename"), this, SLOT(onLocalMenuFileRename()));
         }
-        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("Back"), this, SLOT(onLocalMenuReturnTopDirectory()));
+        menu.addAction(QIcon("../private/skins/black/back3.png"), tr("&Back"), this, SLOT(onLocalMenuReturnTopDirectory()));
         menu.addAction(QIcon("../private/skins/black/reload.png"), tr("Refresh"), this, SLOT(onLocalMenuReloadDirectory()));
         menu.addAction(QIcon("../private/skins/black/home.png"), tr("Home directory"), this, SLOT(onLocalMenuGoHomeDirectory()));
-        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("Create directory"), this, SLOT(onLocalMenuCreateDirectory()));
-        menu.addAction(QIcon("../private/skins/black/rmfile.png"), tr("Remove selections"), this, SLOT(onLocalMenuRemoveSelection()));
+        menu.addAction(QIcon("../private/skins/black/mkdir.png"), tr("&Create directory"), this, SLOT(onLocalMenuCreateDirectory()));
+        menu.addAction(QIcon("../private/skins/black/rmfile.png"), tr("&Delete selections"), this, SLOT(onLocalMenuRemoveSelection()));
         if(fi.isDir()) {
             menu.addAction(QIcon("../private/skins/black/enter.png"), tr("Enter"), this, SLOT(onLocalMenuEnterDirectory()));
         }else if(fi.isSymLink()) {
             menu.addAction(QIcon("../private/skins/black/enter3.png"), tr("Try enter"), this, SLOT(onLocalMenuTryEnterDirectory()));
         }
-        if(m_isUltimate || !fi.isDir()){
-            menu.addAction(QIcon("../private/skins/black/upload2.png"), tr("Upload"), this, SLOT(onLocalMenuUpload()));
-        }
+        menu.addAction(QIcon("../private/skins/black/upload2.png"), tr("Upload"), this, SLOT(onLocalMenuUpload()));
+
     }
     QPoint pt = QCursor::pos();
     menu.exec(pt);
@@ -827,6 +826,32 @@ void QWoSftpWidget::onLocalContextMenuRequested(const QPoint &pos)
 void QWoSftpWidget::onLocalMenuDeselectAll()
 {
     m_local->clearSelection();
+}
+
+void QWoSftpWidget::onLocalMenuFileRename()
+{
+    QList<QFileInfo> lsfi = localSelections();
+    if(lsfi.isEmpty()) {
+        return;
+    }
+    QFileInfo fi = lsfi.at(0);
+    QString path = fi.absolutePath();
+    QWoSftpRenameDialog dlg(path, fi.fileName(), this);
+    if(dlg.exec() == QDialog::Accepted+1) {
+        QString pathOld = path + "/" + fi.fileName();
+        QString pathNew = dlg.pathResult();
+        int idx = pathNew.lastIndexOf('/');
+        if(idx > 0) {
+            QDir d;
+            if(!d.mkpath(pathNew.left(idx))) {
+                QKxMessageBox::information(this, tr("Failure"), tr("Failed to rename file for no permission to make path."));
+                return;
+            }
+        }
+        if(QFile::rename(pathOld, pathNew)) {
+            onLocalMenuReloadDirectory();
+        }
+    }
 }
 
 void QWoSftpWidget::onLocalMenuSelectAll()
@@ -892,6 +917,9 @@ void QWoSftpWidget::onLocalMenuRemoveSelection()
     QList<QFileInfo> lsfi = localSelections();
     if(lsfi.isEmpty()) {
         QKxMessageBox::warning(this, "delete", "no selection?", QMessageBox::Ok|QMessageBox::No);
+        return;
+    }
+    if(QKxMessageBox::information(this, tr("Remove file"), tr("After deleting the file, it will not be recoverable. Please confirm whether to continue deleting the file."), QMessageBox::Yes|QMessageBox::No) != QMessageBox::Yes) {
         return;
     }
     for(int i = 0; i < lsfi.length(); i++) {
@@ -1011,6 +1039,9 @@ void QWoSftpWidget::onRemoteMenuCreateDirectory()
 void QWoSftpWidget::onRemoteMenuRemoveSelection()
 {
     auto lsfi = remoteSelections();
+    if(QKxMessageBox::information(this, tr("Remove file"), tr("After deleting the file, it will not be recoverable. Please confirm whether to continue deleting the file."), QMessageBox::Yes|QMessageBox::No) != QMessageBox::Yes) {
+        return;
+    }
     for(auto it = lsfi.begin(); it != lsfi.end(); it++){
         const FileInfo& fi = *it;
         if(fi.name == "." || fi.name == "..") {

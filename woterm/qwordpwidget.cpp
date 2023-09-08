@@ -26,7 +26,8 @@
 #include <QDesktopWidget>
 #include <QUuid>
 #include <QPainter>
-
+#include <QApplication>
+#include <QScreen>
 
 QWoRdpWidget::QWoRdpWidget(const QString &target, QWidget *parent)
     : QWidget(parent)
@@ -145,9 +146,17 @@ void QWoRdpWidget::onDisconnectedArrived()
 void QWoRdpWidget::reconnect()
 {
     QDesktopWidget desk;
-    QRect rt = desk.screenGeometry(this);
-    int width = rt.width();
-    int height = rt.height();
+    int idx = desk.screenNumber(this);
+    QList<QScreen*> screens = QApplication::screens();
+    if(idx >= screens.length()) {
+        idx = 0;
+    }
+    QScreen *screen = screens.at(idx);
+    int ratio = screen->devicePixelRatio();
+    QRect rt = screen->geometry();
+    int width = rt.width() * ratio;
+    int height = rt.height() * ratio;
+
 
     /* FIXME: desktopWidth has a limitation that it should be divisible by 4,
              *        otherwise the screen will crash when connecting to an XP desktop.*/

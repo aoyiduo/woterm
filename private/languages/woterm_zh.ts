@@ -6122,8 +6122,8 @@
     <message>
         <location filename="../../woterm/qwoserialinput.ui" line="150"/>
         <location filename="../../woterm/qwoserialinput.ui" line="456"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="525"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="557"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="551"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="583"/>
         <source>Listen</source>
         <translation>监听</translation>
     </message>
@@ -6135,7 +6135,7 @@
     </message>
     <message>
         <location filename="../../woterm/qwoserialinput.ui" line="246"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="573"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="599"/>
         <source>Start</source>
         <translation>开始</translation>
     </message>
@@ -6304,9 +6304,9 @@
     </message>
     <message>
         <location filename="../../woterm/qwoserialinput.ui" line="384"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="385"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="541"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="589"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="411"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="567"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="615"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
@@ -6328,25 +6328,25 @@
         <translation type="vanished">发送</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="523"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="529"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="539"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="545"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="549"/>
         <location filename="../../woterm/qwoserialinput.cpp" line="555"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="561"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="565"/>
         <location filename="../../woterm/qwoserialinput.cpp" line="571"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="577"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="581"/>
         <location filename="../../woterm/qwoserialinput.cpp" line="587"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="593"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="597"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="603"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="613"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="619"/>
         <source>Stop</source>
         <translation>停止</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="499"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="604"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="613"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="618"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="1101"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="525"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="630"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="639"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="644"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1127"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
@@ -6357,186 +6357,202 @@
     </message>
     <message>
         <location filename="../../woterm/qwoserialinput.cpp" line="167"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="195"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="201"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="240"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="246"/>
         <source>Hex string</source>
         <translation>十六进制字符串</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="200"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="227"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="195"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="240"/>
+        <source>The current input string contains a non hexadecimal string. Do you want to convert it to a hexadecimal string.</source>
+        <translation>当前输入字符串包含非十六进制字符串。是否要将其转换为十六进制字符串。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="201"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="246"/>
+        <source>Hex string is not complete.</source>
+        <translation>十六进制字符串不完整。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="213"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="253"/>
         <source>No filter</source>
         <translation>透传</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="201"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="214"/>
         <source>Split by timeout</source>
         <translation>按超时分割</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="202"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="215"/>
         <source>Split by hex string</source>
         <translation>按十六进制字符串分割</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="228"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="254"/>
         <source>Latin1 hex string</source>
         <translation>Latin1十六进制字符串</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="229"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="255"/>
         <source>Unicode hex string</source>
         <translation>Unicode十六进制字符串</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="471"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="667"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="497"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="693"/>
         <source>File send error</source>
         <translation>文件发送错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="471"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="497"/>
         <source>Abnormal error, terminating sending.</source>
         <translation>异常错误，正在终止发送。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="499"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="604"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="525"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="630"/>
         <source>The current file content has not been sent yet.</source>
         <translation>当前文件内容尚未发送。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="613"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="639"/>
         <source>make sure all string are hex code.</source>
         <translation>确保所有字符串是十六进制编码。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="618"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="644"/>
         <source>the hex code is not completed.</source>
         <translation>十六进制编码不完整。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="629"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="633"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="795"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="799"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="655"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="659"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="821"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="825"/>
         <source>Suffix information</source>
         <translation>后缀信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="629"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="795"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="655"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="821"/>
         <source>The input suffix string should not be empty.</source>
         <translation>后缀字符串不能为空。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="633"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="799"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="659"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="825"/>
         <source>The input suffix string must be hex string.</source>
         <translation>后缀字符串必须是十六进制字符串。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="645"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="671"/>
         <source>File sending information</source>
         <translation>文件发送信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="645"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="671"/>
         <source>Sending files is a dangerous behavior. Please carefully confirm whether the content of the file will damage the target device or cause other unpredictable events. Do you want to continue the operation.</source>
         <translation>发送文件是一种高风险的行为。请仔细确认文件的内容是否会损坏目标设备或导致其他不可预测的事件。是否要继续执行操作。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="650"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="676"/>
         <source>Please select a file to send.</source>
         <translation>请选择一个文件去发送。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="657"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="683"/>
         <source>File open error</source>
         <translation>文件打开错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="657"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="683"/>
         <source>Failed to open file:</source>
         <translation>无法打开文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="661"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="687"/>
         <source>File size limitation</source>
         <translation>文件大小限制</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="661"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="687"/>
         <source>The size of the sent file cannot exceed 5M bytes.</source>
         <translation>发送文件的字符数量不能超过5M字节。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="667"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="693"/>
         <source>Unknow error and terminat the file sending.</source>
         <translation>未知错误或终止文件发送。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="831"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="835"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="840"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="885"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="889"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="894"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="944"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="948"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="953"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="1006"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="1010"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="1015"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="857"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="861"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="866"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="911"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="915"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="920"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="970"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="974"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="979"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1032"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1036"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1041"/>
         <source>Parameter errors</source>
         <translation>参数错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="831"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="885"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="944"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="1006"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="857"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="911"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="970"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1032"/>
         <source>Host parameter should not be empty.</source>
         <translation>主机参数不能为空。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="835"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="889"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="948"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="1010"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="861"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="915"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="974"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1036"/>
         <source>Port parameter should not be empty.</source>
         <translation>端口参数不能为空。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="840"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="894"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="953"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="1015"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="866"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="920"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="979"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1041"/>
         <source>Port parameter should not range between 0 and 65535.</source>
         <translation>端口参数应该在0至65535的范围内。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="851"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="976"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="877"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1002"/>
         <source>Listen errors</source>
         <translation>监听错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="851"/>
-        <location filename="../../woterm/qwoserialinput.cpp" line="976"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="877"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1002"/>
         <source>Failed to listen for errors</source>
         <translation>监听失败</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="1101"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1127"/>
         <source>Failed to open device.</source>
         <translation>没有打开设备</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="1207"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1233"/>
         <source>Connection error</source>
         <translation>连接错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="1207"/>
+        <location filename="../../woterm/qwoserialinput.cpp" line="1233"/>
         <source>Please confirm if there is currently a valid device connection.</source>
         <translation>请确认当前是否存在有效的设备连接。</translation>
     </message>
@@ -6569,7 +6585,7 @@
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinputhistorydialog.cpp" line="13"/>
+        <location filename="../../woterm/qwoserialinputhistorydialog.cpp" line="24"/>
         <source>History library</source>
         <translation>历史库</translation>
     </message>
@@ -8547,7 +8563,7 @@
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="184"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1349"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1380"/>
         <source>The directory is out of sync with the terminal.</source>
         <translation>文件夹不与终端同步</translation>
     </message>
@@ -8593,7 +8609,7 @@
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="631"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1144"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1175"/>
         <source>the follow files has exist or version restrictions:</source>
         <translation>以下文件已经存在或版本限制：</translation>
     </message>
@@ -8609,22 +8625,18 @@
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="655"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="798"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="797"/>
         <source>Select all</source>
         <translation>选择所有</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="656"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="666"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="800"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="809"/>
         <source>Back</source>
-        <translation>返回</translation>
+        <translation type="vanished">返回</translation>
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="657"/>
         <location filename="../../woterm/qwosftpwidget.cpp" line="667"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="801"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="799"/>
         <location filename="../../woterm/qwosftpwidget.cpp" line="810"/>
         <source>Refresh</source>
         <translation>刷新</translation>
@@ -8636,29 +8648,25 @@
         <translation>返回主文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="659"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="669"/>
         <source>Create Directory</source>
-        <translation>创建文件夹</translation>
+        <translation type="vanished">创建文件夹</translation>
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="661"/>
         <location filename="../../woterm/qwosftpwidget.cpp" line="690"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="820"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="819"/>
         <source>Upload</source>
         <translation>上传</translation>
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="665"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="807"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="805"/>
         <source>Deselect all</source>
         <translation>取消所选</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="670"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="813"/>
         <source>Remove selections</source>
-        <translation>删除选中项</translation>
+        <translation type="vanished">删除选中项</translation>
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="671"/>
@@ -8667,7 +8675,8 @@
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="673"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1577"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="807"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1608"/>
         <source>Rename</source>
         <translation>重命名</translation>
     </message>
@@ -8682,16 +8691,14 @@
         <translation>移动至其它文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="802"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="800"/>
         <location filename="../../woterm/qwosftpwidget.cpp" line="811"/>
         <source>Home directory</source>
         <translation>主文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="803"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="812"/>
         <source>Create directory</source>
-        <translation>创建文件夹</translation>
+        <translation type="vanished">创建文件夹</translation>
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="817"/>
@@ -8699,108 +8706,130 @@
         <translation>尝试进入</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="869"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="847"/>
+        <source>Failure</source>
+        <translation>失败</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="847"/>
+        <source>Failed to rename file for no permission to make path.</source>
+        <translation>无法重命名文件，因为没有创建路径的权限。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="894"/>
         <source>directory name</source>
         <translation>文件夹名</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="870"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="895"/>
         <source>Please input a directory name</source>
         <translation>请输入一个文件夹名称</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="877"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="902"/>
         <source>information</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="877"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="902"/>
         <source>the new directory name should be empty!</source>
         <translation>新文件夹名不能为空！</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="957"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="922"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1042"/>
+        <source>Remove file</source>
+        <translation>删除文件</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="922"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1042"/>
+        <source>After deleting the file, it will not be recoverable. Please confirm whether to continue deleting the file.</source>
+        <translation>删除文件后，该文件将无法恢复。请确认是否继续删除该文件。</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="985"/>
         <source>Input error</source>
         <translation>输入错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="957"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="985"/>
         <source>The directory entered does not exist.</source>
         <translation>所输入的文件夹不存在。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1042"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1073"/>
         <source>Permission information</source>
         <translation>权限信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1042"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1073"/>
         <source>Have other files also been modified with the same access permissions?</source>
         <translation>是否也使用相同的访问权限修改了其他文件？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1243"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1274"/>
         <source>Move file</source>
         <translation>移动文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1243"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1274"/>
         <source>Input a existing directory to save the selected file.</source>
         <translation>输入现有目录以保存所选文件。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1269"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1300"/>
         <source>Directory is not supported to edit.</source>
         <translation>文件夹不支持编辑。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1273"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1304"/>
         <source>Editing files larger than 5M bytes is not supported.</source>
         <translation>不支持编辑大于5M字节的文件。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1277"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1308"/>
         <source>The target file exceeds 500K bytes. Do you want to continue editing?</source>
         <translation>目标文件超过500K字节。是否要继续编辑？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1332"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1405"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1363"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1436"/>
         <source>SFTP</source>
         <translation>SFTP</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1332"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1405"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1363"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1436"/>
         <source>No items are currently selected.</source>
         <translation>当前没有选中项</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1353"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1384"/>
         <source>Keep the directory synchronized with the terminal.</source>
         <translation>保持文件夹与终端同步</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1533"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1564"/>
         <source>The modified file[%1] has been successfully submitted.</source>
         <translation>已成功提交修改后的文件[%1]。</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1546"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1577"/>
         <source>The remote path[%1] does not exist or does not have permission to access it?</source>
         <translation>远程路径[%1]不存在或没有访问权限？</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1571"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1602"/>
         <source>Chmod</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1269"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1273"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1277"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1533"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1546"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1300"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1304"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1308"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1564"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1577"/>
         <source>File information</source>
         <translation>文件信息</translation>
     </message>
@@ -8845,7 +8874,7 @@
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="732"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1586"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1617"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
@@ -8855,13 +8884,13 @@
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="607"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1123"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1154"/>
         <source>FileExist</source>
         <translation>文件存在</translation>
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="608"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1124"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1155"/>
         <source>has the same name in the target path. override it?</source>
         <translation>已经存在同名文件，是否覆盖？</translation>
     </message>
@@ -8873,38 +8902,64 @@
     </message>
     <message>
         <location filename="../../woterm/qwosftpwidget.cpp" line="629"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1142"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1173"/>
         <source>the follow files has exist:</source>
         <translation>以下文件已经存在：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1093"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="656"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="666"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="798"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="809"/>
+        <source>&amp;Back</source>
+        <translation>返回(&amp;B)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="659"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="669"/>
+        <source>&amp;Create Directory</source>
+        <translation>创建文件夹(&amp;C)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="670"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="813"/>
+        <source>&amp;Delete selections</source>
+        <translation>删除选中项(&amp;D)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="801"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="812"/>
+        <source>&amp;Create directory</source>
+        <translation>创建文件夹(&amp;C)</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1124"/>
         <source>Save directory</source>
         <translation>保存文件夹</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1100"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1131"/>
         <source>Parameter error</source>
         <translation>参数错误</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1100"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1131"/>
         <source>Please select directory to save it.</source>
         <translation>请选择文件夹去保存</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1142"/>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1144"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1173"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1175"/>
         <source>Download information</source>
         <translation>下载信息</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1157"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1188"/>
         <source>Select files</source>
         <translation>选择文件</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwosftpwidget.cpp" line="1162"/>
+        <location filename="../../woterm/qwosftpwidget.cpp" line="1193"/>
         <source>Select File</source>
         <translation>选择文件</translation>
     </message>
