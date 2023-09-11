@@ -11,12 +11,15 @@
 
 #include "qkxsocket.h"
 #include "qkxutils.h"
+#include "qkxopensslthreadcryptosafety.h"
 
 #include <QDateTime>
 #include <QtEndian>
 #include <QDebug>
 #include <QMutex>
 #include <QVector>
+#include <QThread>
+#include <QSslSocket>
 
 #ifdef Q_OS_WIN
 #include <winsock2.h>
@@ -41,135 +44,162 @@ typedef int socket_t;
 
 #define MAX_BUFFER  (1024 * 1024)
 
-#ifdef HAVE_TLS
-
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
 #include <openssl/rand.h>
 
-bool gTLSInit() {
-    SSL_load_error_strings();
-    SSLeay_add_ssl_algorithms();
-    return true;
+static int sock_read_ready(SSL *ssl, uint32_t ms)
+{
+    fd_set fds;
+    struct timeval tv;
+
+    FD_ZERO(&fds);
+    FD_SET(SSL_get_fd(ssl), &fds);
+
+    tv.tv_sec = ms / 1000;
+    tv.tv_usec = (ms % 1000) * 1000;
+    return select (SSL_get_fd(ssl) + 1, &fds, NULL, NULL, &tv);
 }
 
-QTLSAuth::QTLSAuth(QObject *parent)
-    : QObject(parent)
+static int wait_for_data(SSL *ssl, int ret, int timeout)
 {
-    static bool btls = gTLSInit();
-}
+    int retval = 1;
+    int err = SSL_get_error(ssl, ret);
 
-QTLSAuth::~QTLSAuth()
-{
-
-}
-
-
-class QPowerTLSAuth : public QTLSAuth
-{
-private:
-    int m_fd;
-public:
-    explicit QPowerTLSAuth(int fd, QObject *parent=nullptr)
-        : QTLSAuth(parent)
-        , m_fd(fd) {
-    }
-
-    ~QPowerTLSAuth(){
-
-    }
-
-    bool init() {
-        return _init();
-    }
-
-protected:
-    int sock_read_ready(SSL *ssl, uint32_t ms) {
-        int r = 0;
-        fd_set fds;
-        struct timeval tv;
-        FD_ZERO(&fds);
-        FD_SET(SSL_get_fd(ssl), &fds);
-        tv.tv_sec = ms / 1000;
-        tv.tv_usec = (ms % 1000) * 1000;
-        r = select (SSL_get_fd(ssl) + 1, &fds, NULL, NULL, &tv);
-        return r;
-    }
-
-    int waitForData(SSL *ssl, int ret, int timeout) {
-        int retval = 1;
-        int err = SSL_get_error(ssl, ret);
-        if(err == SSL_ERROR_WANT_READ || err ==SSL_ERROR_WANT_WRITE) {
-            int ret = sock_read_ready(ssl, timeout*1000);
-            if (ret == -1) {
-                retval = 2;
-            }
-        }else{
-            retval = 3;
-            long verify_res = SSL_get_verify_result(ssl);
-            if (verify_res != X509_V_OK){
-                qDebug() << "Could not verify server certificate:" << X509_verify_cert_error_string(verify_res);
-            }
+    switch(err) {
+    case SSL_ERROR_WANT_READ:
+    case SSL_ERROR_WANT_WRITE:
+        ret = sock_read_ready(ssl, timeout*1000);
+        if (ret == -1) {
+            retval = 2;
         }
-        ERR_clear_error();
-        return retval;
+        break;
+    default:
+        retval = 3;
+        long verify_res = SSL_get_verify_result(ssl);
+        if (verify_res != X509_V_OK){
+            qDebug() << QString("Could not verify server certificate: %1.").arg(X509_verify_cert_error_string(verify_res));
+        }
+        break;
     }
+    ERR_clear_error();
+    return retval;
+}
 
-    bool _init() {
+QTLSAuth::QTLSAuth(int sockFd, QObject *parent)
+    : QObject(parent)
+    , m_socket(sockFd) {
+
+}
+
+QTLSAuth::~QTLSAuth(){
+
+}
+
+int QTLSAuth::sslErrorNo(int err)
+{
+    switch (err) {
+    case SSL_ERROR_NONE:
+        return 0;
+    case SSL_ERROR_ZERO_RETURN:
+        return EINVAL;
+    case SSL_ERROR_WANT_READ:   /* non-fatal; retry */
+    case SSL_ERROR_WANT_WRITE:  /* non-fatal; retry */
+        return EAGAIN;
+    case SSL_ERROR_SYSCALL:
+        return EINTR;
+    case SSL_ERROR_SSL:
+        return EINTR;
+    default:
+        return EINTR;
+    }
+}
+
+
+int QTLSAuth::readFromTLS(char *buf, int len) {
+    int left = len;
+    while(left > 0) {
+        int n = SSL_read (m_ssl, buf, left);
+        if(n < 0) {
+            int err = SSL_get_error(m_ssl, n);
+            if(QKxUtils::isAgain(sslErrorNo(err))) {
+                return len - left;
+            }
+            return n;
+        }
+        if(n == 0) {
+            return len - left;
+        }
+        buf += n;
+        left -= n;
+    }
+    return len;
+}
+
+int QTLSAuth::writeToTLS(const char *buf, int len) {
+    int left = len;
+    while(left > 0) {
+        int n = SSL_write(m_ssl, buf, left);
+        if(n < 0) {
+            int err = SSL_get_error(m_ssl, n);
+            if(QKxUtils::isAgain(sslErrorNo(err))) {
+                return len - left;
+            }
+            return n;
+        }
+        if(n == 0) {
+            return len - left;
+        }
+        buf += n;
+        left -= n;
+    }
+    return len;
+}
+
+class QTLSAnonAuth : public QTLSAuth
+{
+public:
+    explicit QTLSAnonAuth(int sockFd, QObject *parent=nullptr)
+        : QTLSAuth(sockFd, parent){
+        m_ssl = openSslConnection(sockFd);
+    }
+private:
+    SSL *openSslConnection(int sockFd) {
         SSL_CTX *ssl_ctx = SSL_CTX_new(SSLv23_client_method());
         if (ssl_ctx == nullptr) {
-            return false;
+            qDebug() << "Could not create new SSL context.";
+            return nullptr;
         }
-        X509_VERIFY_PARAM *param = X509_VERIFY_PARAM_new();
-        SSL_CTX_set_cipher_list(ssl_ctx, "ADH");
-        SSL *ssl = SSL_new (ssl_ctx);
-        SSL_set_fd (ssl, m_fd);
+        // https://www.openssl.org/docs/manmaster/man1/openssl-ciphers.html
+        SSL_CTX_set_cipher_list(ssl_ctx, "aNULL");
+        SSL_CTX_set_security_level(ssl_ctx, 0);
+        SSL_CTX_set_max_proto_version(ssl_ctx, TLS1_2_VERSION);
+        SSL *ssl = SSL_new(ssl_ctx);
+        if(ssl == nullptr) {
+            SSL_CTX_free(ssl_ctx);
+            return nullptr;
+        }
+        SSL_set_fd(ssl, sockFd);
         SSL_CTX_set_app_data (ssl_ctx, this);
-
         int n = 0;
         int finished = 0;
-        do{
-            int n = SSL_connect(ssl);
-            if(n != 1) {
-                if(waitForData(ssl, n, 1) != 1) {
+        do {
+            n = SSL_connect(ssl);
+            if (n != 1) {
+                if (wait_for_data(ssl, n, 1) != 1)  {
                     finished = 1;
                     SSL_shutdown(ssl);
-                    SSL_free(ssl);
-                    SSL_CTX_free(ssl_ctx);
-                    return false;
                 }
             }
-        }while(n != 1);
-        X509_VERIFY_PARAM_free(param);
-        return true;
-    }
-
-    virtual bool handleAnonTLSAuth() {
-
-        return true;
-    }
-
-    virtual bool handleVeNCryptAuth() {
-        return true;
-    }
-
-    virtual int readFromTLS(char *out, unsigned int n){
-        return 0;
-    }
-
-    virtual int writeToTLS(const char *buf, unsigned int n) {
-        return 0;
-    }
-
-    virtual void freeTLS(){
-
+        }while( n != 1 && finished != 1 );
+        return ssl;
     }
 };
 
-#endif
 
-QKxTcpSocket::QKxTcpSocket()
+QKxTcpSocket::QKxTcpSocket(QObject *parent)
+    : QKxReader(parent)
 {
     m_socket = -1;
     m_ipos = 0;
@@ -234,7 +264,7 @@ int QKxTcpSocket::_waitRead(char *buf, int len, int timeout)
 int QKxTcpSocket::_waitWrite(char *buf, int len, int timeout)
 {
     qint64 tmStart = QDateTime::currentMSecsSinceEpoch();
-    int nWrite = QKxUtils::xSend(m_socket, buf, len);
+    int nWrite = m_auth != nullptr ? m_auth->writeToTLS(buf, len) : QKxUtils::xSend(m_socket, buf, len);
     if(nWrite < 0) {
         return nWrite;
     }
@@ -258,7 +288,7 @@ int QKxTcpSocket::_waitWrite(char *buf, int len, int timeout)
             continue;
         }
         if(FD_ISSET(m_socket, &wfds)) {
-            int n = QKxUtils::xSend(m_socket, buf + nWrite , len - nWrite);
+            int n = m_auth != nullptr ? m_auth->writeToTLS(buf + nWrite , len - nWrite) : QKxUtils::xSend(m_socket, buf + nWrite , len - nWrite);
             if(n < 0) {
                 return n;
             }
@@ -307,14 +337,9 @@ int QKxTcpSocket::handle()
     return m_socket;
 }
 
-bool QKxTcpSocket::makeTLS()
+bool QKxTcpSocket::makeAnonTLS()
 {
-//    if(m_auth) {
-//        return true;
-//    }
-//    QPowerTLSAuth *auth = new QPowerTLSAuth(m_socket);
-//    m_auth = auth;
-//    return auth->init();
+    m_auth = new QTLSAnonAuth(m_socket, this);
     return true;
 }
 
@@ -474,7 +499,7 @@ int QKxTcpSocket::_readAll()
     char *buf = m_buf.data() + m_buf.length();
     int total = m_buf.length();
     while(1) {
-        int cnt = QKxUtils::xRecv(m_socket, buf, m_buf.capacity() - total - 128);
+        int cnt = (m_auth != nullptr ? m_auth->readFromTLS(buf, m_buf.capacity() - total - 128) : QKxUtils::xRecv(m_socket, buf, m_buf.capacity() - total - 128));
         if(cnt <= 0) {
             m_buf.resize(total);
             return m_buf.length();

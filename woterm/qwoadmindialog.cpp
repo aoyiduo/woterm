@@ -47,10 +47,6 @@ QWoAdminDialog::QWoAdminDialog(QWidget *parent) :
     ui->chkLocalshell->setChecked(QWoSetting::localTerminalOnAppStart());
     ui->chkSerialport->setChecked(QWoSetting::serialportOnAppStart());
     ui->chkOpacity->setChecked(QWoSetting::allowToSetWindowOpacity());
-    ui->chkGroupExpand->setChecked(QWoSetting::sessionsGroupCanRestore());
-    QObject::connect(ui->chkGroupExpand, &QCheckBox::clicked, this, [=](){
-        QWoSetting::setSessionsGroupCanRestore(ui->chkGroupExpand->isChecked());
-    });
     ui->chkSshAgent->setChecked(QWoSetting::allowToUseExternalIdentityFiles());
     QObject::connect(ui->chkSshAgent, &QCheckBox::clicked, this, [=](){
         QWoSetting::setAllowToUseExternalIdentityFiles(ui->chkSshAgent->isChecked());

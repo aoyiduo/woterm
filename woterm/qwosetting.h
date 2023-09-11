@@ -78,8 +78,6 @@ public:
     static QString adminPassword();
     static void setAdminPassword(const QString& pass);
 
-    static bool sessionsGroupCanRestore();
-    static void setSessionsGroupCanRestore(bool on);
     static QStringList sessionsGroupExpand(const QString& where);
     static void setSessionsGroupExpand(const QString& where, const QStringList& expands);
 

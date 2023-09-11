@@ -38,6 +38,7 @@ signals:
 private:
     void init();
     void refreshList();
+    void tryToConnect(const HostInfo& hi);
 private slots:
     void onReloadSessionList();
     void onEditTextChanged(const QString& txt);
@@ -63,11 +64,17 @@ private slots:
 private:
     bool handleListViewContextMenu(QContextMenuEvent *ev);
     bool handleListViewMouseButtonPress(QMouseEvent *ev);
+    void tryToRestoreSessionsExpandState();
     Q_INVOKABLE void restoreSessionsExpandState();
     Q_INVOKABLE void saveSessionsExpandState();
+    void handleFilterInputKeyEvent(QKeyEvent *ke);
 private:
     void closeEvent(QCloseEvent *event);
     bool eventFilter(QObject *obj, QEvent *ev);
+
+    QModelIndex first();
+    QModelIndex next(const QModelIndex& idx);
+    QModelIndex prev(const QModelIndex& idx);
 private:
     QPointer<QWoHostListModel> m_listModel;
     QPointer<QWoHostTreeModel> m_treeModel;

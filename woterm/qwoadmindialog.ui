@@ -124,13 +124,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="chkGroupExpand">
-          <property name="text">
-           <string>Allow session group auto restore last expanded state.</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QCheckBox" name="chkOpacity">
           <property name="text">
            <string>Allow to set main window opacity.</string>

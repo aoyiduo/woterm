@@ -26,6 +26,7 @@
 #include <QDateTime>
 #include <QMouseEvent>
 #include <QtMath>
+#include <QSslSocket>
 
 #ifdef Q_OS_WIN
 #include <winsock2.h>
@@ -858,6 +859,9 @@ protected:
             m_ti.vet.removeOne(JPEG);
             m_ti.vet.removeOne(WoVNCScreenCount);
             m_ti.vet.removeOne(WoVNCMessageSupport);
+            if(m_ti.fmt > 5) {
+                m_ti.fmt = QKxVNC::RGB16_565;
+            }
         }else{
             m_ti.vet.append(WoVNCScreenCount);
             m_ti.vet.append(WoVNCMessageSupport);
@@ -1040,6 +1044,18 @@ protected:
     }
 
 private:
+    void bubbleSort(quint8 *typs, int cnt) {
+        for(int i = 0; i < cnt; i++) {
+            for(int j = i+1; j < cnt; j++) {
+                if(typs[i] < typs[j]) {
+                    quint8 tmp = typs[i];
+                    typs[i] = typs[j];
+                    typs[j] = tmp;
+                }
+            }
+        }
+    }
+
     bool handleProtocol() {
         char buf[13] = {0};
         if(!m_vnc.waitRead(buf, 12)) {
@@ -1120,12 +1136,13 @@ private:
         return false;
     }
 
-    bool handleTLSAuth() {
+    bool handleAnonTLSAuth() {
         quint8 cnt = m_vnc.readUint8();
         quint8 ts[100];
         if(!m_vnc.waitRead((char*)ts, cnt)) {
             return false;
         }
+        bubbleSort(ts, cnt);
         for(int i = 0; i < cnt; i++) {
             quint8 t = ts[i];
             switch(t) {
@@ -1137,7 +1154,10 @@ private:
                 }
                 return true;
             case ST_VNCAuth:
-                break;
+                if(!m_vnc.waitWrite((char*)&t, 1)) {
+                    return false;
+                }
+                return handlePassword();
             }
         }
         return true;
@@ -1152,6 +1172,7 @@ private:
         if(!m_vnc.waitRead((char*)ts, cnt)) {
             return false;
         }
+        bubbleSort(ts, cnt);
         for(int i = 0; i < cnt; i++) {
             quint8 t = ts[i];
             if(t == ST_Invalid) {
@@ -1168,14 +1189,16 @@ private:
                 }
                 return handlePassword();
             }else if(t == ST_TLS) {
-                return false;
-//                if(!m_vnc.makeTLS()) {
-//                    return false;
-//                }
-//                if(!m_vnc.waitWrite((char*)&t, 1)) {
-//                    return false;
-//                }
-//                return handleTLSAuth();
+                if(!QSslSocket::supportsSsl()) {
+                    return false;
+                }
+                if(!m_vnc.waitWrite((char*)&t, 1)) {
+                    return false;
+                }
+                if(!m_vnc.makeAnonTLS()) {
+                    return false;
+                }
+                return handleAnonTLSAuth();
             }
         }
         return false;
@@ -1186,10 +1209,12 @@ private:
         if(cnt == 0) {
             return false;
         }
-        quint8 ts[100];
+        quint8 ts[100] = {1, 2, 3, 6, 8, 10, 12};
         if(!m_vnc.waitRead((char*)ts, cnt)) {
             return false;
-        }
+        }        
+        // desc sort.
+        bubbleSort(ts, cnt);
         for(int i = 0; i < cnt; i++) {
             quint8 t = ts[i];
             if(t == ST_Invalid) {
@@ -1216,6 +1241,17 @@ private:
                     return false;
                 }
                 return true;
+            }else if(t == ST_TLS) {
+                if(!QSslSocket::supportsSsl()) {
+                    return false;
+                }
+                if(!m_vnc.waitWrite((char*)&t, 1)) {
+                    return false;
+                }
+                if(!m_vnc.makeAnonTLS()) {
+                    return false;
+                }
+                return handleAnonTLSAuth();
             }
         }
         return false;
@@ -1254,6 +1290,50 @@ private:
         m_screenRect.append(QRect(0, 0, m_frame.width, m_frame.height));
         emit screenCountChanged(1);
         return true;
+    }
+
+    void handlePixelFormat(EPixelFormat pf) {
+        if(m_fmt == pf) {
+            return;
+        }
+        qInfo() << "handlePixelFormat collect error" << m_fmt << pf;
+        switch(pf) {
+        case RGB32_888:
+            m_frame.pixel = m_rgb32_888;
+            break;
+        case JPEG_444:
+            m_frame.pixel = m_jpeg_444;
+            break;
+        case RGB16_565:
+            m_frame.pixel = m_rgb16_565;
+            break;
+        case RGB15_555:
+            m_frame.pixel = m_rgb15_555;
+            break;
+        case RGB8_332:
+            m_frame.pixel = m_rgb8_332;
+            break;
+        case RGB8_Map:
+            m_frame.pixel = m_rgb8_map;
+            break;
+        case YUV_NV12:
+            m_frame.pixel = m_yuv_nv12;
+            break;
+        case H264_High:
+            m_frame.pixel = m_h264_high;
+            break;
+        case H264_Normal:
+            m_frame.pixel = m_h264_normal;
+            break;
+        case H264_Low:
+            m_frame.pixel = m_h264_low;
+            break;
+        case H264_Lowest:
+            m_frame.pixel = m_h264_lowest;
+            break;
+        }
+        m_fmt = pf;
+        m_ti.fmt = pf;
     }
 
     bool setPixelFormat(EPixelFormat pf) {
@@ -1314,50 +1394,6 @@ private:
         return m_vnc.waitWrite((char*)&req, sizeof(req));
     }
 
-    void handlePixelFormat(EPixelFormat pf) {
-        if(m_fmt == pf) {
-            return;
-        }
-        qInfo() << "handlePixelFormat collect error" << m_fmt << pf;
-        switch(pf) {
-        case RGB32_888:
-            m_frame.pixel = m_rgb32_888;
-            break;
-        case JPEG_444:
-            m_frame.pixel = m_jpeg_444;
-            break;
-        case RGB16_565:
-            m_frame.pixel = m_rgb16_565;
-            break;
-        case RGB15_555:
-            m_frame.pixel = m_rgb15_555;
-            break;
-        case RGB8_332:
-            m_frame.pixel = m_rgb8_332;
-            break;
-        case RGB8_Map:
-            m_frame.pixel = m_rgb8_map;
-            break;
-        case YUV_NV12:
-            m_frame.pixel = m_yuv_nv12;
-            break;
-        case H264_High:
-            m_frame.pixel = m_h264_high;
-            break;
-        case H264_Normal:
-            m_frame.pixel = m_h264_normal;
-            break;
-        case H264_Low:
-            m_frame.pixel = m_h264_low;
-            break;
-        case H264_Lowest:
-            m_frame.pixel = m_h264_lowest;
-            break;
-        }
-        m_fmt = pf;
-        m_ti.fmt = pf;
-    }
-
     bool setEncodings(QList<qint32> ecs) {
         QByteArray buf;
         buf.resize(sizeof(EncodingRequest) + ecs.length() * 4);
@@ -1371,24 +1407,6 @@ private:
         return m_vnc.waitWrite(buf.data(), buf.length());
     }
 
-    bool requestMouseUpdate(int button, int x, int y) {
-        QMutexLocker locker(&m_mutex);
-        MouseRequest req = {0};
-        req.type = 5;
-        req.button = button;
-        req.x = qToBigEndian<quint16>(x);
-        req.y = qToBigEndian<quint16>(y);
-        return m_vnc.waitWrite((char*)&req, sizeof(req));
-    }
-
-    bool requestKeyUpdate(quint32 key, bool down) {
-        QMutexLocker locker(&m_mutex);
-        KeyRequest req = {0};
-        req.type = 4;
-        req.down = down;
-        req.key = qToBigEndian(key);
-        return m_vnc.waitWrite((char*)&req, sizeof(req));
-    }
 
     bool requestFramebufferUpdate(bool incr, quint16 x, quint16 y, quint16 w, quint16 h) {
         qint64 now = QDateTime::currentMSecsSinceEpoch();
@@ -1415,6 +1433,25 @@ private:
         req.y = qToBigEndian(y);
         req.w = qToBigEndian(w);
         req.h = qToBigEndian(h);
+        return m_vnc.waitWrite((char*)&req, sizeof(req));
+    }
+
+    bool requestKeyUpdate(quint32 key, bool down) {
+        QMutexLocker locker(&m_mutex);
+        KeyRequest req = {0};
+        req.type = 4;
+        req.down = down;
+        req.key = qToBigEndian(key);
+        return m_vnc.waitWrite((char*)&req, sizeof(req));
+    }
+
+    bool requestMouseUpdate(int button, int x, int y) {
+        QMutexLocker locker(&m_mutex);
+        MouseRequest req = {0};
+        req.type = 5;
+        req.button = button;
+        req.x = qToBigEndian<quint16>(x);
+        req.y = qToBigEndian<quint16>(y);
         return m_vnc.waitWrite((char*)&req, sizeof(req));
     }
 
@@ -1563,6 +1600,9 @@ private:
                 m_isFromWoVNCServer = true;
                 doMessageSupport(x, y, w, h);
                 break;
+            default:
+                qDebug() << "update" << et << x << y << w << h;
+                break;
             }
         }        
         return true;
@@ -1708,7 +1748,7 @@ private:
     bool doFrameCopyRect(quint16 x, quint16 y, quint16 width, quint16 height) {
         quint16 srcX = m_vnc.readUint16();
         quint16 srcY = m_vnc.readUint16();
-        int nbytes = m_frame.pixel.bitsPerPixel / 8;
+        int nbytes = 4;
         if(y > srcY) {
             quint8* pdst = (quint8*)myscanLine(y+height-1);
             quint8 *psrc = (quint8*)myscanLine(srcY+height-1);
@@ -1960,12 +2000,12 @@ private:
         quint32 rgbval = 0;
         QVector<QRgb> clrTable;
         quint8 bitcnt = 0;
+
         for(quint16 h = y; h < height + y; h += bsize) {
             quint16 bheight = qMin<quint16>(h + bsize, y + height) - h;
             for (quint16 w = x; w < width + x; w += bsize) {
                 quint16 bwidth = qMin<quint16>(w + bsize, x + width) - w;
                 quint8 subcode = buf.readUint8();
-                //qDebug() << "subcode" << subcode;
                 if(subcode == 0) {
                     for(quint16 bh = 0; bh < bheight; bh++) {
                         quint32 *line = myscanLine(h + bh);

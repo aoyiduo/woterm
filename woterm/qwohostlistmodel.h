@@ -36,11 +36,14 @@ public:
 
     Q_INVOKABLE bool qmlRemove(const QString& name);
     Q_INVOKABLE QVariantMap qmlGet(int row);
+
+public:
+    QModelIndex sibling(int row, int column, const QModelIndex &idx) const override;
+
 private slots:
     void onDataReset();
 private:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    QModelIndex sibling(int row, int column, const QModelIndex &idx) const override;
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 

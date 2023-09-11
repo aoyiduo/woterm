@@ -15,32 +15,34 @@
 #include <QObject>
 #include <QPointer>
 #include <QByteArray>
+#include <QMutex>
 
 #include "qkxreader.h"
 
-
+typedef struct ssl_st SSL;
 class QTLSAuth : public QObject
 {
 public:
-    explicit QTLSAuth(QObject *parent=nullptr);
+    explicit QTLSAuth(int sockFd, QObject *parent=nullptr);
     ~QTLSAuth();
 
-    virtual bool handleAnonTLSAuth() = 0;
-    virtual bool handleVeNCryptAuth() = 0;
-    virtual int readFromTLS(char *out, unsigned int n) = 0;
-    virtual int writeToTLS(const char *buf, unsigned int n) = 0;
-    virtual void freeTLS() = 0;
+    int sslErrorNo(int err);
+    int readFromTLS(char *buf, int len);
+    int writeToTLS(const char *buf, int len);
+protected:
+    int m_socket;
+    SSL *m_ssl;
 };
 
 
 class QKxTcpSocket : public QKxReader
 {
 public:
-    QKxTcpSocket();
+    explicit QKxTcpSocket(QObject *parent = nullptr);
     virtual ~QKxTcpSocket();
     bool connect(const char* host, int port);
     int handle();
-    bool makeTLS();
+    bool makeAnonTLS();
 
     bool waitRead(char *buf, int len, int timeout = 30000);
     bool waitWrite(char *buf, int len, int timeout = 30000);
@@ -73,7 +75,7 @@ private:
     int m_socket;
     QByteArray m_buf;
     int m_ipos;
-    //QPointer<QTLSAuth> m_auth;
+    QPointer<QTLSAuth> m_auth;
 };
 
 #endif // QKXSOCKET_H

@@ -34,6 +34,7 @@ set(SOURCE_FILES
     qkxlengthbodypacket.cpp
     qkxkeepwakeup.cpp
     qkxprocesslaunch.cpp    
+    qkxopensslthreadcryptosafety.cpp
 )
 
 set(HEADER_FILES
@@ -54,6 +55,7 @@ set(HEADER_FILES
     qkxlengthbodypacket.h
     qkxkeepwakeup.h
     qkxprocesslaunch.h
+    qkxopensslthreadcryptosafety.h
 )
 
 if(WIN32)

@@ -406,16 +406,6 @@ void QWoSetting::setAdminPassword(const QString &pass)
     setValue("admin/password", enkey);
 }
 
-bool QWoSetting::sessionsGroupCanRestore()
-{
-    return value("admin/sessionGroupCanRestore", true).toBool();
-}
-
-void QWoSetting::setSessionsGroupCanRestore(bool on)
-{
-    setValue("admin/sessionGroupCanRestore", on);
-}
-
 QStringList QWoSetting::sessionsGroupExpand(const QString& where)
 {
     return value("admin/sessionGroupExpand"+where).toStringList();
@@ -508,7 +498,7 @@ void QWoSetting::setAllowToSetWindowOpacity(bool on)
 
 bool QWoSetting::allowToUseExternalIdentityFiles()
 {
-    return value("admin/allowExternalKeys", false).toBool();
+    return value("admin/allowExternalKeys", true).toBool();
 }
 
 void QWoSetting::setAllowToUseExternalIdentityFiles(bool on)
@@ -518,7 +508,7 @@ void QWoSetting::setAllowToUseExternalIdentityFiles(bool on)
 
 bool QWoSetting::enableUserHomeIdentityFiles()
 {
-    return value("admin/userHomeIdentityFiles", false).toBool();
+    return value("admin/userHomeIdentityFiles", true).toBool();
 }
 
 void QWoSetting::setEnableUserHomeIdentityFiles(bool on)
@@ -528,7 +518,7 @@ void QWoSetting::setEnableUserHomeIdentityFiles(bool on)
 
 bool QWoSetting::enableLocalSshAgent()
 {
-    return value("admin/localSshAgent", false).toBool();
+    return value("admin/localSshAgent", true).toBool();
 }
 
 void QWoSetting::setEnableLocalSshAgent(bool on)
@@ -538,7 +528,7 @@ void QWoSetting::setEnableLocalSshAgent(bool on)
 
 bool QWoSetting::enableRemoteSshAgent()
 {
-    return value("admin/remoteSshAgent", false).toBool();
+    return value("admin/remoteSshAgent", true).toBool();
 }
 
 void QWoSetting::setEnableRemoteSshAgent(bool on)

@@ -113,7 +113,7 @@ static int handleAuthenticateByInternalKeys(ssh_session session, int method) {
 
 static int handleAuthenticateByDotSshPath(ssh_session session, int method) {
     if(method & SSH_AUTH_METHOD_PUBLICKEY) {
-        if(QWoSetting::enableUserHomeIdentityFiles()) {
+        if(QKxVer::instance()->isFullFeather() && QWoSetting::enableUserHomeIdentityFiles()) {
             QString path = QDir::cleanPath(QDir::homePath() + "/.ssh");
             QDir d(path);
             QFileInfoList fis = d.entryInfoList(QDir::Files);
@@ -147,7 +147,7 @@ static int handleAuthenticateByDotSshPath(ssh_session session, int method) {
 
 static int handleAuthenticateBySshAgent(ssh_session session, int method) {
     if(method & SSH_AUTH_METHOD_PUBLICKEY) {
-        if(QWoSetting::enableLocalSshAgent()) {
+        if(QKxVer::instance()->isFullFeather() && QWoSetting::enableLocalSshAgent()) {
             QString addr = QWoSetting::lastLocalSshAgentAddress();
             if(addr.isEmpty()) {
                 addr = QWoSetting::sshAuthSockDefault();
@@ -173,7 +173,7 @@ static int handleAuthenticateBySshAgent(ssh_session session, int method) {
             }
         }
 
-        if(QWoSetting::enableRemoteSshAgent()) {
+        if(QKxVer::instance()->isFullFeather() && QWoSetting::enableRemoteSshAgent()) {
             QString addr = QWoSetting::remoteSshAgentAddress();
             QStringList hp = addr.split(':');
             if(hp.size() != 2) {

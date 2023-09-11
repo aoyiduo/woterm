@@ -747,6 +747,9 @@ bool QWoSessionProperty::saveConfig()
         hi.property = QWoUtils::qVariantToBase64(prop);
     }
     hi.group = ui->groupBox->currentText();
+    if(!m_name.isEmpty() && m_name != hi.name) {
+        QWoSshConf::instance()->removeServer(m_name);
+    }
     QWoHostListModel::instance()->modifyOrAppend(hi);
     return true;
 }

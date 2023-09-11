@@ -17,7 +17,7 @@ endif()
 
 add_definitions(-DQKXVNC_LIBRARY)
 
-find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Network Widgets REQUIRED)
 
 message("ZLIB_ROOT_DIR:${ZLIB_ROOT_DIR}")
 message("OPENSSL_ROOT_DIR:${OPENSSL_ROOT_DIR}")
@@ -121,6 +121,16 @@ if(WIN32)
     set_target_properties(jpeg_main PROPERTIES IMPORTED_LOCATION
         ${LIBJPEG_ROOT_DIR}/lib/turbojpeg-static.lib)
     link_libraries(jpeg_main)
+
+    add_library(openssl_crypto STATIC IMPORTED)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/lib/libcrypto.lib)
+    link_libraries(openssl_crypto)
+
+    add_library(openssl_ssl STATIC IMPORTED)
+    set_target_properties(openssl_ssl PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/lib/libssl.lib)
+    link_libraries(openssl_ssl)
 elseif(APPLE)
     message("APPLE Here")
     set(ZLIB_LIBRARY  libz.a)
@@ -150,6 +160,15 @@ elseif(APPLE)
     set_target_properties(jpeg_main PROPERTIES IMPORTED_LOCATION
         ${LIBJPEG_ROOT_DIR}/lib/libturbojpeg.a)
     link_libraries(jpeg_main pthread)
+
+    add_library(openssl_crypto STATIC IMPORTED)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION ${OPENSSL_ROOT_DIR}/lib/libcrypto.dylib)
+    link_libraries(openssl_crypto)
+
+    add_library(openssl_ssl STATIC IMPORTED)
+    set_target_properties(openssl_ssl PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/lib/libssl.dylib)
+    link_libraries(openssl_ssl)
 
     find_library(COREAUDIO_LIBRARY CoreAudio REQUIRED)
     find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox REQUIRED)
@@ -191,6 +210,15 @@ elseif(ANDROID)
     set_target_properties(jpeg_main PROPERTIES IMPORTED_LOCATION
         ${LIBJPEG_ROOT_DIR}/lib/libturbojpeg.so)
     link_libraries(jpeg_main)
+
+    add_library(openssl_crypto SHARED IMPORTED)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION ${OPENSSL_ROOT_DIR}/lib/libcrypto.so)
+    link_libraries(openssl_crypto)
+
+    add_library(openssl_ssl SHARED IMPORTED)
+    set_target_properties(openssl_ssl PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/lib/libssl.so)
+    link_libraries(openssl_ssl)
 else()
     message("other")
     set(ZLIB_LIBRARY  libz.a)
@@ -220,11 +248,20 @@ else()
     set_target_properties(jpeg_main PROPERTIES IMPORTED_LOCATION
         ${LIBJPEG_ROOT_DIR}/lib/libturbojpeg.a)
     link_libraries(jpeg_main pthread)
+
+    add_library(openssl_crypto SHARED IMPORTED)
+    set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION ${OPENSSL_ROOT_DIR}/lib/libcrypto.so)
+    link_libraries(openssl_crypto)
+
+    add_library(openssl_ssl SHARED IMPORTED)
+    set_target_properties(openssl_ssl PROPERTIES IMPORTED_LOCATION
+        ${OPENSSL_ROOT_DIR}/lib/libssl.so)
+    link_libraries(openssl_ssl)
 endif()
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES} ${OTHER_FILES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(${PROJECT_NAME} Qt5::Core  Qt5::Gui Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Gui Qt5::Widgets)
 
 install(TARGETS ${PROJECT_NAME}
        RUNTIME DESTINATION ${RUNTIME_OUTPUT_DIRECTORY}

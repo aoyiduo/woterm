@@ -85,21 +85,21 @@ QWoIdentifyDialog::QWoIdentifyDialog(bool noselect, QWidget *parent) :
     {
         QString path = QDir::cleanPath(QDir::homePath() + "/.ssh");
         ui->sshFilePath->setText(path);
-        bool on = QWoSetting::enableUserHomeIdentityFiles();
+        bool on = QKxVer::instance()->isFullFeather() && QWoSetting::enableUserHomeIdentityFiles();
         ui->chkLocalUser->setChecked(on);
         QObject::connect(ui->chkLocalUser, &QCheckBox::clicked, this, [=](){
             QWoSetting::setEnableUserHomeIdentityFiles(ui->chkLocalUser->isChecked());
         });
     }
     {
-        bool on = QWoSetting::enableLocalSshAgent();
+        bool on = QKxVer::instance()->isFullFeather() && QWoSetting::enableLocalSshAgent();
         ui->chkLocalAgent->setChecked(on);
         QObject::connect(ui->chkLocalAgent, &QCheckBox::clicked, this, [=](){
             QWoSetting::setEnableLocalSshAgent(ui->chkLocalAgent->isChecked());
         });
     }
     {
-        bool on = QWoSetting::enableRemoteSshAgent();
+        bool on = QKxVer::instance()->isFullFeather() && QWoSetting::enableRemoteSshAgent();
         ui->chkRemoteAgent->setChecked(on);
         ui->remoteAgentArea->setEnabled(on);
         QObject::connect(ui->chkRemoteAgent, &QCheckBox::clicked, this, [=](){
@@ -125,7 +125,7 @@ QWoIdentifyDialog::QWoIdentifyDialog(bool noselect, QWidget *parent) :
     }
 
     ui->tabWidget->setCurrentIndex(0);
-    bool canUse = QWoSetting::allowToUseExternalIdentityFiles();
+    bool canUse = QKxVer::instance()->isFullFeather() && QWoSetting::allowToUseExternalIdentityFiles();
     ui->remote->setEnabled(canUse);
     ui->dirs->setEnabled(canUse);
     QWoUtils::setLayoutVisible(ui->externalTip1, !canUse);

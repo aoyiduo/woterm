@@ -80,7 +80,7 @@ QWoSessionList::QWoSessionList(QWidget *parent)
     m_treeModel = QWoHostTreeModel::instance();
 
     QObject::connect(m_treeModel.data(), &QAbstractItemModel::modelReset, this, [=](){
-        restoreSessionsExpandState();
+        tryToRestoreSessionsExpandState();
     });
 
     m_proxyModel = new QWoSortFilterProxyModel(1, this);
@@ -110,6 +110,31 @@ QWoSessionList::QWoSessionList(QWidget *parent)
     m_countLeft = -1;
     m_input->setPlaceholderText(tr("Enter keyword to search"));
     m_input->clear();
+
+    m_input->installEventFilter(this);
+
+    QObject::connect((QWoTreeView*)m_tree, &QTreeView::expanded, this, [=](const QModelIndex& idx){
+        QVariant group = idx.data(ROLE_GROUP);
+        if(!group.isValid()) {
+            return ;
+        }
+        QString txt = m_input->text();
+        if(!txt.isEmpty()) {
+            return ;
+        }
+        saveSessionsExpandState();
+    });
+    QObject::connect((QWoTreeView*)m_tree, &QTreeView::collapsed, this, [=](const QModelIndex& idx){
+        QVariant group = idx.data(ROLE_GROUP);
+        if(!group.isValid()) {
+            return ;
+        }
+        QString txt = m_input->text();
+        if(!txt.isEmpty()) {
+            return ;
+        }
+        saveSessionsExpandState();
+    });
 }
 
 QWoSessionList::~QWoSessionList()
@@ -133,7 +158,35 @@ void QWoSessionList::refreshList()
     }else{
         m_treeModel->refreshList();
     }
-    restoreSessionsExpandState();
+    tryToRestoreSessionsExpandState();
+}
+
+void QWoSessionList::tryToConnect(const HostInfo &hi)
+{
+    qDebug() << "server:" << hi.name;
+    switch (hi.type) {
+    case SshWithSftp:
+        emit readyToConnect(hi.name, EOT_SSH);
+        break;
+    case SftpOnly:
+        emit readyToConnect(hi.name, EOT_SFTP);
+        break;
+    case Telnet:
+        emit readyToConnect(hi.name, EOT_TELNET);
+        break;
+    case RLogin:
+        emit readyToConnect(hi.name, EOT_RLOGIN);
+        break;
+    case Mstsc:
+        emit readyToConnect(hi.name, EOT_MSTSC);
+        break;
+    case Vnc:
+        emit readyToConnect(hi.name, EOT_VNC);
+        break;
+    case SerialPort:
+        emit readyToConnect(hi.name, EOT_SERIALPORT);
+        break;
+    }
 }
 
 void QWoSessionList::onReloadSessionList()
@@ -177,33 +230,9 @@ void QWoSessionList::onListItemDoubleClicked(const QModelIndex &item)
         if(!v.isValid()) {
             return;
         }
-        saveSessionsExpandState();
         return;
     }
-    qDebug() << "server:" << hi.name;
-    switch (hi.type) {
-    case SshWithSftp:
-        emit readyToConnect(hi.name, EOT_SSH);
-        break;
-    case SftpOnly:
-        emit readyToConnect(hi.name, EOT_SFTP);
-        break;
-    case Telnet:
-        emit readyToConnect(hi.name, EOT_TELNET);
-        break;
-    case RLogin:
-        emit readyToConnect(hi.name, EOT_RLOGIN);
-        break;
-    case Mstsc:
-        emit readyToConnect(hi.name, EOT_MSTSC);
-        break;
-    case Vnc:
-        emit readyToConnect(hi.name, EOT_VNC);
-        break;
-    case SerialPort:
-        emit readyToConnect(hi.name, EOT_SERIALPORT);
-        break;
-    }
+    tryToConnect(hi);
 }
 
 void QWoSessionList::onListCurrentItemChanged(const QModelIndex &item)
@@ -246,10 +275,6 @@ void QWoSessionList::onTimeout()
 
 void QWoSessionList::onEditReturnPressed()
 {
-    QString txt = m_input->text().trimmed();
-    if(txt.isEmpty()) {
-        return;
-    }
     int cnt = m_proxyModel->rowCount();
     if(cnt <= 0) {
         return;
@@ -433,7 +458,7 @@ void QWoSessionList::onListViewGroupLayout()
         m_proxyModel->setSourceModel(m_treeModel);
         m_model = m_treeModel;
         QWoSetting::setListModel("docker", false);
-        restoreSessionsExpandState();
+        tryToRestoreSessionsExpandState();
     }else{
         m_btnModel->setIcon(QIcon("../private/skins/black/list.png"));
         m_proxyModel->setSourceModel(m_listModel);
@@ -497,14 +522,24 @@ bool QWoSessionList::handleListViewContextMenu(QContextMenuEvent *ev)
     return true;
 }
 
+void QWoSessionList::tryToRestoreSessionsExpandState()
+{
+    QString txt = m_input->text();
+    if(txt.isEmpty() && m_model == m_treeModel) {
+        restoreSessionsExpandState();
+    }else{
+        QPointer<QWoSessionList> that = this;
+        QTimer::singleShot(100, this, [=](){
+            if(that == nullptr) {
+                return ;
+            }
+            onEditTextChanged(txt);
+        });
+    }
+}
+
 void QWoSessionList::restoreSessionsExpandState()
 {
-    if(!QKxVer::instance()->isFullFeather()) {
-        return;
-    }
-    if(!QWoSetting::sessionsGroupCanRestore()) {
-        return;
-    }
     QPointer<QWoSessionList> that = this;
     QTimer::singleShot(100, this, [=](){
         if(that == nullptr) {
@@ -533,12 +568,6 @@ void QWoSessionList::restoreSessionsExpandState()
 
 void QWoSessionList::saveSessionsExpandState()
 {
-    if(!QKxVer::instance()->isFullFeather()) {
-        return;
-    }
-    if(!QWoSetting::sessionsGroupCanRestore()) {
-        return;
-    }
     QPointer<QWoSessionList> that = this;
     QTimer::singleShot(100, this, [=](){
         if(that == nullptr) {
@@ -564,6 +593,39 @@ void QWoSessionList::saveSessionsExpandState()
     });
 }
 
+void QWoSessionList::handleFilterInputKeyEvent(QKeyEvent *ke)
+{
+    int key = ke->key();
+
+    if(key == Qt::Key_Up) {
+        QModelIndex idx = prev(m_tree->currentIndex());
+        if(idx.isValid()) {
+            m_tree->clearSelection();
+            m_tree->setCurrentIndex(idx);
+        }
+    }else if(key == Qt::Key_Down) {
+        QModelIndex idx = next(m_tree->currentIndex());
+        if(idx.isValid()) {
+            m_tree->clearSelection();
+            m_tree->setCurrentIndex(idx);
+        }
+    }else if(key == Qt::Key_Right) {
+        m_tree->expand(m_tree->currentIndex());
+    }else if(key == Qt::Key_Left) {
+        m_tree->collapse(m_tree->currentIndex());
+    }else if(key == Qt::Key_Return || key == Qt::Key_Enter) {
+        QModelIndex idx = m_tree->currentIndex();
+        QVariant group = idx.data(ROLE_GROUP);
+        if(group.isValid()) {
+            if(m_tree->isExpanded(idx)) {
+                m_tree->collapse(idx);
+            }else{
+                m_tree->expand(idx);
+            }
+        }
+    }
+}
+
 void QWoSessionList::closeEvent(QCloseEvent *event)
 {
     emit aboutToClose(event);
@@ -584,8 +646,64 @@ bool QWoSessionList::eventFilter(QObject *obj, QEvent *ev)
                 m_countLeft = MAX_TRY_LEFT;
             }
         }else if(t == QEvent::Show) {
-            restoreSessionsExpandState();
+            tryToRestoreSessionsExpandState();
+        }
+    }else if(obj == m_input) {
+        if(t == QEvent::KeyPress) {
+            handleFilterInputKeyEvent((QKeyEvent*)ev);
         }
     }
     return QWidget::eventFilter(obj, ev);
+}
+
+QModelIndex QWoSessionList::first()
+{
+    return m_proxyModel->index(0, 0);
+}
+
+QModelIndex QWoSessionList::next(const QModelIndex &idx)
+{
+    if(!idx.isValid()) {
+        return first();
+    }
+    QVariant group = idx.data(ROLE_GROUP);
+    if(group.isValid()) {
+        // group.
+        if(m_tree->isExpanded(idx)) {
+            return idx.child(0, 0);
+        }
+    }
+    QModelIndex nidx = idx.siblingAtRow(idx.row()+1);
+    if(!nidx.isValid()) {
+        if(!group.isValid()) {
+            QModelIndex pidx = idx.parent();
+            return pidx.siblingAtRow(pidx.row()+1);
+        }
+    }
+    return nidx;
+}
+
+QModelIndex QWoSessionList::prev(const QModelIndex &idx)
+{
+    if(!idx.isValid()) {
+        return first();
+    }
+    QVariant state = idx.data(ROLE_GROUP);
+    if(state.isValid()) {
+        // group.
+        QModelIndex gidx = idx.siblingAtRow(idx.row()-1);
+        if(m_tree->isExpanded(gidx)) {
+            int cnt = m_proxyModel->rowCount(gidx);
+            return gidx.child(cnt - 1, 0);
+        }
+        return gidx;
+    }
+    QModelIndex nidx = idx.siblingAtRow(idx.row()-1);
+    if(!nidx.isValid()) {
+        QVariant group = idx.data(ROLE_GROUP);
+        if(!group.isValid()) {
+            return idx.parent();
+        }
+    }
+    return nidx;
 }

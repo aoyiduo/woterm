@@ -578,12 +578,6 @@ void QWoSessionManage::resizeHeader()
 
 void QWoSessionManage::restoreSessionsExpandState()
 {
-    if(!QKxVer::instance()->isFullFeather()) {
-        return;
-    }
-    if(!QWoSetting::sessionsGroupCanRestore()) {
-        return;
-    }
     QPointer<QWoSessionManage> that = this;
     QTimer::singleShot(100, this, [=](){
         if(that == nullptr) {
@@ -612,12 +606,6 @@ void QWoSessionManage::restoreSessionsExpandState()
 
 void QWoSessionManage::saveSessionsExpandState()
 {
-    if(!QKxVer::instance()->isFullFeather()) {
-        return;
-    }
-    if(!QWoSetting::sessionsGroupCanRestore()) {
-        return;
-    }
     QPointer<QWoSessionManage> that = this;
     QTimer::singleShot(100, this, [=](){
         if(that == nullptr) {

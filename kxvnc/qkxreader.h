@@ -13,10 +13,15 @@
 #define QKXREADER_H
 
 #include <QByteArray>
+#include <QObject>
 
-class QKxReader
+class QKxReader : public QObject
 {
 public:
+    explicit QKxReader(QObject *parent = nullptr)
+        : QObject(parent){
+
+    }
     virtual QByteArray readArray(int timeout = 10000) = 0;
     virtual qint32 readInt32(int timeout = 10000) = 0;
     virtual quint32 readUint32(int timeout = 10000) = 0;
