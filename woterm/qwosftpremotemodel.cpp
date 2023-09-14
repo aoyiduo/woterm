@@ -10,6 +10,7 @@
 *******************************************************************************************/
 
 #include "qwosftpremotemodel.h"
+#include "qwosetting.h"
 
 #include <QPair>
 #include <QFontMetrics>
@@ -23,6 +24,7 @@ QWoSftpRemoteModel::QWoSftpRemoteModel(QObject *parent)
     : QAbstractListModel (parent)
 {
     m_font = QGuiApplication::font();
+    m_fileIconCachePath = QWoSetting::fileIconCachePath();
 }
 
 QWoSftpRemoteModel::~QWoSftpRemoteModel()
@@ -153,6 +155,7 @@ QVariant QWoSftpRemoteModel::data(const QModelIndex &index, int role) const
             int w = fm.width(fi.date.toString()) + 10;
             return QSize(w, 24);
         }
+        return QVariant();
     }
 
     if(column == 0) {
@@ -162,7 +165,7 @@ QVariant QWoSftpRemoteModel::data(const QModelIndex &index, int role) const
             }else if(fi.type == "l") {
                 return m_iconProvider.icon(QFileIconProvider::File);
             }
-            return m_iconProvider.icon(QFileIconProvider::File);
+            return myFileIcon(fi.name);
         }else if(role == Qt::DisplayRole) {
             return fi.name;
         }
@@ -303,6 +306,61 @@ QString QWoSftpRemoteModel::formatNumber(qint64 n) const
     return out;
 }
 
+void QWoSftpRemoteModel::buildFileIcon(const QString &fileName)
+{
+    int pos = fileName.lastIndexOf('.');
+    if(pos <= 0 || fileName == "." || fileName == "..") {
+        return;
+    }
+    QString type = fileName.mid(pos);
+    if(isNumber(type)) {
+        return;
+    }
+    QString iconFile = m_fileIconCachePath+"/my"+type;
+    if(!QFile::exists(iconFile)) {
+        QFile f(iconFile);
+        if(f.open(QFile::WriteOnly)) {
+            f.write(fileName.toUtf8());
+        }
+    }
+}
+
+QIcon QWoSftpRemoteModel::myFileIcon(const QString &fileName) const
+{
+    int pos = fileName.lastIndexOf('.');
+    if(fileName == "." || fileName == "..") {
+        return m_iconProvider.icon(QFileIconProvider::Folder);
+    }
+    if(pos <= 0) {
+        return m_iconProvider.icon(QFileIconProvider::File);
+    }
+    QString type = fileName.mid(pos);
+    if(isNumber(type)) {
+        return m_iconProvider.icon(QFileIconProvider::File);
+    }
+    QString iconFile = m_fileIconCachePath+"/my"+type;
+
+    QFileInfo fi(iconFile);
+    if(!fi.exists()) {
+        return m_iconProvider.icon(QFileIconProvider::File);
+    }
+    return m_iconProvider.icon(fi);
+}
+
+bool QWoSftpRemoteModel::isNumber(const QString &num) const
+{
+    for(int i = 0; i < num.length(); i++) {
+        QChar c = num.at(i);
+        if(c == '.') {
+            continue;
+        }
+        if(!c.isDigit()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 static bool lessThan(const FileInfo &s1, const FileInfo &s2)
 {
     static QString type = "dl-";
@@ -337,7 +395,9 @@ void QWoSftpRemoteModel::onDirOpen(const QString &path, const QList<QVariant> &v
         fi.permission = mdata.value("permission").toString();
         m_fileInfos.append(fi);
 
-
+        if(fi.isFile()) {
+            buildFileIcon(fi.name);
+        }
     }
     std::sort(m_fileInfos.begin(), m_fileInfos.end(), lessThan);
     endResetModel();

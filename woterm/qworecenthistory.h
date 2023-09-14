@@ -29,6 +29,7 @@ signals:
 private slots:
     void onClearAll();
     void onMenuTriggered();
+    void onServerRemove(const QString& name);
 private:
     void save();
     Q_INVOKABLE void init();

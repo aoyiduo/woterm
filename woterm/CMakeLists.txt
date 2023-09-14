@@ -135,9 +135,10 @@ set(SOURCE_FILES
     qwodbgroupmergemodel.cpp
     qwodbservermergemodel.cpp
     qwodbsftpdownlistdialog.cpp
-    qwodbbackupdialog.cpp
     qwodbsftpdetaildialog.cpp
     qwodbrestoredialog.cpp
+    qwodbbackupdialog.cpp
+    qwodbpowerbackupdialog.cpp
     qwodbpowerrestoredialog.cpp
     qwobindportpermissiondialog.cpp
     qwogroupinputdialog.cpp
@@ -313,9 +314,10 @@ set(HEADER_FILES
     qwodbgroupmergemodel.h
     qwodbservermergemodel.h
     qwodbsftpdownlistdialog.h
-    qwodbbackupdialog.h
     qwodbsftpdetaildialog.h
     qwodbrestoredialog.h
+    qwodbbackupdialog.h
+    qwodbpowerbackupdialog.h
     qwodbpowerrestoredialog.h
     qwobindportpermissiondialog.h
     qwogroupinputdialog.h
@@ -426,9 +428,10 @@ set(OTHER_FILES
     qwosftpmovefiledialog.ui
     qwovnctoolform.ui
     qwovncftpwidget.ui
-    qwodbbackupdialog.ui
     qwodbsftpdetaildialog.ui
     qwodbrestoredialog.ui
+    qwodbbackupdialog.ui
+    qwodbpowerbackupdialog.ui
     qwodbpowerrestoredialog.ui
     qwoplaybookconsole.ui
     qwobindportpermissiondialog.ui

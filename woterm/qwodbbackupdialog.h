@@ -1,6 +1,6 @@
 /*******************************************************************************************
 *
-* Copyright (C) 2022 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
+* Copyright (C) 2023 Guangzhou AoYiDuo Network Technology Co.,Ltd. All Rights Reserved.
 *
 * Contact: http://www.aoyiduo.com
 *
@@ -9,17 +9,16 @@
 *
 *******************************************************************************************/
 
+
 #ifndef QWODBBACKUPDIALOG_H
 #define QWODBBACKUPDIALOG_H
 
 #include <QDialog>
-#include <QPointer>
 
 namespace Ui {
 class QWoDbBackupDialog;
 }
 
-class QWoDBSftpUploadSync;
 class QWoDbBackupDialog : public QDialog
 {
     Q_OBJECT
@@ -29,18 +28,10 @@ public:
     ~QWoDbBackupDialog();
 
 private slots:
-    void onCurrentIndexChanged();
-    void onAdjustLayout();
-    void onSftpDetailButtonClicked();
-    void onFileSaveClicked();
-    void onFileUploadClicked();
-    void onFileBrowserClicked();
-    void onInfoArrived(int action, int err, const QString& errDesc);
-private:
-    void resetSftpUrl();
+    void onBackupButtonClicked();
+    void onAssistButtonClicked(int idx);
 private:
     Ui::QWoDbBackupDialog *ui;
-    QPointer<QWoDBSftpUploadSync> m_sync;
 };
 
 #endif // QWODBBACKUPDIALOG_H

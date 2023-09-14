@@ -37,8 +37,9 @@
 #include "qwosessiontoolconfiguredialog.h"
 #include "qwoopacitysettingdialog.h"
 #include "qwosshconf.h"
-#include "qwodbbackupdialog.h"
+#include "qwodbpowerbackupdialog.h"
 #include "qwodbrestoredialog.h"
+#include "qwodbbackupdialog.h"
 #include "qwodbpowerrestoredialog.h"
 #include "qkxprocesslaunch.h"
 #include "qkxmessagebox.h"
@@ -532,24 +533,11 @@ void QWoMainWindow::onActionOpenSerialportTriggered()
 void QWoMainWindow::onActionBackupTriggered()
 {
     if(QKxVer::instance()->isFullFeather()) {
-        QWoDbBackupDialog dlg(this);
+        QWoDbPowerBackupDialog dlg(this);
         dlg.exec();
     }else{
-        QString path = QWoSetting::lastBackupPath();
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Backup Session Database"), path, "SQLite3 (*.db)");
-        qDebug() << "fileName" << fileName;
-        if(fileName.isEmpty()) {
-            return;
-        }
-        if(!fileName.endsWith(".db")) {
-            fileName += ".db";
-        }
-        QFileInfo fi(fileName);
-        QString last = fi.absolutePath();
-        QWoSetting::setLastBackupPath(last);
-        if(!QWoSshConf::instance()->backup(fileName)) {
-            QKxMessageBox::warning(this, tr("Failure"), tr("failed to backup the session list."));
-        }
+        QWoDbBackupDialog dlg(this);
+        dlg.exec();
     }
 }
 

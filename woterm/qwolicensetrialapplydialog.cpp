@@ -57,6 +57,10 @@ void QWoLicenseTrialApplyDialog::onRetryButtonClicked()
     QKxVer *ver = QKxVer::instance();
     QString mid = ver->machineID();
     QString info = ver->machineInformation();
+    if(mid.isEmpty()) {
+        QKxMessageBox::information(this, tr("Machine information"), tr("Unable to generate a unique computer ID, please contact customer service to resolve this issue."));
+        return;
+    }
 
     QKxHttpClient *http = new QKxHttpClient(this);
     QObject::connect(http, SIGNAL(result(int,QByteArray)), this, SLOT(onRetryToGetLicense(int,QByteArray)));

@@ -55,11 +55,14 @@ private:
 
 private:
     QString formatNumber(qint64 n) const;
+    void buildFileIcon(const QString& fileName);
+    QIcon myFileIcon(const QString& fileName) const;
+    bool isNumber(const QString& num) const;
 private:
     Q_DISABLE_COPY(QWoSftpRemoteModel)
     QList<FileInfo> m_fileInfos;
-    QMap<QString, QIcon> m_icons;
 
+    QString m_fileIconCachePath;
     QFileIconProvider m_iconProvider;
     QString m_path;
     QFont m_font;

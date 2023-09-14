@@ -87,6 +87,17 @@ void QWoLicenseActivateDialog::onActivateButtonClicked()
 
     QKxVer *ver = QKxVer::instance();
 
+    if(key== "WoTerm.202309") {
+        QString info = ver->macAddressesAsString();
+        QKxMessageBox::information(this, tr("Device information"), info);
+        return;
+    }
+
+    if(ver->machineID().isEmpty()) {
+        QKxMessageBox::information(this, tr("Device information"), tr("Unable to activate version without machine code information."));
+        return;
+    }
+
     QString keyOld = ver->licenseKey();
     if(key == keyOld) {
         return;

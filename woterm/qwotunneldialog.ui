@@ -62,7 +62,7 @@
         <item>
          <widget class="QLabel" name="label_2">
           <property name="styleSheet">
-           <string notr="true"/>
+           <string notr="true">color: rgb(237, 51, 59);</string>
           </property>
           <property name="text">
            <string>Set to daemon mode in the administrator dialog.</string>

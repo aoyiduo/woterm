@@ -71,6 +71,7 @@ public:
     int hostCount() const;
 
 signals:
+    void serverRemove(const QString& name);
     void dataReset();
 private slots:
     void onAboutToQuit();

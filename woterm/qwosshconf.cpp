@@ -970,6 +970,7 @@ bool QWoSshConf::removeServer(const QString &name)
         SQLite::Statement del(db, QString("DELETE FROM servers WHERE name='%1'").arg(name).toUtf8());
         int cnt = del.exec();
         qDebug() << "remove server" << name << cnt;
+        emit serverRemove(name);
         resetLater();
         return true;
     }catch(std::exception& e) {

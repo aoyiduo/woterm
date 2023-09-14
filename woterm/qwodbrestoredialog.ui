@@ -6,14 +6,56 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>260</width>
-    <height>90</height>
+    <width>585</width>
+    <height>242</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="minimumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap>../private/skins/black/tips.png</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="styleSheet">
+        <string notr="true">color: rgb(237, 51, 59);</string>
+       </property>
+       <property name="text">
+        <string>Purchase the ultimate version to enjoy more advanced session backup features.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
@@ -62,8 +104,15 @@
         <string>Restore</string>
        </property>
        <property name="icon">
-        <iconset resource="woterm.qrc">
+        <iconset>
          <normaloff>../private/skins/black/enter2.png</normaloff>../private/skins/black/enter2.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnClose">
+       <property name="text">
+        <string>Close</string>
        </property>
       </widget>
      </item>
@@ -84,8 +133,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="woterm.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

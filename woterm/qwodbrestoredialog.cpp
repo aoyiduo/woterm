@@ -36,6 +36,8 @@ QWoDBRestoreDialog::QWoDBRestoreDialog(QWidget *parent) :
     QKxButtonAssist *assist = new QKxButtonAssist("../private/skins/black/folder.png", ui->filePath);
     QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
     QObject::connect(ui->btnRestore, SIGNAL(clicked()), this, SLOT(onRestoreButtonClicked()));
+    QObject::connect(ui->btnClose, SIGNAL(clicked()), this, SLOT(close()));
+    adjustSize();
 }
 
 QWoDBRestoreDialog::~QWoDBRestoreDialog()

@@ -26,6 +26,7 @@ QWoRecentHistory::QWoRecentHistory(QObject *parent)
     : QObject(parent)
 {
     QMetaObject::invokeMethod(this, "init", Qt::QueuedConnection);
+    QObject::connect(QWoSshConf::instance(), SIGNAL(serverRemove(QString)), this, SLOT(onServerRemove(QString)));
 }
 
 void QWoRecentHistory::update(const QString &name, int type)
@@ -104,6 +105,17 @@ void QWoRecentHistory::onMenuTriggered()
     QString name = dm.value("name").toString();
     int t = dm.value("type").toInt();
     emit readyToConnect(name, t);
+}
+
+void QWoRecentHistory::onServerRemove(const QString &name)
+{
+    auto it = std::find_if(m_recents.begin(), m_recents.end(), [=](const RecentHistoryData& rhd) {
+        return name == rhd.name;
+    });
+    if(it != m_recents.end()) {
+        m_recents.erase(it);
+        save();
+    }
 }
 
 void QWoRecentHistory::save()

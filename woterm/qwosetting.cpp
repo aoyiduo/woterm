@@ -155,6 +155,16 @@ QString QWoSetting::cachePath()
     return path;
 }
 
+QString QWoSetting::fileIconCachePath()
+{
+    QString path;
+    path = QWoSetting::ensurePath("fileIcon");
+    if(!QFile::exists(path)) {
+        return "";
+    }
+    return path;
+}
+
 QString QWoSetting::downloadPath()
 {
     QString path;

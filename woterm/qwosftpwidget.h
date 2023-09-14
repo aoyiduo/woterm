@@ -117,6 +117,7 @@ protected slots:
     void onRemoteMenuRename();
     void onRemoteMenuMoveToOtherDirectory();
     void onRemoteMenuEditFileContent();
+    void onRemoteMenuViewFileContent();
 
     void onNewSessionMultiplex();
     void onAdjustPosition();
@@ -149,8 +150,10 @@ protected:
     void handleLocalDropEvent(QDropEvent *de);
     void handleRemoteDragEnterEvent(QDropEvent *de);
     void handleRemoteDropEvent(QDropEvent *de);
+    Q_INVOKABLE void handleView(const QString& fileSave, const QString& fileRemote);
     Q_INVOKABLE void handleEdit(const QString& fileSave, const QString& fileRemote);
     Q_INVOKABLE void handleEditCommit(const QString& fileSave, const QString& fileRemote, const qint64& dt);
+    QProcess* openEditor(const QString &cmd, const QString& fileSave, const QString& fileRemote, const QDateTime& lastModified);
 private:
     Q_INVOKABLE void reconnect();
     QList<FileInfo> remoteSelections();
