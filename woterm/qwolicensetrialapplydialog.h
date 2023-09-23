@@ -30,6 +30,8 @@ private slots:
     void onRetryButtonClicked();
     void onRetryToGetLicense(int code, const QByteArray& body);
 private:
+    Q_INVOKABLE void tryToGetLicense(int tryLeft);
+private:
     Ui::QWoLicenseTrialApplyDialog *ui;
 };
 

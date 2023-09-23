@@ -52,9 +52,9 @@ QWoAdminDialog::QWoAdminDialog(QWidget *parent) :
         QWoSetting::setAllowToUseExternalIdentityFiles(ui->chkSshAgent->isChecked());
     });
 
-    ui->chkOpenLocalFile->setChecked(QWoSetting::allowSftpToOpenLocalFile());
-    QObject::connect(ui->chkOpenLocalFile, &QCheckBox::clicked, this, [=](){
-        QWoSetting::setAllowSftpToOpenLocalFile(ui->chkOpenLocalFile->isChecked());
+    ui->chkSftpOpenFile->setChecked(QWoSetting::allowSftpToOpenFile());
+    QObject::connect(ui->chkSftpOpenFile, &QCheckBox::clicked, this, [=](){
+        QWoSetting::setAllowSftpToOpenFile(ui->chkSftpOpenFile->isChecked());
     });
 
     adjustSize();

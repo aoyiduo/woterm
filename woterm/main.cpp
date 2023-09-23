@@ -110,7 +110,11 @@ void test()
 
 int main_pc_tunnel(int argc, char *argv[])
 {
+#ifdef QT_DEBUG
+    QGuiApplication::setApplicationName("wotermd");
+#else
     QGuiApplication::setApplicationName("woterm");
+#endif
     QGuiApplication::setOrganizationName("aoyiduo");
     QGuiApplication::setOrganizationDomain("aoyiduo.com");
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -147,7 +151,11 @@ int main_pc_tunnel(int argc, char *argv[])
 
 int main_pc_main(int argc, char *argv[])
 {
+#ifdef QT_DEBUG
+    QGuiApplication::setApplicationName("wotermd");
+#else
     QGuiApplication::setApplicationName("woterm");
+#endif
     QGuiApplication::setOrganizationName("aoyiduo");
     QGuiApplication::setOrganizationDomain("aoyiduo.com");
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

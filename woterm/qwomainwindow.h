@@ -83,13 +83,14 @@ private slots:
     void onActionOpenSerialportTriggered();
     void onActionBackupTriggered();
     void onActionRestoreTriggered();
+    void onActionMigrateTriggered();
     void onActionExitTriggered();
     void onActionToolbarTriggered();
     void onActionSessionListTriggered();
     void onActionTTYOptionsTriggered();
     void onActionVNCOptionsTriggered();
     void onActionRDPOptionsTriggered();
-    void onActionToolOptionsTriggered();
+    void onActionFtpOptionsTriggered();
     void onActionSystemOptionsTriggered();
     void onActionRestartOptionsTriggered();
     void onActionSettingTriggered();    
@@ -105,6 +106,7 @@ private slots:
 
     void onFilterArrivedArrived(const QString& name, int type);
     void onFilterCreateArrived(const QString& name);
+    void onFilterEditArrived(const QString& name);
 
 
     // file

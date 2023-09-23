@@ -35,6 +35,8 @@ private slots:
     void onRetryToRedeemLicense(int code, const QByteArray& body);
     void onValidResult(int code, const QByteArray& body);
 private:
+    Q_INVOKABLE void tryToRedeemLicense(const QString& code, int tryLeft);
+private:
     Ui::QWoLicenseActivateDialog *ui;
 };
 

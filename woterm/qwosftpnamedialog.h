@@ -24,6 +24,7 @@ class QWoSftpNameDialog : public QDialog
 public:
     explicit QWoSftpNameDialog(const QString& name, QWidget *parent = nullptr);
     ~QWoSftpNameDialog();
+    void setPrivateButtonVisible(bool on);
     QString result() const;
     bool isPrivate() const;
 private slots:

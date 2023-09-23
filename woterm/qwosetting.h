@@ -51,6 +51,7 @@ public:
     static QString tempPath();
     static QString fontBackupPath();
     static QString cachePath();
+    static QString viewPath();
     static QString fileIconCachePath();
 
     Q_INVOKABLE static QString downloadPath();
@@ -151,8 +152,8 @@ public:
     static void setLastLocalSshAgentAddress(const QString& addr);
     static QByteArray sshAuthSockDefault();
 
-    static bool allowSftpToOpenLocalFile();
-    static void setAllowSftpToOpenLocalFile(bool on);
+    static bool allowSftpToOpenFile();
+    static void setAllowSftpToOpenFile(bool on);
 
 };
 

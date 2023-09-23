@@ -24,8 +24,9 @@ QWoSftpRenameDialog::QWoSftpRenameDialog(const QString &path, const QString &nam
 {
     Qt::WindowFlags flags = windowFlags();
     setWindowFlags(flags &~Qt::WindowContextHelpButtonHint);
-    setWindowTitle(tr("File rename"));
     ui->setupUi(this);
+
+    setWindowTitle(tr("File rename"));
     ui->pathOld->setText(QDir::cleanPath(path+"/"+name));
     ui->pathOld->setReadOnly(true);
     ui->chkModify->setChecked(false);

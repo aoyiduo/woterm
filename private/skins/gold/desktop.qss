@@ -132,6 +132,10 @@ QToolBar QLineEdit:hover {
     border: 1px solid darkgray;
 }
 
+QListView::item {
+    min-height:24px;
+}
+
 QListView::item:selected {
     background-color: #CD9B1D;
     color: white;

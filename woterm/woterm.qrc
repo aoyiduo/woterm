@@ -47,5 +47,6 @@
         <file>resource/images/tunnel.png</file>
         <file>resource/images/exit.png</file>
         <file>resource/images/reload.png</file>
+        <file>resource/images/edit.png</file>
     </qresource>
 </RCC>

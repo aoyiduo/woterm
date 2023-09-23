@@ -137,6 +137,10 @@ QDockWidget {
     margin 0px;
 }
 
+QListView::item {
+    min-height:24px;
+}
+
 QListView::item:selected {
     background-color: rgba(0, 46, 128, 200);
 }

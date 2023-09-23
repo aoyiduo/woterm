@@ -155,6 +155,14 @@ QString QWoSetting::cachePath()
     return path;
 }
 
+QString QWoSetting::viewPath()
+{
+    QString path = QWoSetting::ensurePath("view");
+    path = QDir::cleanPath(path);
+    path = QDir::toNativeSeparators(path);
+    return path;
+}
+
 QString QWoSetting::fileIconCachePath()
 {
     QString path;
@@ -577,14 +585,14 @@ QByteArray QWoSetting::sshAuthSockDefault()
 #endif
 }
 
-bool QWoSetting::allowSftpToOpenLocalFile()
+bool QWoSetting::allowSftpToOpenFile()
 {
-    return value("admin/openLocalFile", true).toBool();
+    return value("admin/sftpOpenFile", true).toBool();
 }
 
-void QWoSetting::setAllowSftpToOpenLocalFile(bool on)
+void QWoSetting::setAllowSftpToOpenFile(bool on)
 {
-    setValue("admin/openLocalFile", on);
+    setValue("admin/sftpOpenFile", on);
 }
 
 bool QWoSetting::serialportOnAppStart()

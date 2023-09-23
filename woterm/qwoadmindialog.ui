@@ -138,9 +138,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="chkOpenLocalFile">
+         <widget class="QCheckBox" name="chkSftpOpenFile">
           <property name="text">
-           <string>[SFTP]Allow to open the local file by double click.</string>
+           <string>[SFTP]Allow to open file by mouse double click.</string>
           </property>
          </widget>
         </item>

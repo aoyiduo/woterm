@@ -78,7 +78,9 @@ set(SOURCE_FILES
     qwosessionrdpproperty.cpp
     qwosessionvncproperty.cpp
     qwosessionttyproperty.cpp
-    qwosessiontoolconfiguredialog.cpp
+    qwosessionftpproperty.cpp
+    qwosessionfileassociationmodel.cpp
+    qwosessionfileassociationadddialog.cpp
     qwosetting.cpp
     qwosettingdialog.cpp
     qwoshower.cpp
@@ -102,6 +104,7 @@ set(SOURCE_FILES
     qworlogintermwidgetimpl.cpp
     qwotreeview.cpp
     qwosftptask.cpp
+    qwosftpeditordialog.cpp
     qwosftpwidget.cpp
     qwosftpwidgetimpl.cpp
     qwosftplocalmodel.cpp
@@ -138,6 +141,7 @@ set(SOURCE_FILES
     qwodbsftpdetaildialog.cpp
     qwodbrestoredialog.cpp
     qwodbbackupdialog.cpp
+    qwodbmigratedialog.cpp
     qwodbpowerbackupdialog.cpp
     qwodbpowerrestoredialog.cpp
     qwobindportpermissiondialog.cpp
@@ -257,7 +261,9 @@ set(HEADER_FILES
     qwosessionrdpproperty.h
     qwosessionvncproperty.h
     qwosessionttyproperty.h
-    qwosessiontoolconfiguredialog.h
+    qwosessionftpproperty.h
+    qwosessionfileassociationmodel.h
+    qwosessionfileassociationadddialog.h
     qwosetting.h
     qwosettingdialog.h
     qwoshower.h
@@ -282,6 +288,7 @@ set(HEADER_FILES
     qwotreeview.h
     qwosftptask.h
     qwosftpwidget.h
+    qwosftpeditordialog.h
     qwosftpwidgetimpl.h
     qwosftplocalmodel.h
     qwosftpremotemodel.h
@@ -317,6 +324,7 @@ set(HEADER_FILES
     qwodbsftpdetaildialog.h
     qwodbrestoredialog.h
     qwodbbackupdialog.h
+    qwodbmigratedialog.h
     qwodbpowerbackupdialog.h
     qwodbpowerrestoredialog.h
     qwobindportpermissiondialog.h
@@ -414,7 +422,8 @@ set(OTHER_FILES
     qwosessionrdpproperty.ui
     qwosessionvncproperty.ui
     qwosessionttyproperty.ui
-    qwosessiontoolconfiguredialog.ui
+    qwosessionftpproperty.ui
+    qwosessionfileassociationadddialog.ui
     qwosettingdialog.ui
     qwotermmask.ui
     qwoserialinput.ui
@@ -422,6 +431,7 @@ set(OTHER_FILES
     qwounioninputitem.ui
     qwounioninputconfiguredialog.ui
     qwosftpwidget.ui
+    qwosftpeditordialog.ui
     qwosftptransferwidget.ui
     qwosftppermissiondialog.ui
     qwosftprenamedialog.ui
@@ -431,6 +441,7 @@ set(OTHER_FILES
     qwodbsftpdetaildialog.ui
     qwodbrestoredialog.ui
     qwodbbackupdialog.ui
+    qwodbmigratedialog.ui
     qwodbpowerbackupdialog.ui
     qwodbpowerrestoredialog.ui
     qwoplaybookconsole.ui

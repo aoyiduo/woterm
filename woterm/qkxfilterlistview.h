@@ -48,6 +48,7 @@ private:
     QPointer<QWidget> m_parent;
     QPointer<QListView> m_listView;
     QToolButton *m_btnSftp;
+    QToolButton *m_btnEdit;
     QPoint m_ptMouse;
     QEvent::Type m_event;
 };

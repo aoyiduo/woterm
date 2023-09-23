@@ -132,6 +132,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="btnLocalBrowser">
+          <property name="toolTip">
+           <string>Open current directory</string>
+          </property>
           <property name="text">
            <string>...</string>
           </property>
@@ -205,6 +208,20 @@
           <property name="icon">
            <iconset>
             <normaloff>../private/skins/black/transfer3.png</normaloff>../private/skins/black/transfer3.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="btnEditors">
+          <property name="toolTip">
+           <string>Edit file watch list</string>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="woterm.qrc">
+            <normaloff>:/woterm/resource/images/edit.png</normaloff>:/woterm/resource/images/edit.png</iconset>
           </property>
          </widget>
         </item>
@@ -305,6 +322,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="woterm.qrc"/>
+ </resources>
  <connections/>
 </ui>

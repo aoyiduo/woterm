@@ -27,7 +27,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -68,6 +68,7 @@
     <addaction name="menuOpen"/>
     <addaction name="menuRecent"/>
     <addaction name="separator"/>
+    <addaction name="actionMigrate"/>
     <addaction name="actionRestore"/>
     <addaction name="actionBackup"/>
     <addaction name="separator"/>
@@ -98,7 +99,7 @@
      <addaction name="actionTTYOptions"/>
      <addaction name="actionVNCOptions"/>
      <addaction name="actionRDPOptions"/>
-     <addaction name="actionToolOptions"/>
+     <addaction name="actionFtpOptions"/>
     </widget>
     <addaction name="actionTunnel"/>
     <addaction name="actionPlaybooks"/>
@@ -370,9 +371,9 @@
     <string>Upgrade check...</string>
    </property>
   </action>
-  <action name="actionToolOptions">
+  <action name="actionFtpOptions">
    <property name="text">
-    <string>Tool options</string>
+    <string>FTP options</string>
    </property>
   </action>
   <action name="actionRestart">
@@ -556,6 +557,11 @@
   <action name="actionLeftTabClose">
    <property name="text">
     <string>Close left tabs</string>
+   </property>
+  </action>
+  <action name="actionMigrate">
+   <property name="text">
+    <string>Migrate from other...</string>
    </property>
   </action>
  </widget>

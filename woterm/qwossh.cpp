@@ -1525,6 +1525,15 @@ private:
             handleError(tr("Error allocating SFTP session: %1").arg(ssh_get_error(ssh_session(session))), QVariantMap());
             return false;
         }
+        int n = 0;
+        do{
+            char msg[128];
+            n = ssh_channel_read_timeout(sftp->channel, msg, 128, 0, 100);
+        }while(n > 0);
+        do{
+            char msg[128];
+            n = ssh_channel_read_timeout(sftp->channel, msg, 128, 1, 100);
+        }while(n > 0);
         if(sftp_init(sftp) != SSH_OK) {
             handleError(tr("Error initializing SFTP session: %1").arg(ssh_get_error(sftp)), QVariantMap());
             return false;

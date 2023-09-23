@@ -23,6 +23,7 @@ public:
     explicit QKxFilterLineEdit(QWidget *parent);
     virtual ~QKxFilterLineEdit();
 signals:
+    void editArrived(const QString& name);
     void targetArrived(const QString& name, int type);
     void createArrived(const QString& name);
 private slots:

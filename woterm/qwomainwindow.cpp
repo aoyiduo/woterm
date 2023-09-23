@@ -33,13 +33,14 @@
 #include "qwosessionttyproperty.h"
 #include "qwosessionrdpproperty.h"
 #include "qwosessionvncproperty.h"
+#include "qwosessionftpproperty.h"
 #include "qwosystemoptiondialog.h"
-#include "qwosessiontoolconfiguredialog.h"
 #include "qwoopacitysettingdialog.h"
 #include "qwosshconf.h"
 #include "qwodbpowerbackupdialog.h"
 #include "qwodbrestoredialog.h"
 #include "qwodbbackupdialog.h"
+#include "qwodbmigratedialog.h"
 #include "qwodbpowerrestoredialog.h"
 #include "qkxprocesslaunch.h"
 #include "qkxmessagebox.h"
@@ -552,6 +553,12 @@ void QWoMainWindow::onActionRestoreTriggered()
     }
 }
 
+void QWoMainWindow::onActionMigrateTriggered()
+{
+    QWoDBMigrateDialog dlg(this);
+    dlg.exec();
+}
+
 void QWoMainWindow::onActionExitTriggered()
 {
     close();
@@ -585,9 +592,9 @@ void QWoMainWindow::onActionRDPOptionsTriggered()
     dlg.exec();
 }
 
-void QWoMainWindow::onActionToolOptionsTriggered()
+void QWoMainWindow::onActionFtpOptionsTriggered()
 {
-    QWoSessionToolConfigureDialog dlg(this);
+    QWoSessionFtpProperty dlg(false, this);
     dlg.exec();
 }
 
@@ -659,8 +666,9 @@ void QWoMainWindow::onActionAdminTriggered()
     input.setWindowFlags(input.windowFlags() & ~Qt::WindowContextHelpButtonHint);
     input.setMinimumWidth(350);
     input.setWindowTitle(tr("Password input"));
-    input.setLabelText(pass.isEmpty() ? tr("Login to the configuration of administrator for the first time, Please input password to activate it.") : tr("Please input password to verify."));
+    input.setLabelText(pass.isEmpty() ? tr("Login to the configuration of administrator for the first time, \r\nPlease input password to activate it.") : tr("Please input password to verify."));
     input.setTextEchoMode(QLineEdit::Password);
+    input.adjustSize();
     int err = input.exec();
     if(err == 0) {
         return;
@@ -714,6 +722,17 @@ void QWoMainWindow::onFilterCreateArrived(const QString &name)
     if(name.contains(':')) {
         dlg.setHostPort(name);
     }
+    QObject::connect(&dlg, SIGNAL(readyToConnect(QString, int)), this, SLOT(onSessionReadyToConnect(QString,int)));
+    int retVal = dlg.exec();
+    if(retVal == QWoSessionProperty::Save || retVal == QWoSessionProperty::Connect) {
+        QWoHostListModel::instance()->refreshList();
+    }
+}
+
+void QWoMainWindow::onFilterEditArrived(const QString &name)
+{
+    QWoSessionProperty dlg(this);
+    dlg.setSession(name);
     QObject::connect(&dlg, SIGNAL(readyToConnect(QString, int)), this, SLOT(onSessionReadyToConnect(QString,int)));
     int retVal = dlg.exec();
     if(retVal == QWoSessionProperty::Save || retVal == QWoSessionProperty::Connect) {
@@ -1222,13 +1241,14 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionOpenSerialport, SIGNAL(triggered()), this, SLOT(onActionOpenSerialportTriggered()));
     QObject::connect(ui->actionBackup, SIGNAL(triggered()), this, SLOT(onActionBackupTriggered()));
     QObject::connect(ui->actionRestore, SIGNAL(triggered()), this, SLOT(onActionRestoreTriggered()));
+    QObject::connect(ui->actionMigrate, SIGNAL(triggered()), this, SLOT(onActionMigrateTriggered()));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(onActionExitTriggered()));
     QObject::connect(ui->actionToolBar, SIGNAL(triggered()), this, SLOT(onActionToolbarTriggered()));
     QObject::connect(ui->actionSessionList, SIGNAL(triggered()), this, SLOT(onActionSessionListTriggered()));
     QObject::connect(ui->actionTTYOptions, SIGNAL(triggered()), this, SLOT(onActionTTYOptionsTriggered()));
     QObject::connect(ui->actionVNCOptions, SIGNAL(triggered()), this, SLOT(onActionVNCOptionsTriggered()));
     QObject::connect(ui->actionRDPOptions, SIGNAL(triggered()), this, SLOT(onActionRDPOptionsTriggered()));
-    QObject::connect(ui->actionToolOptions, SIGNAL(triggered()), this, SLOT(onActionToolOptionsTriggered()));
+    QObject::connect(ui->actionFtpOptions, SIGNAL(triggered()), this, SLOT(onActionFtpOptionsTriggered()));
     QObject::connect(ui->actionSystemOptions, SIGNAL(triggered()), this, SLOT(onActionSystemOptionsTriggered()));
     QObject::connect(ui->actionIdentityManage, SIGNAL(triggered()), this, SLOT(onActionSshKeyManageTriggered()));
     QObject::connect(ui->actionDocument, SIGNAL(triggered()), this, SLOT(onActionHelpTriggered()));
@@ -1282,6 +1302,8 @@ void QWoMainWindow::initMenuBar()
     QObject::connect(ui->actionTopAlway, SIGNAL(triggered()), this, SLOT(onActionTopAlwayTriggered()));
     QObject::connect(ui->actionTrayMode, SIGNAL(triggered()), this, SLOT(onActionTrayModeTriggered()));
     QObject::connect(ui->actionTranslucent, SIGNAL(triggered()), this, SLOT(onActionTranslucentTriggered()));
+
+
 }
 
 void QWoMainWindow::initToolBar()
@@ -1352,6 +1374,7 @@ void QWoMainWindow::initToolBar()
         input->setObjectName(tr("filterBox"));
         tool->addWidget(input);
         QObject::connect(input, SIGNAL(createArrived(QString)), this, SLOT(onFilterCreateArrived(QString)));
+        QObject::connect(input, SIGNAL(editArrived(QString)), this, SLOT(onFilterEditArrived(QString)));
         QObject::connect(input, SIGNAL(targetArrived(QString,int)), this, SLOT(onFilterArrivedArrived(QString,int)));
     }
 }

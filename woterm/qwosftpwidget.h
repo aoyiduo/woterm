@@ -40,6 +40,8 @@ class QWoMessageQueueWidget;
 class QKxMessageBox;
 class QPushButton;
 class QProcess;
+class QFileSystemWatcher;
+class QTimer;
 
 class QWoSftpWidget : public QWidget
 {
@@ -94,6 +96,7 @@ protected slots:
     void onLocalMenuRemoveSelection();
     void onLocalMenuEnterDirectory();
     void onLocalMenuTryEnterDirectory();
+    void onLocalMenuOpenFile();
     void onLocalMenuUpload();
     void onLocalResetModel();    
     void onLocalPathReturnPressed();
@@ -106,6 +109,7 @@ protected slots:
     void onRemoteMenuGoHomeDirectory();
     void onRemoteMenuReloadDirectory();
     void onRemoteMenuCreateDirectory();
+    void onRemoteMenuCreateFile();
     void onRemoteMenuRemoveSelection();
     void onRemoteModifyItemPermission();
     void onRemoteMenuEnterDirectory();
@@ -117,7 +121,7 @@ protected slots:
     void onRemoteMenuRename();
     void onRemoteMenuMoveToOtherDirectory();
     void onRemoteMenuEditFileContent();
-    void onRemoteMenuViewFileContent();
+    void onRemoteMenuOpenFile();
 
     void onNewSessionMultiplex();
     void onAdjustPosition();
@@ -129,6 +133,7 @@ protected slots:
     void onRemoteReloadButtonClicked();
     void onRemoteFollowButtonClicked();
     void onRemoteTransferButtonClicked();
+    void onRemoteEditorsButtonClicked();
     void onRemotePathChanged(const QString& path);
     void onRemoteDropArrived(const QList<QUrl>& urls);
     /* local */
@@ -140,8 +145,12 @@ protected slots:
     void onLocalPathChanged(const QString& path);
     void onLocalDropArrived(const QList<QUrl>& urls);
 
-    /*editor*/
+    /*editor*/    
     void onEditorDestroy();
+    void onWatchFileChanged(const QString& file);
+    void onFileWatchTimeout();
+    void onFileWatchStopArrived(const QString& file);
+
 protected:
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     void resizeEvent(QResizeEvent *ev);
@@ -152,14 +161,17 @@ protected:
     void handleRemoteDropEvent(QDropEvent *de);
     Q_INVOKABLE void handleView(const QString& fileSave, const QString& fileRemote);
     Q_INVOKABLE void handleEdit(const QString& fileSave, const QString& fileRemote);
-    Q_INVOKABLE void handleEditCommit(const QString& fileSave, const QString& fileRemote, const qint64& dt);
+    Q_INVOKABLE bool handleEditCommit(const QString& fileSave, const QString& fileRemote, const qint64& dt, bool force = false);
     QProcess* openEditor(const QString &cmd, const QString& fileSave, const QString& fileRemote, const QDateTime& lastModified);
+    void removeEditorOrFileWatch(const QString& fileSave);
+    void cleanupEditorsOrFilesWatch();
 private:
     Q_INVOKABLE void reconnect();
     QList<FileInfo> remoteSelections();
     QList<QFileInfo> localSelections();
     void runUploadTask(const QList<QFileInfo>& lsf);
     Q_INVOKABLE void runUploadTask(const QStringList& lsfi);
+    QString sessionHexString() const;
 private:
     friend class QWoSftpWidgetImpl;
     Ui::QWoSftpWidget *ui;
@@ -179,6 +191,15 @@ private:
     QPointer<QKxMessageBox> m_warning;
 
     QList<QPointer<QProcess>> m_editors;
+    struct FileWatchActive {
+        QString fileSave;
+        QString fileRemote;
+        QDateTime lastModified;
+        QDateTime lastActive;
+    };
+
+    QMap<QString, FileWatchActive> m_filesWatchLastActive;
+    QPointer<QTimer> m_timerFileWatch;
 
     QString m_target;
     bool m_savePassword;

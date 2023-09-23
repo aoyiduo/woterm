@@ -27,7 +27,7 @@ public:
     void setMargins(int n);
     void setSpacing(int n);
     QToolButton *append(const QString &icon, bool frame);
-    QToolButton *button(int idx);
+    QToolButton *button(int idx);    
     void appendSeperator();
     void setEnabled(int idx, bool on);
     bool isEnabled(int idx);

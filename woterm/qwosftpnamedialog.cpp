@@ -34,6 +34,11 @@ QWoSftpNameDialog::~QWoSftpNameDialog()
     delete ui;
 }
 
+void QWoSftpNameDialog::setPrivateButtonVisible(bool on)
+{
+    ui->prv->setVisible(on);
+}
+
 QString QWoSftpNameDialog::result() const
 {
     return m_result;

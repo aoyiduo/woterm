@@ -21,6 +21,8 @@
 #include <QListView>
 #include <QDebug>
 #include <QDateTime>
+#include <QToolButton>
+#include <QIcon>
 
 QKxFilterLineEdit::QKxFilterLineEdit(QWidget *parent)
     : QLineEdit(parent)
@@ -31,6 +33,15 @@ QKxFilterLineEdit::QKxFilterLineEdit(QWidget *parent)
     assist->append("../private/skins/black/connect.png", true);
     QObject::connect(assist, SIGNAL(clicked(int)), this, SLOT(onAssistButtonClicked(int)));
     QObject::connect(this, SIGNAL(returnPressed()), this, SLOT(onAssistReturnPressed()));
+
+    QObject::connect(this, &QLineEdit::textChanged, this, [=](const QString& name){
+        QToolButton *btn = assist->button(1);
+        if(btn == nullptr) {
+            return ;
+        }
+        bool has = QWoSshConf::instance()->exists(name);
+        btn->setIcon(has ? QIcon("../private/skins/black/edit.png") : QIcon("../private/skins/black/add2.png"));
+    });
 }
 
 QKxFilterLineEdit::~QKxFilterLineEdit()
@@ -50,12 +61,15 @@ void QKxFilterLineEdit::onAssistButtonClicked(int idx)
 {
     if(idx == 0) {
         // add
-        emit createArrived(text());
+        QString name = text();
+        bool has = QWoSshConf::instance()->exists(name);
+        if(has) {
+            emit editArrived(name);
+        }else{
+            emit createArrived(name);
+        }
     }else {
         // connect
-        if(!m_listView->isVisible()) {
-            return;
-        }
         onAssistReturnPressed();
     }
 }

@@ -172,20 +172,9 @@ void QWoLicenseActivateDialog::onRedeemButtonClicked()
             }
         }
     }
-    QString mid = ver->machineID();
-    QString info = ver->buildRedeemInformation(code);
 
-    QKxHttpClient *http = new QKxHttpClient(this);
-    QObject::connect(http, SIGNAL(result(int,QByteArray)), this, SLOT(onRetryToRedeemLicense(int,QByteArray)));
-    QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
-    QJsonObject obj;
-    obj.insert("mid", mid);
-    obj.insert("info", info);
-    QJsonDocument doc;
-    doc.setObject(obj);
-    QByteArray json = doc.toJson(QJsonDocument::Compact);
-    http->post("http://key.woterm.com/redeem/license", json, "application/json; charset=utf-8");
-    ui->btnRedeem->setEnabled(false);
+
+    tryToRedeemLicense(code, 3);
 }
 
 void QWoLicenseActivateDialog::onTypeButtonClicked()
@@ -320,4 +309,44 @@ void QWoLicenseActivateDialog::onValidResult(int code, const QByteArray &body)
         return;
     }
     QKxMessageBox::information(this, tr("Network error"), tr("Network error:%1, try it again!").arg(code));
+}
+
+void QWoLicenseActivateDialog::tryToRedeemLicense(const QString &code, int tryLeft)
+{
+    tryLeft--;
+    if(tryLeft < 0) {
+        return;
+    }
+
+    QKxVer *ver = QKxVer::instance();
+    QString mid = ver->machineID();
+    QString probeMid = ver->machineProbeID();
+    if(probeMid.isEmpty()) {
+        ver->probeBestMid();
+        QKxMessageBox::information(this, tr("Machine information"), tr("Failed to generate the right machine id, please restart application or try it later."));
+        return;
+    }
+
+    if(mid != probeMid) {
+        if(!ver->forceProbeMidToMachineMid()) {
+            QKxMessageBox::information(this, tr("Machine information"), tr("Failed to generate the right machine id, please restart application or try it later."));
+            return;
+        }
+        QMetaObject::invokeMethod(this, "tryToRedeemLicense", Qt::QueuedConnection, Q_ARG(QString, code), Q_ARG(int, tryLeft));
+        return;
+    }
+
+    QString info = ver->buildRedeemInformation(code);
+
+    QKxHttpClient *http = new QKxHttpClient(this);
+    QObject::connect(http, SIGNAL(result(int,QByteArray)), this, SLOT(onRetryToRedeemLicense(int,QByteArray)));
+    QObject::connect(http, SIGNAL(finished()), http, SLOT(deleteLater()));
+    QJsonObject obj;
+    obj.insert("mid", mid);
+    obj.insert("info", info);
+    QJsonDocument doc;
+    doc.setObject(obj);
+    QByteArray json = doc.toJson(QJsonDocument::Compact);
+    http->post("http://key.woterm.com/redeem/license", json, "application/json; charset=utf-8");
+    ui->btnRedeem->setEnabled(false);
 }
