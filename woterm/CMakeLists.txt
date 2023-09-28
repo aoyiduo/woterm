@@ -15,7 +15,7 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Qml Quick QuickControls2 Charts QuickWidgets SerialPort LinguistTools REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Widgets Qml Quick QuickControls2 Xml Charts QuickWidgets SerialPort LinguistTools REQUIRED)
 find_package(Qt5Core CONFIG REQUIRED Private)
 find_package(Qt5Gui CONFIG REQUIRED Private)
 if(ANDROID)
@@ -610,6 +610,6 @@ else()
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::CorePrivate Qt5::Gui Qt5::GuiPrivate Qt5::Widgets  Qt5::SerialPort Qt5::Qml Qt5::Charts Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::CorePrivate Qt5::Gui Qt5::GuiPrivate Qt5::Widgets  Qt5::SerialPort Qt5::Qml Qt5::Xml Qt5::Charts Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets)
 
 

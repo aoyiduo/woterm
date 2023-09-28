@@ -13,6 +13,7 @@
 #include "ui_qkxsearch.h"
 
 #include "qkxtermitem.h"
+#include <QTimer>
 
 QKxSearch::QKxSearch(QKxTermItem *term, QWidget *parent) :
     QWidget(parent),
@@ -59,4 +60,16 @@ void QKxSearch::onFindAll()
 void QKxSearch::onTextChanged(const QString &txt)
 {
     m_term->find(txt, ui->ascase->isChecked(), ui->regular->isChecked());
+}
+
+void QKxSearch::showEvent(QShowEvent *ev)
+{
+    QWidget::showEvent(ev);
+    QPointer<QKxSearch> that(this);
+    QTimer::singleShot(100, this, [=](){
+        if(that == nullptr) {
+            return ;
+        }
+        ui->key->setFocus();
+    });
 }

@@ -15,6 +15,7 @@
 #include "qwoutils.h"
 #include "qwosetting.h"
 #include "qkxmessagebox.h"
+#include "qwosshconf.h"
 
 #include <QDesktopWidget>
 
@@ -54,13 +55,34 @@ QVariantMap QWoSessionRDPProperty::result() const
 
 void QWoSessionRDPProperty::onButtonSaveClicked()
 {
+    m_result = save();
+    if(m_result.isEmpty()) {
+        return;
+    }
+    done(QDialog::Accepted);
+}
+
+void QWoSessionRDPProperty::onButtonSaveToAllClicked()
+{
+    m_result = save();
+    if(m_result.isEmpty()) {
+        return;
+    }
+    QWoSetting::setRdpDefault(m_result);
+    QWoSshConf::instance()->removeProperties(Mstsc);
+    m_result = QVariantMap();
+    done(QDialog::Accepted+1);
+}
+
+QVariantMap QWoSessionRDPProperty::save()
+{
     QVariantMap mvar;
     if(ui->fixRadio->isChecked()) {
         QString width = ui->fixWidth->text();
         QString height = ui->fixHeight->text();
         if(width.isEmpty() || height.isEmpty()) {
             QKxMessageBox::warning(this, tr("Parameter errors"), tr("The parameter value of width or height should be valid."));
-            return;
+            return QVariantMap();
         }
         mvar.insert("desktopType", "fix");
         mvar.insert("desktopWidth", width);
@@ -88,11 +110,10 @@ void QWoSessionRDPProperty::onButtonSaveClicked()
         mvar.insert("audioMode", 1);
     }
 
-    m_result = mvar;
     if(!m_bCustom) {
         QWoSetting::setRdpDefault(mvar);
     }
-    close();
+    return mvar;
 }
 
 void QWoSessionRDPProperty::initDefault()

@@ -19,12 +19,14 @@ class QWoSortFilterProxyModel : public QSortFilterProxyModel
     Q_OBJECT
 public:
     explicit QWoSortFilterProxyModel(int maxColumnCount, QObject *parent = nullptr);
+    bool treeWalk(const std::function<bool(const QModelIndex& idx)>& fn) const;
 public:
     Q_INVOKABLE void search(const QString& key);
     Q_INVOKABLE void qmlSearch(const QString& key);
     Q_INVOKABLE void qmlRemove(const QString& name);
 private:
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    bool treeWalk(const QModelIndex& idx, const std::function<bool(const QModelIndex& idx)>& fn) const;
 private:
     int m_maxColumnCount;
 };

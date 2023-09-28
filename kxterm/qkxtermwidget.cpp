@@ -19,6 +19,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QHBoxLayout>
+#include <QClipboard>
 
 const QString scrollbar_valid =  \
 "QScrollBar::vertical \
@@ -227,6 +228,18 @@ void QKxTermWidget::tryToPaste()
 void QKxTermWidget::pastePlainText(const QString &txt)
 {
     m_term->pastePlainText(txt);
+}
+
+bool QKxTermWidget::pasteWhenOverSelectionText(const QPoint& pt)
+{
+    if(m_term->isOverSelection(pt)) {
+        QString txtSel = m_term->selectedText();
+        QClipboard *clip = QGuiApplication::clipboard();
+        clip->setText(txtSel);
+        m_term->directSendData(txtSel.toUtf8());
+        return true;
+    }
+    return false;
 }
 
 QString QKxTermWidget::selectedText() const

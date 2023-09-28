@@ -381,7 +381,7 @@ void QWoSessionList::onListViewItemModify()
             }
             dlgPtr->done(QDialog::Accepted);
         });
-        if(dlg.exec() != QDialog::Accepted){
+        if(dlg.exec() < QDialog::Accepted){
             return;
         }
     }else{
@@ -391,7 +391,10 @@ void QWoSessionList::onListViewItemModify()
             return;
         }
         QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), this, SIGNAL(readyToConnect(QString,int)));
-        dlg.exec();
+        if(dlg.exec() < QDialog::Accepted) {
+            return;
+        }
+        scrollToSession(dlg.lastSaveName());
     }
     refreshList();
 }
@@ -402,6 +405,7 @@ void QWoSessionList::onListViewItemAdd()
     QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), this, SIGNAL(readyToConnect(QString,int)));
     dlg.exec();
     refreshList();
+    scrollToSession(dlg.lastSaveName());
 }
 
 void QWoSessionList::onListViewItemCopy()
@@ -414,6 +418,7 @@ void QWoSessionList::onListViewItemCopy()
     hi.name.append(".Copy");
     if(!QWoSshConf::instance()->exists(hi.name)) {
         QWoSshConf::instance()->append(hi);
+        QMetaObject::invokeMethod(this, "sessionEditLater", Qt::QueuedConnection, Q_ARG(QString, hi.name));
         return;
     }
 
@@ -424,6 +429,7 @@ void QWoSessionList::onListViewItemCopy()
         }
         hi.name = name;
         QWoSshConf::instance()->append(hi);
+        QMetaObject::invokeMethod(this, "sessionEditLater", Qt::QueuedConnection, Q_ARG(QString, hi.name));
         return;
     }
 }
@@ -483,7 +489,9 @@ bool QWoSessionList::handleListViewContextMenu(QContextMenuEvent *ev)
         HostInfo hi = idx.data(ROLE_HOSTINFO).value<HostInfo>();
         menu.addAction(QIcon("../private/skins/black/reload.png"), tr("ReloadAll"), this, SLOT(onListViewItemReload()));
         menu.addAction(QIcon("../private/skins/black/add.png"), tr("Add"), this, SLOT(onListViewItemAdd()));
-        menu.addAction(QIcon("../private/skins/black/ftp.png"), tr("Copy"), this, SLOT(onListViewItemCopy()));
+        if(hi.isValid()) {
+            menu.addAction(QIcon("../private/skins/black/ftp.png"), tr("Copy"), this, SLOT(onListViewItemCopy()));
+        }
         if(hi.type == SshWithSftp) {
             menu.addAction(QIcon("../private/skins/black/ssh2.png"), tr("SshConnect"), this, SLOT(onListViewItemOpenSsh()));
         }
@@ -624,6 +632,53 @@ void QWoSessionList::handleFilterInputKeyEvent(QKeyEvent *ke)
             }
         }
     }
+}
+
+void QWoSessionList::sessionEditLater(const QString &sessionName)
+{
+    QWoSessionProperty dlg(this);
+    if(!dlg.setSession(sessionName)) {
+        return;
+    }
+    scrollToSession(sessionName);
+    QObject::connect(&dlg, SIGNAL(readyToConnect(QString,int)), this, SIGNAL(readyToConnect(QString,int)));
+    dlg.exec();
+    refreshList();
+    scrollToSession(dlg.lastSaveName());
+}
+
+void QWoSessionList::scrollToSession(const QString &sessionName)
+{
+    QPointer<QWoSessionList> that(this);
+    QTimer::singleShot(500, this, [=]{
+        if(that == nullptr) {
+            return;
+        }
+        m_proxyModel->treeWalk([=](const QModelIndex& idx){
+            QString name = idx.data(Qt::DisplayRole).toString();
+            QVariant v = idx.data(ROLE_GROUP);
+            if(v.isValid()) {
+                return true;
+            }
+            QModelIndex pidx = idx.parent();
+            if(m_model == m_listModel) {
+                if(name == sessionName) {
+                    m_tree->scrollTo(idx);
+                    m_tree->clearSelection();
+                    m_tree->setCurrentIndex(idx);
+                    return false;
+                }
+            }else if(m_tree->isExpanded(pidx)) {
+                if(name == sessionName) {
+                    m_tree->scrollTo(idx);
+                    m_tree->clearSelection();
+                    m_tree->setCurrentIndex(idx);
+                    return false;
+                }
+            }
+            return true;
+        });
+    });
 }
 
 void QWoSessionList::closeEvent(QCloseEvent *event)

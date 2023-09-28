@@ -20,6 +20,7 @@ class QWoDBGroupMergeModel : public QWoDBMergeModel
 public:
     explicit QWoDBGroupMergeModel(QObject *parent = nullptr);
 private:
+    virtual void runApply();
     virtual QString toString(const QVariantMap& data) const;
 };
 

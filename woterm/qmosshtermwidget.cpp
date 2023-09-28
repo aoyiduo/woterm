@@ -485,9 +485,7 @@ void QMoSshTermWidget::resizeEvent(QResizeEvent *ev)
 void QMoSshTermWidget::contextMenuEvent(QContextMenuEvent *ev)
 {
     if(m_rkeyPaste) {
-        if(m_term->isOverSelection(ev->pos())) {
-            QString txtSel = m_term->selectedText();
-            m_term->directSendData(txtSel.toUtf8());
+        if(pasteWhenOverSelectionText(ev->pos())) {
             return;
         }
     }

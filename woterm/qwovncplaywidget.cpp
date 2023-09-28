@@ -60,6 +60,16 @@ QWoVncPlayWidget::~QWoVncPlayWidget()
 
 }
 
+bool QWoVncPlayWidget::smartResize()
+{
+    return m_player->smartResize();
+}
+
+void QWoVncPlayWidget::setSmartResize(bool on)
+{
+    m_player->setSmartResize(on);
+}
+
 bool QWoVncPlayWidget::isConnected()
 {
     return m_player->isConnected();

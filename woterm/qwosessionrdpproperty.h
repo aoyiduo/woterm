@@ -30,7 +30,9 @@ public:
     QVariantMap result() const;
 private slots:
     void onButtonSaveClicked();
+    void onButtonSaveToAllClicked();
 private:
+    QVariantMap save();
     void initDefault();
     void resetProperty(const QVariantMap& dm, bool force = false);
 private:

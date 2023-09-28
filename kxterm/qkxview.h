@@ -69,7 +69,7 @@ private:
     QList<TermLine> copyImage(int y, int rows, int cols);
     void markSelection(QList<TermLine>& img, int y, int rows, int cols, SelectionMode m);
     QChar typeCheck(QChar c);
-    bool lineText(int y, QString& out, QList<int> &pos);
+    bool lineText(int y, QString& out, QList<QPoint> &pos, bool forward);
     void cleanFind();
 private:
     QPointer<QKxScreen> m_screen;

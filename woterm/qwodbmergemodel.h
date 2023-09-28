@@ -30,6 +30,7 @@ public:
     void apply();
     bool runAction(int action, const QModelIndex& idx);
 protected:
+    virtual void runApply() = 0;
     virtual QString toString(const QVariantMap& data) const = 0;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;

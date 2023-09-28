@@ -21,7 +21,9 @@
 #include <QSettings>
 #include <QDebug>
 #include <QTextCodec>
-
+#include <QStandardPaths>
+#include <QDir>
+#include <QDomDocument>
 
 QWoDBMigrateDialog::QWoDBMigrateDialog(QWidget *parent) :
     QDialog(parent),
@@ -31,7 +33,7 @@ QWoDBMigrateDialog::QWoDBMigrateDialog(QWidget *parent) :
 
     setWindowTitle(tr("Migrate from other tools"));
 
-    QStringList typs = {"XShell", "SecureCRT"};
+    QStringList typs = {tr("XShell Sessions directory"), tr("SecureCRT sessions directory"), tr("SecureCRT XML export file")};
     ui->type->setModel(new QStringListModel(typs, ui->type));
     ui->dbPath->setReadOnly(true);
 
@@ -44,8 +46,14 @@ QWoDBMigrateDialog::QWoDBMigrateDialog(QWidget *parent) :
     QObject::connect(ui->btnClose, SIGNAL(clicked()), this, SLOT(close()));
     QObject::connect(ui->btnBrowser, SIGNAL(clicked()), this, SLOT(onBrowserButtonClicked()));
     QObject::connect(ui->btnImport, SIGNAL(clicked()), this, SLOT(onImportSessionButtonClicked()));
+    QObject::connect(ui->btnSearch, SIGNAL(clicked()), this, SLOT(onSearchSessionPathButtonClicked()));
     QObject::connect(ui->type, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypsCurrentIndexChanged(int)));
 
+#ifdef Q_OS_WIN
+    ui->btnSearch->setVisible(true);
+#else
+    ui->btnSearch->setVisible(false);
+#endif
     adjustSize();
 }
 
@@ -56,7 +64,19 @@ QWoDBMigrateDialog::~QWoDBMigrateDialog()
 
 void QWoDBMigrateDialog::onBrowserButtonClicked()
 {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Xshell session path"), QDir::homePath());
+    QString path;
+    int idx = ui->type->currentIndex();
+    if(idx == 0) {
+        // xshell
+        path = QFileDialog::getExistingDirectory(this, tr("Xshell session path"), QDir::homePath());
+    }else if(idx == 1) {
+        // SecureCRT
+        path = QFileDialog::getExistingDirectory(this, tr("SecureCRT session path"), QDir::homePath());
+    }else if(idx == 2) {
+        // SecureCRT file
+        path = QFileDialog::getOpenFileName(this, tr("SecureCRT xml backup file"), QDir::homePath(), "XML files(*.xml)");
+    }
+
     if(path.isEmpty()) {
         return;
     }
@@ -77,10 +97,28 @@ void QWoDBMigrateDialog::onImportSessionButtonClicked()
     int idx = ui->type->currentIndex();
     if(idx == 0) {
         // xshell
+        QFileInfo fi(ui->dbPath->text());
+        if(!fi.isDir()) {
+            QKxMessageBox::information(this, tr("Session path"), tr("Please specify the file path for session import."));
+            return;
+        }
         handleXShellSessionImport(ui->dbPath->text(), all);
     }else if(idx == 1) {
         // SecureCRT
+        QFileInfo fi(ui->dbPath->text());
+        if(!fi.isDir()) {
+            QKxMessageBox::information(this, tr("Session path"), tr("Please specify the file path for session import."));
+            return;
+        }
         handleSecureCRTSessionImport(ui->dbPath->text(), all);
+    }else if(idx == 2) {
+        // SecureCRT file
+        QFileInfo fi(ui->dbPath->text());
+        if(!fi.isFile()) {
+            QKxMessageBox::information(this, tr("Session xml file"), tr("Please specify the xml file for session import."));
+            return;
+        }
+        handleSecureCRTSessionXMLImport(ui->dbPath->text(), all);
     }
     int total = 0;
     for(auto it = all.begin(); it != all.end(); it++) {
@@ -97,6 +135,44 @@ void QWoDBMigrateDialog::onImportSessionButtonClicked()
     QKxMessageBox::information(this, tr("Import information"), tr("Import a total of %1 session records.").arg(total));
 }
 
+void QWoDBMigrateDialog::onSearchSessionPathButtonClicked()
+{
+    QString path = QDir::homePath();
+    int idx = ui->type->currentIndex();
+    if(idx == 0) {
+        // xshell
+        path += "/Documents/NetSarang Computer";
+        QFileInfo fi(path);
+        if(!fi.exists()) {
+            QKxMessageBox::information(this, tr("Sessions directory"), tr("The session save path for the specified program was not found, but you can specify one."));
+            return;
+        }
+        QDir d(path);
+        QFileInfoList lsfi = d.entryInfoList(QDir::Dirs|QDir::NoDotAndDotDot);
+        for(auto it = lsfi.begin(); it != lsfi.end(); it++) {
+            QFileInfo fi = *it;
+            QString path = fi.absoluteFilePath();
+            path += "/Xshell/Sessions";
+            QFileInfo hit(path);
+            if(!hit.exists()) {
+                continue;
+            }
+            ui->dbPath->setText(hit.absoluteFilePath());
+        }
+    }else if(idx == 1) {
+        // SecureCRT
+        path += "/AppData/Roaming/VanDyke/Config/Sessions";
+        QFileInfo fi(path);
+        if(!fi.exists()) {
+            QKxMessageBox::information(this, tr("Sessions directory"), tr("The session save path for the specified program was not found, but you can specify one."));
+            return;
+        }
+        ui->dbPath->setText(fi.absoluteFilePath());
+    }else{
+        ui->dbPath->setText("");
+    }
+}
+
 void QWoDBMigrateDialog::onTypsCurrentIndexChanged(int idx)
 {
     QWoSetting::setValue("sessionImport/lastSource", idx);
@@ -105,6 +181,10 @@ void QWoDBMigrateDialog::onTypsCurrentIndexChanged(int idx)
 // support SSH/Telnet/Localshell/Serial/FTP/RLOGIN
 void QWoDBMigrateDialog::handleXShellSessionImport(const QString &path, QMap<QString, QList<HostInfo>>& all)
 {
+    QFileInfo fi(path);
+    if(!fi.isDir()) {
+        return;
+    }
     QDir d(path);
     QList<QFileInfo> infos = d.entryInfoList(QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot);
     for(auto it = infos.begin(); it != infos.end(); it++) {
@@ -168,6 +248,10 @@ void QWoDBMigrateDialog::handleXShellSessionImport(const QString &path, QMap<QSt
 // support SSH1/SSH2/Telnet/Localshell/RDP/Serial/TAPI/RAW/RLOGIN
 void QWoDBMigrateDialog::handleSecureCRTSessionImport(const QString &path, QMap<QString, QList<HostInfo> > &all)
 {
+    QFileInfo fi(path);
+    if(!fi.isDir()) {
+        return;
+    }
     QDir d(path);
     QList<QFileInfo> infos = d.entryInfoList(QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot);
     for(auto it = infos.begin(); it != infos.end(); it++) {
@@ -226,4 +310,158 @@ void QWoDBMigrateDialog::handleSecureCRTSessionImport(const QString &path, QMap<
             all.insert(hi.group, his);
         }
     }
+}
+
+void QWoDBMigrateDialog::handleSecureCRTSessionXMLImport(const QString &path, QMap<QString, QList<HostInfo> > &all)
+{
+    QFileInfo fi(path);
+    if(!fi.isFile()) {
+        return;
+    }
+
+    QFile xmlFile(fi.absoluteFilePath());
+    if(!xmlFile.open(QIODevice::ReadOnly|QIODevice::Text)) {
+        return;
+    }
+
+    QDomDocument doc;
+    if(!doc.setContent(xmlFile.readAll())) {
+        return;
+    }
+    QDomElement vanDyke = doc.firstChildElement("VanDyke");
+    if(!vanDyke.isElement()) {
+        return;
+    }
+
+    QMap<QString, QString> props;
+    props.insert("name", "Sessions");
+    QList<QDomElement> sessionsAll = findChilds(vanDyke, "key", props);
+    if(sessionsAll.isEmpty()) {
+        return;
+    }
+    QDomElement sessions = sessionsAll.first();
+    handleSecureCRTSessionXMLImport(sessions, all);
+}
+
+void QWoDBMigrateDialog::handleSecureCRTSessionXMLImport(const QDomNode &node, QMap<QString, QList<HostInfo> > &all)
+{
+    QDomElement el = node.firstChildElement("key");
+    while(el.isElement()) {
+        QDomElement group = el.firstChildElement("key");
+        if(!group.isNull()){
+            // group;
+            handleSecureCRTSessionXMLImport(el, all);
+            el = el.nextSiblingElement("key");
+        }else{
+            // session;
+            HostInfo hi;
+            QDomElement group = el.parentNode().toElement();
+            if(!group.isElement()) {
+                el = el.nextSiblingElement("key");
+                continue;
+            }
+            hi.group = group.attribute("name");
+            hi.name = el.attribute("name");
+            if(hi.name.isEmpty()) {
+                el = el.nextSiblingElement("key");
+                continue;
+            }
+            hi.host = hostName(el);
+            if(hi.host.isEmpty()) {
+                el = el.nextSiblingElement("key");
+                continue;
+            }
+            hi.user = userName(el);
+            QString proto = protocol(el).toLower();
+            if(proto.startsWith("ssh")) {
+                // SSH
+                hi.port = port(el, "22").toInt();
+                hi.type = SshWithSftp;
+            }else if(proto.startsWith("telnet")) {
+                hi.port = port(el, "23").toInt();
+                hi.type = Telnet;
+            }else if(proto.startsWith("rlogin")) {
+                hi.port = port(el, "513").toInt();
+                hi.type = RLogin;
+            }else if(proto == "rdp") {
+                hi.port = port(el, "3389").toInt();
+                hi.type = Mstsc;
+            }else {
+                el = el.nextSiblingElement("key");
+                continue;
+            }
+            QList<HostInfo> his = all.take(hi.group);
+            his.append(hi);
+            all.insert(hi.group, his);
+            el = el.nextSiblingElement("key");
+        }
+    }
+}
+
+QString QWoDBMigrateDialog::hostName(const QDomElement &node, const QString &vdef)
+{
+    QMap<QString,QString> props;
+    props.insert("name", "Hostname");
+    QList<QDomElement> els = findChilds(node, "string", props);
+    if(els.isEmpty()) {
+        return vdef;
+    }
+    QString v = els.first().text();
+    return v.isEmpty() ? vdef : v;
+}
+
+QString QWoDBMigrateDialog::userName(const QDomElement &node, const QString &vdef)
+{
+    QMap<QString,QString> props;
+    props.insert("name", "Username");
+    QList<QDomElement> els = findChilds(node, "string", props);
+    if(els.isEmpty()) {
+        return vdef;
+    }
+    QString v = els.first().text();
+    return v.isEmpty() ? vdef : v;
+}
+
+QString QWoDBMigrateDialog::protocol(const QDomElement &node, const QString &vdef)
+{
+    QMap<QString,QString> props;
+    props.insert("name", "Protocol Name");
+    QList<QDomElement> els = findChilds(node, "string", props);
+    if(els.isEmpty()) {
+        return vdef;
+    }
+    QString v = els.first().text();
+    return v.isEmpty() ? vdef : v;
+}
+
+QString QWoDBMigrateDialog::port(const QDomElement &node, const QString &vdef)
+{
+    QMap<QString,QString> props;
+    props.insert("name", "Port");
+    QList<QDomElement> els = findChilds(node, "dword", props);
+    if(els.isEmpty()) {
+        return vdef;
+    }
+    QString v = els.first().text();
+    return v.isEmpty() ? vdef : v;
+}
+
+QList<QDomElement> QWoDBMigrateDialog::findChilds(const QDomElement& node, const QString &name, const QMap<QString, QString> &properties)
+{
+    QList<QDomElement> els;
+    QDomElement el = node.firstChildElement(name);
+    while(el.isElement()) {
+        bool hit = true;
+        for(auto it = properties.begin(); it != properties.end(); it++) {
+            if(el.attribute(it.key()) != it.value()) {
+                hit = false;
+                break;
+            }
+        }
+        if(hit) {
+            els.append(el);
+        }
+        el = el.nextSiblingElement(name);
+    }
+    return els;
 }

@@ -31,9 +31,10 @@ public:
     QVariantMap result() const;
 private slots:
     void onButtonSaveClicked();
+    void onButtonSaveToAllClicked();
 private:
     void initDefault();
-
+    QVariantMap save();
 private:
     Ui::QWoSessionVNCProperty *ui;
     bool m_bCustom;

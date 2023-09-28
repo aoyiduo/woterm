@@ -657,6 +657,13 @@
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="btnSaveToAll">
+       <property name="text">
+        <string>Save to all sessions</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btnSave">
        <property name="text">
         <string>Save</string>

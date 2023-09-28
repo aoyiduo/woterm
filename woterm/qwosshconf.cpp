@@ -306,7 +306,7 @@ QHash<QString, HostInfo> QWoSshConf::parse(const QByteArray& buf)
             }else if(item.startsWith("ProxyJump")) {
                 hi.proxyJump = item.mid(9).trimmed();
             }else if(item.startsWith("Property")) {
-                hi.property = item.mid(8).trimmed();
+                hi.props = HostInfo::base64ToConfigure(item.mid(8).trimmed());
             }else if(item.startsWith("Script")) {
                 hi.script = item.mid(6).trimmed();
             }else if(item.startsWith("ScriptFile")) {
@@ -443,8 +443,8 @@ QByteArray QWoSshConf::toStream()
             QString line(QString("  ScriptFile %1\n").arg(hi.scriptFile));
             file.write(line.toUtf8());
         }
-        if(!hi.property.isEmpty()) {
-            QString line(QString("  Property %1\n").arg(hi.property));
+        if(!hi.props.isEmpty()) {
+            QString line(QString("  Property %1\n").arg(HostInfo::configureToBase64(hi.props)));
             file.write(line.toUtf8());
         }
         if(!hi.baudRate.isEmpty()) {
@@ -537,7 +537,7 @@ void QWoSshConf::importConfToSqlite(const QString &conf, const QString &dbFile)
                 insert.bind("@script", hi.script.toStdString());
                 insert.bind("@proxyJump", hi.proxyJump.toStdString());
                 insert.bind("@memo", hi.memo.toStdString());
-                insert.bind("@property", hi.property.toStdString());
+                insert.bind("@property", HostInfo::configureToBase64(hi.props).toStdString());
                 insert.bind("@groupName", hi.group.toStdString());
                 insert.bind("@baudRate", hi.baudRate.toStdString());
                 insert.bind("@dataBits", hi.dataBits.toStdString());
@@ -579,7 +579,7 @@ QHash<QString, HostInfo> QWoSshConf::loadServerFromSqlite(const QString &dbFile)
             hi.script = QString::fromStdString(query.getColumn("script").getString());
             hi.proxyJump = QString::fromStdString(query.getColumn("proxyJump").getString());
             hi.memo = QString::fromStdString(query.getColumn("memo").getString());
-            hi.property = QString::fromStdString(query.getColumn("property").getString());
+            hi.props = HostInfo::base64ToConfigure(QString::fromStdString(query.getColumn("property").getString()));
             hi.group = QString::fromStdString(query.getColumn("groupName").getString());
             if(hi.group.isEmpty()) {
                 hi.group = "Default"; // don't translate it.
@@ -649,7 +649,7 @@ bool QWoSshConf::save(const HostInfo &hi)
             update.bind("@script", hi.script.toStdString());
             update.bind("@proxyJump", hi.proxyJump.toStdString());
             update.bind("@memo", hi.memo.toStdString());
-            update.bind("@property", hi.property.toStdString());
+            update.bind("@property", HostInfo::configureToBase64(hi.props).toStdString());
             update.bind("@groupName", hi.group.toStdString());
             update.bind("@baudRate", hi.baudRate.toStdString());
             update.bind("@dataBits", hi.dataBits.toStdString());
@@ -678,7 +678,7 @@ bool QWoSshConf::save(const HostInfo &hi)
             insert.bind("@script", hi.script.toStdString());
             insert.bind("@proxyJump", hi.proxyJump.toStdString());
             insert.bind("@memo", hi.memo.toStdString());
-            insert.bind("@property", hi.property.toStdString());
+            insert.bind("@property", HostInfo::configureToBase64(hi.props).toStdString());
             insert.bind("@groupName", hi.group.toStdString());
             insert.bind("@baudRate", hi.baudRate.toStdString());
             insert.bind("@dataBits", hi.dataBits.toStdString());
@@ -1055,6 +1055,20 @@ bool QWoSshConf::modifyOrAppend(const HostInfo &hi)
     return save(hi);
 }
 
+void QWoSshConf::removeProperties(EHostType type)
+{
+    QString shower = HostInfo::showerType(type);
+    for(auto it = m_hosts.begin(); it != m_hosts.end(); it++) {
+        HostInfo &hi = it.value();
+        QString hit = HostInfo::showerType(hi.type);
+        if(hit == shower) {
+            hi.updateConfigure(type, QVariantMap());
+            save(hi);
+        }
+    }
+    resetLater();
+}
+
 bool QWoSshConf::qmlModifyOrAppend(const QVariant &v)
 {
     HostInfo hi;
@@ -1086,6 +1100,7 @@ bool QWoSshConf::qmlModifyOrAppend(const QVariant &v)
 
 void QWoSshConf::resetAllProperty(const QString &v)
 {
+    Q_ASSERT(false);
     try{
         SQLite::Database db(m_dbFile.toUtf8(), SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
         if(!db.tableExists("servers")) {
@@ -1094,12 +1109,9 @@ void QWoSshConf::resetAllProperty(const QString &v)
         SQLite::Statement update(db, "UPDATE servers SET property=@property");
         for(QHash<QString, HostInfo>::iterator iter = m_hosts.begin(); iter != m_hosts.end(); iter++) {
             HostInfo& hi = iter.value();
-            if(hi.property.isEmpty()) {
-                continue;
-            }
-            hi.property = v;
+            hi.props = HostInfo::base64ToConfigure(v);
             update.reset();
-            update.bind("@property", hi.property.toStdString());
+            update.bind("@property", HostInfo::configureToBase64(hi.props).toStdString());
             update.exec();
         }
     }catch(std::exception& e) {

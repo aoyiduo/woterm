@@ -19,7 +19,9 @@ class QWoDBIdentityMergeModel : public QWoDBMergeModel
     Q_OBJECT
 public:
     explicit QWoDBIdentityMergeModel(QObject *parent = nullptr);
+
 private:
+    virtual void runApply();
     virtual QString toString(const QVariantMap& data) const;
 
 };

@@ -136,7 +136,7 @@ void QMoTermWidget::initCustom()
         resetProperty(mdata);
     }else{
         HostInfo hi = QWoSshConf::instance()->find(m_target);
-        QVariantMap mdata = QWoUtils::qBase64ToVariant(hi.property).toMap();
+        QVariantMap mdata = hi.configure(hi.type);
         resetProperty(mdata);
     }
 }

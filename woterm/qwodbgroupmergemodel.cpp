@@ -10,11 +10,50 @@
 *******************************************************************************************/
 
 #include "qwodbgroupmergemodel.h"
+#include "qwosshconf.h"
 
 QWoDBGroupMergeModel::QWoDBGroupMergeModel(QObject *parent)
     : QWoDBMergeModel(parent)
 {
 
+}
+
+void QWoDBGroupMergeModel::runApply()
+{
+    // adds
+    for(auto it = m_mi.rhave.begin(); it != m_mi.rhave.end(); it++) {
+        QVariantMap& dm = *it;
+        QVariantMap remote = dm.value("remote").toMap();
+        QString action = dm.value("mergeAction").toString();
+        if(action == "add") {
+            dm.insert("mergeAction", "done");
+            QString name = remote.value("name").toString();
+            int orderNum = remote.value("orderNum").toInt();
+            QWoSshConf::instance()->updateGroup(name, orderNum);
+        }
+    }
+
+    // remove
+    for(auto it = m_mi.remove.begin(); it != m_mi.remove.end(); ) {
+        QVariantMap dm = *it;
+        QVariantMap local = dm.value("local").toMap();
+        QString name = local.value("name").toString();
+        QWoSshConf::instance()->removeGroup(name);
+        it = m_mi.remove.erase(it);
+    }
+
+    // replace
+    for(auto it = m_mi.replace.begin(); it != m_mi.replace.end(); it++) {
+        QVariantMap& dm = *it;
+        QVariantMap remote = dm.value("remote").toMap();
+        QString action = dm.value("mergeAction").toString();
+        if(action == "replace") {
+            dm.insert("mergeAction", "done");
+            QString name = remote.value("name").toString();
+            int orderNum = remote.value("orderNum").toInt();
+            QWoSshConf::instance()->updateGroup(name, orderNum);
+        }
+    }
 }
 
 QString QWoDBGroupMergeModel::toString(const QVariantMap &dm) const

@@ -82,6 +82,7 @@ private slots:
     void onBeamCursorToggled();
     void onTimeout();
     void onButtonSaveClicked();
+    void onButtonSaveToAllClicked();
     void onShellPathButtonClicked();
     void onItemDoubleClicked(const QModelIndex &index);
     void onButtonImportClicked();
@@ -90,6 +91,7 @@ private slots:
     void onSelectButtonClicked();
 
 private:
+    QVariantMap save();
     void initDefault();
     void setShortCut(const QVariantMap& dm);
     void setFixPreviewString();

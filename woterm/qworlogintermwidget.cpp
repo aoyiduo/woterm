@@ -350,11 +350,6 @@ void QWoRLoginTermWidget::onZmodemFinished()
     m_term->parse("\033[?25h");
 }
 
-void QWoRLoginTermWidget::onSftpConnectReady()
-{
-    QMetaObject::invokeMethod(QWoMainWindow::instance(), "onSessionReadyToSftpConnect", Qt::QueuedConnection, Q_ARG(QString, m_target));
-}
-
 void QWoRLoginTermWidget::onTitleChanged(const QString &title)
 {
     m_loginCount = 100;
@@ -506,9 +501,7 @@ void QWoRLoginTermWidget::resizeEvent(QResizeEvent *ev)
 void QWoRLoginTermWidget::contextMenuEvent(QContextMenuEvent *ev)
 {
     if(m_rkeyPaste) {
-        if(m_term->isOverSelection(ev->pos())) {
-            QString txtSel = m_term->selectedText();
-            m_term->directSendData(txtSel.toUtf8());
+        if(pasteWhenOverSelectionText(ev->pos())) {
             return;
         }
     }

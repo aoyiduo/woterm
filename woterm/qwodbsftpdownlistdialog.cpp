@@ -67,12 +67,16 @@ void QWoDBSftpDownListDialog::onButtonSelectClicked()
     done(QDialog::Accepted);
 }
 
-void QWoDBSftpDownListDialog::onSyncListArrived(const QStringList &fileNames)
+void QWoDBSftpDownListDialog::onSyncListArrived(const QStringList &_fileNames)
 {
     QAbstractItemModel *model = ui->listView->model();
     if(model) {
         model->deleteLater();
     }
+    QStringList fileNames = _fileNames;
+    std::sort(fileNames.begin(), fileNames.end(), [](const QString& v1, const QString& v2){
+        return v1 > v2;
+    });
     model = new QStringListModel(fileNames, this);
     ui->listView->setModel(model);
 }

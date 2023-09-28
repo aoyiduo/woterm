@@ -47,6 +47,9 @@ bool QWoVncWidgetImpl::handleTabMouseEvent(QMouseEvent *ev)
 
 void QWoVncWidgetImpl::handleTabContextMenu(QMenu *menu)
 {
+    QAction *act = menu->addAction(tr("Smart resize"), this, SLOT(onSmartResize()));
+    act->setCheckable(true);
+    act->setChecked(m_vnc->smartResize());
 }
 
 QMap<QString, QString> QWoVncWidgetImpl::collectUnsafeCloseMessage()
@@ -75,4 +78,9 @@ void QWoVncWidgetImpl::reconnectSession(bool all)
 void QWoVncWidgetImpl::onRootDestroy()
 {
     deleteLater();
+}
+
+void QWoVncWidgetImpl::onSmartResize()
+{
+    m_vnc->setSmartResize(!m_vnc->smartResize());
 }

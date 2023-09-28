@@ -15,6 +15,8 @@
 #include <QUuid>
 #include <QVariantMap>
 #include <QDateTime>
+#include <QDataStream>
+#include <QByteArray>
 
 enum EHostType{
     SshWithSftp = 1,
@@ -86,7 +88,7 @@ struct HostInfo{
     QString script;
     QString proxyJump;
     QString memo;
-    QString property;
+    QMap<QString, QVariantMap> props;
     QString group;
     QString baudRate;
     QString dataBits;
@@ -108,6 +110,156 @@ struct HostInfo{
 
     inline bool hasIdentify() const {
         return !identityFile.isEmpty();
+    }
+
+    static EHostType hostType(const QString& txt) {
+        if(txt == "SshWithSftp") {
+            return SshWithSftp;
+        }else if(txt == "SftpOnly") {
+            return SftpOnly;
+        }else if(txt == "Telnet") {
+            return Telnet;
+        }else if(txt == "RLogin") {
+            return RLogin;
+        }else if(txt == "Rdp/Mstsc") {
+            return Mstsc;
+        }else if(txt == "Vnc") {
+            return Vnc;
+        }else if(txt == "SerialPort") {
+            return SerialPort;
+        }
+        return SshWithSftp;
+    }
+
+    static QString showerType(const QString& txt) {
+        if(txt == "SshWithSftp") {
+            return "terminal";
+        }else if(txt == "SftpOnly") {
+            return "terminal";
+        }else if(txt == "Telnet") {
+            return "terminal";
+        }else if(txt == "RLogin") {
+            return "terminal";
+        }else if(txt == "Rdp/Mstsc") {
+            return "mstsc";
+        }else if(txt == "Vnc") {
+            return "vnc";
+        }else if(txt == "SerialPort") {
+            return "terminal";
+        }
+        return "terminal";
+    }
+
+    static QString showerType(EHostType t) {
+        if(t == SshWithSftp) {
+            return "terminal";
+        }else if(t == SftpOnly) {
+            return "terminal";
+        }else if(t == Telnet) {
+            return "terminal";
+        }else if(t == RLogin) {
+            return "terminal";
+        }else if(t == Mstsc) {
+            return "mstsc";
+        }else if(t == Vnc) {
+            return "vnc";
+        }else if(t == SerialPort) {
+            return "terminal";
+        }
+        return "terminal";
+    }
+
+
+    static QString platformType(const QString& type) {
+#if defined (Q_OS_MAC)
+        QString platform = "Mac";
+#elif defined (Q_OS_LINUX)
+        QString platform = "Linux";
+#elif defined(Q_OS_WIN)
+        QString platform = "Win";
+#else
+        QString platform = "Android";
+#endif
+        return platform + type;
+    }
+
+    inline QVariantMap merge(EHostType type, const QVariantMap& global) const {
+        QVariantMap custom = configure(type);
+        return merge(global, custom);
+    }
+
+    inline QVariantMap configure(EHostType type) const {
+        QString typName = showerType(type);
+        return props.value(platformType(typName));
+    }
+
+    static QVariantMap configure(QMap<QString, QVariantMap>& props, EHostType type) {
+        QString typName = showerType(type);
+        return props.value(platformType(typName));
+    }
+
+    inline QVariantMap configure(const QString& type) const {
+        return props.value(platformType(type));
+    }
+
+    inline void updateConfigure(EHostType type, const QVariantMap& v) {
+        QString typName = showerType(type);
+        props.insert(platformType(typName), v);
+    }
+
+    static void updateConfigure(QMap<QString, QVariantMap>& props, EHostType type, const QVariantMap& v) {
+        QString typName = showerType(type);
+        props.insert(platformType(typName), v);
+    }
+
+    inline void updateConfigure(const QString& type, const QVariantMap& v) {
+        props.insert(platformType(type), v);
+    }
+
+    static QVariantMap merge(const QVariantMap& global, const QVariantMap& custom) {
+        QVariantMap opts = global;
+        for(auto it = custom.begin(); it != custom.end(); it++) {
+            QString k = it.key();
+            QVariant v = it.value();
+            if(v.type() == QVariant::Map) {
+                QVariantMap gvm = opts.value(k).toMap();
+                QVariantMap cvm = v.toMap();
+                opts.insert(k, merge(gvm, cvm));
+            }else{
+                opts.insert(k, v);
+            }
+        }
+        return opts;
+    }
+
+    static QMap<QString, QVariantMap> merge(const QMap<QString, QVariantMap>& local, const QMap<QString, QVariantMap>& cloud) {
+        QMap<QString, QVariantMap> opts = local;
+        for(auto it = cloud.begin(); it != cloud.end(); it++) {
+            QString k = it.key();
+            QVariantMap cv = it.value();
+            QVariantMap lv = local.value(k);
+            opts.insert(k, merge(lv, cv));
+        }
+        return opts;
+    }
+
+    static QString configureToBase64(const QMap<QString, QVariantMap>& props) {
+        QByteArray buf;
+        QDataStream in(&buf, QIODevice::WriteOnly);
+        in << props;
+        return "1:"+QString(buf.toBase64());
+    }
+
+    static QMap<QString, QVariantMap> base64ToConfigure(const QString& v) {
+        QMap<QString, QVariantMap> props;
+        if(!v.startsWith("1:")) {
+            return props;
+        }
+        QString b64 = v.mid(2);
+        QByteArray buf = QByteArray::fromBase64(b64.toUtf8());
+        QDataStream out(buf);
+        out >> props;
+        return props;
     }
 };
 

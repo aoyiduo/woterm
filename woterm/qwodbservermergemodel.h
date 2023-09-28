@@ -20,6 +20,7 @@ class QWoDBServerMergeModel : public QWoDBMergeModel
 public:
     explicit QWoDBServerMergeModel(QObject *parent = nullptr);
 private:
+    virtual void runApply();
     virtual QString toString(const QVariantMap& data) const;
 };
 

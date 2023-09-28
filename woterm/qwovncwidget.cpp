@@ -66,7 +66,7 @@ void QWoVncWidget::reconnect()
         m_passInput->deleteLater();
     }
     HostInfo hi = QWoSshConf::instance()->find(m_target);
-    QVariantMap mdata = config(hi.property);
+    QVariantMap mdata = config(hi.merge(hi.type, QWoSetting::vncDefault()));
     QKxVNC::EPixelFormat fmt;
     QKxVNC::EProtoVersion ver;
     QVector<QKxVNC::EEncodingType> encs;
@@ -272,9 +272,9 @@ void QWoVncWidget::onAdjustPosition()
     }
 }
 
-QVariantMap QWoVncWidget::config(const QString &prop)
+QVariantMap QWoVncWidget::config(const QVariantMap &prop)
 {
-    QVariantMap result = QWoUtils::qBase64ToVariant(prop).toMap();
+    QVariantMap result = prop;
     QString val = QWoSetting::value("property/default").toString();
     QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
     if(!result.contains("vncProto")) {

@@ -243,13 +243,11 @@ QString QKxView::plainText(const QPoint &start, const QPoint &end, SelectionMode
     }
     if(pt1.y() == pt2.y()) {
         TermLine line = lineAt(pt1.y());
-        int rx = 0;
         for(int x = 0; x < line.cs.length(); x++) {
-            const TermChar& c = line.cs.at(x);
-            rx += c.count;
-            if(rx - 1 >= pt1.x() && rx - 1 <= pt2.x() && c.c != 0) {
+            const TermChar& c = line.cs.at(x);            
+            if(x >= pt1.x() && x <= pt2.x() && c.c != 0) {
                 out.append(c.c);
-            }
+            }            
         }
     }else {
         for(int y = pt1.y(); y <= pt2.y(); y++) {
@@ -273,20 +271,16 @@ QString QKxView::plainText(const QPoint &start, const QPoint &end, SelectionMode
                 continue;
             }
             if(y == pt1.y()) {
-                int rx = 0;
                 for(int x = 0; x < line.cs.length(); x++) {
-                    const TermChar& c = line.cs.at(x);
-                    rx += c.count;
-                    if(rx - 1 >= pt1.x() && c.c != 0) {
+                    const TermChar& c = line.cs.at(x);                    
+                    if(x >= pt1.x() && c.c != 0) {
                         out.append(c.c);
                     }
                 }
             }else if(y == pt2.y()) {
-                int rx = 0;
                 for(int x = 0; x < line.cs.length(); x++) {
-                    const TermChar& c = line.cs.at(x);
-                    rx += c.count;
-                    if(rx - 1 <= pt2.x() && c.c != 0) {
+                    const TermChar& c = line.cs.at(x);                    
+                    if(x <= pt2.x() && c.c != 0) {
                         out.append(c.c);
                     }
                 }
@@ -336,7 +330,7 @@ QList<TermLine> QKxView::selectedLines()
 
 bool QKxView::find(const QString &key, bool match, bool regular)
 {
-    QList<int> pos;
+    QList<QPoint> pos;
     pos.reserve(m_screen->columens());
     m_findText = key;
     m_findLength = 0;
@@ -351,33 +345,36 @@ bool QKxView::find(const QString &key, bool match, bool regular)
     for(int y = pt1.y(); y < lineCount(); y++) {
         pos.clear();
         QString line;
-        if(!lineText(y, line, pos)) {
+        if(!lineText(y, line, pos, true)) {
             continue;
         }
         int idx = 0;
         if(y == pt1.y()) {
-            idx = pt1.x();
+            idx = pos.indexOf(pt1);
         }
         idx = rgx.indexIn(line, idx);
         if(idx >= 0) {
             const QStringList& caps = rgx.capturedTexts();            
             int cnt = caps.at(0).length();
-            QPoint pt1 = QPoint(pos.at(idx), y);
-            QPoint pt2 = QPoint(cnt - 1 + idx, y);
+            QPoint pt1 = pos.at(idx);
+            QPoint pt2 = pos.at(cnt - 1 + idx);
             m_findKey = intFromPoint(pt1);
             m_findLength = cnt;
             setSelection(pt1, pt2);
             return true;
         }
     }
+    if(m_findKey == 0) {
+        clearSelection();
+        return false;
+    }
     m_findKey = 0;
-    clearSelection();
-    return false;
+    return find(key, match, regular);
 }
 
 bool QKxView::findPrev(bool match, bool regular)
 {
-    QList<int> pos;
+    QList<QPoint> pos;
     pos.reserve(m_screen->columens());
     if(m_findText.isEmpty()) {
         return true;
@@ -389,33 +386,37 @@ bool QKxView::findPrev(bool match, bool regular)
     for(int y = pt1.y(); y >= 0; y--) {
         pos.clear();
         QString line;
-        if(!lineText(y, line, pos)) {
+        if(!lineText(y, line, pos, false)) {
             continue;
         }
         int idx = line.length();
         if(y == pt1.y()) {
-            idx = qMin(pt1.x(), line.length());
+            idx = qMin(pos.indexOf(pt1), line.length());
             line.resize(idx);
         }
         idx = rgx.lastIndexIn(line, idx);
         if(idx >= 0){
             const QStringList& caps = rgx.capturedTexts();
             int cnt = caps.at(0).length();
-            QPoint pt1 = QPoint(pos.at(idx), y);
-            QPoint pt2 = QPoint(cnt - 1 + idx, y);
+            QPoint pt1 = pos.at(idx);
+            QPoint pt2 = pos.at(cnt - 1 + idx);
             m_findKey = intFromPoint(pt1);
             m_findLength = cnt;
             setSelection(pt1, pt2);
             return true;
         }
     }
-    m_findKey = intFromPoint(QPoint(10000,lineCount()));
+    int findKey = intFromPoint(QPoint(10000,lineCount()));
+    if(m_findKey == findKey) {
+        return false;
+    }
+    m_findKey = findKey;
     return findPrev(match, regular);
 }
 
 bool QKxView::findNext(bool match, bool regular)
 {
-    QList<int> pos;
+    QList<QPoint> pos;
     pos.reserve(m_screen->columens());
     if(m_findText.isEmpty()) {
         return true;
@@ -424,28 +425,31 @@ bool QKxView::findNext(bool match, bool regular)
     Qt::CaseSensitivity sensitive = match ? Qt::CaseSensitive : Qt::CaseInsensitive;
     QRegExp::PatternSyntax syntax = regular ? QRegExp::RegExp : QRegExp::FixedString;
     QRegExp rgx(m_findText, sensitive, syntax);
-    QPoint pt1 = intToPoint(m_findKey);
+    QPoint pt1 = intToPoint(m_findKey);    
     for(int y = pt1.y(); y < lineCount(); y++) {
         pos.clear();
         QString line;
-        if(!lineText(y, line, pos)) {
+        if(!lineText(y, line, pos, true)) {
             continue;
         }
         int idx = 0;
         if(y == pt1.y()) {
-            idx = pt1.x() + m_findLength;
+            idx = pos.indexOf(pt1) + m_findLength;
         }
         idx = rgx.indexIn(line, idx);
         if(idx >= 0) {
             const QStringList& caps = rgx.capturedTexts();
             int cnt = caps.at(0).length();
-            QPoint pt1 = QPoint(pos.at(idx), y);
-            QPoint pt2 = QPoint(cnt - 1 + idx, y);
+            QPoint pt1 = pos.at(idx);
+            QPoint pt2 = pos.at(cnt - 1 + idx);
             m_findKey = intFromPoint(pt1);
             m_findLength = cnt;
             setSelection(pt1, pt2);
             return true;
         }
+    }
+    if(m_findKey == 0) {
+        return false;
     }
     m_findKey = 0;
     return findNext(match, regular);
@@ -453,7 +457,7 @@ bool QKxView::findNext(bool match, bool regular)
 
 void QKxView::findAll(bool match, bool regular)
 {
-    QList<int> pos;
+    QList<QPoint> pos;
     pos.reserve(m_screen->columens());
     clearSelection();
     if(m_findText.isEmpty()) {
@@ -466,7 +470,7 @@ void QKxView::findAll(bool match, bool regular)
     for(int y = 0; y < lineCount(); y++) {
         pos.clear();
         QString line;
-        if(!lineText(y, line, pos)) {
+        if(!lineText(y, line, pos, true)) {
             continue;
         }
         int idx = 0;
@@ -474,7 +478,7 @@ void QKxView::findAll(bool match, bool regular)
             const QStringList& caps = rgx.capturedTexts();
             for(int i = 0; i < caps.length(); i++) {
                 int cnt = caps.at(i).length();
-                sels.insert(QPoint(pos.at(idx), y), QPoint(cnt - 1 + idx, y));
+                sels.insert(pos.at(idx), pos.at(cnt - 1 + idx));
                 idx += cnt;
             }
         }
@@ -602,7 +606,7 @@ QChar QKxView::typeCheck(QChar c)
     return c;
 }
 
-bool QKxView::lineText(int y, QString& out, QList<int> &pos)
+bool QKxView::lineText(int y, QString& out, QList<QPoint> &pos, bool forward)
 {
     const TermLine& line = lineAt(y);
     if(line.cs.isEmpty()) {
@@ -610,12 +614,35 @@ bool QKxView::lineText(int y, QString& out, QList<int> &pos)
         out.clear();
         return false;
     }
+    if(!forward){
+        if(line.cs.at(0).wrap) {
+            const TermLine& prev = lineAt(y-1);
+            for(int x = 0; x < prev.cs.length(); x++) {
+                const TermChar& c = prev.cs.at(x);
+                if(c.c != 0) {
+                    pos.append(QPoint(x, y-1));
+                    out.push_back(c.c);
+                }
+            }
+        }
+    }
     for(int x = 0; x < line.cs.length(); x++) {
         const TermChar& c = line.cs.at(x);
         if(c.c != 0) {
-            pos.append(x);
+            pos.append(QPoint(x, y));
             out.push_back(c.c);
         }
     }
+    if(forward) {
+        const TermLine& next = lineAt(y+1);
+        for(int x = 0; x < next.cs.length(); x++) {
+            const TermChar& c = next.cs.at(x);
+            if(c.c != 0) {
+                pos.append(QPoint(x, y+1));
+                out.push_back(c.c);
+            }
+        }
+    }
+
     return true;
 }

@@ -33,62 +33,6 @@
 #include <QDir>
 #include <QTimer>
 
-EHostType hostType(const QString& txt) {
-    if(txt == "SshWithSftp") {
-        return SshWithSftp;
-    }else if(txt == "SftpOnly") {
-        return SftpOnly;
-    }else if(txt == "Telnet") {
-        return Telnet;
-    }else if(txt == "RLogin") {
-        return RLogin;
-    }else if(txt == "Rdp/Mstsc") {
-        return Mstsc;
-    }else if(txt == "Vnc") {
-        return Vnc;
-    }else if(txt == "SerialPort") {
-        return SerialPort;
-    }
-    return SshWithSftp;
-}
-
-QString showerType(const QString& txt) {
-    if(txt == "SshWithSftp") {
-        return "terminal";
-    }else if(txt == "SftpOnly") {
-        return "terminal";
-    }else if(txt == "Telnet") {
-        return "terminal";
-    }else if(txt == "RLogin") {
-        return "terminal";
-    }else if(txt == "Rdp/Mstsc") {
-        return "mstsc";
-    }else if(txt == "Vnc") {
-        return "vnc";
-    }else if(txt == "SerialPort") {
-        return "terminal";
-    }
-    return "terminal";
-}
-
-QString hostType2ShowerType(EHostType t) {
-    if(t == SshWithSftp) {
-        return "terminal";
-    }else if(t == SftpOnly) {
-        return "terminal";
-    }else if(t == Telnet) {
-        return "terminal";
-    }else if(t == RLogin) {
-        return "terminal";
-    }else if(t == Mstsc) {
-        return "mstsc";
-    }else if(t == Vnc) {
-        return "vnc";
-    }else if(t == SerialPort) {
-        return "terminal";
-    }
-    return "terminal";
-}
 
 QWoSessionProperty::QWoSessionProperty(QWidget *parent) :
     QDialog(parent),
@@ -113,6 +57,8 @@ bool QWoSessionProperty::setSession(const QString &name)
     m_name = name;
     HostInfo hi = QWoSshConf::instance()->find(name);
     setWindowTitle(tr("Session[%1]").arg(name));
+
+    m_props = hi.props;
 
     ui->groupBox->setCurrentText(hi.group);
     ui->name->setText(hi.name);
@@ -186,6 +132,11 @@ void QWoSessionProperty::setHostPort(const QString &hp)
     }
     ui->port->setText(QString::number(port));
     ui->host->setText(args.at(0));
+}
+
+QString QWoSessionProperty::lastSaveName() const
+{
+    return ui->name->text();
 }
 
 void QWoSessionProperty::init()
@@ -540,39 +491,34 @@ void QWoSessionProperty::onIdentifyFileBrowser()
 void QWoSessionProperty::onMoreConfig()
 {
     QString txt = ui->type->currentText();
-    QString shower = showerType(txt);
-    EHostType type = hostType(txt);
-    QVariantMap prop = m_props.value(shower);
-    if(prop.isEmpty() && !m_name.isEmpty()) {
-        HostInfo hi = QWoSshConf::instance()->find(m_name);
-        QString shower2 = hostType2ShowerType(hi.type);
-        if(shower2 == shower && !hi.property.isEmpty()) {
-            prop = QWoUtils::qBase64ToVariant(hi.property).toMap();
-        }
-    }
+    EHostType type = HostInfo::hostType(txt);
+
+    QVariantMap prop = HostInfo::configure(m_props, type);
+
     if(type == Mstsc) {
         QWoSessionRDPProperty dlg(this);
         dlg.setCustom(prop);
-        dlg.exec();
+        int code = dlg.exec();
         QVariantMap result = dlg.result();
-        if(!result.isEmpty()) {
-            m_props.insert(shower, result);
+        if(code == QDialog::Accepted+1 || !result.isEmpty()) {
+            HostInfo::updateConfigure(m_props, type, result);
         }
     }else if(type == Vnc) {
         QWoSessionVNCProperty dlg(this);
         dlg.setCustom(prop);
-        dlg.exec();
+        int code = dlg.exec();
         QVariantMap result = dlg.result();
-        if(!result.isEmpty()) {
-            m_props.insert(shower, result);
+        if(code == QDialog::Accepted+1 || !result.isEmpty()) {
+            HostInfo::updateConfigure(m_props, type, result);
         }
     }else{
         QWoSessionTTYProperty dlg(QWoSessionTTYProperty::ETTY_RemoteTarget, this);
+
         dlg.setCustom(prop);
-        dlg.exec();
+        int code = dlg.exec();
         QVariantMap result = dlg.result();
-        if(!result.isEmpty()) {
-            m_props.insert(shower, result);
+        if(code == QDialog::Accepted+1 || !result.isEmpty()) {
+            HostInfo::updateConfigure(m_props, type, result);
         }
     }
 }
@@ -704,7 +650,7 @@ bool QWoSessionProperty::saveConfig()
         HostInfo hit = QWoSshConf::instance()->find(m_name);
         if((hi.type != Mstsc && hit.type != Mstsc)
                 || (hi.type == Mstsc && hit.type == Mstsc)) {
-            hi.property = hit.property;
+            hi.props = hit.props;
         }
     }
     if(hi.name.isEmpty()) {
@@ -741,11 +687,8 @@ bool QWoSessionProperty::saveConfig()
             }
         }
     }
-    QString key = hostType2ShowerType(hi.type);
-    QVariantMap prop = m_props.value(key);
-    if(!prop.isEmpty()) {
-        hi.property = QWoUtils::qVariantToBase64(prop);
-    }
+    QString key = hi.showerType(hi.type);
+    hi.props = m_props;
     hi.group = ui->groupBox->currentText();
     if(!m_name.isEmpty() && m_name != hi.name) {
         QWoSshConf::instance()->removeServer(m_name);

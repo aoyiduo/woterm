@@ -689,8 +689,7 @@ QList<QVariantMap> fetchList(SQLite::Database& db, const QString& tblName) {
                     ||name == "dt"
                     || name == "syncFlag"
                     || name == "delFlag"
-                    || name == "version"
-                    || name == "property") {
+                    || name == "version") {
                 continue;
             }
             SQLite::Column col = query.getColumn(i);

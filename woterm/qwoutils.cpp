@@ -125,7 +125,7 @@ void QWoUtils::setLayoutVisible(QLayout *layout, bool visible)
     }
 }
 
-QString QWoUtils::qVariantToBase64(const QVariant& v)
+QString QWoUtils::qVariantToBase64(const QVariant &v)
 {
     QByteArray buf;
     QDataStream in(&buf, QIODevice::WriteOnly);
@@ -140,6 +140,23 @@ QVariant QWoUtils::qBase64ToVariant(const QString& v)
     QVariant data;
     out >> data;
     return data;
+}
+
+QMap<QString, QVariantMap> QWoUtils::qBase64ToMoreConfigure(const QString &v)
+{
+    QByteArray buf = QByteArray::fromBase64(v.toUtf8());
+    QDataStream out(buf);
+    QMap<QString, QVariantMap> data;
+    out >> data;
+    return data;
+}
+
+QString QWoUtils::qBase64FromMoreConfigure(const QMap<QString, QVariantMap> &v)
+{
+    QByteArray buf;
+    QDataStream in(&buf, QIODevice::WriteOnly);
+    in << v;
+    return QString(buf.toBase64());
 }
 
 QStringList QWoUtils::parseCombinedArgString(const QString &program)

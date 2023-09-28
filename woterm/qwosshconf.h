@@ -52,6 +52,7 @@ public:
     bool modify(const HostInfo& hi);
     bool append(const HostInfo& hi);
     bool modifyOrAppend(const HostInfo& hi);
+    void removeProperties(EHostType type);
     Q_INVOKABLE bool qmlModifyOrAppend(const QVariant& v);
     HostInfo find(const QString&name) const;
     Q_INVOKABLE QVariant qmlFind(const QString& name) const;

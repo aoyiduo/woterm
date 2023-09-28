@@ -52,6 +52,7 @@ public:
     Q_INVOKABLE void tryToCopy();
     Q_INVOKABLE void tryToPaste();
     Q_INVOKABLE void pastePlainText(const QString& txt);
+    Q_INVOKABLE bool pasteWhenOverSelectionText(const QPoint& pt);
 
     QString selectedText() const;
     void selectAllText();

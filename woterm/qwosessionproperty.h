@@ -26,7 +26,7 @@ class QWoSessionProperty : public QDialog
     Q_OBJECT
 public:
     enum EResult {
-        Cancel = QDialog::Rejected,
+        Cancel = QDialog::Accepted,
         Save,
         Connect
     };
@@ -36,7 +36,7 @@ public:
     bool setSession(const QString& name);
     void setName(const QString& name);
     void setHostPort(const QString& hp);
-
+    QString lastSaveName() const;
 signals:
     void readyToConnect(const QString& host, int type);
 private:

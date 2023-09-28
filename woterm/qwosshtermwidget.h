@@ -75,6 +75,7 @@ private slots:
     void onZmodemStatusArrived(const QByteArray& buf);
     void onZmodemFinished();
     void onSftpConnectReady();
+    void onSftpTabConnectReady();
     void onForceToReconnect();
     void onAdjustPosition();
 protected:

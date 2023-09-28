@@ -20,7 +20,7 @@ class QListWidget;
 class QPushButton;
 class QWoHostListModel;
 class QWoHostTreeModel;
-class QSortFilterProxyModel;
+class QWoSortFilterProxyModel;
 class QWoTreeView;
 class QMenu;
 class QPlainTextEdit;
@@ -66,8 +66,10 @@ private:
     bool handleListViewMouseButtonPress(QMouseEvent *ev);
     void tryToRestoreSessionsExpandState();
     Q_INVOKABLE void restoreSessionsExpandState();
-    Q_INVOKABLE void saveSessionsExpandState();
+    Q_INVOKABLE void saveSessionsExpandState();    
     void handleFilterInputKeyEvent(QKeyEvent *ke);
+    Q_INVOKABLE void sessionEditLater(const QString& sessionName);
+    Q_INVOKABLE void scrollToSession(const QString& sessionName);
 private:
     void closeEvent(QCloseEvent *event);
     bool eventFilter(QObject *obj, QEvent *ev);
@@ -80,7 +82,7 @@ private:
     QPointer<QWoHostTreeModel> m_treeModel;
     QPointer<QAbstractItemModel> m_model;
     QPointer<QPushButton> m_btnModel;
-    QPointer<QSortFilterProxyModel> m_proxyModel;
+    QPointer<QWoSortFilterProxyModel> m_proxyModel;
     QPointer<QLineEdit> m_input;
     QPointer<QWoTreeView> m_tree;
     QPointer<QPlainTextEdit> m_info;

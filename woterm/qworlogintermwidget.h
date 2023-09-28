@@ -65,7 +65,6 @@ private slots:
     void onZmodemDataArrived(const QByteArray& buf);
     void onZmodemStatusArrived(const QByteArray& buf);
     void onZmodemFinished();
-    void onSftpConnectReady();
     void onTitleChanged(const QString& title);
     void onAdjustPosition();
 

@@ -31,6 +31,8 @@ public:
     explicit QWoVncPlayWidget(const QString& target, QWidget *parent = 0);
     ~QWoVncPlayWidget();
 
+    bool smartResize();
+    void setSmartResize(bool on);
     bool isConnected();
     void stop();
     void reconnect();

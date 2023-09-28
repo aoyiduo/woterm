@@ -1404,6 +1404,8 @@ void QKxTermItem::mouseMoveEvent(QMouseEvent *ev)
                 drag.setMimeData(mimeData);
                 drag.exec(Qt::CopyAction|Qt::MoveAction);
                 if(!txtSel.isEmpty()) {
+                    QClipboard *clip = QGuiApplication::clipboard();
+                    clip->setText(txtSel);
                     handleSendData(txtSel.toUtf8());
                 }
                 m_ptDraged = QPoint(-1,-1);

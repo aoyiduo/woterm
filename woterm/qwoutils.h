@@ -35,6 +35,8 @@ public:
     static void setLayoutVisible(QLayout* layout, bool visible);
     static QString qVariantToBase64(const QVariant& v);
     static QVariant qBase64ToVariant(const QString& v);
+    static QMap<QString, QVariantMap> qBase64ToMoreConfigure(const QString& v);
+    static QString qBase64FromMoreConfigure(const QMap<QString, QVariantMap>& v);
     static QStringList parseCombinedArgString(const QString &program);
     static QByteArray rc4(const QByteArray& data, const QByteArray& key);
     static QString nameToPath(const QString &name);
@@ -46,7 +48,6 @@ public:
     static int createDesktopShortcut(bool everyone, const QString& name, const QString& desc, const QString& iconPath);
     static void removeDesktopShortcut(bool everyone);
     static QString getDefaultGateway();
-
 
     /*socket*/
     static int getAddrInfos(const char *host, int port, struct addrinfo **ai);

@@ -384,6 +384,12 @@ void QWoSshTermWidget::onSftpConnectReady()
     //QMetaObject::invokeMethod(QWoMainWindow::instance(), "onSessionReadyToSftpConnect", Qt::QueuedConnection, Q_ARG(QString, m_target));
 }
 
+void QWoSshTermWidget::onSftpTabConnectReady()
+{
+    QWoShower *shower = QWoMainWindow::instance()->shower();
+    shower->openSftp(m_target, m_gid);
+}
+
 void QWoSshTermWidget::onForceToReconnect()
 {
     reconnect();
@@ -556,9 +562,7 @@ void QWoSshTermWidget::resizeEvent(QResizeEvent *ev)
 void QWoSshTermWidget::contextMenuEvent(QContextMenuEvent *ev)
 {
     if(m_rkeyPaste) {
-        if(m_term->isOverSelection(ev->pos())) {
-            QString txtSel = m_term->selectedText();
-            m_term->directSendData(txtSel.toUtf8());
+        if(pasteWhenOverSelectionText(ev->pos())) {
             return;
         }
     }
@@ -584,6 +588,7 @@ void QWoSshTermWidget::contextMenuEvent(QContextMenuEvent *ev)
     QObject::connect(hsplit, SIGNAL(triggered()), this, SLOT(onHorizontalSplitView()));
 
     menu.addAction(QIcon("../private/skins/black/sftp.png"), tr("Sftp Assistant"), this, SLOT(onSftpConnectReady()));
+    menu.addAction(QIcon("../private/skins/black/sftp.png"), tr("Sftp independent tab"), this, SLOT(onSftpTabConnectReady()));
     menu.addAction(QIcon("../private/skins/black/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
     menu.addAction(QIcon("../private/skins/black/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
     menu.addAction(tr("Duplicate in new window"), this, SLOT(onDuplicateInNewWindow()));

@@ -19,6 +19,19 @@ QWoSortFilterProxyModel::QWoSortFilterProxyModel(int maxColumn, QObject *parent)
 
 }
 
+bool QWoSortFilterProxyModel::treeWalk(const std::function<bool (const QModelIndex &)> &fn) const
+{
+    QModelIndex idx = index(0, 0);
+    do {
+        if(!treeWalk(idx, fn)) {
+            return false;
+        }
+        idx = idx.siblingAtRow(idx.row()+1);
+    }while(idx.isValid());
+    return true;
+}
+
+
 void QWoSortFilterProxyModel::search(const QString &key)
 {
     QStringList sets = key.split(' ');
@@ -54,4 +67,21 @@ int QWoSortFilterProxyModel::columnCount(const QModelIndex &parent) const
         return m_maxColumnCount;
     }
     return cnt;
+}
+
+bool QWoSortFilterProxyModel::treeWalk(const QModelIndex &idx, const std::function<bool (const QModelIndex &)> &fn) const
+{
+    if(!idx.isValid()) {
+        return true;
+    }
+    if(!fn(idx)) {
+        return false;
+    }
+    int count = rowCount(idx);
+    for(int i = 0; i < count; i++) {
+        if(!treeWalk(idx.child(i, 0), fn)) {
+            return false;
+        }
+    }
+    return true;
 }

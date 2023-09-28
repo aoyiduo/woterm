@@ -50,7 +50,7 @@ private slots:
     void onPasswordInputResult(const QString& pass, bool isSave);
     void onAdjustPosition();
 private:
-    QVariantMap config(const QString& props);
+    QVariantMap config(const QVariantMap& props);
     void showPasswordInput(const QString&title, const QString& prompt, bool echo);
     bool eventFilter(QObject *w, QEvent *e);
 private:

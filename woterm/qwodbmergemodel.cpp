@@ -68,94 +68,10 @@ void QWoDBMergeModel::clear()
     reset(false);
 }
 
-/*
-std::string sql = "update servers set type=@type,host=@host,port=@port,loginName=@loginName,";
-sql += "loginPassword=@loginPassword,identityFile=@identityFile,scriptFile=@scriptFile,script=@script,";
-sql += "proxyJump=@proxyJump,memo=@memo,property=@property,groupName=@groupName,baudRate=@baudRate,";
-sql += "dataBits=@dataBits,parity=@parity,stopBits=@stopBits,flowControl=@flowControl ";
-sql += "where name=@name and delFlag=0";
-*/
-
-static void qVariantMapMergeToHostInfo(HostInfo& hi, QVariantMap dm) {
-    hi.name = dm.value("name").toString();
-    hi.type = (EHostType)dm.value("type").toInt();
-    hi.host = dm.value("host").toString();
-    hi.port = dm.value("port").toInt();
-    hi.user = dm.value("loginName").toString();
-    hi.password = dm.value("loginPassword").toString();
-    hi.identityFile = dm.value("identityFile").toString();
-    hi.scriptFile = dm.value("scriptFile").toString();
-    hi.script = dm.value("script").toString();
-    hi.proxyJump = dm.value("proxyJump").toString();
-    hi.memo = dm.value("meno").toString();
-
-    hi.property = dm.value("property").toString();
-    hi.group = dm.value("groupName").toString();
-    hi.baudRate = dm.value("baudRate").toString();
-    hi.dataBits = dm.value("dataBits").toString();
-    hi.parity = dm.value("parity").toString();
-    hi.stopBits = dm.value("stopBits").toString();
-    hi.flowControl = dm.value("flowControl").toString();
-}
-
-static HostInfo qVariantMapToHostInfo(QVariantMap dm) {
-    HostInfo hi;
-    hi.name = dm.value("name").toString();
-    hi.type = (EHostType)dm.value("type").toInt();
-    hi.host = dm.value("host").toString();
-    hi.port = dm.value("port").toInt();
-    hi.user = dm.value("loginName").toString();
-    hi.password = dm.value("loginPassword").toString();
-    hi.identityFile = dm.value("identityFile").toString();
-    hi.scriptFile = dm.value("scriptFile").toString();
-    hi.script = dm.value("script").toString();
-    hi.proxyJump = dm.value("proxyJump").toString();
-    hi.memo = dm.value("meno").toString();
-    hi.property = dm.value("property").toString();
-    hi.group = dm.value("groupName").toString();
-    hi.baudRate = dm.value("baudRate").toString();
-    hi.dataBits = dm.value("dataBits").toString();
-    hi.parity = dm.value("parity").toString();
-    hi.stopBits = dm.value("stopBits").toString();
-    hi.flowControl = dm.value("flowControl").toString();
-    return hi;
-}
 
 void QWoDBMergeModel::apply()
 {
-    // adds
-    for(auto it = m_mi.rhave.begin(); it != m_mi.rhave.end(); it++) {
-        QVariantMap& dm = *it;
-        QVariantMap remote = dm.value("remote").toMap();
-        QString action = dm.value("mergeAction").toString();
-        if(action == "add") {
-            dm.insert("mergeAction", "done");
-            HostInfo hi = qVariantMapToHostInfo(remote);
-            QWoSshConf::instance()->append(hi);
-        }
-    }
-
-    // remove
-    for(auto it = m_mi.remove.begin(); it != m_mi.remove.end(); ) {
-        QVariantMap dm = *it;
-        QVariantMap local = dm.value("local").toMap();
-        QString name = local.value("name").toString();
-        QWoSshConf::instance()->removeServer(name);
-        it = m_mi.remove.erase(it);
-    }
-
-    // replace
-    for(auto it = m_mi.replace.begin(); it != m_mi.replace.end(); it++) {
-        QVariantMap& dm = *it;
-        QVariantMap remote = dm.value("remote").toMap();
-        QString action = dm.value("mergeAction").toString();
-        if(action == "replace") {
-            dm.insert("mergeAction", "done");
-            HostInfo hi;
-            qVariantMapMergeToHostInfo(hi, remote);
-            QWoSshConf::instance()->modify(hi);
-        }
-    }
+    runApply();
 }
 
 bool QWoDBMergeModel::runAction(int action, const QModelIndex &idx)

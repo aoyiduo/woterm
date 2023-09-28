@@ -14,6 +14,7 @@
 
 #include "qwoutils.h"
 #include "qwosetting.h"
+#include "qwosshconf.h"
 
 #include <QStringListModel>
 
@@ -93,44 +94,23 @@ QVariantMap QWoSessionVNCProperty::result() const
 
 void QWoSessionVNCProperty::onButtonSaveClicked()
 {
-    QVariantMap mvar;
-    QString proto = ui->proto->currentText();
-    mvar.insert("vncProto", proto);
-    QString pixel = ui->pixel->currentText();
-    mvar.insert("vncPixel", pixel);
-    bool zrle = ui->zrle->isChecked();
-    mvar.insert("vncZRLE", zrle);
-    bool trle = ui->trle->isChecked();
-    mvar.insert("vncTRLE", trle);
-    bool zrle2 = ui->zrle2->isChecked();
-    mvar.insert("vncZRLE2", zrle2);
-    bool trle2 = ui->trle2->isChecked();
-    mvar.insert("vncTRLE2", trle2);
-    bool zrle3 = ui->zrle3->isChecked();
-    mvar.insert("vncZRLE3", zrle3);
-    bool trle3 = ui->trle3->isChecked();
-    mvar.insert("vncTRLE3", trle3);
-    bool h264 = ui->h264->isChecked();
-    mvar.insert("vncH264", h264);
-    bool jpeg = ui->jpeg->isChecked();
-    mvar.insert("vncJPEG", jpeg);
-    bool hextile = ui->hextile->isChecked();
-    mvar.insert("vncHextile", hextile);
-    bool copyrect = ui->copyrect->isChecked();
-    mvar.insert("vncCopyRect", copyrect);
-    bool rre = ui->rre->isChecked();
-    mvar.insert("vncRRE", rre);
-    bool raw = ui->rre->isChecked();
-    mvar.insert("vncRaw", raw);
-    bool deskresize = ui->deskresize->isChecked();
-    mvar.insert("vncDeskResize", deskresize);
-    bool viewonly = ui->viewonly->isChecked();
-    mvar.insert("vncViewOnly", viewonly);
-    m_result = mvar;
-    if(!m_bCustom) {
-        QWoSetting::setVncDefault(m_result);
+    m_result = save();
+    if(m_result.isEmpty()) {
+        return;
     }
-    close();
+    done(QDialog::Accepted);
+}
+
+void QWoSessionVNCProperty::onButtonSaveToAllClicked()
+{
+    m_result = save();
+    if(m_result.isEmpty()) {
+        return;
+    }
+    QWoSetting::setVncDefault(m_result);
+    QWoSshConf::instance()->removeProperties(Vnc);
+    m_result = QVariantMap();
+    done(QDialog::Accepted+1);
 }
 
 void QWoSessionVNCProperty::initDefault()
@@ -166,4 +146,45 @@ void QWoSessionVNCProperty::initDefault()
     ui->raw->setChecked(/*mdata.value("vncRaw", true).toBool()*/true);
     ui->deskresize->setChecked(mdata.value("vncDeskResize", true).toBool());
     ui->viewonly->setChecked(mdata.value("vncViewOnly", false).toBool());
+}
+
+QVariantMap QWoSessionVNCProperty::save()
+{
+    QVariantMap mvar;
+    QString proto = ui->proto->currentText();
+    mvar.insert("vncProto", proto);
+    QString pixel = ui->pixel->currentText();
+    mvar.insert("vncPixel", pixel);
+    bool zrle = ui->zrle->isChecked();
+    mvar.insert("vncZRLE", zrle);
+    bool trle = ui->trle->isChecked();
+    mvar.insert("vncTRLE", trle);
+    bool zrle2 = ui->zrle2->isChecked();
+    mvar.insert("vncZRLE2", zrle2);
+    bool trle2 = ui->trle2->isChecked();
+    mvar.insert("vncTRLE2", trle2);
+    bool zrle3 = ui->zrle3->isChecked();
+    mvar.insert("vncZRLE3", zrle3);
+    bool trle3 = ui->trle3->isChecked();
+    mvar.insert("vncTRLE3", trle3);
+    bool h264 = ui->h264->isChecked();
+    mvar.insert("vncH264", h264);
+    bool jpeg = ui->jpeg->isChecked();
+    mvar.insert("vncJPEG", jpeg);
+    bool hextile = ui->hextile->isChecked();
+    mvar.insert("vncHextile", hextile);
+    bool copyrect = ui->copyrect->isChecked();
+    mvar.insert("vncCopyRect", copyrect);
+    bool rre = ui->rre->isChecked();
+    mvar.insert("vncRRE", rre);
+    bool raw = ui->rre->isChecked();
+    mvar.insert("vncRaw", raw);
+    bool deskresize = ui->deskresize->isChecked();
+    mvar.insert("vncDeskResize", deskresize);
+    bool viewonly = ui->viewonly->isChecked();
+    mvar.insert("vncViewOnly", viewonly);
+    if(!m_bCustom) {
+        QWoSetting::setVncDefault(mvar);
+    }
+    return mvar;
 }

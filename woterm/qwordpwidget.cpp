@@ -163,10 +163,8 @@ void QWoRdpWidget::reconnect()
     width = (width + 3) & (~3);
     const HostInfo& hi = QWoSshConf::instance()->find(m_target);
 
-    QVariantMap mdata = QWoUtils::qBase64ToVariant(hi.property).toMap();
-    if(mdata.isEmpty()) {
-        mdata = QWoSetting::rdpDefault();
-    }
+    QVariantMap mdata = hi.merge(hi.type, QWoSetting::rdpDefault());
+
     if(mdata.contains("desktopType")) {
         QString deskType = mdata.value("desktopType", "desktop").toString();
         if(deskType == "fix") {

@@ -35,6 +35,8 @@ private slots:
     void onTextChanged(const QString& txt);
 
 private:
+    virtual void showEvent(QShowEvent *ev);
+private:
     Ui::QKxSearch *ui;
     QPointer<QKxTermItem> m_term;
 };

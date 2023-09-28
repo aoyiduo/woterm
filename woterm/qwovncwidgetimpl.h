@@ -36,6 +36,7 @@ protected:
     virtual void reconnectSession(bool all);
 private slots:
     void onRootDestroy();
+    void onSmartResize();
 private:
     QPointer<QWoVncPlayWidget> m_vnc;
 };

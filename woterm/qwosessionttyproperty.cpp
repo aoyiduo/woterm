@@ -22,6 +22,7 @@
 #include "qwofontlistmodel.h"
 #include "qkxpositionitem.h"
 #include "qkxbuttonassist.h"
+#include "qwosshconf.h"
 
 #include <QTabBar>
 #include <QBoxLayout>
@@ -181,6 +182,7 @@ QWoSessionTTYProperty::QWoSessionTTYProperty(ETTYType type, QWidget *parent)
     QObject::connect(ui->beamCursor, SIGNAL(toggled(bool)), this, SLOT(onBeamCursorToggled()));
 
     QObject::connect(ui->btnSave, SIGNAL(clicked()), this, SLOT(onButtonSaveClicked()));
+    QObject::connect(ui->btnSaveToAll, SIGNAL(clicked()), this, SLOT(onButtonSaveToAllClicked()));
     QObject::connect(ui->btnCancel, SIGNAL(clicked()), this, SLOT(close()));
 
     if(m_ttyType == ETTY_LocalShell) {
@@ -250,63 +252,65 @@ QWoSessionTTYProperty::~QWoSessionTTYProperty()
     delete ui;
 }
 
-void QWoSessionTTYProperty::setCustom(const QVariantMap &mdata)
+void QWoSessionTTYProperty::setCustom(const QVariantMap &_mdata)
 {
+    QVariantMap global = QWoSetting::ttyDefault();
+    QVariantMap mdata = HostInfo::merge(global, _mdata);
     m_bCustom = true;
-    if(!mdata.isEmpty()) {
-        if(mdata.contains("colorSchema")){
-            QString schema = mdata.value("colorSchema", DEFAULT_COLOR_SCHEMA).toString();
-            ui->schema->setCurrentText(schema);
-            m_term->setColorSchema(schema);
-        }
-        if(mdata.contains("keyboard")) {
-            QString name = mdata.value("keyboard", DEFAULT_KEY_LAYOUT).toString();
-            ui->kblayout->setCurrentText(name);
-        }
-        if(mdata.contains("textcodec")) {
-            QString name = mdata.value("textcodec", DEFAULT_TEXT_CODEC).toString();
-            ui->codepage->setCurrentText(name);
-            m_term->setTextCodec(name);
-        }
-        if(mdata.contains("fontName")) {
-            QFont ft = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-            QString fontName = mdata.value("fontName", ft.family()).toString();
-            int fontSize = mdata.value("fontSize", ft.pointSize()).toInt();
-            ui->fontSize->setValue(fontSize);
-            ui->fontChooser->setCurrentText(fontName);
-            m_term->setTerminalFont(fontName, fontSize);
-            refleshFontPreview();
-        }
-        if(mdata.contains("cursorType")) {
-            QString cursorType = mdata.value("cursorType", "block").toString();
-            if(cursorType.isEmpty() || cursorType == "block") {
-                ui->blockCursor->setChecked(true);
-            }else if(cursorType == "underline") {
-                ui->underlineCursor->setChecked(true);
-            }else {
-                ui->beamCursor->setChecked(true);
-            }
-        }
-        if(mdata.contains("historyLength")){
-            QString line = mdata.value("historyLength", QString("%1").arg(DEFAULT_HISTORY_LINE_LENGTH)).toString();
-            ui->lineSize->setText(line);
-        }
-        if(mdata.contains("dragPaste")) {
-            bool checked = mdata.value("dragPaste", false).toBool();
-            ui->chkDragCopyPaste->setChecked(checked);
-        }
-        if(mdata.contains("rkeyPaste")) {
-            bool checked = mdata.value("rkeyPaste", false).toBool();
-            ui->chkRKeyCopyPaste->setChecked(checked);
-        }
-        if(mdata.contains("keySequence")) {
-            setShortCut(mdata.value("keySequence").toMap());
-        }
-        if(mdata.contains("shellPath")) {
-            QString path = mdata.value("shellPath").toString();
-            ui->shellPath->setText(path);
+
+    if(mdata.contains("colorSchema")){
+        QString schema = mdata.value("colorSchema", DEFAULT_COLOR_SCHEMA).toString();
+        ui->schema->setCurrentText(schema);
+        m_term->setColorSchema(schema);
+    }
+    if(mdata.contains("keyboard")) {
+        QString name = mdata.value("keyboard", DEFAULT_KEY_LAYOUT).toString();
+        ui->kblayout->setCurrentText(name);
+    }
+    if(mdata.contains("textcodec")) {
+        QString name = mdata.value("textcodec", DEFAULT_TEXT_CODEC).toString();
+        ui->codepage->setCurrentText(name);
+        m_term->setTextCodec(name);
+    }
+    if(mdata.contains("fontName")) {
+        QFont ft = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+        QString fontName = mdata.value("fontName", ft.family()).toString();
+        int fontSize = mdata.value("fontSize", ft.pointSize()).toInt();
+        ui->fontSize->setValue(fontSize);
+        ui->fontChooser->setCurrentText(fontName);
+        m_term->setTerminalFont(fontName, fontSize);
+        refleshFontPreview();
+    }
+    if(mdata.contains("cursorType")) {
+        QString cursorType = mdata.value("cursorType", "block").toString();
+        if(cursorType.isEmpty() || cursorType == "block") {
+            ui->blockCursor->setChecked(true);
+        }else if(cursorType == "underline") {
+            ui->underlineCursor->setChecked(true);
+        }else {
+            ui->beamCursor->setChecked(true);
         }
     }
+    if(mdata.contains("historyLength")){
+        QString line = mdata.value("historyLength", QString("%1").arg(DEFAULT_HISTORY_LINE_LENGTH)).toString();
+        ui->lineSize->setText(line);
+    }
+    if(mdata.contains("dragPaste")) {
+        bool checked = mdata.value("dragPaste", false).toBool();
+        ui->chkDragCopyPaste->setChecked(checked);
+    }
+    if(mdata.contains("rkeyPaste")) {
+        bool checked = mdata.value("rkeyPaste", false).toBool();
+        ui->chkRKeyCopyPaste->setChecked(checked);
+    }
+    if(mdata.contains("keySequence")) {
+        setShortCut(mdata.value("keySequence").toMap());
+    }
+    if(mdata.contains("shellPath")) {
+        QString path = mdata.value("shellPath").toString();
+        ui->shellPath->setText(path);
+    }
+
 }
 
 QVariantMap QWoSessionTTYProperty::result() const
@@ -380,59 +384,23 @@ void QWoSessionTTYProperty::onTimeout()
 
 void QWoSessionTTYProperty::onButtonSaveClicked()
 {
-    QVariantMap mvar;
-
-    QString schema = ui->schema->currentText();
-    QString keyboard = ui->kblayout->currentText();
-    QString textcodec = ui->codepage->currentText();
-    QString fontName = ui->fontChooser->currentText();
-    int fontSize = ui->fontSize->value();
-    QString cursorType = ui->blockCursor->isChecked() ? "block" : (ui->beamCursor->isChecked() ? "beam": "underline");
-    QString lineSize = ui->lineSize->text();
-    mvar.insert("colorSchema", schema);
-    mvar.insert("keyboard", keyboard);
-    mvar.insert("textcodec", textcodec);
-    mvar.insert("fontName", fontName);
-    mvar.insert("fontSize", fontSize);
-    mvar.insert("cursorType", cursorType);
-    mvar.insert("historyLength", lineSize);
-    mvar.insert("rkeyPaste", ui->chkRKeyCopyPaste->isChecked());
-    mvar.insert("dragPaste", ui->chkDragCopyPaste->isChecked());
-
-    QWoShortCutModel *model = qobject_cast<QWoShortCutModel*>(ui->keymap->model());
-    QMap<int,QKeySequence> all = model->toMap();
-    QVariantMap mdata;
-    mdata.insert("SCK_Copy", all.value(QKxTermItem::SCK_Copy));
-    mdata.insert("SCK_Paste", all.value(QKxTermItem::SCK_Paste));
-    mdata.insert("SCK_SelectAll", all.value(QKxTermItem::SCK_SelectAll));
-    mdata.insert("SCK_SelectLeft", all.value(QKxTermItem::SCK_SelectLeft));
-    mdata.insert("SCK_SelectRight", all.value(QKxTermItem::SCK_SelectRight));
-    mdata.insert("SCK_SelectUp", all.value(QKxTermItem::SCK_SelectUp));
-    mdata.insert("SCK_SelectDown", all.value(QKxTermItem::SCK_SelectDown));
-    mdata.insert("SCK_SelectHome", all.value(QKxTermItem::SCK_SelectHome));
-    mdata.insert("SCK_SelectEnd", all.value(QKxTermItem::SCK_SelectEnd));
-
-    mvar.insert("keySequence", mdata);
-
-    if(m_ttyType == ETTY_LocalShell) {
-        mvar.insert("shellPath", ui->shellPath->text());
+    m_result = save();
+    if(m_result.isEmpty()) {
+        return;
     }
+    done(QDialog::Accepted);
+}
 
-    m_result = mvar;
-    if(!m_bCustom) {
-        QWoSetting::setTtyDefault(m_result);
+void QWoSessionTTYProperty::onButtonSaveToAllClicked()
+{
+    m_result = save();
+    if(m_result.isEmpty()) {
+        return;
     }
-
-
-    /*set background image*/
-    QString path = ui->bkImage->text();
-    QWoSetting::setTerminalBackgroundImage(path);
-    QWoSetting::setTerminalBackgroundImageAlpha(ui->bkImgAlpha->value());
-    QWoSetting::setTerminalBackgroundImageEdgeSmooth(ui->chkEdgeSmooth->isChecked());
-    QWoSetting::setTerminalBackgroundImagePosition(m_item->postionAsString());
-
-
-    close();
+    QWoSetting::setTtyDefault(m_result);
+    QWoSshConf::instance()->removeProperties(SshWithSftp);
+    m_result = QVariantMap();
+    done(QDialog::Accepted+1);
 }
 
 void QWoSessionTTYProperty::onShellPathButtonClicked()
@@ -524,6 +492,61 @@ void QWoSessionTTYProperty::onSelectButtonClicked()
     }
 
     ui->bkImage->setText(file);
+}
+
+QVariantMap QWoSessionTTYProperty::save()
+{
+    QVariantMap mvar;
+
+    QString schema = ui->schema->currentText();
+    QString keyboard = ui->kblayout->currentText();
+    QString textcodec = ui->codepage->currentText();
+    QString fontName = ui->fontChooser->currentText();
+    int fontSize = ui->fontSize->value();
+    QString cursorType = ui->blockCursor->isChecked() ? "block" : (ui->beamCursor->isChecked() ? "beam": "underline");
+    QString lineSize = ui->lineSize->text();
+    mvar.insert("colorSchema", schema);
+    mvar.insert("keyboard", keyboard);
+    mvar.insert("textcodec", textcodec);
+    mvar.insert("fontName", fontName);
+    mvar.insert("fontSize", fontSize);
+    mvar.insert("cursorType", cursorType);
+    mvar.insert("historyLength", lineSize);
+    mvar.insert("rkeyPaste", ui->chkRKeyCopyPaste->isChecked());
+    mvar.insert("dragPaste", ui->chkDragCopyPaste->isChecked());
+
+    QWoShortCutModel *model = qobject_cast<QWoShortCutModel*>(ui->keymap->model());
+    QMap<int,QKeySequence> all = model->toMap();
+    QVariantMap mdata;
+    mdata.insert("SCK_Copy", all.value(QKxTermItem::SCK_Copy));
+    mdata.insert("SCK_Paste", all.value(QKxTermItem::SCK_Paste));
+    mdata.insert("SCK_SelectAll", all.value(QKxTermItem::SCK_SelectAll));
+    mdata.insert("SCK_SelectLeft", all.value(QKxTermItem::SCK_SelectLeft));
+    mdata.insert("SCK_SelectRight", all.value(QKxTermItem::SCK_SelectRight));
+    mdata.insert("SCK_SelectUp", all.value(QKxTermItem::SCK_SelectUp));
+    mdata.insert("SCK_SelectDown", all.value(QKxTermItem::SCK_SelectDown));
+    mdata.insert("SCK_SelectHome", all.value(QKxTermItem::SCK_SelectHome));
+    mdata.insert("SCK_SelectEnd", all.value(QKxTermItem::SCK_SelectEnd));
+
+    mvar.insert("keySequence", mdata);
+
+    if(m_ttyType == ETTY_LocalShell) {
+        mvar.insert("shellPath", ui->shellPath->text());
+    }
+
+    if(!m_bCustom) {
+        QWoSetting::setTtyDefault(mvar);
+    }
+
+
+    /*set background image*/
+    QString path = ui->bkImage->text();
+    QWoSetting::setTerminalBackgroundImage(path);
+    QWoSetting::setTerminalBackgroundImageAlpha(ui->bkImgAlpha->value());
+    QWoSetting::setTerminalBackgroundImageEdgeSmooth(ui->chkEdgeSmooth->isChecked());
+    QWoSetting::setTerminalBackgroundImagePosition(m_item->postionAsString());
+
+    return mvar;
 }
 
 void QWoSessionTTYProperty::initDefault()

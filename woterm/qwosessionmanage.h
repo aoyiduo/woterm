@@ -26,7 +26,7 @@ class QKxTermWidget;
 class QStringListModel;
 class QWoHostTreeModel;
 class QWoHostListModel;
-class QSortFilterProxyModel;
+class QWoSortFilterProxyModel;
 class QWoTreeView;
 
 
@@ -68,6 +68,9 @@ private:
     Q_INVOKABLE void restoreSessionsExpandState();
     Q_INVOKABLE void saveSessionsExpandState();
     bool handleTreeViewContextMenu(QContextMenuEvent *ev);
+
+    Q_INVOKABLE void sessionEditLater(const QString& sessionName);
+    Q_INVOKABLE void scrollToSession(const QString& sessionName);
 protected:
     bool eventFilter(QObject *obj, QEvent *ev);
 private:
@@ -75,7 +78,7 @@ private:
     QPointer<QWoHostListModel> m_listModel;
     QPointer<QWoHostTreeModel> m_treeModel;
     QPointer<QAbstractItemModel> m_model;
-    QPointer<QSortFilterProxyModel> m_proxyModel;
+    QPointer<QWoSortFilterProxyModel> m_proxyModel;
     QPointer<QWoTreeView> m_tree;
 };
 

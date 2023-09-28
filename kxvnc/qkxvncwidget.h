@@ -32,6 +32,12 @@ public:
     void setInputResult(const QString& passwd);
     bool scrollEnabled();
     void setScrollEnabled(bool on);
+    bool smartResize() {
+        return !scrollEnabled();
+    };
+    void setSmartResize(bool on) {
+        setScrollEnabled(!on);
+    }
     void setNextRatio();
     void setNextScreen();
     void setAudioEnabled(bool on);
