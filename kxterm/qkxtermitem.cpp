@@ -45,6 +45,7 @@
 #define REPAINT_TIMEOUT2 (40)
 #define BLINK_MAX_COUNT (9)
 
+
 /***
  * Windows only AlignBaseline can be better.
  * https://www.freesion.com/article/83151447592/
@@ -82,8 +83,9 @@ QKxTermItem::QKxTermItem(QWidget* parent)
     , m_blinkAlway(false)
     , m_bEchoInputEnabled(false)
     , m_readOnly(false)
-    , m_dragActived(false)
+    , m_dragMode(DTM_NotDefined)
     , m_ptDraged(-1,-1)
+    , m_keyRepeat(QEvent::None, 0, Qt::NoModifier)
 {
     static int idx = 0;
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -93,23 +95,13 @@ QKxTermItem::QKxTermItem(QWidget* parent)
     setObjectName(QString("QKxTermItem:%1").arg(idx++));
     setInputEnable(true);
 
-
-    m_keyCopy = QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_C);
-    m_keyPaste = QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_V);
-    m_keyUpSelect = QKeySequence(Qt::SHIFT + Qt::Key_Up);
-    m_keyDownSelect = QKeySequence(Qt::SHIFT + Qt::Key_Down);
-    m_keyLeftSelect = QKeySequence(Qt::SHIFT + Qt::Key_Left);
-    m_keyRightSelect = QKeySequence(Qt::SHIFT + Qt::Key_Right);
-    m_keyHomeSelect = QKeySequence(Qt::SHIFT + Qt::Key_Home);
-    m_keyEndSelect = QKeySequence(Qt::SHIFT + Qt::Key_End);
-    m_keySelectAll = QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_A);
-
     initTitle();
 
     m_vte = new QVteImpl(this);
     m_view = new QKxView(this);
     m_view->setScreen(m_vte->screen());
     QObject::connect(m_vte, SIGNAL(contentChanged(bool)), this, SLOT(onContentChanged(bool)));
+    QObject::connect(m_view, SIGNAL(selectChanged()), this, SIGNAL(selectChanged()));
     QObject::connect(m_view, SIGNAL(selectChanged()), this, SLOT(onSelectChanged()));
     QObject::connect(m_vte, SIGNAL(screenChanged()), this, SLOT(onScreenChanged()));
     QObject::connect(m_vte, SIGNAL(sendData(QByteArray)), this, SIGNAL(sendData(QByteArray)));
@@ -131,7 +123,7 @@ QKxTermItem::QKxTermItem(QWidget* parent)
     QObject::connect(m_ticker, SIGNAL(timeout()), this, SLOT(onRepaintTimeout()));
     QObject::connect(m_ticker2, SIGNAL(timeout()), this, SLOT(onRepaintTimeout()));
 
-    setKeyLayoutByName(DEFAULT_KEY_LAYOUT);
+    setKeyTranslatorByName(DEFAULT_KEY_TRANSLATOR);
     setColorSchema(DEFAULT_COLOR_SCHEMA);
 
     QFont ft = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -258,15 +250,19 @@ void QKxTermItem::setReadOnly(bool on)
     }
 }
 
-bool QKxTermItem::dragCopyAndPaste() const
+QKxTermItem::DragTextMode QKxTermItem::dragTextMode() const
 {
-    return m_dragActived;
+    return m_dragMode;
 }
 
-void QKxTermItem::setDragCopyAndPaste(bool on)
+void QKxTermItem::setDragTextMode(DragTextMode mode)
 {
-    m_dragActived = on;
-    setAcceptDrops(on);
+    m_dragMode = mode;
+    if(mode != DTM_NotDefined) {
+        setAcceptDrops(true);
+    }else{
+        setAcceptDrops(false);
+    }
 }
 
 bool QKxTermItem::isOverSelection(const QPoint &_pt)
@@ -352,11 +348,6 @@ void QKxTermItem::setCursorType(const QKxTermItem::CursorType &t)
     m_cursorType = t;
 }
 
-QString QKxTermItem::keyTable() const
-{
-    return m_keyTranslator->path();
-}
-
 QCursor QKxTermItem::mouseCursor() const
 {
     return cursor();
@@ -424,41 +415,73 @@ bool QKxTermItem::scrollTo(int y)
     return false;
 }
 
-QKxKeyTranslator* QKxTermItem::keyLayout() const
+QKxKeyTranslator *QKxTermItem::keyTranslator() const
 {
     return m_keyTranslator;
 }
 
-void QKxTermItem::setKeyLayoutByName(const QString &name)
-{
-    QKxKeyTranslator *translator = QKxUtils::keyboardLayout(name);
-    setKeyLayout(translator);
-}
-
-void QKxTermItem::setKeyLayout(QKxKeyTranslator *translator)
+void QKxTermItem::setKeyTranslator(QKxKeyTranslator *translator)
 {
     m_keyTranslator = translator;
 }
 
-QString QKxTermItem::keyLayoutName() const
+QString QKxTermItem::keyTranslatorName() const
 {
-    return m_keyTranslator->name();
+    if(m_keyTranslator) {
+        return m_keyTranslator->name();
+    }
+    return QString();
+}
+
+void QKxTermItem::setKeyTranslatorByName(const QString &name)
+{
+    QString path = QKxUtils::keytabPath(name);
+    if(path.isEmpty()) {
+        QString err = QString("\r\nkey translator file named of %1 is not exist").arg(name);
+        QMetaObject::invokeMethod(this, "parseError", Qt::QueuedConnection, Q_ARG(QByteArray, err.toUtf8()));
+        return;
+    }
+
+    if(!loadKeyTranslator(path)) {
+        QString err = QString("\r\nThe file format is incorrect, please check its content and try to load the default configure.");
+        err += "\r\n";
+        err += path;
+        QByteArray msg = err.toUtf8();
+        QMetaObject::invokeMethod(this, "parseError", Qt::QueuedConnection, Q_ARG(QByteArray, msg));
+
+        QString path = QKxUtils::keytabPath(DEFAULT_KEY_TRANSLATOR);
+        if(QFile::exists(path)) {
+            loadKeyTranslator(path);
+        }
+        return;
+    }
 }
 
 QString QKxTermItem::colorSchema() const
 {
-    return m_schema;
+    if(m_colorSchema) {
+        return m_colorSchema->name();
+    }
+    return QString();
 }
 
 void QKxTermItem::setColorSchema(const QString &name)
 {
     QString path = QKxUtils::colorSchemaPath(name);
-    if(!path.isEmpty()) {
-        m_schema = name;
-        if(loadColorSchema(path)) {
-            setBackgroundColor(m_colorSchema->background());
-        }
+    if(path.isEmpty()) {
+        QString err = QString("failed to load the color schema named of %1").arg(name);
+        QMetaObject::invokeMethod(this, "parseError", Qt::QueuedConnection, Q_ARG(QByteArray, err.toUtf8()));
+        return;
     }
+    if(!loadColorSchema(path)) {
+        QString err = QString("The file format is incorrect, please check its content.");
+        err += "\r\n";
+        err += path;
+        QByteArray msg = err.toUtf8();
+        QMetaObject::invokeMethod(this, "parseError", Qt::QueuedConnection, Q_ARG(QByteArray, msg));
+        return;
+    }
+    setBackgroundColor(m_colorSchema->background());
 }
 
 QString QKxTermItem::termName() const
@@ -608,96 +631,9 @@ void QKxTermItem::simulateKeyRelease(QKeyEvent *ev)
     keyReleaseEvent(ev);
 }
 
-void QKxTermItem::bindShortCut(QKxTermItem::ShortCutKey sck, QKeySequence key)
+QStringList QKxTermItem::availableKeytabs() const
 {
-    switch(sck)
-    {
-    case SCK_Copy:
-        m_keyCopy = key;
-        break;
-    case SCK_Paste:
-        m_keyPaste = key;
-        break;
-    case SCK_SelectAll:
-        m_keySelectAll = key;
-        break;
-    case SCK_SelectDown:
-        m_keyDownSelect = key;
-        break;
-    case SCK_SelectEnd:
-        m_keyEndSelect = key;
-        break;
-    case SCK_SelectHome:
-        m_keyHomeSelect = key;
-        break;
-    case SCK_SelectLeft:
-        m_keyLeftSelect = key;
-        break;
-    case SCK_SelectRight:
-        m_keyRightSelect = key;
-        break;
-    case SCK_SelectUp:
-        m_keyUpSelect = key;
-        break;
-    }
-}
-
-
-QKeySequence QKxTermItem::defaultShortCutKey(QKxTermItem::ShortCutKey sck)
-{
-    switch(sck)
-    {
-    case SCK_Copy:
-        return QKeySequence(Qt::ALT + Qt::Key_C);
-    case SCK_Paste:
-        return QKeySequence(Qt::ALT + Qt::Key_V);
-    case SCK_SelectAll:
-        return QKeySequence(Qt::ALT + Qt::Key_A);
-    case SCK_SelectDown:
-        return QKeySequence(Qt::SHIFT + Qt::Key_Down);
-    case SCK_SelectEnd:
-        return QKeySequence(Qt::SHIFT + Qt::Key_End);
-    case SCK_SelectHome:
-        return QKeySequence(Qt::SHIFT + Qt::Key_Home);
-    case SCK_SelectLeft:
-        return QKeySequence(Qt::SHIFT + Qt::Key_Left);
-    case SCK_SelectRight:
-        return QKeySequence(Qt::SHIFT + Qt::Key_Right);
-    case SCK_SelectUp:
-        return QKeySequence(Qt::SHIFT + Qt::Key_Up);
-    }
-    return QKeySequence();
-}
-
-QKeySequence QKxTermItem::currentShortCutKey(QKxTermItem::ShortCutKey sck)
-{
-    switch(sck)
-    {
-    case SCK_Copy:
-        return m_keyCopy;
-    case SCK_Paste:
-        return m_keyPaste;
-    case SCK_SelectAll:
-        return m_keySelectAll;
-    case SCK_SelectDown:
-        return m_keyDownSelect;
-    case SCK_SelectEnd:
-        return m_keyEndSelect;
-    case SCK_SelectHome:
-        return m_keyHomeSelect;
-    case SCK_SelectLeft:
-        return m_keyLeftSelect;
-    case SCK_SelectRight:
-        return m_keyRightSelect;
-    case SCK_SelectUp:
-        return m_keyUpSelect;
-    }
-    return QKeySequence();
-}
-
-QStringList QKxTermItem::availableKeyLayouts() const
-{
-    return QKxUtils::availableKeyLayouts();
+    return QKxUtils::availableKeytabs();
 }
 
 QStringList QKxTermItem::availableColorSchemas() const
@@ -763,6 +699,17 @@ void QKxTermItem::tryToPaste()
     if(clipTxt.isEmpty()) {
         return;
     }
+
+#define NEVER_TRY_TO_FIX_CRLF_PROBLEM_AND_LEFT_FOR_USER_FIX_OUTSIZE
+#if defined(NEVER_TRY_TO_FIX_CRLF_PROBLEM_AND_LEFT_FOR_USER_FIX_OUTSIZE)
+    /***
+     *    No longer trying to convert line breaks for different platforms.
+     *    If there are any issues, the user will fix them themselves.
+     ***/
+    // clipTxt = clipTxt.replace("\r\n", "\n");
+    pastePlainText(clipTxt);
+#else
+    //vim / vi:  it is very bad  on local terminal.
     clipTxt = clipTxt.replace("\r\n", "\n");
     clipTxt = clipTxt.replace("\r", "\n");
     QStringList lines = clipTxt.split("\n");
@@ -774,6 +721,7 @@ void QKxTermItem::tryToPaste()
         handleKeyEvent(&ev);
     }
     pastePlainText(last);
+#endif
 }
 
 void QKxTermItem::pastePlainText(const QString &txt)
@@ -782,7 +730,8 @@ void QKxTermItem::pastePlainText(const QString &txt)
         if(m_echoInput != nullptr && m_bEchoInputEnabled) {
             m_echoInput->tryToPaste(txt);
         }else{
-            QByteArray buf = txt.toUtf8();
+            QTextCodec *m_codec = m_vte->getTextCodec();
+            QByteArray buf = m_codec->fromUnicode(txt);
             handleSendData(buf);
         }
     }
@@ -794,6 +743,11 @@ void QKxTermItem::selectAll()
     m_selectEnd = QPoint(m_columns-1, m_view->lineCount());
     qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
     m_view->setSelection(m_selectStart, m_selectEnd);
+}
+
+void QKxTermItem::tryToShowFindTool()
+{
+    emit showFindTool();
 }
 
 void QKxTermItem::resetTermSize()
@@ -958,19 +912,21 @@ void QKxTermItem::updateTermSize(int rows, int cols)
     m_vte->resize(rows, cols);
 }
 
-bool QKxTermItem::loadKeyLayout(const QString &path)
+bool QKxTermItem::loadKeyTranslator(const QString &path)
 {
-    if(m_keyTranslator == nullptr) {
-        m_keyTranslator = new QKxKeyTranslator(this);
+    if(m_keyTranslator) {
+        m_keyTranslator->deleteLater();
     }
+    m_keyTranslator = new QKxKeyTranslator(this);
     return m_keyTranslator->load(path);
 }
 
 bool QKxTermItem::loadColorSchema(const QString &path)
 {
-    if(m_colorSchema == nullptr) {
-        m_colorSchema = new QKxColorSchema(this);
+    if(m_colorSchema) {
+        m_colorSchema->deleteLater();
     }
+    m_colorSchema = new QKxColorSchema(this);
     if(m_colorSchema->load(path)) {
        setBackgroundColor(m_colorSchema->background());
        updateView(PF_FullScreen);
@@ -1190,6 +1146,18 @@ void QKxTermItem::onSetActive()
     setFocus();
 }
 
+void QKxTermItem::onKeyAutoRepeat()
+{
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    if(now - m_timeLast > 1000) {
+        QTimer *timer = qobject_cast<QTimer*>(sender());
+        timer->stop();
+    }
+    if(m_keyRepeat.type() != QEvent::None) {
+        handleKeyEvent(&m_keyRepeat);
+    }
+}
+
 void QKxTermItem::paint(QPainter *p)
 {
     if(m_image.isEmpty()) {
@@ -1253,96 +1221,45 @@ void QKxTermItem::keyPressEvent(QKeyEvent *ev)
         m_echoInput->onKeyPressEvent(ev);
         return;
     }
-    int key = ev->key();
     Qt::KeyboardModifiers modifier = ev->modifiers();
-    if(modifier & Qt::ShiftModifier) {
-        key += Qt::SHIFT;
+    if(modifier == Qt::NoModifier){
+        clearSelection();
     }
-    if(modifier & Qt::ControlModifier) {
-        key += Qt::CTRL;
-    }
-    if(modifier & Qt::MetaModifier) {
-        key += Qt::META;
-    }
-    if(modifier & Qt::AltModifier) {
-        key += Qt::ALT;
-    }
-    QKeySequence seq(key);
-    if(seq == m_keyCopy) {
-        tryToCopy();
-    }else if(seq == m_keyPaste) {
-        tryToPaste();
-    }else if(seq == m_keyUpSelect){
-        if(m_selectStart == QPoint(-1,-1)) {
-            TermCursor tc = m_view->cursor();
-            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
-        }
-        int y = m_selectEnd.y() - 1;
-        m_selectEnd.setY(y > 0 ? y : 0);
-        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
-        m_view->setSelection(m_selectStart, m_selectEnd);
-    }else if(seq == m_keyDownSelect){
-        if(m_selectStart == QPoint(-1,-1)) {
-            TermCursor tc = m_view->cursor();
-            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
-        }
-        int y = m_selectEnd.y() + 1;
-        m_selectEnd.setY(y >= m_view->lineCount() ? m_view->lineCount() - 1 : y);
-        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
-        m_view->setSelection(m_selectStart, m_selectEnd);
-    }else if(seq == m_keyLeftSelect){
-        if(m_selectStart == QPoint(-1,-1)) {
-            TermCursor tc = m_view->cursor();
-            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
-        }
-        int x = m_selectEnd.x() - 1;
-        m_selectEnd.setX(x > 0 ? x : 0);
-        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
-        m_view->setSelection(m_selectStart, m_selectEnd);
-    }else if(seq == m_keyRightSelect){
-        if(m_selectStart == QPoint(-1,-1)) {
-            TermCursor tc = m_view->cursor();
-            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
-        }
-        int x = m_selectEnd.x() + 1;
-        m_selectEnd.setX(x >= m_columns ? m_columns - 1 : x);
-        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
-        m_view->setSelection(m_selectStart, m_selectEnd);
-    }else if(seq == m_keyHomeSelect){
-        if(m_selectStart == QPoint(-1,-1)) {
-            TermCursor tc = m_view->cursor();
-            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
-        }
-        m_selectEnd.setX(0);
-        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
-        m_view->setSelection(m_selectStart, m_selectEnd);
-    }else if(seq == m_keyEndSelect){
-        if(m_selectStart == QPoint(-1,-1)) {
-            TermCursor tc = m_view->cursor();
-            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
-        }
-        m_selectEnd.setX(m_columns-1);
-        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
-        m_view->setSelection(m_selectStart, m_selectEnd);
-    }else if(seq == m_keySelectAll){
-        m_selectStart = QPoint(0, 0);
-        m_selectEnd = QPoint(m_columns-1, m_view->lineCount());
-        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
-        m_view->setSelection(m_selectStart, m_selectEnd);
-    }else{
-        if(modifier == Qt::NoModifier){
-            clearSelection();
+
+#if defined (Q_OS_MAC)
+    if(!ev->isAutoRepeat()) {
+        m_keyRepeat = QKeyEvent(QEvent::None, 0, Qt::NoModifier);
+        if(m_keyAutoRepeat) {
+            m_keyAutoRepeat->stop();
         }
         handleKeyEvent(ev);
+    }else{
+        m_keyRepeat = QKeyEvent(ev->type(), ev->key(), ev->modifiers(), ev->text(), true);
+        if(m_keyAutoRepeat == nullptr) {
+            m_keyAutoRepeat = new QTimer(this);
+            m_keyAutoRepeat->setTimerType(Qt::PreciseTimer);
+            QObject::connect(m_keyAutoRepeat, SIGNAL(timeout()), this, SLOT(onKeyAutoRepeat()));
+        }
+        if(!m_keyAutoRepeat->isActive()) {
+            m_keyAutoRepeat->start(10);            
+        }
+        m_timeLast = QDateTime::currentMSecsSinceEpoch();
     }
+#else
+    handleKeyEvent(ev);
+#endif
 }
 
 void QKxTermItem::keyReleaseEvent(QKeyEvent *ev)
-{
+{    
     ev->accept();
     if(m_bEchoInputEnabled && m_echoInput != nullptr) {
         m_echoInput->onKeyReleaseEvent(ev);
         return;
+    }
+    m_keyRepeat = QKeyEvent(QEvent::None, 0, Qt::NoModifier);
+    if(m_keyAutoRepeat) {
+        m_keyAutoRepeat->stop();
     }
 }
 
@@ -1380,7 +1297,7 @@ void QKxTermItem::mousePressEvent(QMouseEvent *ev)
         }
         m_ptClicked = QPoint(-1,-1);
         QPoint pt = widgetPointToTermViewPosition(ev->pos());
-        if(m_dragActived && m_view->isOverSelection(pt)) {
+        if(m_dragMode != DTM_NotDefined && m_view->isOverSelection(pt)) {
             m_ptDraged = ev->pos();
             return;
         }
@@ -1393,7 +1310,7 @@ void QKxTermItem::mouseMoveEvent(QMouseEvent *ev)
 {
     if(ev->buttons() & Qt::LeftButton) {
         QPoint pt = ev->pos();
-        if(m_dragActived && m_ptDraged != QPoint(-1,-1)) {
+        if(m_dragMode != DTM_NotDefined && m_ptDraged != QPoint(-1,-1)) {
             int x = qAbs(pt.x() - m_ptDraged.x());
             int y = qAbs(pt.y() - m_ptDraged.y());
             if( x < 5 &&  y < 5) {
@@ -1404,8 +1321,10 @@ void QKxTermItem::mouseMoveEvent(QMouseEvent *ev)
                 drag.setMimeData(mimeData);
                 drag.exec(Qt::CopyAction|Qt::MoveAction);
                 if(!txtSel.isEmpty()) {
-                    QClipboard *clip = QGuiApplication::clipboard();
-                    clip->setText(txtSel);
+                    if(m_dragMode == DTM_DragCopyAndPaste) {
+                        QClipboard *clip = QGuiApplication::clipboard();
+                        clip->setText(txtSel);
+                    }
                     handleSendData(txtSel.toUtf8());
                 }
                 m_ptDraged = QPoint(-1,-1);
@@ -1427,7 +1346,7 @@ void QKxTermItem::mouseMoveEvent(QMouseEvent *ev)
 void QKxTermItem::mouseReleaseEvent(QMouseEvent *ev)
 {
     QPoint pt = ev->pos();
-    if(m_dragActived && pt == m_ptDraged) {
+    if(m_dragMode != DTM_NotDefined && pt == m_ptDraged) {
         clearSelection();
     }
     m_ptDraged = QPoint(-1,-1);
@@ -1442,6 +1361,8 @@ void QKxTermItem::mouseReleaseEvent(QMouseEvent *ev)
         break;
     case Qt::RightButton:
         key = 2;
+        break;
+    default:
         break;
     }
 
@@ -1842,11 +1763,13 @@ void QKxTermItem::updateImage()
                 dst.cs.resize(col);
             }
             if(src.xcur >= 0) {
-                QRect rt(src.xcur * m_fontWidth, r * (m_fontHeight + m_spaceLine + m_lineWidth), m_fontWidth, m_fontHeight + m_spaceLine + m_lineWidth);
+                const TermChar& c = src.cs.at(src.xcur);
+                QRect rt(src.xcur * m_fontWidth, r * (m_fontHeight + m_spaceLine + m_lineWidth), m_fontWidth * c.count, m_fontHeight + m_spaceLine + m_lineWidth);
                 clip |= rt.adjusted(-2, -2, 2, 2);
             }
             if(dst.xcur >= 0) {
-                QRect rt(dst.xcur * m_fontWidth, r * (m_fontHeight + m_spaceLine + m_lineWidth), m_fontWidth, m_fontHeight + m_spaceLine + m_lineWidth);
+                const TermChar& c = dst.cs.at(dst.xcur);
+                QRect rt(dst.xcur * m_fontWidth, r * (m_fontHeight + m_spaceLine + m_lineWidth), m_fontWidth * c.count, m_fontHeight + m_spaceLine + m_lineWidth);
                 clip |= rt.adjusted(-2, -2, 2, 2);
             }
             int y = r * (m_fontHeight + m_spaceLine + m_lineWidth);
@@ -2070,18 +1993,102 @@ void QKxTermItem::handleKeyEvent(QKeyEvent *ev)
 {
     unsigned int states = m_vte->states();
     QKxKeyTranslator::VTModes vtmode;
-    vtmode |= states & TF_DECANM ? QKxKeyTranslator::VM_ANSI_NO : QKxKeyTranslator::VM_ANSI_YES;
+    vtmode |= states & TF_DECANM ? QKxKeyTranslator::VM_ANSI_YES : QKxKeyTranslator::VM_ANSI_NO;
     vtmode |= states & TF_LNM ? QKxKeyTranslator::VM_NEWLINE_YES : QKxKeyTranslator::VM_NEWLINE_NO;
     vtmode |= states & TF_DECCKM ? QKxKeyTranslator::VM_APPCUKEY_YES : QKxKeyTranslator::VM_APPCUKEY_NO;
     vtmode |= states & TF_SCREEN ? QKxKeyTranslator::VM_APPSCREEN_YES : QKxKeyTranslator::VM_APPSCREEN_NO;
     vtmode |= states & TF_DECKPAM ? QKxKeyTranslator::VM_APPKEYPAD_YES : QKxKeyTranslator::VM_APPKEYPAD_NO;
     int key = ev->key();
     Qt::KeyboardModifiers modifiers = ev->modifiers();
-    QByteArray buf = m_keyTranslator->match(key, modifiers, vtmode);
-    if(!buf.isEmpty()) {
+
+    //if(modifiers & Qt::MetaModifier && key == Qt::Key_C) {
+    //    qDebug() << modifiers << ev->key();
+    //}
+
+    QByteArray buf;
+    QKxKeyTranslator::EOperation op = QKxKeyTranslator::ENotDefined;
+    m_keyTranslator->match(key, modifiers, vtmode, op, buf);
+
+    // operation first.
+    if(op == QKxKeyTranslator::ECopy) {
+        tryToCopy();
+    }else if(op == QKxKeyTranslator::EPaste) {
+        tryToPaste();
+    }else if(op == QKxKeyTranslator::EFind){
+        tryToShowFindTool();
+    }else if(op == QKxKeyTranslator::EScrollLineUp) {
+        scrollLine(-3);
+    }else if(op == QKxKeyTranslator::EScrollPageUp) {
+        scrollPage(-1);
+    }else if(op == QKxKeyTranslator::EScrollUpToTop) {
+        scrollToTop();
+    }else if(op == QKxKeyTranslator::EScrollLineDown) {
+        scrollLine(3);
+    }else if(op == QKxKeyTranslator::EScrollPageDown) {
+        scrollPage(1);
+    }else if(op == QKxKeyTranslator::EScrollDownToBottom) {
+        scrollToBottom();
+    }else if(op == QKxKeyTranslator::ESelectLineUp) {
+        if(m_selectStart == QPoint(-1,-1)) {
+            TermCursor tc = m_view->cursor();
+            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
+        }
+        int y = m_selectEnd.y() - 1;
+        m_selectEnd.setY(y > 0 ? y : 0);
+        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
+        m_view->setSelection(m_selectStart, m_selectEnd);
+    }else if(op == QKxKeyTranslator::ESelectLineDown) {
+        if(m_selectStart == QPoint(-1,-1)) {
+            TermCursor tc = m_view->cursor();
+            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
+        }
+        int y = m_selectEnd.y() + 1;
+        m_selectEnd.setY(y >= m_view->lineCount() ? m_view->lineCount() - 1 : y);
+        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
+        m_view->setSelection(m_selectStart, m_selectEnd);
+    }else if(op == QKxKeyTranslator::ESelectLineLeft) {
+        if(m_selectStart == QPoint(-1,-1)) {
+            TermCursor tc = m_view->cursor();
+            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
+        }
+        int x = m_selectEnd.x() - 1;
+        m_selectEnd.setX(x > 0 ? x : 0);
+        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
+        m_view->setSelection(m_selectStart, m_selectEnd);
+    }else if(op == QKxKeyTranslator::ESelectLineRight) {
+        if(m_selectStart == QPoint(-1,-1)) {
+            TermCursor tc = m_view->cursor();
+            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
+        }
+        int x = m_selectEnd.x() + 1;
+        m_selectEnd.setX(x >= m_columns ? m_columns - 1 : x);
+        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
+        m_view->setSelection(m_selectStart, m_selectEnd);
+    }else if(op == QKxKeyTranslator::ESelectLineHome) {
+        if(m_selectStart == QPoint(-1,-1)) {
+            TermCursor tc = m_view->cursor();
+            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
+        }
+        m_selectEnd.setX(0);
+        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
+        m_view->setSelection(m_selectStart, m_selectEnd);
+    }else if(op == QKxKeyTranslator::ESelectLineEnd) {
+        if(m_selectStart == QPoint(-1,-1)) {
+            TermCursor tc = m_view->cursor();
+            m_selectStart = m_selectEnd = QPoint(tc.x, tc.y + m_scrollValue);
+        }
+        m_selectEnd.setX(m_columns-1);
+        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
+        m_view->setSelection(m_selectStart, m_selectEnd);
+    }else if(op == QKxKeyTranslator::ESelectAll) {
+        m_selectStart = QPoint(0, 0);
+        m_selectEnd = QPoint(m_columns-1, m_view->lineCount());
+        qDebug() << "start:" << m_selectStart << "end:" << m_selectEnd;
+        m_view->setSelection(m_selectStart, m_selectEnd);
+    }else if(!buf.isEmpty()) {
         char tmp[100];
         sprintf(tmp, "0x%x", ev->key());
-        qDebug() << "keyPressEvent:" << tmp  << "buf:" << buf << "text:" << ev->text();
+        qDebug() << "from match:" << tmp  << "buf:" << buf << "text:" << ev->text();
         handleSendData(buf);
     }else{
         if(ev->key() >= 0x40 && ev->key() < 0x5f && (ev->modifiers() & Qt::ControlModifier)) {
@@ -2094,13 +2101,13 @@ void QKxTermItem::handleKeyEvent(QKeyEvent *ev)
             buf.append("\033[6~");
         }else {
             QTextCodec *m_codec = m_vte->getTextCodec();
-            QByteArray tmp = m_codec->fromUnicode(ev->text());
+            QByteArray tmp = m_codec->fromUnicode(ev->text());            
             buf.append(tmp);
         }
         if(!buf.isEmpty()) {
-            char tmp[100];
-            sprintf(tmp, "0x%x", ev->key());
-            qDebug() << "keyPressEvent key:" << tmp << " UnicodeText:" << ev->text() << " RemoteText:" << buf;
+            char str[100];
+            sprintf(str, "0x%x", ev->key());
+            qDebug() << "keyPressEvent key:" << str << " UnicodeText:" << ev->text() << " RemoteText:" << buf;
             handleSendData(buf);
         }
     }
@@ -2118,7 +2125,7 @@ void QKxTermItem::scroll(int yoffset)
 {
     int lineToScroll = yoffset / m_fontHeight;
     int vmax = m_view->historyLineCount();
-    if(vmax) {
+    if(vmax > 0) {
         int value = m_scrollValue;
         value += lineToScroll;
         if(value < 0) {
@@ -2134,6 +2141,44 @@ void QKxTermItem::scroll(int yoffset)
             handleKeyEvent(&event);
         }
     }
+}
+
+void QKxTermItem::scrollLine(int lineToScroll)
+{
+    int vmax = m_view->historyLineCount();
+    if(vmax > 0) {
+        int value = m_scrollValue;
+        value += lineToScroll;
+        if(value < 0) {
+            value = 0;
+        }else if(value > vmax) {
+            value = vmax;
+        }
+        updateScrollValue(value);
+    }else{
+        int key = lineToScroll > 0 ? Qt::Key_Up : Qt::Key_Down;
+        QKeyEvent event(QEvent::KeyPress, key, Qt::NoModifier);
+        for (int i=0; i < qAbs(lineToScroll);i++) {
+            handleKeyEvent(&event);
+        }
+    }
+}
+
+void QKxTermItem::scrollPage(int n)
+{
+    int line = n > 0 ? (n*m_rows - 1) : (n*m_rows + 1);
+    scrollLine(line);
+}
+
+void QKxTermItem::scrollToTop()
+{
+    updateScrollValue(0);
+}
+
+void QKxTermItem::scrollToBottom()
+{
+    int vmax = m_view->historyLineCount();
+    updateScrollValue(vmax);
 }
 
 bool QKxTermItem::isLineVisible(int y)

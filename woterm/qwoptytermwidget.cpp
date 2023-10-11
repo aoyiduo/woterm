@@ -29,6 +29,7 @@
 
 #include "qkxtermwidget.h"
 #include "qkxtermitem.h"
+#include "qkxkeytranslator.h"
 #include "qkxmessagebox.h"
 
 
@@ -245,8 +246,8 @@ void QWoPtyTermWidget::resizeEvent(QResizeEvent *ev)
 
 void QWoPtyTermWidget::contextMenuEvent(QContextMenuEvent *ev)
 {
-    if(m_rkeyPaste) {
-        if(pasteWhenOverSelectionText(ev->pos())) {
+    if(m_rkeyMode != ERKM_NotDefined) {
+        if(copyWhenOverSelectionText(ev->pos(), m_rkeyMode == ERKM_CopyPaste)) {
             return;
         }
     }
@@ -269,7 +270,8 @@ void QWoPtyTermWidget::contextMenuEvent(QContextMenuEvent *ev)
             m_menu->addAction(tr("Float this tab"), this, SLOT(onFloatThisTab()));
         }
 
-        m_menu->addAction(QIcon("../private/skins/black/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
+        QKeySequence ksFind = m_term->keyTranslator()->shortcut(QKxKeyTranslator::EFind);
+        m_menu->addAction(QIcon("../private/skins/black/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), ksFind);
         m_menu->addAction(QIcon("../private/skins/black/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
         m_output = m_menu->addAction(tr("Output history to file"), this, SLOT(onOutputHistoryToFile()));
         m_stop = m_menu->addAction(tr("Stop history to file"), this, SLOT(onStopOutputHistoryFile()));

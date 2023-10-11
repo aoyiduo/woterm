@@ -38,8 +38,6 @@ public:
 
     void sendInput(const QByteArray& cmd);
 
-    void setFindShortCut(QKeySequence key);
-
     QString textCodec() const;
     void setTextCodec(const QString& codec);
 
@@ -52,7 +50,7 @@ public:
     Q_INVOKABLE void tryToCopy();
     Q_INVOKABLE void tryToPaste();
     Q_INVOKABLE void pastePlainText(const QString& txt);
-    Q_INVOKABLE bool pasteWhenOverSelectionText(const QPoint& pt);
+    Q_INVOKABLE bool copyWhenOverSelectionText(const QPoint& pt, bool paste);
 
     QString selectedText() const;
     void selectAllText();
@@ -77,7 +75,6 @@ protected:
     QPointer<QKxTermItem> m_term;
     QPointer<QKxSearch> m_find;
     QPointer<QAbstractSlider> m_vscroll;
-    QKeySequence m_keyFind;
 };
 
 #endif // QTERM_H

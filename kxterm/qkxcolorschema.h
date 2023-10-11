@@ -23,6 +23,7 @@ class QKxColorSchema : public QObject
 public:
     explicit QKxColorSchema(QObject *parent = nullptr);
     virtual ~QKxColorSchema();
+    QString name() const;
     bool load(const QString& path);
     QColor cursor() const;
     QColor background() const;
@@ -37,6 +38,7 @@ private:
     QColor m_cursor;
     QVector<QColor> m_indexs;
     QMap<QRgb, QColor> m_pretty;
+    QString m_name;
 };
 
 #endif // QTHEME_H

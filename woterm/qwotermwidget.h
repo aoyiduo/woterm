@@ -53,6 +53,13 @@ public:
         ETTSerialPort,
         ETTConsole
     };
+
+    enum ERightKeyMode {
+        ERKM_NotDefined,
+        ERKM_Copy,
+        ERKM_CopyPaste
+    };
+
 public:
     explicit QWoTermWidget(const QString& target, int gid, ETermType ttype, QWidget *parent=nullptr);
     virtual ~QWoTermWidget();
@@ -101,6 +108,7 @@ protected slots:
     void onOutputHistoryToFile();
     void onStopOutputHistoryFile();
     void onFloatThisTab();
+    void onTimeoutToSelectCopy();
 private:
     void resetProperty(QVariantMap data, bool force=false);
 
@@ -119,7 +127,8 @@ protected:
     QString m_target;
     int m_gid;
     bool m_bexit;
-    bool m_rkeyPaste;
+    ERightKeyMode m_rkeyMode;
+    bool m_selectCopy;
     ETermType m_ttype;
 
     static QList<QPointer<QWoTermWidget>> m_gsTermsAll;

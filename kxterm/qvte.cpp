@@ -77,6 +77,8 @@ static inline void resetFlag(unsigned int& mode, unsigned int flag) {
 
 typedef void (*ModeModifier)(unsigned int& mode, unsigned int flag);
 
+
+#define MODES_DEFAULT        (TF_DECANM | TF_DECAWM | TF_DECTCEM | TF_DECARM | TF_DECSCLM | TF_UTF8)
 QVte::QVte()
 {
     columns = 80;
@@ -88,7 +90,7 @@ QVte::QVte()
     // according to the datasheet of DEC, DECAWM is default OFF.
     // but the linux console defaults to ON.
     // http://vt100.net/docs/vt510-rm/chapter2.html#S2.13
-    flags = TF_DECAWM | TF_DECTCEM | TF_DECARM | TF_DECSCLM | TF_UTF8;
+    flags = MODES_DEFAULT;
     cursor_hidden = true;    
 }
 
@@ -129,7 +131,7 @@ void QVte::reset()
 {
     resize(rows, columns);
     mode = TM_Ground;
-    flags = TF_DECAWM | TF_DECTCEM | TF_DECARM | TF_DECSCLM | TF_UTF8;
+    flags = MODES_DEFAULT;
     cursor_hidden = true;
     cursor = TermCursor();
     csi_data = ControlData();
@@ -140,6 +142,11 @@ void QVte::reset()
 unsigned int QVte::states()
 {
     return flags;
+}
+
+bool QVte::isAnsiMode() const
+{
+    return flags & TF_DECANM;
 }
 
 void QVte::RIS()
@@ -156,7 +163,7 @@ void QVte::RIS()
     // according to the datasheet of DEC, DECAWM is default OFF.
     // but the linux console defaults to ON.
     // http://vt100.net/docs/vt510-rm/chapter2.html#S2.13
-    flags = TF_DECAWM | TF_DECTCEM | TF_DECARM | TF_DECSCLM | TF_UTF8;
+    flags = MODES_DEFAULT;
 
     saveCursor(cursor);
     resetEscape();

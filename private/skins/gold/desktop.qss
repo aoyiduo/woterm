@@ -388,3 +388,10 @@ QWidget#deskopTool {
     min-width: 9ex;
     min-height: 20px;
 }
+
+QWidget[objectName="shortcut"] QPushButton {
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}

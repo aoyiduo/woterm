@@ -72,8 +72,8 @@ key Home           : "\E[1~"
 key Insert-Shift   : "\E[2~" 
 key Delete         : "\E[3~" 
 key End            : "\E[4~" 
-key PgUp -Shift   : "\E[5~" 
-key PgDown  -Shift   : "\E[6~" 
+key PgUp  -Shift   : "\E[5~" 
+key PgDown-Shift   : "\E[6~" 
  
 # function keys 
  
@@ -97,12 +97,23 @@ key Space +Control : "\x00"
 # Some keys are used by konsole to cause operations. 
 # The scroll* operations refer to the history buffer. 
 
-#key Left  +Shift   : prevSession 
-#key Right +Shift   : nextSession 
-key Up    +Shift   : scrollLineUp 
-key PgUp +Shift   : scrollPageUp 
-key Down  +Shift   : scrollLineDown 
-key PgDown  +Shift   : scrollPageDown 
-#key Insert+Shift   : emitSelection 
+key Up      -Alt+Ctrl+Shift-AppScreen  : scrollLineUp
+key PgUp    -Alt+Ctrl+Shift-AppScreen  : scrollPageUp
+key Down    -Alt+Ctrl+Shift-AppScreen  : scrollLineDown
+key PgDown  -Alt+Ctrl+Shift-AppScreen  : scrollPageDown
+key Home    -Alt+Ctrl+Shift-AppScreen  : scrollUpToTop
+key End     -Alt+Ctrl+Shift-AppScreen  : scrollDownToBottom
 
-# keypad characters are not offered differently by Qt.
+#key Left    -Alt-Ctrl+Shift  : selectLineLeft
+#key Right   -Alt-Ctrl+Shift  : selectLineRight
+#key Up      -Alt-Ctrl+Shift  : selectLineUp
+#key Down    -Alt-Ctrl+Shift  : selectLineDown
+#key Home    -Alt-Ctrl+Shift  : selectLineHome
+#key End     -Alt-Ctrl+Shift  : selectLineEnd
+
+key A       -Alt+Ctrl+Shift  : selectAll
+key C       -Alt+Ctrl+Shift  : copy
+key V       -Alt+Ctrl+Shift  : paste
+key F       -Alt+Ctrl+Shift  : find
+
+

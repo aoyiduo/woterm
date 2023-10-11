@@ -139,9 +139,17 @@ QString QWoSetting::tempPath()
     return path;
 }
 
-QString QWoSetting::fontBackupPath()
+QString QWoSetting::customFontPath()
 {
     QString path = QWoSetting::ensurePath("font");
+    path = QDir::cleanPath(path);
+    path = QDir::toNativeSeparators(path);
+    return path;
+}
+
+QString QWoSetting::customKeytabPath()
+{
+    QString path = QWoSetting::ensurePath("keytab");
     path = QDir::cleanPath(path);
     path = QDir::toNativeSeparators(path);
     return path;

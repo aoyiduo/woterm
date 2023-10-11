@@ -16,13 +16,13 @@
 #include "qwoutils.h"
 #include "qkxutils.h"
 #include "qwosetting.h"
-#include "qwoshortcutmodel.h"
-#include "qwoshortcutdelegate.h"
+#include "qkxkeytranslatormodel.h"
 #include "qkxmessagebox.h"
 #include "qwofontlistmodel.h"
 #include "qkxpositionitem.h"
 #include "qkxbuttonassist.h"
 #include "qwosshconf.h"
+#include "qkxcombinekeyactiondialog.h"
 
 #include <QTabBar>
 #include <QBoxLayout>
@@ -38,6 +38,9 @@
 #include <QPushButton>
 #include <QMouseEvent>
 #include <QToolButton>
+#include <QDesktopServices>
+#include <QInputDialog>
+#include <QButtonGroup>
 
 #define BUTTON_REMOVE_SIZE      (10)
 #define BUTTON_MARGIN           (3)
@@ -139,6 +142,8 @@ QWoSessionTTYProperty::QWoSessionTTYProperty(ETTYType type, QWidget *parent)
     m_tabBar->addTab(tr("Other"));
     m_tabBar->addTab(tr("Background image"));
     QObject::connect(m_tabBar, SIGNAL(currentChanged(int)), this, SLOT(onPageCurrentChanged(int)));
+    m_tabBar->setCurrentIndex(0);
+    ui->stacked->setCurrentWidget(ui->pattern);
 
     m_preview = new QKxTermWidget(this);
     m_term = m_preview->termItem();
@@ -154,11 +159,17 @@ QWoSessionTTYProperty::QWoSessionTTYProperty(ETTYType type, QWidget *parent)
     QStringList schemas = m_term->availableColorSchemas();
     schemas.sort();
     ui->schema->setModel(new QStringListModel(schemas, this));
-    QObject::connect(ui->schema, SIGNAL(currentIndexChanged(const QString &)),  this, SLOT(onColorCurrentIndexChanged(const QString &)));
+    QObject::connect(ui->schema, SIGNAL(currentIndexChanged(QString)),  this, SLOT(onColorCurrentIndexChanged(QString)));
 
+    m_keysModel = new QKxKeyTranslatorModel(QWoSetting::privatePath(), ui->keymap->font(), this);
+    ui->keymap->setModel(m_keysModel);
+    ui->keymap->setIconSize(QSize(32, 32));
 
-    QStringList kbly = QKxUtils::availableKeyLayouts();
-    ui->kblayout->setModel(new QStringListModel(kbly, this));
+    QStringList kbly = QKxUtils::availableKeytabs();
+    ui->keytab->setModel(new QStringListModel(kbly, this));
+    QObject::connect(ui->keytab, SIGNAL(currentIndexChanged(QString)), this, SLOT(onKeytabCurrentIndexChanged(QString)));
+    ui->keytab->setCurrentIndex(-1);
+    ui->keytab->setCurrentText(DEFAULT_KEY_TRANSLATOR);
 
     QList<QString> codec;
     foreach(QByteArray c, QTextCodec::availableCodecs()) {
@@ -174,8 +185,15 @@ QWoSessionTTYProperty::QWoSessionTTYProperty(ETTYType type, QWidget *parent)
     QWoFontListModel *model = new QWoFontListModel(this);
     ui->fontChooser->setModel(model);
 
+    QObject::connect(ui->keymap, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onKeymapItemDBClicked(QModelIndex)));
+    QHeaderView *hdrView = ui->keymap->header();
+    if(hdrView != nullptr) {
+        hdrView->setStretchLastSection(true);
+        hdrView->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+
     QObject::connect(m_delegate, SIGNAL(removeArrived(QString)), this, SLOT(onFontFamilyRemove(QString)));
-    QObject::connect(ui->fontChooser, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onFontCurrentIndexChanged(const QString&)));
+    QObject::connect(ui->fontChooser, SIGNAL(currentIndexChanged(QString)), this, SLOT(onFontCurrentIndexChanged(QString)));
     QObject::connect(ui->fontSize, SIGNAL(valueChanged(int)), this, SLOT(onFontValueChanged(int)));
     QObject::connect(ui->blockCursor, SIGNAL(toggled(bool)), this, SLOT(onBlockCursorToggled()));
     QObject::connect(ui->underlineCursor, SIGNAL(toggled(bool)), this, SLOT(onUnderlineCursorToggled()));
@@ -184,6 +202,32 @@ QWoSessionTTYProperty::QWoSessionTTYProperty(ETTYType type, QWidget *parent)
     QObject::connect(ui->btnSave, SIGNAL(clicked()), this, SLOT(onButtonSaveClicked()));
     QObject::connect(ui->btnSaveToAll, SIGNAL(clicked()), this, SLOT(onButtonSaveToAllClicked()));
     QObject::connect(ui->btnCancel, SIGNAL(clicked()), this, SLOT(close()));
+
+    {
+        QObject::connect(ui->chkDragCopyPaste, &QRadioButton::clicked, this, [=](){
+            if(ui->chkDragCopyPaste->isChecked()) {
+                ui->chkDragToInput->setChecked(false);
+            }
+        });
+        QObject::connect(ui->chkDragToInput, &QRadioButton::clicked, this, [=](){
+            if(ui->chkDragToInput->isChecked()) {
+                ui->chkDragCopyPaste->setChecked(false);
+            }
+        });
+    }
+
+    {
+        QObject::connect(ui->chkRKeyCopyPaste, &QRadioButton::clicked, this, [=](){
+            if(ui->chkRKeyCopyPaste->isChecked()) {
+                ui->chkRKeyCopy->setChecked(false);
+            }
+        });
+        QObject::connect(ui->chkRKeyCopy, &QRadioButton::clicked, this, [=](){
+            if(ui->chkRKeyCopy->isChecked()) {
+                ui->chkRKeyCopyPaste->setChecked(false);
+            }
+        });
+    }
 
     if(m_ttyType == ETTY_LocalShell) {
         ui->shellPathGroup->setVisible(true);
@@ -235,6 +279,19 @@ QWoSessionTTYProperty::QWoSessionTTYProperty(ETTYType type, QWidget *parent)
         m_item->setPositionAsString(pos);
     }
 
+    {
+        QObject::connect(ui->btnClone, SIGNAL(clicked()), this, SLOT(onCloneButtonClicked()));
+        QObject::connect(ui->btnReload, SIGNAL(clicked()), this, SLOT(onReloadButtonClicked()));
+        QObject::connect(ui->btnRename, SIGNAL(clicked()), this, SLOT(onRenameButtonClicked()));
+        QObject::connect(ui->btnRemove, SIGNAL(clicked()), this, SLOT(onDeleteButtonClicked()));
+        QObject::connect(ui->btnWrite, SIGNAL(clicked()), this, SLOT(onWriteButtonClicked()));
+
+        QObject::connect(ui->btnKeyAdd, SIGNAL(clicked()), this, SLOT(onKeyAddButtonClicked()));
+        QObject::connect(ui->btnKeyCopy, SIGNAL(clicked()), this, SLOT(onKeyCopyButtonClicked()));
+        QObject::connect(ui->btnKeyModify, SIGNAL(clicked()), this, SLOT(onKeyModifyButtonClicked()));
+        QObject::connect(ui->btnKeyRemove, SIGNAL(clicked()), this, SLOT(onKeyRemoveButtonClicked()));
+    }
+
     QObject::connect(ui->chkTileNone, SIGNAL(clicked()), this, SLOT(onTileButtonClicked()));
     QObject::connect(ui->chkTileH, SIGNAL(clicked()), this, SLOT(onTileButtonClicked()));
     QObject::connect(ui->chkTileV, SIGNAL(clicked()), this, SLOT(onTileButtonClicked()));
@@ -243,6 +300,11 @@ QWoSessionTTYProperty::QWoSessionTTYProperty(ETTYType type, QWidget *parent)
 
     QObject::connect(ui->bkImgAlpha, SIGNAL(valueChanged(int)), this, SLOT(onBkImageAlphaValueChanged(int)));
 
+    QObject::connect(ui->btnKeyHelp, &QAbstractButton::clicked, this, [=](){
+        QString url = QWoSetting::isChineseLanguageFile() ? "http://cn.woterm.com" : "http://en.woterm.com";
+        url += "/docs/manual/termopts/ttyopts/";
+        QDesktopServices::openUrl(url);
+    });
     initDefault();
     adjustSize();
 }
@@ -258,21 +320,21 @@ void QWoSessionTTYProperty::setCustom(const QVariantMap &_mdata)
     QVariantMap mdata = HostInfo::merge(global, _mdata);
     m_bCustom = true;
 
-    if(mdata.contains("colorSchema")){
+    {
         QString schema = mdata.value("colorSchema", DEFAULT_COLOR_SCHEMA).toString();
         ui->schema->setCurrentText(schema);
         m_term->setColorSchema(schema);
     }
-    if(mdata.contains("keyboard")) {
-        QString name = mdata.value("keyboard", DEFAULT_KEY_LAYOUT).toString();
-        ui->kblayout->setCurrentText(name);
+    {
+        QString name = mdata.value("keyTranslator", DEFAULT_KEY_TRANSLATOR).toString();
+        ui->keytab->setCurrentText(name);
     }
-    if(mdata.contains("textcodec")) {
-        QString name = mdata.value("textcodec", DEFAULT_TEXT_CODEC).toString();
+    {
+        QString name = mdata.value("textCodec", DEFAULT_TEXT_CODEC).toString();
         ui->codepage->setCurrentText(name);
         m_term->setTextCodec(name);
     }
-    if(mdata.contains("fontName")) {
+    {
         QFont ft = QFontDatabase::systemFont(QFontDatabase::FixedFont);
         QString fontName = mdata.value("fontName", ft.family()).toString();
         int fontSize = mdata.value("fontSize", ft.pointSize()).toInt();
@@ -281,7 +343,7 @@ void QWoSessionTTYProperty::setCustom(const QVariantMap &_mdata)
         m_term->setTerminalFont(fontName, fontSize);
         refleshFontPreview();
     }
-    if(mdata.contains("cursorType")) {
+    {
         QString cursorType = mdata.value("cursorType", "block").toString();
         if(cursorType.isEmpty() || cursorType == "block") {
             ui->blockCursor->setChecked(true);
@@ -291,31 +353,230 @@ void QWoSessionTTYProperty::setCustom(const QVariantMap &_mdata)
             ui->beamCursor->setChecked(true);
         }
     }
-    if(mdata.contains("historyLength")){
+    {
         QString line = mdata.value("historyLength", QString("%1").arg(DEFAULT_HISTORY_LINE_LENGTH)).toString();
         ui->lineSize->setText(line);
     }
-    if(mdata.contains("dragPaste")) {
+    {
         bool checked = mdata.value("dragPaste", false).toBool();
         ui->chkDragCopyPaste->setChecked(checked);
     }
-    if(mdata.contains("rkeyPaste")) {
+    {
+        bool checked = mdata.value("dragInput", false).toBool();
+        ui->chkDragToInput->setChecked(checked);
+    }
+    {
+        bool checked = mdata.value("selectCopy", false).toBool();
+        ui->chkSelectToCopy->setChecked(checked);
+    }
+    {
+        bool checked = mdata.value("rkeyCopy", false).toBool();
+        ui->chkRKeyCopy->setChecked(checked);
+    }
+    {
         bool checked = mdata.value("rkeyPaste", false).toBool();
         ui->chkRKeyCopyPaste->setChecked(checked);
     }
-    if(mdata.contains("keySequence")) {
-        setShortCut(mdata.value("keySequence").toMap());
-    }
-    if(mdata.contains("shellPath")) {
+
+    {
         QString path = mdata.value("shellPath").toString();
         ui->shellPath->setText(path);
     }
 
+    {
+        QString name = mdata.value("keyTranslator", DEFAULT_KEY_TRANSLATOR).toString();
+        if(!m_keysModel->load(name)) {
+            reloadKeytabsLater(name);
+        }
+    }
 }
 
 QVariantMap QWoSessionTTYProperty::result() const
 {
     return m_result;
+}
+
+void QWoSessionTTYProperty::onCloneButtonClicked()
+{
+    QString name = ui->keytab->currentText();
+    QString path = QKxUtils::keytabPath(name);
+    QFileInfo fi(path);
+    if(!fi.exists()) {
+        QKxMessageBox::information(this, tr("File information"), tr("File is not exist."));
+        return;
+    }
+    int tryLeft = 3;
+    QString fileName = name;
+    QStringList keytabsAll = QKxUtils::availableKeytabs();
+    while(tryLeft-- > 0) {
+        fileName = QInputDialog::getText(this, tr("File name"), tr("Input a file name to save."), QLineEdit::Normal, fileName);
+        if(fileName.isEmpty()) {
+            return;
+        }
+        if(keytabsAll.contains(fileName)) {
+            QKxMessageBox::information(this, tr("File information"), tr("A file with the same name already exists，Please input a new one."));
+            continue;
+        }
+        QString pathCustom = QWoSetting::customKeytabPath();
+        pathCustom = pathCustom+"/"+fileName;
+        if(!fileName.endsWith(".keytab")) {
+            pathCustom += ".keytab";
+        }
+        if(QFile::copy(path, pathCustom)) {
+            reloadKeytabsLater(fileName);
+            return;
+        }
+        QKxMessageBox::information(this, tr("File information"), tr("Failed to create file. Please check if the file name is a valid file name."));
+    }
+}
+
+void QWoSessionTTYProperty::onReloadButtonClicked()
+{
+    reloadKeytabsLater();
+}
+
+void QWoSessionTTYProperty::onRenameButtonClicked()
+{
+    QString name = ui->keytab->currentText();
+    if(isPrivateKeytab(name)) {
+        QKxMessageBox::information(this, tr("Rename information"), tr("Internal private directory does not support this operation."));
+        return;
+    }
+    QString path = QKxUtils::keytabPath(name);
+    QFileInfo fi(path);
+    QString fileName = QInputDialog::getText(this, tr("File information"), tr("Input a new file name"), QLineEdit::Normal, name);
+    if(fileName.isEmpty()) {
+        return;
+    }
+    QStringList all = QKxUtils::availableKeytabs();
+    if(all.contains(fileName)) {
+        QKxMessageBox::information(this, tr("Rename information"), tr("The name already exist, please input a new one."));
+        return;
+    }
+    QString pathNew = fi.absolutePath();
+    pathNew += "/" + fileName;
+    if(!pathNew.endsWith(".keytab")) {
+        pathNew += ".keytab";
+    }
+    if(!QFile::rename(fi.absoluteFilePath(), pathNew)) {
+        QKxMessageBox::information(this, tr("Rename information"), tr("Failed to rename file")+":"+name);
+        return;
+    }
+    reloadKeytabsLater(fileName);
+}
+
+void QWoSessionTTYProperty::onDeleteButtonClicked()
+{
+    QString name = ui->keytab->currentText();
+    if(isPrivateKeytab(name)) {
+        QKxMessageBox::information(this, tr("Delete information"), tr("Internal private directory does not support this operation."));
+        return;
+    }
+    QString path = QKxUtils::keytabPath(name);
+    if(QFile::remove(path)) {
+        reloadKeytabsLater();
+    }
+}
+
+void QWoSessionTTYProperty::onWriteButtonClicked()
+{
+    QString name = ui->keytab->currentText();
+    if(isPrivateKeytab(name)) {
+        QKxMessageBox::information(this, tr("Operation information"), tr("Modifying internal private files is not supported. Please clone a file before editing."));
+        return;
+    }
+    m_keysModel->save(":/woterm/resource/keytab.template");
+}
+
+void QWoSessionTTYProperty::onKeyAddButtonClicked()
+{
+    if(!switchToModify()) {
+        return;
+    }
+    QKxCombineKeyActionDialog dlg(this);
+    QObject::connect(&dlg, &QKxCombineKeyActionDialog::messageArrived, this, [=](const QString& title, const QString& msg){
+        QKxMessageBox::information(this, title, msg);
+    });
+    if(dlg.exec() == QDialog::Accepted+1) {
+        QKxKeyTranslator::KeyInfo ki = dlg.result();
+        QModelIndex idx = m_keysModel->add(ki);
+        ui->keymap->setCurrentIndex(idx);
+        ui->keymap->scrollTo(idx);
+    }
+}
+
+void QWoSessionTTYProperty::onKeyCopyButtonClicked()
+{
+    if(!switchToModify()) {
+        return;
+    }
+
+    QModelIndex idx = ui->keymap->currentIndex();
+    if(!idx.isValid()) {
+        QKxMessageBox::information(this, tr("Parameter error"), tr("No selection to modify"));
+        return;
+    }
+    QKxKeyTranslator::KeyInfo ki;
+    if(!m_keysModel->data(idx.row(), ki)) {
+        QKxMessageBox::information(this, tr("Parameter error"), tr("No selection to modify"));
+        return;
+    }
+    QModelIndex idx2 = m_keysModel->add(ki);
+    ui->keymap->setCurrentIndex(idx2);
+}
+
+void QWoSessionTTYProperty::onKeyModifyButtonClicked()
+{
+    if(!switchToModify()) {
+        return;
+    }
+    QModelIndex idx = ui->keymap->currentIndex();
+    if(!idx.isValid()) {
+        QKxMessageBox::information(this, tr("Parameter error"), tr("No selection to modify"));
+        return;
+    }
+    onKeymapItemDBClicked(idx);
+}
+
+void QWoSessionTTYProperty::onKeyRemoveButtonClicked()
+{
+    if(!switchToModify()) {
+        return;
+    }
+    QModelIndex idx = ui->keymap->currentIndex();
+    if(!idx.isValid()) {
+        QKxMessageBox::information(this, tr("Parameter error"), tr("No selection to modify"));
+        return;
+    }
+    m_keysModel->remove(idx);
+    if(idx.row() >= m_keysModel->count()) {
+        idx = idx.siblingAtRow(idx.row()-1);
+    }
+    ui->keymap->setCurrentIndex(idx);
+    ui->keymap->scrollTo(idx);
+}
+
+void QWoSessionTTYProperty::onKeymapItemDBClicked(const QModelIndex &idx)
+{
+    if(!switchToModify()) {
+        return;
+    }
+    QKxCombineKeyActionDialog dlg(this);
+    QObject::connect(&dlg, &QKxCombineKeyActionDialog::messageArrived, this, [=](const QString& title, const QString& msg){
+        QKxMessageBox::information(this, title, msg);
+    });
+    QKxKeyTranslator::KeyInfo ki;
+    if(!m_keysModel->data(idx.row(), ki)) {
+        QKxMessageBox::information(this, tr("Parameter error"), tr("No selection to modify"));
+        return;
+    }
+    dlg.init(ki);
+    if(dlg.exec() == QDialog::Accepted+1) {
+        QKxKeyTranslator::KeyInfo ki = dlg.result();
+        QModelIndex idx2 = m_keysModel->modify(idx, ki);
+        ui->keymap->setCurrentIndex(idx2);
+        ui->keymap->scrollTo(idx2);
+    }
 }
 
 void QWoSessionTTYProperty::onPageCurrentChanged(int idx)
@@ -339,6 +600,32 @@ void QWoSessionTTYProperty::onPageCurrentChanged(int idx)
 void QWoSessionTTYProperty::onColorCurrentIndexChanged(const QString &txt)
 {
     m_term->setColorSchema(txt);
+}
+
+void QWoSessionTTYProperty::onKeytabCurrentIndexChanged(const QString &txt)
+{
+    if(txt.isEmpty()) {
+        return;
+    }
+
+
+    QString path = QDir::cleanPath(QKxUtils::keytabPath(txt));
+    QString pathPrv = QDir::cleanPath(QWoSetting::privatePath());
+    bool isPrv = path.startsWith(pathPrv);
+    ui->btnRemove->setVisible(!isPrv);
+    ui->btnRename->setVisible(!isPrv);
+    ui->btnWrite->setVisible(!isPrv);
+
+    //ui->btnKeyAdd->setEnabled(!isPrv);
+    //ui->btnKeyCopy->setEnabled(!isPrv);
+    //ui->btnKeyModify->setEnabled(!isPrv);
+    //ui->btnKeyRemove->setEnabled(!isPrv);
+
+    saveShortcut();
+    if(!m_keysModel->load(txt)) {
+        QKxMessageBox::information(this, tr("Shortcut information"), tr("Failed to load keytab file")+":"+txt);
+        reloadKeytabsLater(DEFAULT_KEY_TRANSLATOR);
+    }
 }
 
 void QWoSessionTTYProperty::onFontCurrentIndexChanged(const QString &family)
@@ -418,18 +705,6 @@ void QWoSessionTTYProperty::onShellPathButtonClicked()
     }
 }
 
-void QWoSessionTTYProperty::onItemDoubleClicked(const QModelIndex &index)
-{
-    QAbstractItemModel *model = ui->keymap->model();
-    if(index.column() == 1) {
-        return;
-    }
-    int row = index.row();
-    QModelIndex idx = model->index(row, 1, index.parent());
-    QRect rt = ui->keymap->visualRect(idx);
-    ui->keymap->edit(idx);
-}
-
 void QWoSessionTTYProperty::onButtonImportClicked()
 {
     QString pathLast = QWoSetting::value("fontImport/lastPath", QDir::homePath()).toString();
@@ -494,41 +769,45 @@ void QWoSessionTTYProperty::onSelectButtonClicked()
     ui->bkImage->setText(file);
 }
 
+void QWoSessionTTYProperty::saveShortcut(bool force)
+{
+    if(m_keysModel->hasModified()) {
+        if(force) {
+            m_keysModel->save(":/woterm/resource/keytab.template");
+            return;
+        }
+        int code = QKxMessageBox::information(this, tr("Modify information"), tr("The shortcut file[%1] has been modified, do you need to save it?").arg(m_keysModel->name()), QMessageBox::Yes|QMessageBox::No);
+        if(code == QMessageBox::Yes) {
+            m_keysModel->save(":/woterm/resource/keytab.template");
+        }
+    }
+}
+
 QVariantMap QWoSessionTTYProperty::save()
 {
     QVariantMap mvar;
 
+    saveShortcut();
+
     QString schema = ui->schema->currentText();
-    QString keyboard = ui->kblayout->currentText();
+    QString keytab = ui->keytab->currentText();
     QString textcodec = ui->codepage->currentText();
     QString fontName = ui->fontChooser->currentText();
     int fontSize = ui->fontSize->value();
     QString cursorType = ui->blockCursor->isChecked() ? "block" : (ui->beamCursor->isChecked() ? "beam": "underline");
     QString lineSize = ui->lineSize->text();
     mvar.insert("colorSchema", schema);
-    mvar.insert("keyboard", keyboard);
+    mvar.insert("keyTranslator", keytab);
     mvar.insert("textcodec", textcodec);
     mvar.insert("fontName", fontName);
     mvar.insert("fontSize", fontSize);
     mvar.insert("cursorType", cursorType);
     mvar.insert("historyLength", lineSize);
+    mvar.insert("rkeyCopy", ui->chkRKeyCopy->isChecked());
     mvar.insert("rkeyPaste", ui->chkRKeyCopyPaste->isChecked());
     mvar.insert("dragPaste", ui->chkDragCopyPaste->isChecked());
-
-    QWoShortCutModel *model = qobject_cast<QWoShortCutModel*>(ui->keymap->model());
-    QMap<int,QKeySequence> all = model->toMap();
-    QVariantMap mdata;
-    mdata.insert("SCK_Copy", all.value(QKxTermItem::SCK_Copy));
-    mdata.insert("SCK_Paste", all.value(QKxTermItem::SCK_Paste));
-    mdata.insert("SCK_SelectAll", all.value(QKxTermItem::SCK_SelectAll));
-    mdata.insert("SCK_SelectLeft", all.value(QKxTermItem::SCK_SelectLeft));
-    mdata.insert("SCK_SelectRight", all.value(QKxTermItem::SCK_SelectRight));
-    mdata.insert("SCK_SelectUp", all.value(QKxTermItem::SCK_SelectUp));
-    mdata.insert("SCK_SelectDown", all.value(QKxTermItem::SCK_SelectDown));
-    mdata.insert("SCK_SelectHome", all.value(QKxTermItem::SCK_SelectHome));
-    mdata.insert("SCK_SelectEnd", all.value(QKxTermItem::SCK_SelectEnd));
-
-    mvar.insert("keySequence", mdata);
+    mvar.insert("dragInput", ui->chkDragToInput->isChecked());
+    mvar.insert("selectCopy", ui->chkSelectToCopy->isChecked());
 
     if(m_ttyType == ETTY_LocalShell) {
         mvar.insert("shellPath", ui->shellPath->text());
@@ -557,11 +836,11 @@ void QWoSessionTTYProperty::initDefault()
     ui->schema->setCurrentText(schema);
     m_term->setColorSchema(schema);
 
-    QString keyboard = mdata.value("keyboard", DEFAULT_KEY_LAYOUT).toString();
-    ui->kblayout->setCurrentText(keyboard);
-    m_term->setKeyLayoutByName(keyboard);
+    QString keytab = mdata.value("keyTranslator", DEFAULT_KEY_TRANSLATOR).toString();
+    ui->keytab->setCurrentText(keytab);
+    m_term->setKeyTranslatorByName(keytab);
 
-    QString codec = mdata.value("textcodec", DEFAULT_TEXT_CODEC).toString();
+    QString codec = mdata.value("textCodec", DEFAULT_TEXT_CODEC).toString();
     ui->codepage->setCurrentText(codec);
     m_term->setTextCodec(codec);
 
@@ -583,14 +862,25 @@ void QWoSessionTTYProperty::initDefault()
     }
     QString line = mdata.value("historyLength", QString("%1").arg(DEFAULT_HISTORY_LINE_LENGTH)).toString();
     ui->lineSize->setText(line);
-
     {
         bool checked = mdata.value("dragPaste", false).toBool();
         ui->chkDragCopyPaste->setChecked(checked);
     }
     {
+        bool checked = mdata.value("dragInput", false).toBool();
+        ui->chkDragToInput->setChecked(checked);
+    }    
+    {
+        bool checked = mdata.value("rkeyCopy", false).toBool();
+        ui->chkRKeyCopy->setChecked(checked);
+    }
+    {
         bool checked = mdata.value("rkeyPaste", false).toBool();
         ui->chkRKeyCopyPaste->setChecked(checked);
+    }
+    {
+        bool checked = mdata.value("selectCopy", false).toBool();
+        ui->chkSelectToCopy->setChecked(checked);
     }
 
     if(m_ttyType == ETTY_LocalShell){
@@ -598,26 +888,12 @@ void QWoSessionTTYProperty::initDefault()
         ui->shellPath->setText(shellPath);
     }
 
-    setShortCut(mdata.value("keySequence").toMap());
-}
-
-void QWoSessionTTYProperty::setShortCut(const QVariantMap &mdata)
-{
-    QWoShortCutModel *model = new QWoShortCutModel(ui->keymap, this);
-    ui->keymap->setModel(model);
-    model->append(tr("Edit"));
-    model->append(QKxTermItem::SCK_Copy, tr("Copy"), mdata.value("SCK_Copy", m_term->defaultShortCutKey(QKxTermItem::SCK_Copy)).value<QKeySequence>());
-    model->append(QKxTermItem::SCK_Paste, tr("Paste"), mdata.value("SCK_Paste", m_term->defaultShortCutKey(QKxTermItem::SCK_Paste)).value<QKeySequence>());
-    model->append(QKxTermItem::SCK_SelectAll, tr("SelectAll"), mdata.value("SCK_SelectAll", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectAll)).value<QKeySequence>());
-    model->append(QKxTermItem::SCK_SelectLeft, tr("Select text from right to left"), mdata.value("SCK_SelectLeft", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectLeft)).value<QKeySequence>());
-    model->append(QKxTermItem::SCK_SelectRight, tr("Select text from left to right"), mdata.value("SCK_SelectRight", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectRight)).value<QKeySequence>());
-    model->append(QKxTermItem::SCK_SelectUp, tr("Select text from bottom to up"), mdata.value("SCK_SelectUp", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectUp)).value<QKeySequence>());
-    model->append(QKxTermItem::SCK_SelectDown, tr("Select text from top to bottom"), mdata.value("SCK_SelectDown", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectDown)).value<QKeySequence>());
-    model->append(QKxTermItem::SCK_SelectHome, tr("Select text from from line start to end"), mdata.value("SCK_SelectHome", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectHome)).value<QKeySequence>());
-    model->append(QKxTermItem::SCK_SelectEnd, tr("Select text from current to line end"), mdata.value("SCK_SelectEnd", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectEnd)).value<QKeySequence>());
-    ui->keymap->setColumnWidth(0, model->widthColumn(ui->keymap->font(), 0));
-    ui->keymap->setItemDelegate(new QWoKeySequenceDelegate(this));
-    QObject::connect(ui->keymap, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onItemDoubleClicked(QModelIndex)));
+    {
+        QString name = mdata.value("keyTranslator", DEFAULT_KEY_TRANSLATOR).toString();
+        if(!m_keysModel->load(name)) {
+            reloadKeytabsLater(name);
+        }
+    }
 }
 
 void QWoSessionTTYProperty::setFixPreviewString()
@@ -640,6 +916,13 @@ void QWoSessionTTYProperty::refleshFontPreview()
     }else{
         ui->fontInfo->setVisible(false);
     }
+}
+
+bool QWoSessionTTYProperty::isPrivateKeytab(const QString &name)
+{
+    QString path = QDir::cleanPath(QKxUtils::keytabPath(name));
+    QString pathPrv = QDir::cleanPath(QWoSetting::privatePath());
+    return path.startsWith(pathPrv);
 }
 
 bool QWoSessionTTYProperty::importFont(const QStringList& allFamilies, const QString &fileName)
@@ -678,11 +961,71 @@ bool QWoSessionTTYProperty::importFont(const QStringList& allFamilies, const QSt
         QKxMessageBox::warning(this, tr("Import errors"), tr("Failed to open the font file.")+QString("[%1,%2]").arg(fileName).arg(f.errorString()));
         return false;
     }
-    QString path = QWoSetting::fontBackupPath();
+    QString path = QWoSetting::customFontPath();
     QString fileNew = path + "/" + fi.fileName();
     if(!f.copy(fileNew)) {
         QKxMessageBox::warning(this, tr("Import errors"), tr("Failed to backup the font file.")+QString("[%1,%2]").arg(fileName).arg(f.errorString()));
         return false;
+    }
+    return true;
+}
+
+void QWoSessionTTYProperty::reloadKeytabsLater(const QString& name)
+{
+    QString nameNow = ui->keytab->currentText();
+    QKxUtils::cleanupKeytabs();
+    QStringList all = QKxUtils::availableKeytabs();
+    QStringListModel *model = qobject_cast<QStringListModel*>(ui->keytab->model());
+    model->setStringList(all);
+
+    QString target = name;
+    if(name.isEmpty() || !all.contains(name)) {
+        target = nameNow;
+    }
+    if(target.isEmpty() || !all.contains(target)) {
+        target = DEFAULT_KEY_TRANSLATOR;
+    }
+    ui->keytab->setCurrentText(target);
+}
+
+bool QWoSessionTTYProperty::switchToModify()
+{
+    QString name = ui->keytab->currentText();
+    if(isPrivateKeytab(name)) {
+        QStringList keytabsAll = QKxUtils::availableKeytabs();
+        for(int i = 0; i < 3; i++) {
+            QStringList tips;
+            tips.append(tr("The current profile does not support modification, a new profile will be created."));
+            tips.append(tr("Please input a profile name."));
+            QString fileName = QInputDialog::getText(this, tr("File name"), tips.join("\r\n"), QLineEdit::Normal, name);
+            if(fileName.isEmpty()) {
+                return false;
+            }
+            if(keytabsAll.contains(fileName)) {
+                if(isPrivateKeytab(fileName)) {
+                    QKxMessageBox::information(this, tr("File information"), tr("Modifying internal private files is not supported. Please input a new one."));
+                    continue;
+                }
+                if(QKxMessageBox::information(this, tr("File information"), tr("Found a profile with the same name. Do you want to switch to that profile?"), QMessageBox::Yes|QMessageBox::No) != QMessageBox::Yes) {
+                    return false;
+                }
+                ui->keytab->setCurrentText(fileName);
+                reloadKeytabsLater(fileName);
+                return true;
+            }else{
+                QString pathCustom = QWoSetting::customKeytabPath();
+                pathCustom = pathCustom+"/"+fileName;
+                if(!fileName.endsWith(".keytab")) {
+                    pathCustom += ".keytab";
+                }
+                QString path = QDir::cleanPath(QKxUtils::keytabPath(name));
+                if(!QFile::copy(path, pathCustom)) {
+                    return false;
+                }
+                reloadKeytabsLater(fileName);
+                return true;
+            }
+        }
     }
     return true;
 }

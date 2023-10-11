@@ -517,9 +517,6 @@ QList<TermLine> QKxView::copyImage(int y, int rows, int cols)
         TermLine &last = img.last();
         if(r == tcy && visible) {            
             last.xcur = tc.x;
-            if(last.cs.length() < tc.x - 2) {
-                int i = tc.x - 2;
-            }
             while(last.cs.length() <= tc.x) {
                 last.cs.append(TermChar());
             }

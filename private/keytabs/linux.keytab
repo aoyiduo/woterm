@@ -103,9 +103,9 @@ key F12    : "\E[24~"
 key Home   : "\E[1~"  
 key End    : "\E[4~"  
 
-key PgUp -Shift : "\E[5~"  
-key PgDown  -Shift : "\E[6~"  
-key Insert-Shift : "\E[2~"  
+key PgUp    -Shift : "\E[5~"
+key PgDown  -Shift : "\E[6~"
+key Insert  -Shift : "\E[2~"
 
 # Keypad-Enter. See comment on Return above.
 
@@ -116,17 +116,23 @@ key Space +Control : "\x00"
 
 # some of keys are used by konsole.
 
-key Up    +Shift   : scrollLineUp
-key PgUp +Shift   : scrollPageUp
-key Down  +Shift   : scrollLineDown
-key PgDown  +Shift   : scrollPageDown
+key Up      -Alt+Ctrl+Shift-AppScreen  : scrollLineUp
+key PgUp    -Alt+Ctrl+Shift-AppScreen  : scrollPageUp
+key Down    -Alt+Ctrl+Shift-AppScreen  : scrollLineDown
+key PgDown  -Alt+Ctrl+Shift-AppScreen  : scrollPageDown
+key Home    -Alt+Ctrl+Shift-AppScreen  : scrollUpToTop
+key End     -Alt+Ctrl+Shift-AppScreen  : scrollDownToBottom
 
+# linux no such shortcut.
+#key Left    -Alt-Ctrl+Shift  : selectLineLeft
+#key Right   -Alt-Ctrl+Shift  : selectLineRight
+#key Up      -Alt-Ctrl+Shift  : selectLineUp
+#key Down    -Alt-Ctrl+Shift  : selectLineDown
+#key Home    -Alt-Ctrl+Shift  : selectLineHome
+#key End     -Alt-Ctrl+Shift  : selectLineEnd
 
-#----------------------------------------------------------
+key A       -Alt+Ctrl+Shift  : selectAll
+key C       -Alt+Ctrl+Shift  : copy
+key V       -Alt+Ctrl+Shift  : paste
+key F       -Alt+Ctrl+Shift  : find
 
-# keypad characters as offered by Qt
-# cannot be recognized as such.
-
-#----------------------------------------------------------
-
-# Following other strings as emitted by konsole.

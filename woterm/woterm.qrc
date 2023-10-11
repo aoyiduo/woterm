@@ -48,5 +48,6 @@
         <file>resource/images/exit.png</file>
         <file>resource/images/reload.png</file>
         <file>resource/images/edit.png</file>
+        <file>resource/keytab.template</file>
     </qresource>
 </RCC>

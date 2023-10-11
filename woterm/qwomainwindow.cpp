@@ -383,6 +383,8 @@ void QWoMainWindow::onAppStart()
         int level = QWoSetting::windownOpacity();
         resetWindowOpacity(turnOn, level);
     }
+
+    //QMetaObject::invokeMethod(this, "onActionTTYOptionsTriggered", Qt::QueuedConnection);
 }
 
 

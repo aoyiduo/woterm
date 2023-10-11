@@ -28,6 +28,7 @@
 
 #include "qkxtermwidget.h"
 #include "qkxtermitem.h"
+#include "qkxkeytranslator.h"
 #include "qkxmessagebox.h"
 
 
@@ -389,8 +390,8 @@ void QMoRLoginTermWidget::resizeEvent(QResizeEvent *ev)
 
 void QMoRLoginTermWidget::contextMenuEvent(QContextMenuEvent *ev)
 {
-    if(m_rkeyPaste) {
-        if(pasteWhenOverSelectionText(ev->pos())) {
+    if(m_rkeyMode != ERKM_NotDefined) {
+        if(copyWhenOverSelectionText(ev->pos(), m_rkeyMode == ERKM_CopyPaste)) {
             return;
         }
     }
@@ -418,7 +419,8 @@ void QMoRLoginTermWidget::contextMenuEvent(QContextMenuEvent *ev)
             m_menu->addAction(tr("Float This Tab"), this, SLOT(onFloatThisTab()));
         }
 
-        m_menu->addAction(QIcon("../private/skins/black/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
+        QKeySequence ksFind = m_term->keyTranslator()->shortcut(QKxKeyTranslator::EFind);
+        m_menu->addAction(QIcon("../private/skins/black/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), ksFind);
         m_menu->addAction(QIcon("../private/skins/black/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
         //m_menu->addAction(QIcon("../private/skins/black/history.png"), tr("History"), this, SLOT(onSessionCommandHistory()));
         m_menu->addAction(tr("Duplicate in new window"), this, SLOT(onDuplicateInNewWindow()));

@@ -24,6 +24,7 @@ public:
     void resize(int rows, int cols);
     void reset();
     unsigned int states();
+    bool isAnsiMode() const;
 protected:
     // to implement
     virtual void screenResize(int rows, int cols) = 0;

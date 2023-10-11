@@ -1,0 +1,55 @@
+# --------------------------------------------------------------
+#     document help
+#     https://cn.woterm.com/docs/manual/termopts/ttyopts/
+#     https://en.woterm.com/docs/manual/termopts/ttyopts/
+#     private/keytabs/readme.docbook
+#     private/keytabs/keyinfo.txt
+# --------------------------------------------------------------
+
+# --------------------------------------------------------------
+#
+# This configuration table allows to customize the
+# meaning of the keys.
+#
+# The syntax is that each entry has the form : 
+#
+#   "key" Keyname { ("+"|"-") Modename } ":" (String|Operation)
+#
+# Keynames are those defined in <qnamespace.h> with the
+# "Qt::Key_" removed. (We'd better insert the list here)
+#
+# Mode names are : 
+#
+# - Shift
+# - Alt
+# - Control
+#
+#   The VT100 emulation has two modes that can affect the
+#   sequences emitted by certain keys. These modes are
+#   under control of the client program.
+#   
+# - Newline     : effects Return and Enter key.
+# - Application : effects Up and Down key.
+#
+# - Ansi        : effects Up and Down key (This is for VT52, really).
+# Some keys are used by konsole to cause operations.
+# scrollLineUp
+# scrollPageUp
+# scrollPromptUp
+# scrollUpToTop
+# scrollLineDown
+# scrollPageDown
+# scrollPromptDown
+# scrollDownToBottom
+
+# selectLineLeft
+# selectLineRight
+# selectLineUp
+# selectLineDown
+# selectLineHome
+# selectLineEnd
+# selectAll
+
+keyboard "{{name}}"
+
+{{key}}

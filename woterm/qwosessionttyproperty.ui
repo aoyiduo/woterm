@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>584</width>
-    <height>438</height>
+    <width>616</width>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,9 @@
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <widget class="QStackedWidget" name="stacked">
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
      <widget class="QWidget" name="pattern">
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="leftMargin">
@@ -246,24 +249,184 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QTreeView" name="keymap"/>
-       </item>
-       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Keyboard Layout</string>
+            <string>Key profile</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="kblayout">
+          <widget class="QComboBox" name="keytab">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnReload">
+           <property name="text">
+            <string>Reload</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../private/skins/black/reload.png</normaloff>../private/skins/black/reload.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnClone">
+           <property name="text">
+            <string>Clone</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../private/skins/black/copy.png</normaloff>../private/skins/black/copy.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnWrite">
+           <property name="text">
+            <string>Save</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../private/skins/black/save.png</normaloff>../private/skins/black/save.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnRemove">
+           <property name="text">
+            <string>Delete</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../private/skins/black/remove.png</normaloff>../private/skins/black/remove.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnRename">
+           <property name="text">
+            <string>Rename</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTreeView" name="keymap">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_13">
+         <item>
+          <widget class="QPushButton" name="btnKeyHelp">
+           <property name="text">
+            <string>Help</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../private/skins/black/help2.png</normaloff>../private/skins/black/help2.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnKeyAdd">
+           <property name="text">
+            <string>Add</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../private/skins/black/add2.png</normaloff>../private/skins/black/add2.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnKeyCopy">
+           <property name="text">
+            <string>Copy</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../private/skins/black/ftp.png</normaloff>../private/skins/black/ftp.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnKeyModify">
+           <property name="text">
+            <string>Modify</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../private/skins/black/edit.png</normaloff>../private/skins/black/edit.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnKeyRemove">
+           <property name="text">
+            <string>Remove</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../private/skins/black/remove.png</normaloff>../private/skins/black/remove.png</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="maximumSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../private/skins/black/tips.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>Keyboard events that are not listed will be handled by default.</string>
            </property>
           </widget>
          </item>
@@ -390,9 +553,30 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
+           <widget class="QCheckBox" name="chkDragToInput">
+            <property name="text">
+             <string>Drag the selected text to input.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="chkDragCopyPaste">
             <property name="text">
-             <string>Drag the selected text to copy and paste</string>
+             <string>Drag the selected text to copy and paste it.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkSelectToCopy">
+            <property name="text">
+             <string>Auto copy when selecting text.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkRKeyCopy">
+            <property name="text">
+             <string>Right click the selected text to copy.</string>
             </property>
            </widget>
           </item>

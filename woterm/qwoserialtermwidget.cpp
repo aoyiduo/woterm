@@ -18,6 +18,7 @@
 #include "qwoevent.h"
 #include "qkxtermwidget.h"
 #include "qkxtermitem.h"
+#include "qkxkeytranslator.h"
 #include "qwosessionttyproperty.h"
 #include "qkxmessagebox.h"
 #include "qwosetting.h"
@@ -75,7 +76,8 @@ void QWoSerialTermWidget::contextMenuEvent(QContextMenuEvent *ev)
     }else{
         menu.addAction(tr("Close interactive mode"), this, SLOT(onCloseInteractiveMode()));
     }
-    menu.addAction(QIcon("../private/skins/black/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
+    QKeySequence ksFind = m_term->keyTranslator()->shortcut(QKxKeyTranslator::EFind);
+    menu.addAction(QIcon("../private/skins/black/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), ksFind);
 #if 0
     menu.addSeparator();
     menu.addAction(QIcon("../private/skins/black/upload.png"), tr("Zmodem upload"), this, SLOT(onZmodemSend()));

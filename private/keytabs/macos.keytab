@@ -1,24 +1,32 @@
-# [README.default.Keytab] Default Keyboard Table
-#
-# To customize your keyboard, copy this file to something ending with
-# .keytab and change it to meet you needs.
-#
-# Please read the README-KeyTab and the doc/user/README.keyboard files
-# in this case.
-#
+# [macos.keytab] Konsole Keyboard Table
 # --------------------------------------------------------------
 
-keyboard "Default (XFree 4)"
+keyboard "macOS"
 
 # --------------------------------------------------------------
-#
-# Note that this particular table is a "risc" version made to
-# ease customization without bothering with obsolete details.
-# See VT100.keytab for the more hairy stuff.
-#
+
+# TODO: There's something wrong in Konsole that these are
+# required. 
+# Konsole's files are in the wrong location in macOS.
+# All Konsole files should be installed into
+# ~/Library/Application Support/konsole/
+
+key A+Control : "\x01"     # goto start of line
+key C+Control : "\x03"     # interrupt
+key D+Control : "\x04"     # logout "exit"
+key E+Control : "\x05"     # goto end of line
+key L+Control : "\x0C"     # clear terminal screen
+key R+Control : "\x12"     # invoke shell history
+key U+Control : "\x15"     # clear current line
+key V+Control : "\x16"     #
+key W+Control : "\x17"     # erase the word preceding to the cursor position
+#key Z+Control : "\x1a"
+
+key Delete      +Shift   : "\x7f"
+
 # --------------------------------------------------------------
 
-# common keys
+# common keys - below is same as default.keytab
 
 key Escape             : "\E"
 
@@ -28,20 +36,15 @@ key Tab   +Shift-Ansi  : "\t"
 key Backtab     +Ansi  : "\E[Z"
 key Backtab     -Ansi  : "\t"
 
-key Tab       +Control+Ansi : "\E[27;5;9~"
-key Backtab   +Control+Ansi : "\E[27;6;9~"
-key Tab       +Control-Ansi : "\t"
-key Backtab   +Control-Ansi : "\t"
-
 key Return-Shift-NewLine : "\r"
 key Return-Shift+NewLine : "\r\n"
 
 key Return+Shift         : "\EOM"
 
-# Backspace and Delete codes are preserving CTRL-H.
+# Backspace and Delete codes are preserving Control-H.
 #
-# Backspace without CTRL sends '^?'; this matches XTerm behaviour, so that
-# pressing Alt+Backspace will send \E + Del, which is the expected behaviour
+# Backspace without Control sends '^?'; this matches XTerm behaviour, so that
+# pressing Option+Backspace will send \E + Del, which is the expected behaviour
 # in some apps (e.g. emacs), and it was the behaviour before the commit
 # that add the Backspace +Control rule
 key Backspace   -Control : "\x7f"
@@ -81,15 +84,15 @@ key Down  +Shift+AppScreen             : "\E[1;*B"
 key Left  +Shift+AppScreen             : "\E[1;*D"
 key Right +Shift+AppScreen             : "\E[1;*C"
 
-key Up    +Shift+Alt-AppScreen         : "\E[1;*A"
-key Down  +Shift+Alt-AppScreen         : "\E[1;*B"
-key Left  +Shift+Alt-AppScreen         : "\E[1;*D"
-key Right +Shift+Alt-AppScreen         : "\E[1;*C"
+key Up    +Shift+Option-AppScreen         : "\E[1;*A"
+key Down  +Shift+Option-AppScreen         : "\E[1;*B"
+key Left  +Shift+Option-AppScreen         : "\E[1;*D"
+key Right +Shift+Option-AppScreen         : "\E[1;*C"
 
-key Up    +Shift+Ctrl-AppScreen        : "\E[1;*A"
-key Down  +Shift+Ctrl-AppScreen        : "\E[1;*B"
-key Left  +Shift+Ctrl-AppScreen        : "\E[1;*D"
-key Right +Shift+Ctrl-AppScreen        : "\E[1;*C"
+key Up    +Shift+Control-AppScreen        : "\E[1;*A"
+key Down  +Shift+Control-AppScreen        : "\E[1;*B"
+key Left  +Shift+Control-AppScreen        : "\E[1;*D"
+key Right +Shift+Control-AppScreen        : "\E[1;*C"
 
 # Keypad keys with NumLock ON
 # (see https://web.archive.org/web/20070807181942/http://www.nw.com/nw/WWW/products/wizcon/vt100.html
@@ -178,42 +181,42 @@ key F11 -AnyMod  : "\E[23~"
 key F12 -AnyMod  : "\E[24~"
 
 key F1  +AnyMod  : "\EO*P"
-key F7  +AnyMod  : "\E[18;*~"
 key F2  +AnyMod  : "\EO*Q"
 key F3  +AnyMod  : "\EO*R"
 key F4  +AnyMod  : "\EO*S"
 key F5  +AnyMod  : "\E[15;*~"
 key F6  +AnyMod  : "\E[17;*~"
+key F7  +AnyMod  : "\E[18;*~"
 key F8  +AnyMod  : "\E[19;*~"
 key F9  +AnyMod  : "\E[20;*~"
 key F10 +AnyMod  : "\E[21;*~"
 key F11 +AnyMod  : "\E[23;*~"
 key F12 +AnyMod  : "\E[24;*~"
 
+# Work around dead keys
 
 key Space +Control : "\x00"
 
 # Some keys are used by konsole to cause operations.
 # The scroll* operations refer to the history buffer.
 
-key Up      -Alt+Ctrl+Shift-AppScreen  : scrollLineUp
-key PgUp    -Alt+Ctrl+Shift-AppScreen  : scrollPageUp
-key Down    -Alt+Ctrl+Shift-AppScreen  : scrollLineDown
-key PgDown  -Alt+Ctrl+Shift-AppScreen  : scrollPageDown
-key Home    -Alt+Ctrl+Shift-AppScreen  : scrollUpToTop
-key End     -Alt+Ctrl+Shift-AppScreen  : scrollDownToBottom
+key Up      -Option-Control-Shift+Command-AppScreen  : scrollLineUp
+key PgUp    -Option-Control-Shift+Command-AppScreen  : scrollPageUp
+key Down    -Option-Control-Shift+Command-AppScreen  : scrollLineDown
+key PgDown  -Option-Control-Shift+Command-AppScreen  : scrollPageDown
+key Home    -Option-Control-Shift+Command-AppScreen  : scrollUpToTop
+key End     -Option-Control-Shift+Command-AppScreen  : scrollDownToBottom
 
-key Left    -Alt-Ctrl+Shift  : selectLineLeft
-key Right   -Alt-Ctrl+Shift  : selectLineRight
-key Up      -Alt-Ctrl+Shift  : selectLineUp
-key Down    -Alt-Ctrl+Shift  : selectLineDown
-key Home    -Alt-Ctrl+Shift  : selectLineHome
-key End     -Alt-Ctrl+Shift  : selectLineEnd
+# mac no such shortcut
+#key Left    -Option-Control+Shift  : selectLineLeft
+#key Right   -Option-Control+Shift  : selectLineRight
+#key Up      -Option-Control+Shift  : selectLineUp
+#key Down    -Option-Control+Shift  : selectLineDown
+#key Home    -Option-Control+Shift  : selectLineHome
+#key End     -Option-Control+Shift  : selectLineEnd
 
-key A       -Alt+Ctrl+Shift  : selectAll
-key C       -Alt+Ctrl+Shift  : copy
-key V       -Alt+Ctrl+Shift  : paste
-key F       -Alt+Ctrl+Shift  : find
-
-
+key A       -Option-Control-Shift+Command  : selectAll
+key C       -Option-Control-Shift+Command  : copy
+key V       -Option-Control-Shift+Command  : paste
+key F       -Option-Control-Shift+Command  : find
 

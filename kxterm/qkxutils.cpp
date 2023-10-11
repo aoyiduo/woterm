@@ -293,25 +293,19 @@ QVector<QColor> initDefault() {
     return vcs;
 }
 
-static QMap<QString, QKxKeyTranslator*> layouts;
-static QStringList m_keyboardPaths;
-static QStringList m_colorPaths;
-void QKxUtils::addCustomKeyboardLayoutPaths(const QStringList &paths)
+static QMap<QString, QString> layouts;
+static QString gkeytabCustomPath;
+void QKxUtils::setCustomKeytabPath(const QString &path)
 {
-    m_keyboardPaths = paths;
+    gkeytabCustomPath = path;
 }
 
-void QKxUtils::addCustomColorSchemaPaths(const QStringList &paths)
-{
-    m_colorPaths = paths;
-}
-
-QStringList QKxUtils::availableKeyLayouts()
+QStringList QKxUtils::availableKeytabs()
 {
     if(layouts.isEmpty()) {
-        QStringList paths = m_keyboardPaths;
+        QStringList paths(gkeytabCustomPath);
         QString path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../private/keytabs");
-        paths.append(path);
+        paths.prepend(path);
         QStringList filters;
         filters << "*.keytab";
         for(auto it = paths.begin(); it != paths.end(); it++) {
@@ -322,11 +316,7 @@ QStringList QKxUtils::availableKeyLayouts()
                 for(int i = 0; i < fis.length(); i++) {
                     QFileInfo& fi = fis[i];
                     QString fileName = fi.baseName();
-                    QKxKeyTranslator *keyLayout = new QKxKeyTranslator();
-                    if(keyLayout->load(fi.absoluteFilePath())){
-                        keyLayout->setName(fileName);
-                        layouts.insert(fileName, keyLayout);
-                    }
+                    layouts.insert(fileName, fi.absoluteFilePath());
                 }
             }
         }
@@ -334,28 +324,35 @@ QStringList QKxUtils::availableKeyLayouts()
     return layouts.keys();
 }
 
-QKxKeyTranslator *QKxUtils::keyboardLayout(const QString &name)
+QString QKxUtils::keytabPath(const QString &name)
 {
     if(layouts.isEmpty()) {
-        availableKeyLayouts();
+        availableKeytabs();
     }
-    if(layouts.isEmpty()) {
-        return nullptr;
-    }
-    QKxKeyTranslator *key = layouts.value(name);
-    if(key != nullptr) {
-        return key;
-    }
-    return layouts.first();
+    return layouts.value(name);
+}
+
+void QKxUtils::cleanupKeytabs()
+{
+    layouts.clear();
 }
 
 static QMap<QString, QString> schemas;
+static QString gschemaCustomPath;
+void QKxUtils::setCustomColorSchemaPath(const QString &path)
+{
+    if(gschemaCustomPath.contains(path)) {
+        return;
+    }
+    gschemaCustomPath.append(path);
+}
+
 QStringList QKxUtils::availableColorSchemas()
 {
     if(schemas.isEmpty()) {
-        QStringList paths = m_colorPaths;
+        QStringList paths(gschemaCustomPath);
         QString path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../private/themes");
-        paths.append(path);
+        paths.prepend(path);
         QStringList filters;
         filters << "*.theme";
         for(auto it = paths.begin(); it != paths.end(); it++) {
@@ -389,16 +386,16 @@ struct FontCustomInfo {
 
 #define FONT_FILE_DELETE      ("fontDels.txt")
 static QList<QString> gsysFamilies;
-static QString gfontBackupPath;
+static QString gfontCustomPath;
 static QMap<QString,FontCustomInfo> gcustomFonts;
 void QKxUtils::setCustomFontPath(const QString &path)
 {
-    gfontBackupPath = path;
+    gfontCustomPath = path;
 }
 
 QStringList QKxUtils::customFontFamilies()
 {
-    QDir d(gfontBackupPath);
+    QDir d(gfontCustomPath);
 
     systemFontFamilies();
 
@@ -406,7 +403,7 @@ QStringList QKxUtils::customFontFamilies()
     QStringList fs = d.entryList(QDir::Files|QDir::NoDotAndDotDot);
     for(auto it = fs.begin(); it != fs.end(); it++) {
         QString name = *it;
-        QString fileName = gfontBackupPath + "/" + name;
+        QString fileName = gfontCustomPath + "/" + name;
         if(name == FONT_FILE_DELETE) {
             continue;
         }
@@ -500,7 +497,7 @@ bool QKxUtils::isFixedPitch(const QFont &font) {
 
 QStringList QKxUtils::fontRemoveList()
 {
-    QString fileName = gfontBackupPath + "/" + FONT_FILE_DELETE;
+    QString fileName = gfontCustomPath + "/" + FONT_FILE_DELETE;
     QStringList fileDels;
     QFile file(fileName);
     if(!file.open(QFile::ReadOnly)) {
@@ -525,7 +522,7 @@ QStringList QKxUtils::removeFontList()
         }
     }
     if(fileDels.isEmpty()) {
-        QString fileName = gfontBackupPath + "/" + FONT_FILE_DELETE;
+        QString fileName = gfontCustomPath + "/" + FONT_FILE_DELETE;
         QFile::remove(fileName);
     }
     return fileDels;
@@ -544,7 +541,7 @@ void QKxUtils::appentFontRemoveList(const QStringList &_dels)
         }
     }
     fileDels.append(dels);
-    QString fileName = gfontBackupPath + "/" + FONT_FILE_DELETE;
+    QString fileName = gfontCustomPath + "/" + FONT_FILE_DELETE;
     QFile file(fileName);
     if(file.open(QFile::WriteOnly)) {
         QDataStream ds(&file);

@@ -117,9 +117,11 @@ QKxTermWidget::QKxTermWidget(QWidget* parent)
     QObject::connect(m_term, SIGNAL(activePathArrived(QString)), this, SIGNAL(activePathArrived(QString)));
     QObject::connect(m_term, SIGNAL(sendData(QByteArray)), this, SIGNAL(sendData(QByteArray)));
     QObject::connect(m_term, SIGNAL(readOnlyChanged()), this, SIGNAL(readOnlyChanged()));
+    QObject::connect((QKxTermItem*)m_term, &QKxTermItem::showFindTool, this, [=](){
+        setFindBarVisible(true);
+    });
     QObject::connect(m_vscroll, SIGNAL(valueChanged(int)), this, SLOT(onScrollValueChanged(int)));
     m_term->installEventFilter(this);
-    m_keyFind = QKeySequence(Qt::CTRL + Qt::Key_F);
 }
 
 QKxTermWidget::~QKxTermWidget()
@@ -180,11 +182,6 @@ void QKxTermWidget::sendInput(const QByteArray &cmd)
     emit m_term->sendData(cmd);
 }
 
-void QKxTermWidget::setFindShortCut(QKeySequence key)
-{
-    m_keyFind = key;
-}
-
 QString QKxTermWidget::textCodec() const
 {
     return m_term->textCodec();
@@ -230,13 +227,15 @@ void QKxTermWidget::pastePlainText(const QString &txt)
     m_term->pastePlainText(txt);
 }
 
-bool QKxTermWidget::pasteWhenOverSelectionText(const QPoint& pt)
+bool QKxTermWidget::copyWhenOverSelectionText(const QPoint& pt, bool paste)
 {
     if(m_term->isOverSelection(pt)) {
         QString txtSel = m_term->selectedText();
         QClipboard *clip = QGuiApplication::clipboard();
         clip->setText(txtSel);
-        m_term->directSendData(txtSel.toUtf8());
+        if(paste) {
+            m_term->directSendData(txtSel.toUtf8());
+        }
         return true;
     }
     return false;
@@ -283,36 +282,11 @@ void QKxTermWidget::resizeEvent(QResizeEvent *ev)
     QWidget::resizeEvent(ev);
     QSize sz = ev->size();
     QSize szh = m_vscroll->sizeHint();
-    //m_vscroll->setGeometry(sz.width() - szh.width(), 0, szh.width(), sz.height());
-    //m_term->setGeometry(0, 0, sz.width() - szh.width(), sz.height());
 }
 
 bool QKxTermWidget::eventFilter(QObject *watched, QEvent *event)
 {
-    if(watched == m_term) {
-        if(event->type() == QEvent::KeyPress) {
-            QKeyEvent *ev = (QKeyEvent*)event;
-            int key = ev->key();
-            Qt::KeyboardModifiers modifier = ev->modifiers();
-            if(modifier & Qt::ShiftModifier) {
-                key += Qt::SHIFT;
-            }
-            if(modifier & Qt::ControlModifier) {
-                key += Qt::CTRL;
-            }
-            if(modifier & Qt::MetaModifier) {
-                key += Qt::META;
-            }
-            if(modifier & Qt::AltModifier) {
-                key += Qt::ALT;
-            }
-            QKeySequence seq(key);
-            if(seq == m_keyFind) {
-                setFindBarVisible(true);
-            }
-        }
-    }
-    return false;
+    return QWidget::eventFilter(watched, event);
 }
 
 void QKxTermWidget::onTermScrollValueChanged(int lines, int position)

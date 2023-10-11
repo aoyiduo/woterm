@@ -45,20 +45,15 @@ public:
         PF_Scroll = 4,
         PF_FullScreen = 8
     };
-    enum ShortCutKey{
-        SCK_Copy = 1,
-        SCK_Paste,
-        SCK_SelectAll,
-        SCK_SelectLeft,
-        SCK_SelectRight,
-        SCK_SelectUp,
-        SCK_SelectDown,
-        SCK_SelectHome,
-        SCK_SelectEnd,
+    enum DragTextMode{
+        DTM_NotDefined = 0,
+        DTM_DragToInput,
+        DTM_DragCopyAndPaste
     };
+
     Q_ENUM(CursorType)
     Q_ENUM(SelectionMode)
-    Q_ENUM(ShortCutKey)
+    Q_ENUM(DragTextMode)
     Q_DECLARE_FLAGS(PaintFlags, PaintFlag)
 
     Q_PROPERTY(QFont font READ font WRITE setFont)
@@ -70,7 +65,6 @@ public:
     Q_PROPERTY(int scrollMaxValue READ scrollMaxValue)
     Q_PROPERTY(bool highContrast READ highContrast WRITE setHighContrast)
     Q_PROPERTY(CursorType cursorType READ cursorType WRITE setCursorType)
-    Q_PROPERTY(QString keyTable READ keyTable)
     Q_PROPERTY(SelectionMode selectionMode READ selectionMode WRITE setSelectionMode)
     Q_PROPERTY(QColor background READ backgroundColor)
     Q_PROPERTY(QString name READ termName WRITE setTermName)
@@ -95,8 +89,8 @@ public:
     bool readOnly() const;
     void setReadOnly(bool on);
 
-    bool dragCopyAndPaste() const;
-    void setDragCopyAndPaste(bool on);
+    DragTextMode dragTextMode() const;
+    void setDragTextMode(DragTextMode mode);
 
     bool isOverSelection(const QPoint& pt);
 
@@ -122,8 +116,6 @@ public:
     CursorType cursorType() const;
     void setCursorType(const CursorType& t);
 
-    QString keyTable() const;
-
     QCursor mouseCursor() const;
     void setMouseCursor(const QCursor& cur);
 
@@ -141,10 +133,10 @@ public:
     void scrollToEnd();
     bool scrollTo(int y);
 
-    QKxKeyTranslator *keyLayout() const;
-    void setKeyLayout(QKxKeyTranslator *translator);
-    QString keyLayoutName() const;
-    void setKeyLayoutByName(const QString& name);
+    QKxKeyTranslator *keyTranslator() const;
+    void setKeyTranslator(QKxKeyTranslator *translator);
+    QString keyTranslatorName() const;
+    void setKeyTranslatorByName(const QString& name);
 
     QString colorSchema() const;
     void setColorSchema(const QString& name);
@@ -180,12 +172,8 @@ public:
     void simulateKeyPress(QKeyEvent *ev);
     void simulateKeyRelease(QKeyEvent *ev);
 
-    // shortcut
-    void bindShortCut(ShortCutKey sck, QKeySequence key);
-    QKeySequence defaultShortCutKey(ShortCutKey sck);
-    QKeySequence currentShortCutKey(ShortCutKey sck);
     // theme
-    Q_INVOKABLE QStringList availableKeyLayouts() const;
+    Q_INVOKABLE QStringList availableKeytabs() const;
     Q_INVOKABLE QStringList availableColorSchemas() const;
     Q_INVOKABLE QStringList availableFontFamilies() const;
     Q_INVOKABLE void clearAll();
@@ -197,6 +185,7 @@ public:
     Q_INVOKABLE void tryToPaste();
     Q_INVOKABLE void pastePlainText(const QString& txt);
     Q_INVOKABLE void selectAll();
+    Q_INVOKABLE void tryToShowFindTool();
 
     void resetTermSize();
 signals:
@@ -207,7 +196,9 @@ signals:
     void scrollValueChanged(int lines, int position);
     void backgroundChanged(const QColor &clr);
     void titleChanged(const QString& title);
-    void activePathArrived(const QString& path);    
+    void activePathArrived(const QString& path);
+    void showFindTool();
+    void selectChanged();
 
 public slots:
     void onScreenChanged();
@@ -219,7 +210,12 @@ public slots:
     void onSelectClickTimeout();
     void onGuessActivePathChanged(const QString& path);
     void onSetActive();
+    void onKeyAutoRepeat();
 public:
+    Q_INVOKABLE void scrollLine(int n);
+    Q_INVOKABLE void scrollPage(int n);
+    Q_INVOKABLE void scrollToTop();
+    Q_INVOKABLE void scrollToBottom();
     Q_INVOKABLE void resetState();
     Q_INVOKABLE void echoInput(const QByteArray& data);
     Q_INVOKABLE void parse(const QByteArray& data);
@@ -230,7 +226,7 @@ public:
     Q_INVOKABLE void updateTermSize();
     Q_INVOKABLE void updateTermSize(int rows, int cols);
     Q_INVOKABLE void updateScrollPosition(qreal position);
-    Q_INVOKABLE bool loadKeyLayout(const QString &path);
+    Q_INVOKABLE bool loadKeyTranslator(const QString &path);
     Q_INVOKABLE bool loadColorSchema(const QString &path);
     Q_INVOKABLE bool find(const QString& key, bool match, bool regular);
     Q_INVOKABLE bool findPrev(bool match, bool regular);
@@ -278,7 +274,7 @@ private:
     void drawCursor(QPainter *p, const QRect& rt, const QColor& bg, const QColor& fg,  bool &inverse);
     void handleKeyEvent(QKeyEvent *ev);
     void handleSendData(const QByteArray& buf);
-    void scroll(int offsety);
+    void scroll(int offsety);    
     bool isLineVisible(int y);
     // -1: timeout.
     //  1: title changed.
@@ -338,8 +334,6 @@ private:
     SelectionMode m_selectMode;
     bool m_tripleClick;
 
-    QString m_schema;
-
     QString m_preeditText;
     QRect m_preeditRect;
 
@@ -353,10 +347,6 @@ private:
 
     QString m_pathActive;
 
-    QKeySequence m_keyCopy;
-    QKeySequence m_keyPaste;
-    QKeySequence m_keyUpSelect, m_keyDownSelect, m_keyLeftSelect, m_keyRightSelect;
-    QKeySequence m_keyHomeSelect, m_keyEndSelect, m_keySelectAll;
     QPoint m_ptClicked;
 
     bool m_bEchoInputEnabled;
@@ -364,7 +354,7 @@ private:
 
     bool m_readOnly;
     bool m_dragEnabled;
-    bool m_dragActived;
+    DragTextMode m_dragMode;
     QPoint m_ptDraged;
 
 
@@ -373,6 +363,11 @@ private:
 
     /* background image */
     QPointer<QKxBackgroundImageRender> m_bkImageRender;
+
+    // auto key repeat
+    QPointer<QTimer> m_keyAutoRepeat;
+    QKeyEvent m_keyRepeat;
+    qint64 m_timeLast;
 };
 
 #endif // QTERM_H

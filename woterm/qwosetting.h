@@ -49,7 +49,8 @@ public:
     static QString sftpTaskDbPath();
     static QString sftpTaskLogPath();
     static QString tempPath();
-    static QString fontBackupPath();
+    static QString customFontPath();
+    static QString customKeytabPath();
     static QString cachePath();
     static QString viewPath();
     static QString fileIconCachePath();

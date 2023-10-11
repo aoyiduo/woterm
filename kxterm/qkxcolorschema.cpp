@@ -12,6 +12,7 @@
 #include "qkxcolorschema.h"
 
 #include <QFile>
+#include <QFileInfo>
 
 QKxColorSchema::QKxColorSchema(QObject *parent)
     : QObject(parent)
@@ -24,8 +25,17 @@ QKxColorSchema::~QKxColorSchema()
 
 }
 
+QString QKxColorSchema::name() const
+{
+    return m_name;
+}
+
 bool QKxColorSchema::load(const QString &path)
 {
+    m_pretty.clear();
+    m_name.clear();
+    m_indexs.clear();
+
     QFile f(path);
     if(!f.open(QFile::ReadOnly|QFile::Text)) {
         return false;
@@ -49,6 +59,8 @@ bool QKxColorSchema::load(const QString &path)
             }
         }
     }
+    QFileInfo fi(f);
+    m_name = fi.fileName();
     m_pretty.clear();
     return !m_indexs.isEmpty();
 }

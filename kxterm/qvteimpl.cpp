@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QFont>
 #include <QFontMetricsF>
+#include <QApplication>
 
 static const int graphic_size = 32;
 //static quint16 vt100_graphics_std[graphic_size] =
@@ -338,7 +339,8 @@ void QVteImpl::scrollDown(int y1, int y2, int n)
 
 void QVteImpl::bell()
 {
-    qDebug() << "bell";
+    //qDebug() << "bell";
+    QApplication::beep();
 }
 
 void QVteImpl::setLineTextSize(int y, TermTextSize t)

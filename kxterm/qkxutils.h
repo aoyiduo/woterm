@@ -22,12 +22,15 @@ class QKxKeyTranslator;
 class QTERM_EXPORT QKxUtils
 {
 public:
-    static void addCustomKeyboardLayoutPaths(const QStringList& paths);
-    static void addCustomColorSchemaPaths(const QStringList& paths);
-    static QStringList availableKeyLayouts();
-    static QKxKeyTranslator *keyboardLayout(const QString& name);
+    static void setCustomKeytabPath(const QString& path);
+    static QStringList availableKeytabs();
+    static QString keytabPath(const QString& name);
+    static void cleanupKeytabs();
+
+    static void setCustomColorSchemaPath(const QString& path);
     static QStringList availableColorSchemas();
     static QString colorSchemaPath(const QString& name);
+
     static void setCustomFontPath(const QString& path);
     static QStringList customFontFamilies();
     static void removeCustomFontFamily(const QString& name, QStringList& fileErrs);

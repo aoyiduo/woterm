@@ -53,7 +53,8 @@ QWoTermWidget::QWoTermWidget(const QString& target, int gid, ETermType ttype, QW
     , m_target(target)
     , m_gid(gid)
     , m_bexit(false)
-    , m_rkeyPaste(false)
+    , m_rkeyMode(ERKM_NotDefined)
+    , m_selectCopy(false)
     , m_ttype(ttype)
 {
     static int idx = 0;
@@ -69,20 +70,17 @@ QWoTermWidget::QWoTermWidget(const QString& target, int gid, ETermType ttype, QW
 
     m_loading = new QWoLoadingWidget(QColor("#1296DB"), this);
 
-    QString val = QWoSetting::value("property/shortcut").toString();
-    QVariantMap mdata = QWoUtils::qBase64ToVariant(val).toMap();
-    m_term->bindShortCut(QKxTermItem::SCK_Copy, mdata.value("SCK_Copy", m_term->defaultShortCutKey(QKxTermItem::SCK_Copy)).value<QKeySequence>());
-    m_term->bindShortCut(QKxTermItem::SCK_Paste, mdata.value("SCK_Paste", m_term->defaultShortCutKey(QKxTermItem::SCK_Paste)).value<QKeySequence>());
-    m_term->bindShortCut(QKxTermItem::SCK_SelectAll, mdata.value("SCK_SelectAll", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectAll)).value<QKeySequence>());
-    m_term->bindShortCut(QKxTermItem::SCK_SelectLeft, mdata.value("SCK_SelectLeft", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectLeft)).value<QKeySequence>());
-    m_term->bindShortCut(QKxTermItem::SCK_SelectRight, mdata.value("SCK_SelectRight", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectRight)).value<QKeySequence>());
-    m_term->bindShortCut(QKxTermItem::SCK_SelectUp, mdata.value("SCK_SelectUp", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectUp)).value<QKeySequence>());
-    m_term->bindShortCut(QKxTermItem::SCK_SelectDown, mdata.value("SCK_SelectDown", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectDown)).value<QKeySequence>());
-    m_term->bindShortCut(QKxTermItem::SCK_SelectHome, mdata.value("SCK_SelectHome", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectHome)).value<QKeySequence>());
-    m_term->bindShortCut(QKxTermItem::SCK_SelectEnd, mdata.value("SCK_SelectEnd", m_term->defaultShortCutKey(QKxTermItem::SCK_SelectEnd)).value<QKeySequence>()); 
-
     m_term->installEventFilter(this);
     m_gsTermsAll.append(this);
+
+    QTimer *timer = new QTimer(this);
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(onTimeoutToSelectCopy()));
+    QObject::connect((QKxTermItem*)m_term, &QKxTermItem::selectChanged, this, [=]{
+        if(!m_selectCopy) {
+            return;
+        }
+        timer->start(300);
+    });
 }
 
 QWoTermWidget::~QWoTermWidget()
@@ -272,6 +270,23 @@ void QWoTermWidget::onFloatThisTab()
     }
 }
 
+void QWoTermWidget::onTimeoutToSelectCopy()
+{
+    QTimer *timer = qobject_cast<QTimer*>(sender());
+    if(timer) {
+        timer->stop();
+    }
+    if(!m_selectCopy) {
+        return;
+    }
+    QString txt = m_term->selectedText();
+    if(txt.isEmpty()) {
+        return;
+    }
+    QClipboard *clip = QGuiApplication::clipboard();
+    clip->setText(txt);
+}
+
 void QWoTermWidget::resetProperty(QVariantMap mdata, bool force)
 {
     if(mdata.isEmpty() && !force) {
@@ -280,10 +295,10 @@ void QWoTermWidget::resetProperty(QVariantMap mdata, bool force)
     QString schema = mdata.value("colorSchema", DEFAULT_COLOR_SCHEMA).toString();
     m_term->setColorSchema(schema);
 
-    QString keyboard = mdata.value("keyboard", DEFAULT_KEY_LAYOUT).toString();
-    m_term->setKeyLayoutByName(keyboard);
+    QString keyboard = mdata.value("keyTranslator", DEFAULT_KEY_TRANSLATOR).toString();
+    m_term->setKeyTranslatorByName(keyboard);
 
-    QString codec = mdata.value("textcodec", DEFAULT_TEXT_CODEC).toString();
+    QString codec = mdata.value("textCodec", DEFAULT_TEXT_CODEC).toString();
     m_term->setTextCodec(codec);
 
     QFont ft = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -304,8 +319,24 @@ void QWoTermWidget::resetProperty(QVariantMap mdata, bool force)
     int lines = mdata.value("historyLength", DEFAULT_HISTORY_LINE_LENGTH).toInt();
     m_term->setHistorySize(lines);
     bool dragPaste = mdata.value("dragPaste", false).toBool();
-    m_term->setDragCopyAndPaste(dragPaste);
-    m_rkeyPaste = mdata.value("rkeyPaste", false).toBool();
+    bool dragInput = mdata.value("dragInput", false).toBool();
+    if(dragPaste) {
+        m_term->setDragTextMode(QKxTermItem::DTM_DragCopyAndPaste);
+    }else if(dragInput) {
+        m_term->setDragTextMode(QKxTermItem::DTM_DragToInput);
+    }else{
+        m_term->setDragTextMode(QKxTermItem::DTM_NotDefined);
+    }
+    bool rkeyCopy = mdata.value("rkeyCopy", false).toBool();
+    bool rkeyPaste = mdata.value("rkeyPaste", false).toBool();
+    if(rkeyCopy) {
+        m_rkeyMode = ERKM_Copy;
+    }else if(rkeyPaste) {
+        m_rkeyMode = ERKM_CopyPaste;
+    }else{
+        m_rkeyMode = ERKM_NotDefined;
+    }
+    m_selectCopy = mdata.value("selectCopy", false).toBool();
 
 
     QString path = QWoSetting::terminalBackgroundImage();

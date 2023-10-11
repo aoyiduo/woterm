@@ -400,3 +400,10 @@ QTabWidget {
 QTabWidget > QWidget {
     border: 1px solid #313131; 
 }
+
+QWidget[objectName="shortcut"] QPushButton {
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}

@@ -15,6 +15,7 @@ find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 set(SOURCE_FILES
     qkxhistory.cpp
     qkxkeytranslator.cpp
+    qkxkeytranslatormodel.cpp
     qkxscreen.cpp
     qkxtermitem.cpp
     qkxutils.cpp
@@ -27,11 +28,14 @@ set(SOURCE_FILES
     wcwidth.cpp
     qkxechoinput.cpp
     qkxbackgroundimagerender.cpp
+    qkxcombinekeyactiondialog.cpp
+    qkxshortcutinputdialog.cpp
 )
 
 set(HAEDER_FILES
     qkxhistory.h
     qkxkeytranslator.h
+    qkxkeytranslatormodel.h
     qkxscreen.h
     qkxtermitem.h
     qkxutils.h
@@ -45,11 +49,15 @@ set(HAEDER_FILES
     wcwidth.h
     qkxechoinput.h
     qkxbackgroundimagerender.h
+    qkxcombinekeyactiondialog.h
+    qkxshortcutinputdialog.h
     qkxterm_share.h
 )
 
 set(OTHER_FILES
     qkxsearch.ui
+    qkxcombinekeyactiondialog.ui
+    qkxshortcutinputdialog.ui
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HAEDER_FILES} ${OTHER_FILES})

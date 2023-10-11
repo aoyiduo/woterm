@@ -13,6 +13,7 @@
 
 #include "qkxtermwidget.h"
 #include "qkxtermitem.h"
+#include "qkxkeytranslator.h"
 #include "qkxmessagebox.h"
 #include "qwossh.h"
 #include "qwosshconf.h"
@@ -484,8 +485,8 @@ void QMoSshTermWidget::resizeEvent(QResizeEvent *ev)
 
 void QMoSshTermWidget::contextMenuEvent(QContextMenuEvent *ev)
 {
-    if(m_rkeyPaste) {
-        if(pasteWhenOverSelectionText(ev->pos())) {
+    if(m_rkeyMode != ERKM_NotDefined) {
+        if(copyWhenOverSelectionText(ev->pos(), m_rkeyMode == ERKM_CopyPaste)) {
             return;
         }
     }
@@ -511,7 +512,8 @@ void QMoSshTermWidget::contextMenuEvent(QContextMenuEvent *ev)
     QObject::connect(hsplit, SIGNAL(triggered()), this, SLOT(onHorizontalSplitView()));
 
     menu.addAction(QIcon("../private/skins/black/sftp.png"), tr("Sftp Assistant"), this, SLOT(onSftpConnectReady()));
-    menu.addAction(QIcon("../private/skins/black/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), QKeySequence(Qt::CTRL +  Qt::Key_F));
+    QKeySequence ksFind = m_term->keyTranslator()->shortcut(QKxKeyTranslator::EFind);
+    menu.addAction(QIcon("../private/skins/black/find.png"), tr("Find..."), this, SLOT(onShowFindBar()), ksFind);
     menu.addAction(QIcon("../private/skins/black/palette.png"), tr("Edit"), this, SLOT(onModifyThisSession()));
     menu.addAction(tr("Duplicate in new window"), this, SLOT(onDuplicateInNewWindow()));
     menu.addAction(tr("New session multiplex"), this, SLOT(onNewSessionMultiplex()));

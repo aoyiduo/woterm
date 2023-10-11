@@ -55,6 +55,7 @@ private:
     QEvent::Type m_event;
 };
 
+class QKxKeyTranslatorModel;
 class QWoSessionTTYProperty : public QDialog
 {
     Q_OBJECT
@@ -71,8 +72,19 @@ public:
     void setCustom(const QVariantMap& prop);
     QVariantMap result() const;
 private slots:
+    void onCloneButtonClicked();
+    void onReloadButtonClicked();
+    void onRenameButtonClicked();
+    void onDeleteButtonClicked();
+    void onWriteButtonClicked();
+    void onKeyAddButtonClicked();
+    void onKeyCopyButtonClicked();
+    void onKeyModifyButtonClicked();
+    void onKeyRemoveButtonClicked();
+    void onKeymapItemDBClicked(const QModelIndex& idx);
     void onPageCurrentChanged(int idx);
     void onColorCurrentIndexChanged(const QString & txt);
+    void onKeytabCurrentIndexChanged(const QString& txt);
     void onFontCurrentIndexChanged(const QString& family);
     void onStyleCurrentIndexChanged(const QString& style);
     void onFontValueChanged(int v);
@@ -84,19 +96,21 @@ private slots:
     void onButtonSaveClicked();
     void onButtonSaveToAllClicked();
     void onShellPathButtonClicked();
-    void onItemDoubleClicked(const QModelIndex &index);
     void onButtonImportClicked();
     void onFontFamilyRemove(const QString& family);
     void onTileButtonClicked();
     void onSelectButtonClicked();
 
 private:
+    void saveShortcut(bool force = false);
     QVariantMap save();
     void initDefault();
-    void setShortCut(const QVariantMap& dm);
     void setFixPreviewString();
     void refleshFontPreview();
+    bool isPrivateKeytab(const QString& name);
     bool importFont(const QStringList& families, const QString& fileName);
+    void reloadKeytabsLater(const QString& name = QString());
+    bool switchToModify();
 private:
     Ui::QWoSessionTTYProperty *ui;
     bool m_bCustom;
@@ -107,7 +121,7 @@ private:
     QPointer<QKxTermItem> m_term;
     QPointer<QFontCleanDelegate> m_delegate;
     QPointer<QKxPositionItem> m_item;
-
+    QPointer<QKxKeyTranslatorModel> m_keysModel;
 };
 
 #endif // QWOSESSIONTTYPROPERTY_H

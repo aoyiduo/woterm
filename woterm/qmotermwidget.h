@@ -26,6 +26,11 @@ public:
         ETTLocalShell,
         ETTSerialPort
     };
+    enum ERightKeyMode {
+        ERKM_NotDefined,
+        ERKM_Copy,
+        ERKM_CopyPaste
+    };
 public:
     explicit QMoTermWidget(const QString& target, ETermType ttype, QWidget *parent=nullptr);
     virtual ~QMoTermWidget();
@@ -56,7 +61,7 @@ protected:
     QString m_target;
     ETermType m_ttype;
     QPointer<QWoLoadingWidget> m_loading;
-    bool m_rkeyPaste;
+    ERightKeyMode m_rkeyMode;
     QString m_historyFile;
     QPointer<QKxTouchPoint> m_touchPoint;
 };

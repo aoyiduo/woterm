@@ -60,6 +60,7 @@ static void MyMessageHandler(QtMsgType type, const QMessageLogContext & context,
     switch (type)
     {
     case QtDebugMsg:
+        return;
     case QtInfoMsg:
         typeText = "Info";
         break;
@@ -111,15 +112,16 @@ void test()
 int main_pc_tunnel(int argc, char *argv[])
 {
 #ifdef QT_DEBUG
-    QGuiApplication::setApplicationName("wotermd");
+    QApplication::setApplicationName("wotermd");
 #else
-    QGuiApplication::setApplicationName("woterm");
+    QApplication::setApplicationName("woterm");
 #endif
-    QGuiApplication::setOrganizationName("aoyiduo");
-    QGuiApplication::setOrganizationDomain("aoyiduo.com");
-    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication::setAttribute(Qt::AA_DontUseNativeMenuBar);
-    QGuiApplication::setAttribute(Qt::AA_DisableWindowContextHelpButton);
+    QApplication::setOrganizationName("aoyiduo");
+    QApplication::setOrganizationDomain("aoyiduo.com");
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar);
+    QApplication::setAttribute(Qt::AA_DisableWindowContextHelpButton);
+    QApplication::setAttribute(Qt::AA_MacDontSwapCtrlAndMeta);
 #ifdef Q_OS_WIN
     static QWoTunnelApplication app(argc, argv);
 #else
@@ -152,15 +154,16 @@ int main_pc_tunnel(int argc, char *argv[])
 int main_pc_main(int argc, char *argv[])
 {
 #ifdef QT_DEBUG
-    QGuiApplication::setApplicationName("wotermd");
+    QApplication::setApplicationName("wotermd");
 #else
-    QGuiApplication::setApplicationName("woterm");
+    QApplication::setApplicationName("woterm");
 #endif
-    QGuiApplication::setOrganizationName("aoyiduo");
-    QGuiApplication::setOrganizationDomain("aoyiduo.com");
-    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication::setAttribute(Qt::AA_DontUseNativeMenuBar);
-    QGuiApplication::setAttribute(Qt::AA_DisableWindowContextHelpButton);
+    QApplication::setOrganizationName("aoyiduo");
+    QApplication::setOrganizationDomain("aoyiduo.com");
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar);
+    QApplication::setAttribute(Qt::AA_DisableWindowContextHelpButton);
+    QApplication::setAttribute(Qt::AA_MacDontSwapCtrlAndMeta);
 #ifdef Q_OS_WIN
     static QWoMainApplication app(argc, argv);
 #else
@@ -178,14 +181,15 @@ int main_pc_main(int argc, char *argv[])
         app.installTranslator(&translator);
     }
 
-    QString fontPath = QWoSetting::fontBackupPath();
+    QString fontPath = QWoSetting::customFontPath();
     QKxUtils::setCustomFontPath(fontPath);
     QKxUtils::availableFontFamilies();
 
+    QString keytabPath = QWoSetting::customKeytabPath();
+    QKxUtils::setCustomKeytabPath(keytabPath);
+    QKxUtils::availableKeytabs();
     return app.exec();
 }
-
-
 
 int main_pc(int argc, char *argv[])
 {
@@ -201,15 +205,15 @@ int main_qml(int argc, char *argv[])
 {
     //qInstallMessageHandler(myMessageOutput);
 #if defined (Q_OS_ANDROID) || defined (Q_OS_IOS)
-    QGuiApplication::setApplicationName("woterm");
+    QApplication::setApplicationName("woterm");
 #else
     // prevent overwriting existing local configurations
-    QGuiApplication::setApplicationName("moterm");
+    QApplication::setApplicationName("moterm");
 #endif
-    QGuiApplication::setOrganizationName("aoyiduo");
-    QGuiApplication::setOrganizationDomain("aoyiduo.com");
-    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication::setAttribute(Qt::AA_DisableWindowContextHelpButton);
+    QApplication::setOrganizationName("aoyiduo");
+    QApplication::setOrganizationDomain("aoyiduo.com");
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_DisableWindowContextHelpButton);
 #ifdef Q_OS_WIN
     static QMoApplication app(argc, argv);
 #else
@@ -224,7 +228,7 @@ int main_qml(int argc, char *argv[])
         app.installTranslator(&translator);
     }
 
-    QString fontPath = QWoSetting::fontBackupPath();
+    QString fontPath = QWoSetting::customFontPath();
     QKxUtils::setCustomFontPath(fontPath);
     QKxUtils::availableFontFamilies();
 

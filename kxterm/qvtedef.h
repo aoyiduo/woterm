@@ -31,7 +31,13 @@
 #endif
 
 
-#define DEFAULT_KEY_LAYOUT      ("default")
+#if defined (Q_OS_MAC)
+#define DEFAULT_KEY_TRANSLATOR  ("macos")
+#elif defined(Q_OS_LINUX)
+#define DEFAULT_KEY_TRANSLATOR  ("linux")
+#else
+#define DEFAULT_KEY_TRANSLATOR  ("default")
+#endif
 #define DEFAULT_TEXT_CODEC      ("UTF-8")
 #define DEFAULT_FONT_SIZE       (12)
 #define DEFAULT_COLOR_SCHEMA    ("Ubuntu")
@@ -176,7 +182,9 @@ enum TermFlags {
     TF_LNM     = (1 <<  3),     // line feedback/new line mode
     TF_DECTCEM = (1 <<  4),     // text cursor enable mode
     TF_DECCKM  = (1 <<  5),     // cursor keys mode
-    TF_DECANM  = (1 <<  6),     // ANSI/VT52 mode //Designate VT52 mode (DECANM)
+    TF_DECANM  = (1 <<  6),     // ANSI/VT52 mode //Designate VT52 mode (DECANM),
+                                // true: ANSI
+                                // false: vt52
     TF_DECCOLM = (1 <<  7),     // column mode (80/132)
     TF_DECSCLM = (1 <<  8),     // scolling mode (soft scroll)
     TF_DECSCNM = (1 <<  9),     // screen mode
