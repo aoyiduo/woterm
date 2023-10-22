@@ -40,7 +40,7 @@ Unlimited backup history and differential merging, addition, deletion, and repla
 
 
 ## Module description
-The client code has been completely open source, and the third-party code which comes from GitHub or CodeProject or other open communities. Some modules come from [WoVNC](http://wovnc.com).
+The client code has been completely open source(except for the kxver version control module), and the third-party code which comes from GitHub or CodeProject or other open communities. Some modules come from [WoVNC](http://wovnc.com).
 
 ## WoVNCServer
 [WoVNCServer](http://www.wovnc.com) is recommended, The server enables more advanced features.
@@ -60,10 +60,9 @@ The client code has been completely open source, and the third-party code which 
 <div>Playbook<br><img src="doc/playbook.gif"></div>
 <div>Merge and seperate<br><img src="doc/merge.gif"></div>
 <div>Cloud sync<br><img src="doc/sync.gif"></div>
-<div>Administrator<br><img src="doc/main2.png"/></div>
-<div>Keyword filter<br><img src="doc/search.gif"/></div>
+<div>Keyword filter<br><img src="doc/filter.gif"/></div>
 <div>File transfer<br><img src="doc/sftp.gif"/></div>
 <div>Tab float<br><img src="doc/float.gif"/></div>
 <div>window split<br><img src="doc/split.gif"/></div>
-<div>terminal theme<br><img src="doc/color.gif"/></div>
-<div>VNC terminal<br><img src="doc/vnc.png"/></div>
+<div>terminal theme<br><img src="doc/patten.gif"/></div>
+<div>VNC terminal<br><img src="doc/vnc.gif"/></div>

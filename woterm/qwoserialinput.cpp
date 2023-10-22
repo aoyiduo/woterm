@@ -251,7 +251,7 @@ QWoSerialInput::QWoSerialInput(QWoTermWidget *term, QWidget *parent)
     {
         QStringList items;
         items.append(tr("No filter"));
-        items.append(tr("Latin1 hex string"));
+        items.append(tr("Ansi hex string"));
         items.append(tr("Unicode hex string"));
         ui->modeOutput->setModel(new QStringListModel(items, ui->modeOutput));
         int type = QWoSetting::value("serialPort/outputType", 0).toInt();

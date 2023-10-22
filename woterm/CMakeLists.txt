@@ -15,6 +15,9 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
+string(TIMESTAMP WOTERM_BUILD_TIME UTC)
+add_definitions(-DWOTERM_BUILD_TIME="${WOTERM_BUILD_TIME}")
+
 find_package(Qt5 COMPONENTS Core Gui Widgets Qml Quick QuickControls2 Xml Charts QuickWidgets SerialPort LinguistTools REQUIRED)
 find_package(Qt5Core CONFIG REQUIRED Private)
 find_package(Qt5Gui CONFIG REQUIRED Private)

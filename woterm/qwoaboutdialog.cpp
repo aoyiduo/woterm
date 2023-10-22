@@ -64,6 +64,7 @@ QWoAboutDialog::QWoAboutDialog(QWidget *parent) :
     http->get("http://down.woterm.com/.ver");
     adjustSize();
 
+    ui->buildTime->setText(WOTERM_BUILD_TIME);
 #ifdef QT_DEBUG
     ui->btnOfficeWeb->setEnabled(false);
 #else

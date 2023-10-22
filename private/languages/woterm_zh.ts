@@ -1710,25 +1710,25 @@
 <context>
     <name>QKxLicense</name>
     <message>
-        <location filename="../../kxver/qkxlicense.cpp" line="98"/>
-        <location filename="../../kxver/qkxlicense.cpp" line="106"/>
-        <location filename="../../kxver/qkxlicense.cpp" line="112"/>
-        <location filename="../../kxver/qkxlicense.cpp" line="133"/>
+        <location filename="../../kxver/qkxlicense.cpp" line="101"/>
+        <location filename="../../kxver/qkxlicense.cpp" line="109"/>
+        <location filename="../../kxver/qkxlicense.cpp" line="115"/>
+        <location filename="../../kxver/qkxlicense.cpp" line="136"/>
         <source>failed to verify the license key</source>
         <translation>校验许可证失败</translation>
     </message>
     <message>
-        <location filename="../../kxver/qkxlicense.cpp" line="123"/>
+        <location filename="../../kxver/qkxlicense.cpp" line="126"/>
         <source>The current version is lower and does not support this license key. Please upgrade to the latest version.</source>
         <translation>当前版本较低，不支持该版本的许可证，请升级至最新版本。</translation>
     </message>
     <message>
-        <location filename="../../kxver/qkxlicense.cpp" line="129"/>
+        <location filename="../../kxver/qkxlicense.cpp" line="132"/>
         <source>failed to extract the license key information</source>
         <translation>无法提取许可证信息</translation>
     </message>
     <message>
-        <location filename="../../kxver/qkxlicense.cpp" line="178"/>
+        <location filename="../../kxver/qkxlicense.cpp" line="200"/>
         <source>the license key information is not match the local device.</source>
         <translation>许可证信息与本地设备不匹配。</translation>
     </message>
@@ -1966,12 +1966,12 @@
 <context>
     <name>QKxTermItem</name>
     <message>
-        <location filename="../../kxterm/qkxtermitem.cpp" line="591"/>
+        <location filename="../../kxterm/qkxtermitem.cpp" line="592"/>
         <source>In read-only mode, no commands can be executed.</source>
         <translation>在只读模式下，不能执行任何命令。</translation>
     </message>
     <message>
-        <location filename="../../kxterm/qkxtermitem.cpp" line="595"/>
+        <location filename="../../kxterm/qkxtermitem.cpp" line="596"/>
         <source>There are no conditions for executing commands in the current state.</source>
         <translation>在当前状态下不存在执行命令的条件。</translation>
     </message>
@@ -2910,7 +2910,12 @@
         <translation>最新版本：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoaboutdialog.ui" line="207"/>
+        <location filename="../../woterm/qwoaboutdialog.ui" line="168"/>
+        <source>Build time:</source>
+        <translation>构建时间：</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoaboutdialog.ui" line="243"/>
         <source>C</source>
         <translation>C</translation>
     </message>
@@ -2924,12 +2929,12 @@
         <translation>官网：</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoaboutdialog.ui" line="197"/>
+        <location filename="../../woterm/qwoaboutdialog.ui" line="233"/>
         <source>OfficeWeb</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoaboutdialog.ui" line="204"/>
+        <location filename="../../woterm/qwoaboutdialog.ui" line="240"/>
         <source>Check Version</source>
         <translation>检查版本</translation>
     </message>
@@ -7079,9 +7084,13 @@ Please input password to activate it.</source>
         <translation>按十六进制字符串分割</translation>
     </message>
     <message>
-        <location filename="../../woterm/qwoserialinput.cpp" line="254"/>
         <source>Latin1 hex string</source>
-        <translation>Latin1十六进制字符串</translation>
+        <translation type="vanished">Latin1十六进制字符串</translation>
+    </message>
+    <message>
+        <location filename="../../woterm/qwoserialinput.cpp" line="254"/>
+        <source>Ansi hex string</source>
+        <translation>Ansi十六进制字符串</translation>
     </message>
     <message>
         <location filename="../../woterm/qwoserialinput.cpp" line="255"/>

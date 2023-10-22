@@ -705,9 +705,32 @@ void QKxTermItem::tryToPaste()
     /***
      *    No longer trying to convert line breaks for different platforms.
      *    If there are any issues, the user will fix them themselves.
+     *
+     *       clipTxt = clipTxt.replace("\r\n", "\n");
+     *       clipTxt += "\r\naaaabbbb\r\nccccc\r1111\r2222\n3\n4\n\tdddddd5\r\n64541\r\r\n3\r\r\r";
+     *
      ***/
-    // clipTxt = clipTxt.replace("\r\n", "\n");
-    pastePlainText(clipTxt);
+
+    QString out;
+    for(int i = 0; i < clipTxt.length(); i++) {
+        QChar c = clipTxt[i];
+        if(c == '\r') {
+            if((i+1) < clipTxt.length()) {
+                if(clipTxt.at(i+1) != '\n') {
+                    out.append('\n');
+                }else{
+                    out.append(c);
+                }
+            }else if((i+1) == clipTxt.length()){
+                out.append('\n');
+            }else{
+                out.append(c);
+            }
+        }else{
+            out.append(c);
+        }
+    }
+    pastePlainText(out);
 #else
     //vim / vi:  it is very bad  on local terminal.
     clipTxt = clipTxt.replace("\r\n", "\n");

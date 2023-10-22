@@ -39,7 +39,7 @@
 
 
 ## 仓库模块说明
-客户端代码已经全部开源，其所依赖的第三方代码均来自GitHub或CodeProject或其它开放社区，部份模块来自[WoVNC](http://wovnc.com)。
+客户端代码已经全部开源(除kxver版本控制模块外)，其所依赖的第三方代码均来自GitHub或CodeProject或其它开放社区，部份模块来自[WoVNC](http://wovnc.com)。
 
 ## WoVNCServer
 推荐使用[WoVNCServer](http://www.wovnc.com)服务端，开启更多高级特性。
@@ -59,10 +59,9 @@
 <div>剧本<br><img src="doc/playbook.gif"></div>
 <div>选项卡合并及分离<br><img src="doc/merge.gif"></div>
 <div>云同步<br><img src="doc/sync.gif"></div>
-<div>管理员登录<br><img src="doc/main2.png"/></div>
-<div>关键字搜索<br><img src="doc/search.gif"/></div>
+<div>关键字搜索<br><img src="doc/filter.gif"/></div>
 <div>SFTP的上传下载<br><img src="doc/sftp.gif"/></div>
 <div>选项卡浮动<br><img src="doc/float.gif"/></div>
 <div>窗口分割<br><img src="doc/split.gif"/></div>
-<div>终端配色表<br><img src="doc/color.gif"/></div>
-<div>VNC终端<br><img src="doc/vnc.png"/></div>
+<div>终端配色表<br><img src="doc/patten.gif"/></div>
+<div>VNC终端<br><img src="doc/vnc.gif"/></div>
