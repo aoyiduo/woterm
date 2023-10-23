@@ -47,6 +47,8 @@ set(SOURCE_FILES
     qkxtouchpoint.cpp
     qkxloadingbarwidget.cpp
     qkxpositionitem.cpp
+    qkxbubblesyncwidget.cpp
+    qkxplaintextedit.cpp
     #window object
     main.cpp
     qwotheme.cpp
@@ -230,6 +232,8 @@ set(HEADER_FILES
     qkxmessagebox.h
     qkxloadingbarwidget.h
     qkxpositionitem.h
+    qkxbubblesyncwidget.h
+    qkxplaintextedit.h
     # window object
     qwotheme.h
     qwoapplication.h
@@ -400,6 +404,7 @@ set(OTHER_FILES
     woterm.qrc
     qwoplaybookmanagedialog.ui
     qwoplaybookconfiguredialog.ui
+    qkxbubblesyncwidget.ui
     # window object
     qwoplaybookwidget.ui
     qkxfilterlistview.ui    

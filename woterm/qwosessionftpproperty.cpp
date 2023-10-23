@@ -20,6 +20,7 @@
 #include <QFileInfo>
 #include <QVariantMap>
 #include <QStandardItemModel>
+#include <QButtonGroup>
 
 QWoSessionFtpProperty::QWoSessionFtpProperty(bool editAsk, QWidget *parent) :
     QDialog(parent),
@@ -44,6 +45,23 @@ QWoSessionFtpProperty::QWoSessionFtpProperty(bool editAsk, QWidget *parent) :
     ui->btnModify->setVisible(false);
     ui->btnRemove->setVisible(false);
 
+    {
+
+        bool bubbleSync = QWoSetting::value("sftpFileEdit/bubbleSync", true).toBool();
+        ui->radBubbleSync->setChecked(bubbleSync);
+        ui->radConfirmSync->setChecked(!bubbleSync);
+
+        QButtonGroup *group = new QButtonGroup(this);
+        group->addButton(ui->radBubbleSync);
+        group->addButton(ui->radConfirmSync);
+        QObject::connect(ui->radBubbleSync, &QRadioButton::clicked, this, [=](){
+            QWoSetting::setValue("sftpFileEdit/bubbleSync", true);
+        });
+
+        QObject::connect(ui->radConfirmSync, &QRadioButton::clicked, this, [=](){
+            QWoSetting::setValue("sftpFileEdit/bubbleSync", false);
+        });
+    }
 
 
     QObject::connect(ui->btnUseIt, SIGNAL(clicked()), this, SLOT(onUseItButtonClicked()));

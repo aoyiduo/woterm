@@ -36,6 +36,7 @@
 #include "qwosftpeditordialog.h"
 #include "qwosessionfileassociationmodel.h"
 #include "qwosessionftpproperty.h"
+#include "qkxbubblesyncwidget.h"
 
 #include <QResizeEvent>
 #include <QSortFilterProxyModel>
@@ -534,14 +535,35 @@ bool QWoSftpWidget::handleEditCommit(const QString &fileSave, const QString &fil
     if(!force && fi.lastModified() == lastModified) {
         return false;
     }
-    int retval = QKxMessageBox::information(this, tr("Modify information"), tr("The content has been modified. Do you need to submit it to the server?"), QMessageBox::Yes|QMessageBox::No);
-    if(retval == QMessageBox::Yes && m_sftp) {
-        QVariantMap user;
-        user.insert("command", "editFile");
-        user.insert("local", fileSave);
-        user.insert("remote", fileRemote);
-        m_sftp->upload(fileSave, fileRemote, QWoSshFtp::TP_Override, user);
-        return true;
+    bool bubbleSync = QWoSetting::value("sftpFileEdit/bubbleSync", true).toBool();
+    if(bubbleSync) {
+        if(m_sftp) {
+            QVariantMap user;
+            user.insert("command", "editFile");
+            user.insert("local", fileSave);
+            user.insert("remote", fileRemote);
+            user.insert("bubbleSync", true);
+            m_sftp->upload(fileSave, fileRemote, QWoSshFtp::TP_Override, user);
+            QString msg = tr("Ready to submit file: %1").arg(fileRemote);
+            bubbleSyncGet()->setMessage(tr("File synchronization"), msg);
+        }
+    }else if(m_pConfirmSync == nullptr){
+        QKxMessageBox dlg(QMessageBox::Information,
+                           tr("Modify information"),
+                           tr("The content has been modified. Do you need to submit it to the server?"),
+                           QMessageBox::Yes|QMessageBox::No,
+                           this,
+                           Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint);
+        m_pConfirmSync = &dlg;
+        if(dlg.exec() == QMessageBox::Yes && m_sftp) {
+            QVariantMap user;
+            user.insert("command", "editFile");
+            user.insert("local", fileSave);
+            user.insert("remote", fileRemote);
+            user.insert("bubbleSync", false);
+            m_sftp->upload(fileSave, fileRemote, QWoSshFtp::TP_Override, user);
+            return true;
+        }
     }
     return false;
 }
@@ -722,6 +744,14 @@ void QWoSftpWidget::runUploadTask(const QStringList &lsf)
 QString QWoSftpWidget::sessionHexString() const
 {
     return m_target.toUtf8().toHex();
+}
+
+QKxBubbleSyncWidget *QWoSftpWidget::bubbleSyncGet()
+{
+    if(m_bubbleSync == nullptr) {
+        m_bubbleSync = new QKxBubbleSyncWidget(this);
+    }
+    return m_bubbleSync;
 }
 
 void QWoSftpWidget::onRemoteContextMenuRequested(const QPoint& pos)
@@ -1804,10 +1834,16 @@ void QWoSftpWidget::onCommandFinish(int t, const QVariantMap& userData)
         }
     }else if(t == MT_FTP_UPLOAD) {
         QString command = userData.value("command").toString();
-        if(command == "editFile" && reason == "ok") {
+        if(command == "editFile"){
             QString fileSave = userData.value("local").toString();
             QString fileRemote = userData.value("remote").toString();
-            QKxMessageBox::message(this, tr("File information"), tr("The modified file[%1] has been successfully submitted.").arg(fileRemote));
+            QString msg = (reason == "ok") ? tr("Successfully submitted the modified file: %1").arg(fileRemote) : tr("Failed to submit the modified file: %1").arg(fileRemote);
+            bool bubbleSync = userData.value("bubbleSync", false).toBool();
+            if(bubbleSync) {
+                bubbleSyncGet()->setMessage(tr("File synchronization"), msg);
+            }else{
+                QKxMessageBox::message(this, tr("File information"), msg);
+            }
         }
     }else if(t == MT_FTP_FILE_INFO) {
         bool customEnter = userData.value("customEnter").toBool();

@@ -42,6 +42,7 @@ class QPushButton;
 class QProcess;
 class QFileSystemWatcher;
 class QTimer;
+class QKxBubbleSyncWidget;
 
 class QWoSftpWidget : public QWidget
 {
@@ -172,6 +173,7 @@ private:
     void runUploadTask(const QList<QFileInfo>& lsf);
     Q_INVOKABLE void runUploadTask(const QStringList& lsfi);
     QString sessionHexString() const;
+    QKxBubbleSyncWidget *bubbleSyncGet();
 private:
     friend class QWoSftpWidgetImpl;
     Ui::QWoSftpWidget *ui;
@@ -200,6 +202,8 @@ private:
 
     QMap<QString, FileWatchActive> m_filesWatchLastActive;
     QPointer<QTimer> m_timerFileWatch;
+    QPointer<QKxMessageBox> m_pConfirmSync;
+    QPointer<QKxBubbleSyncWidget> m_bubbleSync;
 
     QString m_target;
     bool m_savePassword;

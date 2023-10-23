@@ -49,5 +49,6 @@
         <file>resource/images/reload.png</file>
         <file>resource/images/edit.png</file>
         <file>resource/keytab.template</file>
+        <file>resource/images/close.png</file>
     </qresource>
 </RCC>

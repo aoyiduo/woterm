@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>550</width>
-    <height>373</height>
+    <width>573</width>
+    <height>380</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,6 +34,20 @@
     <widget class="QCheckBox" name="chkDefault">
      <property name="text">
       <string>Auto add the default editors.</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radConfirmSync">
+     <property name="text">
+      <string>Pop up the dialog box to confirm whether to synchronize the modified file.</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="radBubbleSync">
+     <property name="text">
+      <string>Bubble prompt on the bottom right screen and synchronize the modified files.</string>
      </property>
     </widget>
    </item>
