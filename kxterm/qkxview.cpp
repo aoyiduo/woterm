@@ -125,7 +125,7 @@ void QKxView::setSelection(const QMap<QPoint, QPoint> &sels)
 
 void QKxView::selectWord(const QPoint& pt)
 {
-    int cols = m_screen->columens();
+    int cols = m_screen->columns();
     int x = pt.x();
     int y = pt.y();
     const TermLine& line = lineAt(pt.y());
@@ -166,7 +166,7 @@ void QKxView::selectWord(const QPoint& pt)
 void QKxView::selectLine(int y)
 {
     int rows = lineCount();
-    int cols = m_screen->columens();
+    int cols = m_screen->columns();
     const TermLine& line = lineAt(y);
     if(line.cs.isEmpty()) {
         setSelection(QPoint(0, y), QPoint(cols, y));
@@ -331,7 +331,7 @@ QList<TermLine> QKxView::selectedLines()
 bool QKxView::find(const QString &key, bool match, bool regular)
 {
     QList<QPoint> pos;
-    pos.reserve(m_screen->columens());
+    pos.reserve(m_screen->columns());
     m_findText = key;
     m_findLength = 0;
     if(key.isEmpty()) {
@@ -360,6 +360,21 @@ bool QKxView::find(const QString &key, bool match, bool regular)
             QPoint pt2 = pos.at(cnt - 1 + idx);
             m_findKey = intFromPoint(pt1);
             m_findLength = cnt;
+            if(pt1.y() != pt2.y()) {
+                QMap<QPoint, QPoint> sels;
+                for(int i = idx; i <= cnt-1+idx; i++) {
+                    QPoint pt = pos.at(i);
+                    if(pt1.y() != pt.y()) {
+                        sels.insert(pt1, pt2);
+                        pt1 = pt2 = pt;
+                    }else{
+                        pt2 = pt;
+                    }
+                }
+                sels.insert(pt1, pt2);
+                setSelection(sels);
+                return true;
+            }
             setSelection(pt1, pt2);
             return true;
         }
@@ -375,7 +390,7 @@ bool QKxView::find(const QString &key, bool match, bool regular)
 bool QKxView::findPrev(bool match, bool regular)
 {
     QList<QPoint> pos;
-    pos.reserve(m_screen->columens());
+    pos.reserve(m_screen->columns());
     if(m_findText.isEmpty()) {
         return true;
     }
@@ -402,6 +417,21 @@ bool QKxView::findPrev(bool match, bool regular)
             QPoint pt2 = pos.at(cnt - 1 + idx);
             m_findKey = intFromPoint(pt1);
             m_findLength = cnt;
+            if(pt1.y() != pt2.y()) {
+                QMap<QPoint, QPoint> sels;
+                for(int i = idx; i <= cnt-1+idx; i++) {
+                    QPoint pt = pos.at(i);
+                    if(pt1.y() != pt.y()) {
+                        sels.insert(pt1, pt2);
+                        pt1 = pt2 = pt;
+                    }else{
+                        pt2 = pt;
+                    }
+                }
+                sels.insert(pt1, pt2);
+                setSelection(sels);
+                return true;
+            }
             setSelection(pt1, pt2);
             return true;
         }
@@ -417,7 +447,7 @@ bool QKxView::findPrev(bool match, bool regular)
 bool QKxView::findNext(bool match, bool regular)
 {
     QList<QPoint> pos;
-    pos.reserve(m_screen->columens());
+    pos.reserve(m_screen->columns());
     if(m_findText.isEmpty()) {
         return true;
     }
@@ -444,6 +474,21 @@ bool QKxView::findNext(bool match, bool regular)
             QPoint pt2 = pos.at(cnt - 1 + idx);
             m_findKey = intFromPoint(pt1);
             m_findLength = cnt;
+            if(pt1.y() != pt2.y()) {
+                QMap<QPoint, QPoint> sels;
+                for(int i = idx; i <= cnt-1+idx; i++) {
+                    QPoint pt = pos.at(i);
+                    if(pt1.y() != pt.y()) {
+                        sels.insert(pt1, pt2);
+                        pt1 = pt2 = pt;
+                    }else{
+                        pt2 = pt;
+                    }
+                }
+                sels.insert(pt1, pt2);
+                setSelection(sels);
+                return true;
+            }
             setSelection(pt1, pt2);
             return true;
         }
@@ -458,7 +503,7 @@ bool QKxView::findNext(bool match, bool regular)
 void QKxView::findAll(bool match, bool regular)
 {
     QList<QPoint> pos;
-    pos.reserve(m_screen->columens());
+    pos.reserve(m_screen->columns());
     clearSelection();
     if(m_findText.isEmpty()) {
         return;
@@ -478,7 +523,22 @@ void QKxView::findAll(bool match, bool regular)
             const QStringList& caps = rgx.capturedTexts();
             for(int i = 0; i < caps.length(); i++) {
                 int cnt = caps.at(i).length();
-                sels.insert(pos.at(idx), pos.at(cnt - 1 + idx));
+                QPoint pt1 = pos.at(idx);
+                QPoint pt2 = pos.at(cnt - 1 + idx);
+                if(pt1.y() != pt2.y()) {
+                    for(int i = idx; i <= cnt-1+idx; i++) {
+                        QPoint pt = pos.at(i);
+                        if(pt1.y() != pt.y()) {
+                            sels.insert(pt1, pt2);
+                            pt1 = pt2 = pt;
+                        }else{
+                            pt2 = pt;
+                        }
+                    }
+                    sels.insert(pt1, pt2);
+                }else{
+                    sels.insert(pt1, pt2);
+                }
                 idx += cnt;
             }
         }

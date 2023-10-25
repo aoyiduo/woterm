@@ -57,7 +57,11 @@ QString QWoSessionFileAssociationAddDialog::application() const
 
 QString QWoSessionFileAssociationAddDialog::parameter() const
 {
-    return ui->parameter->text();
+    QString params = ui->parameter->text();
+    if(params.isEmpty()) {
+        return "\"{file}\"";
+    }
+    return params;
 }
 
 int QWoSessionFileAssociationAddDialog::priority() const
@@ -67,7 +71,7 @@ int QWoSessionFileAssociationAddDialog::priority() const
 
 void QWoSessionFileAssociationAddDialog::onSaveButtonClicked()
 {
-    QString params = ui->parameter->text();
+    QString params = parameter();
     if(!params.contains("{file}")) {
         QKxMessageBox::information(this, tr("Parameter error"), tr("The start parameter does not contain a %1 placeholder").arg("{file}"));
         return;

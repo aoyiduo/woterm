@@ -1,3 +1,5 @@
+*本仓库没有包含任何第三方库和kxver模块的源码或库文件，kxver模块主要是用于版本控制，特别是与旗舰版的相关的功能如数据加密，它是团队的唯一资金来源，也是产品健康维护和升级的重要保证，在没有解决资金来源之前，并不计划开放该模块。*
+***
 <p align="center">
   <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">跨平台/小内存/多协议/多功能/云同步</h2>

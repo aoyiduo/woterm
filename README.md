@@ -1,3 +1,5 @@
+*This repository does not contain any third-party libraries or source code for the kxver module.  The kxver module is primarily used for version control, particularly for features related to the ultimate version such as data encryption.  It is the team's sole source of funding and an important guarantee for the health maintenance and upgrade of the product.Until the funding source is resolved, there are no plans to open the source code for this module.*
+***
 <p align="center">
   <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Cross platform / small memory / multi-protocol / multi-function / cloud sync</h2>

@@ -496,7 +496,7 @@ void QWoSftpWidget::handleView(const QString &fileSave, const QString &fileRemot
         QKxMessageBox::information(this, tr("File error"), tr("The temp file has been lost."));
         return;
     }
-    if(!QDesktopServices::openUrl(QUrl::fromLocalFile(fileSave))){
+    if(!QDesktopServices::openUrl(QUrl::fromLocalFile(fi.absoluteFilePath()))){
         QKxMessageBox::information(this, tr("Open file"), tr("Failed to open:")+fi.fileName());
     }
 }
@@ -521,8 +521,18 @@ void QWoSftpWidget::handleEdit(const QString &fileSave, const QString &fileRemot
         QKxMessageBox::information(this, tr("File error"), tr("The temp file has been lost."));
         return;
     }
-    QString params = fa.parameter.replace("{file}", fileSave);
-    openEditor(fa.application + " " + params, fileSave, fileRemote, fi.lastModified());
+
+    QFileInfo app(fa.application);
+    if(!app.isExecutable()) {
+        QKxMessageBox::information(this, tr("Program file error"), tr("The program file has no permission to execute."));
+        return;
+    }
+
+    QString fileEdit = QDir::toNativeSeparators(fi.absoluteFilePath());
+    QString params = fa.parameter.replace("{file}", fileEdit);
+    QString application = QDir::toNativeSeparators(app.absoluteFilePath());
+    QString cmd = QString("\"%1\" %2").arg(application).arg(params);
+    openEditor(cmd, fileSave, fileRemote, fi.lastModified());
 }
 
 bool QWoSftpWidget::handleEditCommit(const QString &fileSave, const QString &fileRemote, const qint64& dt, bool force)

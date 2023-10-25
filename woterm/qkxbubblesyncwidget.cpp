@@ -27,6 +27,7 @@ QKxBubbleSyncWidget::QKxBubbleSyncWidget(QWidget *parent) :
 
     setAttribute(Qt::WA_DeleteOnClose);
     QObject::connect(ui->btnClose, SIGNAL(clicked()), this, SLOT(close()));
+    setAttribute(Qt::WA_StyledBackground);
 
     ui->content->setReadOnly(true);
 

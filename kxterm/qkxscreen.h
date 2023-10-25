@@ -41,7 +41,7 @@ public:
     void clearScreen();
     void resize(int rows, int cols);
     inline int rows() { return m_rows; }
-    inline int columens() { return m_columns; }
+    inline int columns() { return m_columns; }
     TermLine lineAt(int y) const;
     TermCursor cursor() const;
     bool visibleCursor() const;

@@ -396,3 +396,8 @@ QWidget[objectName="shortcut"] QPushButton {
     padding-top: 0px;
     padding-bottom: 0px;
 }
+
+QKxBubbleSyncWidget {
+    padding: 5px;
+    border: 1px solid lightGray;
+}
