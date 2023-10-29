@@ -63,6 +63,7 @@ private slots:
     void onHorizontalInviteView();
     void onCloseThisSession();
     void onPasteTestFont();
+    void onClearClipboard();
     void onForceToCloseThisSession();
     void onShowFindBar();
     void onDuplicateInNewWindow();

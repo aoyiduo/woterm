@@ -174,6 +174,10 @@ private:
     Q_INVOKABLE void runUploadTask(const QStringList& lsfi);
     QString sessionHexString() const;
     QKxBubbleSyncWidget *bubbleSyncGet();
+    Q_INVOKABLE void resetTransferGeometry();
+    int transferPreferWidth();
+
+    QWoSshFtp *sftpGet();
 private:
     friend class QWoSftpWidgetImpl;
     Ui::QWoSftpWidget *ui;

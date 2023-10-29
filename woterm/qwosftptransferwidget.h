@@ -126,6 +126,7 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void paintEvent(QPaintEvent *e);
+    virtual bool eventFilter(QObject *obj, QEvent *ev);
 private:
     Ui::QWoSftpTransferWidget *ui;
     QPoint m_dragPosition;
@@ -133,7 +134,6 @@ private:
     int m_gid;
     bool m_queueMode;
 
-    bool m_elidedText;
     EAbortExpected m_abortExpected;
 
     QPointer<QWoSshFtp> m_sftp;

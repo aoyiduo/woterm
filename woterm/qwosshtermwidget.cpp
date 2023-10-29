@@ -274,6 +274,12 @@ void QWoSshTermWidget::onPasteTestFont()
     m_term->parseTest();
 }
 
+void QWoSshTermWidget::onClearClipboard()
+{
+    QClipboard *clip = QGuiApplication::clipboard();
+    clip->clear();
+}
+
 void QWoSshTermWidget::onForceToCloseThisSession()
 {
     closeAndDelete();
@@ -614,7 +620,8 @@ void QWoSshTermWidget::contextMenuEvent(QContextMenuEvent *ev)
     }
     menu.addAction(tr("Close Session"), this, SLOT(onCloseThisSession()));
 #ifdef QT_DEBUG
-    menu.addAction(tr("Test font"), this, SLOT(onPasteTestFont()));
+    menu.addAction(tr("Test font"), this, SLOT(onPasteTestFont()));    
+    menu.addAction(tr("Clear clipboard"), this, SLOT(onClearClipboard()));
 #endif
     menu.exec(QCursor::pos());
 }

@@ -516,23 +516,6 @@ private:
         runAyncTaskNext();
     }
 
-    QVariantMap openDirResult(int err, const QVariantMap& user) {
-        return reasonResult(err, user);
-    }
-
-    QVariantMap uploadResult(int err, const QVariantMap& user) {
-        return reasonResult(err, user);
-    }
-
-    QVariantMap fileInfoResult(int err, const QVariantMap& user) {
-        return reasonResult(err, user);
-    }
-
-    QVariantMap unlinkResult(int err, const QVariantMap& user) {
-        return reasonResult(err, user);
-    }
-
-
     QVariantMap mkDirResult(int err, const QVariantMap& user) {
         QVariantMap dm = user;
         if(err == -999) {
@@ -553,12 +536,9 @@ private:
         return dm;
     }
 
-    QVariantMap mkPathResult(int err, const QVariantMap& user) {
-        return mkDirResult(err, user);
-    }
-
-    QVariantMap rmDirResult(int err, const QVariantMap& user) {
-        return reasonResult(err, user);
+    bool channelValid() {
+        ssh_channel rchn = ssh_channel(m_sftp->channel);
+        return !(ssh_channel_is_eof(rchn) || ssh_channel_is_closed(rchn));
     }
 
     QVariantMap reasonResult(int err, const QVariantMap& user) {
@@ -569,8 +549,15 @@ private:
         }else if(err < 0) {
             int code = sftpLastError(dm);
             dm.insert("code", code);
-            if(code == 0 || code == SSH_FX_NO_CONNECTION || code == SSH_FX_CONNECTION_LOST) {
-                // net broken, will has code == 0. so add it.
+            qDebug() << "reasonResult" << err << code << user;
+            if(code == 0) {
+                if(channelValid()) {
+                    dm.insert("reason", "error");
+                }else{
+                    dm.insert("reason", "fatal");
+                }
+            }else if(code == SSH_FX_NO_CONNECTION || code == SSH_FX_CONNECTION_LOST) {
+                // net broken, will has code == 0. so add it.                
                 dm.insert("reason", "fatal");
             }else{
                 dm.insert("reason", "error");
@@ -641,16 +628,16 @@ private:
         handleCommandStart(MT_FTP_LISTFILE, user);
         m_listFileNext.clear();
         m_opAsync = eListFile;
-        int code = _runListFile(path, user);
+        int code = _runListFile(path, m_userData);
         if(code <= 0) {
             m_opAsync = eNone;
             m_listFileNext.clear();
-            handleCommandFinish(MT_FTP_LISTFILE, reasonResult(code, user));
+            handleCommandFinish(MT_FTP_LISTFILE, reasonResult(code, m_userData));
         }
         return code;
     }
 
-    int _runListFile(const QByteArray& _path, const QVariantMap& user) {
+    int _runListFile(const QByteArray& _path, QVariantMap& user) {
         QByteArray path = canonicalizePath(_path);
         if(path.isEmpty()) {
             return -1;
@@ -704,11 +691,11 @@ private:
                 break;
             }
         }
-        handleCommandFinish(MT_FTP_OPENDIR, reasonResult(code, user));
+        handleCommandFinish(MT_FTP_OPENDIR, reasonResult(code, m_userData));
         return code;
     }
 
-    int _runOpenDir(const QByteArray& _path, const QVariantMap& user) {
+    int _runOpenDir(const QByteArray& _path, QVariantMap& user) {
         QByteArray path = canonicalizePath(_path);
         if(path.isEmpty()) {
             return -1;
@@ -836,11 +823,10 @@ private:
         m_abort = false;
         m_userData = user;
         m_errorString.clear();
-        QVariantMap dm = user;
         handleCommandStart(MT_FTP_READ_FILE_CONTENT, user);
-        int code = _runFileContent(remote, offset, maxSize, dm);
+        int code = _runFileContent(remote, offset, maxSize, m_userData);
         if(code <= 0) {
-            handleCommandFinish(MT_FTP_READ_FILE_CONTENT, reasonResult(code, dm));
+            handleCommandFinish(MT_FTP_READ_FILE_CONTENT, reasonResult(code, m_userData));
         }
         return code;
     }
@@ -888,14 +874,14 @@ private:
         m_userData = user;
         m_errorString.clear();
         handleCommandStart(MT_FTP_WRITE_FILE_CONTENT, user);
-        int code = _runWriteFileContent(remote, content, user);
+        int code = _runWriteFileContent(remote, content, m_userData);
         if(code <= 0) {
-            handleCommandFinish(MT_FTP_WRITE_FILE_CONTENT, reasonResult(code, user));
+            handleCommandFinish(MT_FTP_WRITE_FILE_CONTENT, reasonResult(code, m_userData));
         }
         return code;
     }
 
-    int _runWriteFileContent(const QByteArray& _path, const QByteArray& content, const QVariantMap& user) {
+    int _runWriteFileContent(const QByteArray& _path, const QByteArray& content, QVariantMap& user) {
         QByteArray path = canonicalizePath(_path);
         if(path.isEmpty()) {
             return -1;
@@ -920,7 +906,7 @@ private:
         handleCommandStart(MT_FTP_DOWNLOAD, user);
         emit progress(MT_FTP_DOWNLOAD, 0, user);
         m_opAsync = eDownload;
-        int code = _runDownload(remote, local, policy, user);
+        int code = _runDownload(remote, local, policy, m_userData);
         if(code <= 0) {
             m_opAsync = eNone;
             handleCommandFinish(MT_FTP_DOWNLOAD, reasonResult(code, user));
@@ -928,7 +914,7 @@ private:
         return code;
     }
 
-    int _runDownload(const QByteArray& _remote, const QByteArray& local, int policy, const QVariantMap& user) {
+    int _runDownload(const QByteArray& _remote, const QByteArray& local, int policy, QVariantMap& user) {
         QByteArray remote = canonicalizePath(_remote);
         if(remote.isEmpty()) {
             return -1;
@@ -953,11 +939,15 @@ private:
             if(policy == QWoSshFtp::TP_Override){
                 m_lfile.remove();
                 if(!m_lfile.open(QFile::WriteOnly)) {
+                    QString errString = m_lfile.errorString();
+                    m_userData.insert("errorString", errString);
                     sftp_close(rf);
                     return -5;
                 }
             }else{
                 if(!m_lfile.open(QFile::Append)) {
+                    QString errString = m_lfile.errorString();
+                    m_userData.insert("errorString", errString);
                     sftp_close(rf);
                     return -6;
                 }
@@ -965,6 +955,10 @@ private:
             }
         }else{
             if(!m_lfile.open(QFile::WriteOnly)) {
+                QString errString = m_lfile.errorString();
+                QFile::FileError err = m_lfile.error();
+                m_userData.insert("errorString", errString);
+                qDebug() << "Local file open:" << errString << err;
                 sftp_close(rf);
                 return -7;
             }
@@ -1033,15 +1027,15 @@ private:
         handleCommandStart(MT_FTP_UPLOAD, user);
         emit progress(MT_FTP_UPLOAD, 0, user);
         m_opAsync = eUpload;
-        int code = _runUpload(local, remote, policy, user);
+        int code = _runUpload(local, remote, policy, m_userData);
         if(code <= 0) {
             m_opAsync = eNone;
-            handleCommandFinish(MT_FTP_UPLOAD, uploadResult(code, user));
+            handleCommandFinish(MT_FTP_UPLOAD, reasonResult(code, m_userData));
         }
         return code;
     }
 
-    int _runUpload(const QByteArray& local, const QByteArray& _remote, int policy, const QVariantMap& user) {        
+    int _runUpload(const QByteArray& local, const QByteArray& _remote, int policy, QVariantMap& user) {
         QByteArray remote = canonicalizePath(_remote);
         if(remote.isEmpty()) {
             return -1;
@@ -1068,8 +1062,13 @@ private:
         if(wf == nullptr) {
             return -1;
         }
+        if(m_lfile.isOpen()) {
+            m_lfile.close();
+        }
         m_lfile.setFileName(local);
         if(!m_lfile.open(QFile::ReadOnly)) {
+            QString errString = m_lfile.errorString();
+            m_userData.insert("errorString", errString);
             sftp_close(wf);
             return -2;
         }
@@ -1098,7 +1097,7 @@ private:
         return uploadNext(user) ? 1 : 0;
     }
 
-    int _runUploading(const QVariantMap& user) {
+    int _runUploading(QVariantMap& user) {
         if(m_abort) {
             return -999;
         }
@@ -1138,9 +1137,8 @@ private:
         m_userData = user;
         m_errorString.clear();
         handleCommandStart(MT_FTP_FILE_INFO, user);
-        QVariantMap result = user;
-        int code = _runFileInfo(path, result);
-        handleCommandFinish(MT_FTP_FILE_INFO, fileInfoResult(code, result));
+        int code = _runFileInfo(path, m_userData);
+        handleCommandFinish(MT_FTP_FILE_INFO, reasonResult(code, m_userData));
         return code;
     }
 
@@ -1261,12 +1259,12 @@ private:
         m_userData = user;
         m_errorString.clear();
         handleCommandStart(MT_FTP_UNLINK, user);
-        int code = _runUnlink(path, user);
-        handleCommandFinish(MT_FTP_UNLINK, unlinkResult(code, user));
+        int code = _runUnlink(path, m_userData);
+        handleCommandFinish(MT_FTP_UNLINK, reasonResult(code, m_userData));
         return code;
     }
 
-    int _runUnlink(const QByteArray& _path, const QVariantMap& user) {
+    int _runUnlink(const QByteArray& _path, QVariantMap& user) {
         QByteArray path = canonicalizePath(_path);
         if(path.isEmpty()) {
             return -1;
@@ -1284,15 +1282,15 @@ private:
         m_rmDirNext.clear();
         handleCommandStart(MT_FTP_RMDIR, user);
         m_opAsync = eRmDir;
-        int code = _runRmDir(path, true, user);
+        int code = _runRmDir(path, true, m_userData);
         if(code <= 0) {
             m_opAsync = eNone;
-            handleCommandFinish(MT_FTP_RMDIR, rmDirResult(code, user));
+            handleCommandFinish(MT_FTP_RMDIR, reasonResult(code, m_userData));
         }
         return code;
     }
 
-    int _runRmDir(const QByteArray& _path, bool isDir, const QVariantMap& user) {
+    int _runRmDir(const QByteArray& _path, bool isDir, QVariantMap& user) {
         QByteArray path = canonicalizePath(_path);
         if(path.isEmpty()) {
             return -1;
@@ -1345,12 +1343,12 @@ private:
         m_userData = user;
         m_errorString.clear();
         handleCommandStart(MT_FTP_MKDIR, user);
-        int code = _runMkDir(path, mode, user);
+        int code = _runMkDir(path, mode, m_userData);
         handleCommandFinish(MT_FTP_MKDIR, mkDirResult(code, user));
         return code;
     }
 
-    int _runMkDir(const QByteArray& path, int mode, const QVariantMap& user) {
+    int _runMkDir(const QByteArray& path, int mode, QVariantMap& user) {
         if(sftp_mkdir(m_sftp, path, mode) != SSH_OK) {
             return -1;
         }
@@ -1362,12 +1360,12 @@ private:
         m_userData = user;
         m_errorString.clear();
         handleCommandStart(MT_FTP_MKPATH, user);
-        int code = _runMkPath(path, mode, user);
-        handleCommandFinish(MT_FTP_MKPATH, mkPathResult(code, user));
+        int code = _runMkPath(path, mode, m_userData);
+        handleCommandFinish(MT_FTP_MKPATH, reasonResult(code, m_userData));
         return code;
     }
 
-    int _runMkPath(const QByteArray& _path, int mode, const QVariantMap& user) {
+    int _runMkPath(const QByteArray& _path, int mode, QVariantMap& user) {
         QByteArray path = canonicalizePath(_path);
         if(path.isEmpty()) {
             return -1;
@@ -1400,12 +1398,12 @@ private:
         m_userData = user;
         m_errorString.clear();
         handleCommandStart(MT_FTP_RENAME, user);
-        int code = _runRename(nameOld, nameNew, user);
-        handleCommandFinish(MT_FTP_RENAME, mkPathResult(code, user));
+        int code = _runRename(nameOld, nameNew, m_userData);
+        handleCommandFinish(MT_FTP_RENAME, reasonResult(code, m_userData));
         return code;
     }
 
-    int _runRename(const QByteArray& _nameOld, const QByteArray& _nameNew, const QVariantMap& user) {
+    int _runRename(const QByteArray& _nameOld, const QByteArray& _nameNew, QVariantMap& user) {
         QByteArray nameOld = canonicalizePath(_nameOld);
         if(nameOld.isEmpty()) {
             return -1;
@@ -1426,12 +1424,12 @@ private:
         m_userData = user;
         m_errorString.clear();
         handleCommandStart(MT_FTP_SYMLINK, user);
-        int code = _runSymlink(target, dest, user);
-        handleCommandFinish(MT_FTP_SYMLINK, mkPathResult(code, user));
+        int code = _runSymlink(target, dest, m_userData);
+        handleCommandFinish(MT_FTP_SYMLINK, reasonResult(code, m_userData));
         return code;
     }
 
-    int _runSymlink(const QByteArray& _target, const QByteArray& _dest, const QVariantMap& user) {
+    int _runSymlink(const QByteArray& _target, const QByteArray& _dest, QVariantMap& user) {
         QByteArray target = canonicalizePath(_target);
         if(target.isEmpty()) {
             return -1;
@@ -1454,16 +1452,16 @@ private:
         handleCommandStart(MT_FTP_CHMOD, user);
         m_chmodFolderNext.clear();
         m_opAsync = eChmodFile;
-        int code = _runChmod(path, permission, subdirs, user);
+        int code = _runChmod(path, permission, subdirs, m_userData);
         if(code <= 0) {
             m_opAsync = eNone;
             m_chmodFolderNext.clear();
-            handleCommandFinish(MT_FTP_CHMOD, reasonResult(code, user));
+            handleCommandFinish(MT_FTP_CHMOD, reasonResult(code, m_userData));
         }
         return code;
     }
 
-    int _runChmod(const QByteArray& _path, int permission, bool subdirs, const QVariantMap& user) {
+    int _runChmod(const QByteArray& _path, int permission, bool subdirs, QVariantMap& user) {
         QByteArray path = canonicalizePath(_path);
         if(path.isEmpty()) {
             return -1;
@@ -1604,7 +1602,7 @@ private:
                 }
                 m_lfile.close();
                 m_opAsync = eNone;
-                handleCommandFinish(MT_FTP_UPLOAD, uploadResult(n, user));
+                handleCommandFinish(MT_FTP_UPLOAD, reasonResult(n, user));
             }
             return true;
         }else if(type == MT_FTP_LISTFILENEXT) {
@@ -1642,7 +1640,7 @@ private:
             if(n <= 0) {
                 m_rmDirNext.clear();
                 m_opAsync = eNone;
-                handleCommandFinish(MT_FTP_RMDIR, rmDirResult(n, user));
+                handleCommandFinish(MT_FTP_RMDIR, reasonResult(n, user));
             }
             return true;
         }else if(type == MT_FTP_ABORT) {

@@ -125,7 +125,7 @@ QVariant QWoSftpRemoteModel::data(const QModelIndex &index, int role) const
     }
     if(role == Qt::TextAlignmentRole) {
         if(col == 4) {
-            return Qt::AlignRight;
+            return int(Qt::AlignRight|Qt::AlignVCenter);
         }
         return QVariant();
     }

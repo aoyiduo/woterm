@@ -28,7 +28,7 @@ QMenuBar::item:pressed {
 
 QMenu {
     background-color: rgb(139, 105, 20); /* sets background of the menu */
-    border: 1px rgb(139, 105, 20);
+    border: 1px solid rgb(139, 105, 20);
     padding: 3px 5px;
     margin: 2px; /* can not zero for easy trigger clicked action.*/
 }

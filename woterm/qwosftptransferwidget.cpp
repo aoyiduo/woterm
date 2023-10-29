@@ -36,6 +36,8 @@
 #include <QScrollBar>
 
 #define MAX_LOG_SIZE    (1024 * 1024 * 5)
+#define BUTTON_WIDTH    (60)
+#define BUTTON_HEIGHT   (30)
 
 QWoSftpItemDelegate::QWoSftpItemDelegate(QWidget *parent)
     : QStyledItemDelegate(parent)
@@ -50,8 +52,7 @@ QWoSftpItemDelegate::QWoSftpItemDelegate(QWidget *parent)
 void QWoSftpItemDelegate::onRemoveArrived()
 {
     QWidget *btnRemove = qobject_cast<QWidget*>(sender());
-    QWidget *parent = btnRemove->parentWidget();
-    const TaskInfo& ti = parent->property("itemIndex").value<TaskInfo>();
+    const TaskInfo& ti = btnRemove->property("itemIndex").value<TaskInfo>();
     if(ti.isValid()) {
         emit removeArrived(ti.taskId);
     }
@@ -107,24 +108,15 @@ QWidget *QWoSftpItemDelegate::createEditor(QWidget *parent, const QStyleOptionVi
 {
     QWidget *container = m_parent->property("container").value<QWidget*>();
     if(container == nullptr) {
-        container = new QWidget(parent);
-        container->setAttribute(Qt::WA_ShowWithoutActivating);
-        QHBoxLayout *layout = new QHBoxLayout(container);
-        container->setLayout(layout);
-        layout->setContentsMargins(0,0,0,0);
         QIcon remove = QIcon(QPixmap("../private/skins/black/close.png").scaled(24, 24, Qt::KeepAspectRatio ,Qt::SmoothTransformation));
-        QPushButton *btnRemove = new QPushButton(container);
+        QPushButton *btnRemove = new QPushButton(parent);
         btnRemove->setObjectName("transferRemove");
         btnRemove->setIcon(remove);
         btnRemove->setText(tr("Delete"));
-        QObject::connect(btnRemove, SIGNAL(clicked(bool)), this, SLOT(onRemoveArrived()));
-        QSpacerItem *item1 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Fixed);
-        layout->addSpacerItem(item1);
-        layout->addWidget(btnRemove);
-        QSpacerItem *item2 = new QSpacerItem(20, 20, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-        layout->addSpacerItem(item2);
-        m_parent->setProperty("container", QVariant::fromValue<QWidget*>(container));
+        QObject::connect(btnRemove, SIGNAL(clicked()), this, SLOT(onRemoveArrived()));
+        m_parent->setProperty("container", QVariant::fromValue<QWidget*>(btnRemove));
         m_parent->setProperty("btnRemove", QVariant::fromValue<QWidget*>(btnRemove));
+        return btnRemove;
     }
     return container;
 }
@@ -150,7 +142,9 @@ void QWoSftpItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOpti
         return;
     }
     QRect rt = option.rect;
-    editor->setGeometry(rt);
+    QRect btnRt(rt.left() + BUTTON_HEIGHT, rt.top() + (rt.height() - BUTTON_HEIGHT) / 2, BUTTON_WIDTH, BUTTON_HEIGHT);
+    qDebug() << "updateEditorGeometry" << btnRt << rt;
+    editor->setGeometry(btnRt);
     editor->setProperty("itemIndex", idx.data(ROLE_TASKINFO));
 }
 
@@ -175,7 +169,7 @@ QWoSftpTransferWidget::QWoSftpTransferWidget(const QString &target, int gid, boo
     ui->dirProgress->setRange(0, 100);
     ui->dirProgress->setValue(0);
     ui->dirProgress->setVisible(false);
-    ui->taskArea->setVisible(false);
+    ui->taskArea->setVisible(true);
     QObject::connect(ui->btnBrowser, SIGNAL(clicked()), this, SLOT(onLocalFilePathBrowser()));
     QObject::connect(ui->btnCopy, SIGNAL(clicked()), this, SLOT(onRemoteFilePathCopy()));
 
@@ -205,6 +199,9 @@ QWoSftpTransferWidget::QWoSftpTransferWidget(const QString &target, int gid, boo
 
     m_progressLabel = new QKxLabelAssist(ui->fileProgress);
 
+    ui->fileLocal->installEventFilter(this);
+    ui->fileRemote->installEventFilter(this);
+    setTaskLabel(ui->fileLocal->text(), ui->fileRemote->text());
     resetAll();
 }
 
@@ -221,7 +218,6 @@ bool QWoSftpTransferWidget::isQueueMode()
 void QWoSftpTransferWidget::onAdjustLayout()
 {
     adjustSize();
-    m_elidedText = true;
 }
 
 void QWoSftpTransferWidget::onLocalFilePathBrowser()
@@ -233,11 +229,10 @@ void QWoSftpTransferWidget::onLocalFilePathBrowser()
     QFileInfo fi(url);
     if(!fi.isDir()) {
         QString path = fi.absolutePath();
-        url = "file:///" + path;
-    }else{
-        url = "file:///" + url;
+        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+        return;
     }
-    QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(url));
 }
 
 void QWoSftpTransferWidget::onRemoteFilePathCopy()
@@ -488,7 +483,6 @@ void QWoSftpTransferWidget::runTask(const TaskInfo& ti)
     m_taskFiles.clear();
     ui->btnStart->hide();
     ui->btnStop->setVisible(m_queueMode);
-    m_elidedText = false;
     QWoUtils::setLayoutVisible(ui->dirLayout, ti.isDir);
     if(ti.isDir) {
         ui->fileCount->setText(QString::number(m_taskFiles.length()));
@@ -727,12 +721,12 @@ void QWoSftpTransferWidget::setTaskLabel(const QString &_local, const QString &_
 
     ui->fileLocal->setProperty("fileLocal", local);
     ui->fileRemote->setProperty("fileRemote", remote);
-    if(m_elidedText) {
-        QFontMetrics fm1(ui->fileLocal->font());
-        QFontMetrics fm2(ui->fileRemote->font());
-        local = fm1.elidedText(local, Qt::ElideLeft, ui->fileLocal->width());
-        remote = fm2.elidedText(remote, Qt::ElideLeft, ui->fileRemote->width());
-    }
+
+    QFontMetrics fm1(ui->fileLocal->font());
+    QFontMetrics fm2(ui->fileRemote->font());
+    local = fm1.elidedText(local, Qt::ElideLeft, ui->fileLocal->width());
+    remote = fm2.elidedText(remote, Qt::ElideLeft, ui->fileRemote->width());
+
     ui->fileLocal->setText(local);
     ui->fileRemote->setText(remote);
 }
@@ -854,4 +848,25 @@ void QWoSftpTransferWidget::paintEvent(QPaintEvent *e)
     o.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
+}
+
+bool QWoSftpTransferWidget::eventFilter(QObject *obj, QEvent *ev)
+{
+    QEvent::Type t = ev->type();
+    if(obj == ui->fileLocal) {
+        if(t == QEvent::Resize) {
+            QString local = obj->property("fileLocal").toString();
+            QFontMetrics fm(ui->fileLocal->font());
+            local = fm.elidedText(local, Qt::ElideLeft, ui->fileLocal->width());
+            ui->fileLocal->setText(local);
+        }
+    }else if(obj == ui->fileRemote) {
+        if(t == QEvent::Resize) {
+            QString remote = obj->property("fileRemote").toString();
+            QFontMetrics fm(ui->fileRemote->font());
+            remote = fm.elidedText(remote, Qt::ElideLeft, ui->fileRemote->width());
+            ui->fileRemote->setText(remote);
+        }
+    }
+    return QWidget::eventFilter(obj, ev);
 }
