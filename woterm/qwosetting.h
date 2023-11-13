@@ -48,11 +48,11 @@ public:
     static QString sshServerDbPath();
     static QString sftpTaskDbPath();
     static QString sftpTaskLogPath();
+    static QString sftpCachePath();
+    static QString sftpViewPath();
     static QString tempPath();
     static QString customFontPath();
     static QString customKeytabPath();
-    static QString cachePath();
-    static QString viewPath();
     static QString fileIconCachePath();
 
     Q_INVOKABLE static QString downloadPath();

@@ -42,7 +42,7 @@
 QMoApplication::QMoApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
-    setWindowIcon(QIcon(":/woterm/resource/images/woterm2.png"));
+    setWindowIcon(QIcon(":/woterm/resource/images/woterm.png"));
     m_timeStart = QDateTime::currentSecsSinceEpoch();
 
     QString path = applicationDirPath();

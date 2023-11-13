@@ -91,7 +91,7 @@ QWoMainWindow::QWoMainWindow(QWidget *parent)
     setMinimumSize(QSize(800, 600));
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowIcon(QIcon(":/woterm/resource/images/woterm2.png"));
+    setWindowIcon(QIcon(":/woterm/resource/images/woterm.png"));
 
     QKxVer *ver = QKxVer::instance();
     QKxVer::ELicenseType type = ver->licenseType();

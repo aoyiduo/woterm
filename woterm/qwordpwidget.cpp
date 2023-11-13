@@ -98,7 +98,7 @@ void QWoRdpWidget::resizeEvent(QResizeEvent *event)
     m_area->setGeometry(0, 0, sz.width(), sz.height());
     m_loading->setGeometry(0, 0, sz.width(), sz.height());
     m_mask->setGeometry(0, 0, sz.width(), sz.height());
-    resizeRdpWidget();
+    QMetaObject::invokeMethod(this, "resizeRdpWidget", Qt::QueuedConnection);
 }
 
 bool QWoRdpWidget::focusNextPrevChild(bool next)
@@ -134,6 +134,8 @@ void QWoRdpWidget::onConnectedArrived()
     m_loading->hide();
     m_mask->hide();
     m_rdp->show();
+
+    QMetaObject::invokeMethod(this, "resizeRdpWidget", Qt::QueuedConnection);
 }
 
 void QWoRdpWidget::onDisconnectedArrived()
@@ -216,7 +218,7 @@ void QWoRdpWidget::reconnect()
     m_rdp->setPerformanceFlags(flags);
     m_rdp->setDesktopSize(width, height);
     m_rdp->start(hi.host, hi.port, hi.user, hi.password);
-    resizeRdpWidget();
+    m_rdp->resize(QSize(1024, 768));
 
     m_mask->setAutoReconnect(m_autoReconnect);
     m_mask->hide();

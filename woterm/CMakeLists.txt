@@ -49,6 +49,7 @@ set(SOURCE_FILES
     qkxpositionitem.cpp
     qkxbubblesyncwidget.cpp
     qkxplaintextedit.cpp
+    qkxfilesystemwatcher.cpp
     #window object
     main.cpp
     qwotheme.cpp
@@ -234,6 +235,7 @@ set(HEADER_FILES
     qkxpositionitem.h
     qkxbubblesyncwidget.h
     qkxplaintextedit.h
+    qkxfilesystemwatcher.h
     # window object
     qwotheme.h
     qwoapplication.h

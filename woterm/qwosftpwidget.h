@@ -43,6 +43,7 @@ class QProcess;
 class QFileSystemWatcher;
 class QTimer;
 class QKxBubbleSyncWidget;
+class QKxFileSystemWatcher;
 
 class QWoSftpWidget : public QWidget
 {
@@ -52,7 +53,7 @@ public:
     explicit QWoSftpWidget(const QString& target, int gid, bool assist, QWidget *parent = 0);
     ~QWoSftpWidget();
 
-    void tryToSyncPath(const QString& path);
+    void tryToSyncPath(const QString& path);    
 private:
     void openHome();
     void openDir(const QStringList& paths);
@@ -146,10 +147,7 @@ protected slots:
     void onLocalPathChanged(const QString& path);
     void onLocalDropArrived(const QList<QUrl>& urls);
 
-    /*editor*/    
-    void onEditorDestroy();
     void onWatchFileChanged(const QString& file);
-    void onFileWatchTimeout();
     void onFileWatchStopArrived(const QString& file);
 
 protected:
@@ -163,8 +161,6 @@ protected:
     Q_INVOKABLE void handleView(const QString& fileSave, const QString& fileRemote);
     Q_INVOKABLE void handleEdit(const QString& fileSave, const QString& fileRemote);
     Q_INVOKABLE bool handleEditCommit(const QString& fileSave, const QString& fileRemote, const qint64& dt, bool force = false);
-    QProcess* openEditor(const QString &cmd, const QString& fileSave, const QString& fileRemote, const QDateTime& lastModified);
-    void removeEditorOrFileWatch(const QString& fileSave);
     void cleanupEditorsOrFilesWatch();
 private:
     Q_INVOKABLE void reconnect();
@@ -178,6 +174,8 @@ private:
     int transferPreferWidth();
 
     QWoSshFtp *sftpGet();
+    void cleanupCache();
+    bool isActiveProcess(qint64 pid);
 private:
     friend class QWoSftpWidgetImpl;
     Ui::QWoSftpWidget *ui;
@@ -195,16 +193,15 @@ private:
     QPointer<QTreeView> m_local, m_remote;
     QPointer<QWoSftpTransferWidget> m_transfer;
     QPointer<QKxMessageBox> m_warning;
+    QPointer<QKxFileSystemWatcher> m_fileWatcher;
 
-    QList<QPointer<QProcess>> m_editors;
     struct FileWatchActive {
         QString fileSave;
         QString fileRemote;
         QDateTime lastModified;
-        QDateTime lastActive;
     };
 
-    QMap<QString, FileWatchActive> m_filesWatchLastActive;
+    QMap<QString, FileWatchActive> m_filesWatch;
     QPointer<QTimer> m_timerFileWatch;
     QPointer<QKxMessageBox> m_pConfirmSync;
     QPointer<QKxBubbleSyncWidget> m_bubbleSync;

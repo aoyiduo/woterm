@@ -19,8 +19,8 @@
 #include <QCursor>
 #include <QDebug>
 
-QKxBubbleSyncWidget::QKxBubbleSyncWidget(QWidget *parent) :
-    QWidget(parent, Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowStaysOnTopHint | Qt::Tool),
+QKxBubbleSyncWidget::QKxBubbleSyncWidget() :
+    QWidget(nullptr, Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowStaysOnTopHint | Qt::ToolTip),
     ui(new Ui::QKxBubbleSyncWidget)
 {
     ui->setupUi(this);

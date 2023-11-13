@@ -37,6 +37,7 @@
 #include "qwosessionfileassociationmodel.h"
 #include "qwosessionftpproperty.h"
 #include "qkxbubblesyncwidget.h"
+#include "qkxfilesystemwatcher.h"
 
 #include <QResizeEvent>
 #include <QSortFilterProxyModel>
@@ -52,7 +53,6 @@
 #include <QDropEvent>
 #include <QPushButton>
 #include <QProcess>
-#include <QFileSystemWatcher>
 
 #define SYNC_FOLLOW_FLAG    ("syncFollow")
 
@@ -60,8 +60,6 @@
 #define MAX_EDIT_FILE_SIZE_CONFIRM          (500*1024)
 #define TRANSFER_MAX_WIDTH      (600)
 #define TRANSFER_MIN_WIDTH      (150)
-
-Q_GLOBAL_STATIC(QFileSystemWatcher, gFileSystemWatcher)
 
 QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidget *parent)
     : QWidget(parent)
@@ -77,7 +75,10 @@ QWoSftpWidget::QWoSftpWidget(const QString &target, int gid, bool assist, QWidge
 
     ui->setupUi(this);
 
-    QObject::connect(gFileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onWatchFileChanged(QString)));
+    cleanupCache();
+
+    m_fileWatcher = new QKxFileSystemWatcher(this);
+    QObject::connect(m_fileWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onWatchFileChanged(QString)));
 
     m_transfer = new QWoSftpTransferWidget(target, gid, m_isUltimate, this);
     m_transfer->installEventFilter(this);
@@ -503,8 +504,9 @@ void QWoSftpWidget::handleView(const QString &fileSave, const QString &fileRemot
     }
 }
 
-void QWoSftpWidget::handleEdit(const QString &fileSave, const QString &fileRemote)
+void QWoSftpWidget::handleEdit(const QString &_fileSave, const QString &fileRemote)
 {
+    const QString& fileSave = QDir::cleanPath(_fileSave);
     FileAssociation fa;
     if(!QWoSessionFileAssociationModel::instance()->findEditor(fileSave, &fa)) {
         QWoSessionFtpProperty dlg(true, this);
@@ -530,11 +532,20 @@ void QWoSftpWidget::handleEdit(const QString &fileSave, const QString &fileRemot
         return;
     }
 
+    FileWatchActive fwa;
+    fwa.fileRemote = fileRemote;
+    fwa.fileSave = fileSave;
+    fwa.lastModified = fi.lastModified();
+    m_filesWatch.insert(fileSave, fwa); // Must After QDir::cleanPath(fileSave);
+    if(!m_fileWatcher->addPath(fileSave)) {
+        qInfo() << "failed to watch file" << fileSave;
+    }
+
     QString fileEdit = QDir::toNativeSeparators(fi.absoluteFilePath());
     QString params = fa.parameter.replace("{file}", fileEdit);
     QString application = QDir::toNativeSeparators(app.absoluteFilePath());
-    QString cmd = QString("\"%1\" %2").arg(application).arg(params);
-    openEditor(cmd, fileSave, fileRemote, fi.lastModified());
+    QString cmd = QString("\"%1\" %2").arg(application, params);
+    QProcess::startDetached(cmd);
 }
 
 bool QWoSftpWidget::handleEditCommit(const QString &fileSave, const QString &fileRemote, const qint64& dt, bool force)
@@ -580,56 +591,13 @@ bool QWoSftpWidget::handleEditCommit(const QString &fileSave, const QString &fil
     return false;
 }
 
-QProcess* QWoSftpWidget::openEditor(const QString &cmd, const QString& fileSave, const QString& fileRemote, const QDateTime& lastModified)
-{
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    QProcess *editor = new QProcess(this);
-    QObject::connect(editor, SIGNAL(finished(int)), this, SLOT(onEditorDestroy()));
-    QObject::connect(editor, SIGNAL(finished(int)), editor, SLOT(deleteLater()));
-    QObject::connect(editor, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(onEditorDestroy()));
-    QObject::connect(editor, SIGNAL(errorOccurred(QProcess::ProcessError)), editor, SLOT(deleteLater()));
-    editor->setProperty("fileSave", fileSave);
-    editor->setProperty("fileRemote", fileRemote);
-    editor->setProperty("lastModified", lastModified);
-    editor->setProperty("startTime", QDateTime::currentDateTime());
-    editor->setProcessEnvironment(env);
-    editor->start(cmd);
-    m_editors.append(editor);
-
-    gFileSystemWatcher->addPath(fileSave);
-    return editor;
-}
-
-void QWoSftpWidget::removeEditorOrFileWatch(const QString &fileSave)
-{
-    gFileSystemWatcher->removePath(fileSave);
-    m_filesWatchLastActive.remove(fileSave);
-    for(auto it = m_editors.begin(); it != m_editors.end(); it++) {
-        QProcess *editor = *it;
-        QString myfile = editor->property("fileSave").toString();
-        if(fileSave == myfile) {
-            gFileSystemWatcher->removePath(fileSave);
-            editor->kill();
-            it = m_editors.erase(it);
-            return;
-        }
-    }
-}
-
 void QWoSftpWidget::cleanupEditorsOrFilesWatch()
 {
-    for(auto it = m_filesWatchLastActive.begin(); it != m_filesWatchLastActive.end(); it++) {
+    for(auto it = m_filesWatch.begin(); it != m_filesWatch.end(); it++) {
         FileWatchActive act = *it;
-        gFileSystemWatcher->removePath(act.fileSave);
+        m_fileWatcher->removePath(act.fileSave);
     }
-    m_filesWatchLastActive.clear();
-    for(auto it = m_editors.begin(); it != m_editors.end(); it++) {
-        QProcess *editor = *it;
-        QString fileSave = editor->property("fileSave").toString();
-        gFileSystemWatcher->removePath(fileSave);
-        editor->kill();
-    }
-    m_editors.clear();
+    m_filesWatch.clear();
 }
 
 void QWoSftpWidget::reconnect()
@@ -750,7 +718,7 @@ QString QWoSftpWidget::sessionHexString() const
 QKxBubbleSyncWidget *QWoSftpWidget::bubbleSyncGet()
 {
     if(m_bubbleSync == nullptr) {
-        m_bubbleSync = new QKxBubbleSyncWidget(this);
+        m_bubbleSync = new QKxBubbleSyncWidget();
     }
     return m_bubbleSync;
 }
@@ -1507,13 +1475,12 @@ void QWoSftpWidget::onRemoteMenuEditFileContent()
         }
     }
     QString filePath = QDir::cleanPath(path + "/" + fi.name);
-    QString fileSave = QWoSetting::cachePath() + "/" + sessionHexString()+ "-" + fi.name;
+    QString fileSave = QString("%1/pid%2-%3-%4").arg(QWoSetting::sftpCachePath()).arg(QCoreApplication::applicationPid()).arg(sessionHexString()).arg(fi.name);
+    fileSave = QDir::toNativeSeparators(QDir::cleanPath(fileSave));
     QVariantMap user;
     user.insert("command", "editFile");
     user.insert("local", fileSave);
     user.insert("remote", filePath);
-
-    removeEditorOrFileWatch(fileSave);
 
     sftpGet()->download(filePath, fileSave, QWoSshFtp::TP_Override, user);
 }
@@ -1541,7 +1508,8 @@ void QWoSftpWidget::onRemoteMenuOpenFile()
         }
     }
     QString filePath = QDir::cleanPath(path + "/" + fi.name);
-    QString fileSave = QWoSetting::viewPath() + "/" + sessionHexString()+ "-" + fi.name;
+    QString fileSave = QString("%1/pid%2-%3-%4").arg(QWoSetting::sftpViewPath()).arg(QCoreApplication::applicationPid()).arg(sessionHexString()).arg(fi.name);
+    fileSave = QDir::toNativeSeparators(QDir::cleanPath(fileSave));
     QVariantMap user;
     user.insert("command", "viewFile");
     user.insert("local", fileSave);
@@ -1576,6 +1544,82 @@ void QWoSftpWidget::tryToSyncPath(const QString &_path)
         }
     }
 }
+
+void QWoSftpWidget::cleanupCache()
+{
+    static bool cleanup = false;
+    if(!cleanup) {
+        cleanup = true;
+        QStringList paths = {QWoSetting::sftpCachePath(), QWoSetting::sftpViewPath()};
+        for(int i = 0; i < paths.length(); i++) {
+            QDir d(paths.at(i));
+            QFileInfoList lsfi = d.entryInfoList(QDir::Files);
+            for(auto it = lsfi.begin(); it != lsfi.end(); it++) {
+                QFileInfo fi = *it;
+                QString fileName = fi.fileName();
+                int pos = fileName.indexOf('-');
+                if(pos <= 0) {
+                    continue;
+                }
+                QString pid = fileName.left(pos);
+                if(!pid.startsWith("pid")) {
+                    continue;
+                }
+                pid = pid.mid(3);
+                qint64 ipid = pid.toLongLong();
+                if(isActiveProcess(ipid)) {
+                    continue;
+                }
+                QFile::remove(fi.absoluteFilePath());
+            }
+        }
+    }
+}
+
+#ifdef Q_OS_WIN
+#include <Windows.h>
+bool QWoSftpWidget::isActiveProcess(qint64 pid)
+{
+    HANDLE hdl = OpenProcess(PROCESS_QUERY_INFORMATION, false, pid);
+    if(hdl == NULL) {
+        return false;
+    }
+    CloseHandle(hdl);
+    return true;
+}
+#elif defined (Q_OS_MAC)
+bool QWoSftpWidget::isActiveProcess(qint64 pid)
+{
+    static QList<qint64> pidsLive;
+    static QList<qint64> pidsDead;
+    if(pidsLive.contains(pid)) {
+        return true;
+    }
+    if(pidsDead.contains(pid)) {
+        return false;
+    }
+    QProcess proc;
+    proc.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    QStringList args;
+    QString cmd = QString("ps -p %1 && echo \"activeProcess\" || echo \"deadProcess\"").arg(pid);
+    args << "-c" << cmd;
+    proc.start("/bin/bash", args);
+    proc.waitForFinished(1000);
+    QByteArray code = proc.readAll();
+    if(code.contains("activeProcess")) {
+        pidsLive.append(pid);
+        return true;
+    }
+    pidsDead.append(pid);
+    return false;
+}
+#else
+bool QWoSftpWidget::isActiveProcess(qint64 pid)
+{
+    QString path = QString("/proc/%1").arg(pid);
+    return QFileInfo::exists(path);
+}
+#endif
 
 void QWoSftpWidget::onRemoteHomeButtonClicked()
 {
@@ -1623,7 +1667,8 @@ void QWoSftpWidget::onRemoteTransferButtonClicked()
 
 void QWoSftpWidget::onRemoteEditorsButtonClicked()
 {
-    QStringList files = gFileSystemWatcher->files();
+    QStringList files = m_fileWatcher->files();
+
     QWoSftpEditorDialog dlg(files, this);
     QObject::connect(&dlg, SIGNAL(stopArrived(QString)), this, SLOT(onFileWatchStopArrived(QString)));
     QObject::connect(&dlg, &QWoSftpEditorDialog::clearAll, this, [=](){
@@ -1724,83 +1769,30 @@ void QWoSftpWidget::onLocalDropArrived(const QList<QUrl> &urls)
     }
 }
 
-void QWoSftpWidget::onEditorDestroy()
-{
-    QProcess *editor = qobject_cast<QProcess*>(sender());
-    qInfo() << "editorProcess:" << editor->processId();
-    if(m_editors.removeAll(editor) > 0) {
-        QString fileSave = editor->property("fileSave").toString();
-        QString fileRemote = editor->property("fileRemote").toString();
-        QDateTime lastModified = editor->property("lastModified").toDateTime();
-        QDateTime startTime = editor->property("startTime").toDateTime();
-        QDateTime now = QDateTime::currentDateTime();
-        qint64 ms = startTime.msecsTo(now);
-        if(ms < 3000) {
-            FileWatchActive act;
-            act.fileRemote = fileRemote;
-            act.fileSave = fileSave;
-            act.lastModified = lastModified;
-            act.lastActive = now;
-            m_filesWatchLastActive.insert(fileSave, act);
-            if(m_timerFileWatch == nullptr) {
-                m_timerFileWatch = new QTimer(this);
-                QObject::connect(m_timerFileWatch, SIGNAL(timeout()), this, SLOT(onFileWatchTimeout()));
-            }
-            m_timerFileWatch->start(5000);
-            return;
-        }
-        gFileSystemWatcher->removePath(fileSave);
-        QMetaObject::invokeMethod(this, "handleEditCommit", Qt::QueuedConnection, Q_ARG(QString, fileSave), Q_ARG(QString, fileRemote), Q_ARG(qint64, lastModified.toMSecsSinceEpoch()));
-    }
-}
 
-void QWoSftpWidget::onWatchFileChanged(const QString& file)
+void QWoSftpWidget::onWatchFileChanged(const QString& _file)
 {
-    for(auto it = m_editors.begin(); it != m_editors.end(); it++) {
-        QPointer<QProcess> editor = qobject_cast<QProcess*>(*it);
-        QString fileSave = editor->property("fileSave").toString();
-        if(fileSave == file) {
-            QFileInfo fi(fileSave);
-            gFileSystemWatcher->addPath(fileSave);
-            QString fileRemote = editor->property("fileRemote").toString();
-            QDateTime dt = editor->property("lastModified").toDateTime();
-            editor->setProperty("lastModified", fi.lastModified());
-            QMetaObject::invokeMethod(this, "handleEditCommit", Qt::QueuedConnection, Q_ARG(QString, fileSave), Q_ARG(QString, fileRemote), Q_ARG(qint64, dt.toMSecsSinceEpoch()), Q_ARG(bool, true));
-            return;
-        }
-    }
-    if(m_filesWatchLastActive.contains(file)) {
+    const QString& file = QDir::cleanPath(_file);
+    if(m_filesWatch.contains(file)) {
         QFileInfo fi(file);
-        gFileSystemWatcher->addPath(file);
-        FileWatchActive act = m_filesWatchLastActive.value(file);
+        if(!m_fileWatcher->addPath(file)) {
+            qInfo() << "failed to watch file" << file;
+        }
+        FileWatchActive act = m_filesWatch.value(file);
         if(act.lastModified != fi.lastModified()) {
             QDateTime lastModified = act.lastModified;
             act.lastModified = fi.lastModified();
-            act.lastActive = QDateTime::currentDateTime();
-            m_filesWatchLastActive.insert(file, act);
+            m_filesWatch.insert(file, act);
             QMetaObject::invokeMethod(this, "handleEditCommit", Qt::QueuedConnection, Q_ARG(QString, act.fileSave), Q_ARG(QString, act.fileRemote), Q_ARG(qint64, lastModified.toMSecsSinceEpoch()));
         }
     }
 }
 
-void QWoSftpWidget::onFileWatchTimeout()
+void QWoSftpWidget::onFileWatchStopArrived(const QString &_file)
 {
-    QDateTime now = QDateTime::currentDateTime();
-    for(auto it = m_filesWatchLastActive.begin(); it != m_filesWatchLastActive.end(); ) {
-        FileWatchActive& act = *it;
-        qint64 sec = act.lastActive.secsTo(now);
-        if(sec > 15 * 60) {
-            gFileSystemWatcher->removePath(act.fileSave);
-            it = m_filesWatchLastActive.erase(it);
-        }else{
-            it++;
-        }
-    }
-}
-
-void QWoSftpWidget::onFileWatchStopArrived(const QString &file)
-{
-    removeEditorOrFileWatch(file);
+    const QString& file = QDir::cleanPath(_file);
+    m_fileWatcher->removePath(file);
+    m_filesWatch.remove(file);
 }
 
 void QWoSftpWidget::onTransferCommandStart(int type, const QVariantMap& userData)

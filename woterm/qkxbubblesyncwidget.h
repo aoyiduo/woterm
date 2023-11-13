@@ -27,7 +27,7 @@ class QKxBubbleSyncWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit QKxBubbleSyncWidget(QWidget *parent = nullptr);
+    explicit QKxBubbleSyncWidget();
     ~QKxBubbleSyncWidget();
 
     void setMessage(const QString& title, const QString& msg, int timeout = 1000);

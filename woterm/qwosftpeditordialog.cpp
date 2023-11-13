@@ -31,12 +31,18 @@ QWoSftpEditorDialog::QWoSftpEditorDialog(const QStringList &watchs, QWidget *par
     for(auto it = watchs.begin(); it != watchs.end(); it++) {
         QString file = *it;
         QFileInfo fi(file);
-        QString fileName = fi.fileName();
-        int pos = fileName.indexOf('-');
-        QString sessionName = fileName.left(pos);
-        QString session = QByteArray::fromHex(sessionName.toLatin1());
-        fileName = fileName.replace(0, pos, session);
-        m_watchs.insert(fileName, file);
+        QString fileFull = fi.fileName();
+        QStringList fns = fileFull.split('-');
+        if(fns.length() >= 3) {
+            QString pid = fns.takeFirst();
+            QString sessionName = fns.takeFirst();
+            QString fileName = fns.join('-');
+            QString session = QByteArray::fromHex(sessionName.toLatin1());
+            m_watchs.insert(session+"-"+fileName, file);
+        }else{
+            QString fileName = fi.fileName();
+            m_watchs.insert(fileName, file);
+        }
     }
     QStringListModel *model = new QStringListModel(m_watchs.keys(), ui->tasks);
     ui->tasks->setModel(model);

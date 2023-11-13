@@ -47,7 +47,7 @@ QWoApplication::QWoApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
     QKxVer::installQSettingCipher();
-    setWindowIcon(QIcon(":/woterm/resource/images/woterm2.png"));
+    setWindowIcon(QIcon(":/woterm/resource/images/woterm.png"));
     QString path = applicationDirPath();
     addLibraryPath(path);
     QString libPath = QDir::cleanPath(path + "/../lib");
@@ -131,7 +131,7 @@ void QWoTunnelApplication::init()
 {
     QMenu *menu = new QMenu();
     menu->addAction(QIcon(":/woterm/resource/images/tunnel.png"), QObject::tr("Show tunnel window"), this, SLOT(onShowWindow()));
-    menu->addAction(QIcon(":/woterm/resource/images/woterm2.png"), QObject::tr("New session"), this, SLOT(onNewSessionWindow()));
+    menu->addAction(QIcon(":/woterm/resource/images/woterm.png"), QObject::tr("New session"), this, SLOT(onNewSessionWindow()));
     menu->addAction(QIcon(":/woterm/resource/images/reload.png"), QObject::tr("Restart application"), this, SLOT(onRestartApplication()));
     menu->addAction(QIcon(":/woterm/resource/images/exit.png"), QObject::tr("Exit"), this, SLOT(onAboutToQuit()));
     m_menu = menu;

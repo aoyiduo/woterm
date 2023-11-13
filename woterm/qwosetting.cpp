@@ -155,17 +155,17 @@ QString QWoSetting::customKeytabPath()
     return path;
 }
 
-QString QWoSetting::cachePath()
+QString QWoSetting::sftpCachePath()
 {
-    QString path = QWoSetting::ensurePath("cache");
+    QString path = QWoSetting::ensurePath("sftpCache");
     path = QDir::cleanPath(path);
     path = QDir::toNativeSeparators(path);
     return path;
 }
 
-QString QWoSetting::viewPath()
+QString QWoSetting::sftpViewPath()
 {
-    QString path = QWoSetting::ensurePath("view");
+    QString path = QWoSetting::ensurePath("sftpView");
     path = QDir::cleanPath(path);
     path = QDir::toNativeSeparators(path);
     return path;
