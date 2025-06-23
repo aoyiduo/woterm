@@ -4,10 +4,11 @@
   <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Cross platform / small memory / multi-protocol / multi-function / cloud sync</h2>
   <h3 style="text-align: center;">[<a href="README.md">English</a>] | [<a href="README-zh.md">中文</a>]</h3>
+  <h3 style="text-align: center;">[<a href="https://woterm.com">WoTerm offical Website</a>]</a></h3>
 </p>
 
 # Overview
-Cross platform remote access management tool, out of the box, no configuration, safe and stable.
+Integrated with all major remote communication protocols to meet your needs: supports SSH1/SSH2, FTP/FTPS, SFTP, TELNET, RLOGIN, RDP, VNC, SHELL, Serial Port, TCP, UDP, and more — no more switching between tools. Easily handle diverse remote access and communication scenarios in one unified platform.
 
 ## Functions description
 - Support Windows / Linux / MacOSX / Android.
