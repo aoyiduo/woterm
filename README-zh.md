@@ -4,7 +4,7 @@
   <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">跨平台/小内存/多协议/多功能/云同步</h2>
   <h3 style="text-align: center;">[<a href="README.md">English</a>] | [<a href="README-zh.md">中文</a>]</h3>
-  <h3 style="text-align: center;">[<a href="https://woterm.com">WoTerm offical Website</a>]</a></h3>
+  <h3 style="text-align: center;">[<a href="https://woterm.com">WoTerm官网</a>]</a></h3>
 </p>
 
 # 概要
