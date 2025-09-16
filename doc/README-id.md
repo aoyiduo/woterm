@@ -4,7 +4,7 @@ Ini adalah satu-satunya sumber pendanaan tim dan jaminan penting untuk pemelihar
 Sampai sumber pendanaan diselesaikan, tidak ada rencana untuk membuka kode sumber modul ini.*  
 ***
 <p align="center">
-  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
+  <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Lintas platform / memori kecil / multi-protokol / multi-fungsi / sinkronisasi cloud</h2>
 <h3 style="text-align: center;">
   [<a href="../README.md">English</a>] | 
@@ -70,18 +70,18 @@ Disarankan [WoVNCServer](http://wovnc.com) untuk fitur lanjutan.
 <a href="http://woterm.com">http://woterm.com</a>  
 
 ## Pratinjau UI:
-<div>UI utama<br><img src="doc/main.gif"/></div>
-<div>Manajemen kunci SSH<br><img src="doc/keymgr2.gif"></div>
-<div>Port serial<br><img src="doc/serialport.gif"></div>
-<div>Terowongan<br><img src="doc/tunnel.png"></div>
-<div>Beberapa tema<br><img src="doc/skins.png"></div>
-<div>Playbook<br><img src="doc/playbook.gif"></div>
-<div>Gabung dan pisah<br><img src="doc/merge.gif"></div>
-<div>Sinkronisasi cloud<br><img src="doc/sync.gif"></div>
-<div>Filter kata kunci<br><img src="doc/filter.gif"></div>
-<div>Transfer file<br><img src="doc/sftp.gif"></div>
-<div>Tab mengambang<br><img src="doc/float.gif"></div>
-<div>Pembagian jendela<br><img src="doc/split.gif"></div>
-<div>Tema terminal<br><img src="doc/patten.gif"></div>
-<div>Terminal VNC<br><img src="doc/vnc.gif"/></div>
+<div>UI utama<br><img src="main.gif"/></div>
+<div>Manajemen kunci SSH<br><img src="keymgr2.gif"></div>
+<div>Port serial<br><img src="serialport.gif"></div>
+<div>Terowongan<br><img src="tunnel.png"></div>
+<div>Beberapa tema<br><img src="skins.png"></div>
+<div>Playbook<br><img src="playbook.gif"></div>
+<div>Gabung dan pisah<br><img src="merge.gif"></div>
+<div>Sinkronisasi cloud<br><img src="sync.gif"></div>
+<div>Filter kata kunci<br><img src="filter.gif"></div>
+<div>Transfer file<br><img src="sftp.gif"></div>
+<div>Tab mengambang<br><img src="float.gif"></div>
+<div>Pembagian jendela<br><img src="split.gif"></div>
+<div>Tema terminal<br><img src="patten.gif"></div>
+<div>Terminal VNC<br><img src="vnc.gif"/></div>
 

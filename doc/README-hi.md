@@ -4,7 +4,7 @@ kxver मॉड्यूल मुख्य रूप से संस्कर�
 जब तक वित्त पोषण स्रोत हल नहीं होता, इस मॉड्यूल का स्रोत कोड खोलने की कोई योजना नहीं है।*  
 ***
 <p align="center">
-  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
+  <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">क्रॉस-प्लेटफ़ॉर्म / कम मेमोरी / मल्टी-प्रोटोकॉल / मल्टी-फ़ंक्शन / क्लाउड सिंक</h2>
 <h3 style="text-align: center;">
   [<a href="../README.md">English</a>] | 
@@ -70,17 +70,17 @@ kxver मॉड्यूल मुख्य रूप से संस्कर�
 <a href="http://woterm.com">http://woterm.com</a>  
 
 ## UI पूर्वावलोकन:
-<div>मुख्य UI<br><img src="doc/main.gif"/></div>
-<div>SSH कुंजी प्रबंधन<br><img src="doc/keymgr2.gif"></div>
-<div>सीरियल पोर्ट<br><img src="doc/serialport.gif"></div>
-<div>टनेल<br><img src="doc/tunnel.png"></div>
-<div>कई स्किन्स<br><img src="doc/skins.png"></div>
-<div>Playbook<br><img src="doc/playbook.gif"></div>
-<div>मर्ज और विभाजित<br><img src="doc/merge.gif"></div>
-<div>क्लाउड सिंक<br><img src="doc/sync.gif"></div>
-<div>कीवर्ड फ़िल्टर<br><img src="doc/filter.gif"></div>
-<div>फ़ाइल ट्रांसफ़र<br><img src="doc/sftp.gif"></div>
-<div>फ़्लोटिंग टैब<br><img src="doc/float.gif"></div>
-<div>विंडो विभाजन<br><img src="doc/split.gif"></div>
-<div>टर्मिनल थीम<br><img src="doc/patten.gif"></div>
-<div>VNC टर्मिनल<br><img src="doc/vnc.gif"/></div>
+<div>मुख्य UI<br><img src="main.gif"/></div>
+<div>SSH कुंजी प्रबंधन<br><img src="keymgr2.gif"></div>
+<div>सीरियल पोर्ट<br><img src="serialport.gif"></div>
+<div>टनेल<br><img src="tunnel.png"></div>
+<div>कई स्किन्स<br><img src="skins.png"></div>
+<div>Playbook<br><img src="playbook.gif"></div>
+<div>मर्ज और विभाजित<br><img src="merge.gif"></div>
+<div>क्लाउड सिंक<br><img src="sync.gif"></div>
+<div>कीवर्ड फ़िल्टर<br><img src="filter.gif"></div>
+<div>फ़ाइल ट्रांसफ़र<br><img src="sftp.gif"></div>
+<div>फ़्लोटिंग टैब<br><img src="float.gif"></div>
+<div>विंडो विभाजन<br><img src="split.gif"></div>
+<div>टर्मिनल थीम<br><img src="patten.gif"></div>
+<div>VNC टर्मिनल<br><img src="vnc.gif"/></div>

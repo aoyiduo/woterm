@@ -4,7 +4,7 @@ kxver モジュールは主にバージョン管理に使用され、特にア�
 資金源が解決されるまでは、このモジュールのソースコードを公開する予定はありません。*  
 ***
 <p align="center">
-  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
+  <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">クロスプラットフォーム / 小メモリ / マルチプロトコル / マルチ機能 / クラウド同期</h2>
 <h3 style="text-align: center;">
   [<a href="../README.md">English</a>] | 
@@ -70,17 +70,17 @@ kxver モジュールは主にバージョン管理に使用され、特にア�
 <a href="http://woterm.com">http://woterm.com</a>
 
 ## UIプレビュー:
-<div>メインUI<br><img src="doc/main.gif"/></div>
-<div>SSHキー管理<br><img src="doc/keymgr2.gif"></div>
-<div>シリアルポート<br><img src="doc/serialport.gif"></div>
-<div>トンネル<br><img src="doc/tunnel.png"></div>
-<div>複数スキン<br><img src="doc/skins.png"></div>
-<div>プレイブック<br><img src="doc/playbook.gif"></div>
-<div>結合と分割<br><img src="doc/merge.gif"></div>
-<div>クラウド同期<br><img src="doc/sync.gif"></div>
-<div>キーワードフィルター<br><img src="doc/filter.gif"></div>
-<div>ファイル転送<br><img src="doc/sftp.gif"></div>
-<div>浮動タブ<br><img src="doc/float.gif"></div>
-<div>ウィンドウ分割<br><img src="doc/split.gif"></div>
-<div>ターミナルテーマ<br><img src="doc/patten.gif"></div>
-<div>VNCターミナル<br><img src="doc/vnc.gif"/></div>
+<div>メインUI<br><img src="main.gif"/></div>
+<div>SSHキー管理<br><img src="keymgr2.gif"></div>
+<div>シリアルポート<br><img src="serialport.gif"></div>
+<div>トンネル<br><img src="tunnel.png"></div>
+<div>複数スキン<br><img src="skins.png"></div>
+<div>プレイブック<br><img src="playbook.gif"></div>
+<div>結合と分割<br><img src="merge.gif"></div>
+<div>クラウド同期<br><img src="sync.gif"></div>
+<div>キーワードフィルター<br><img src="filter.gif"></div>
+<div>ファイル転送<br><img src="sftp.gif"></div>
+<div>浮動タブ<br><img src="float.gif"></div>
+<div>ウィンドウ分割<br><img src="split.gif"></div>
+<div>ターミナルテーマ<br><img src="patten.gif"></div>
+<div>VNCターミナル<br><img src="vnc.gif"/></div>

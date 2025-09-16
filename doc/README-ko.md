@@ -4,7 +4,7 @@ kxver 모듈은 주로 버전 관리에 사용되며, 특히 Ultimate 버전 관
 자금원이 해결될 때까지 이 모듈의 소스 코드를 공개할 계획은 없습니다.*  
 ***
 <p align="center">
-  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
+  <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">크로스 플랫폼 / 저메모리 / 다중 프로토콜 / 다기능 / 클라우드 동기화</h2>
   <h3 style="text-align: center;">
   [<a href="../README.md">English</a>] | 
@@ -70,17 +70,17 @@ kxver 모듈은 주로 버전 관리에 사용되며, 특히 Ultimate 버전 관
 <a href="http://woterm.com">http://woterm.com</a>
 
 ## UI 미리보기:
-<div>메인 UI<br><img src="doc/main.gif"/></div>
-<div>SSH 키 관리<br><img src="doc/keymgr2.gif"></div>
-<div>시리얼 포트<br><img src="doc/serialport.gif"></div>
-<div>터널<br><img src="doc/tunnel.png"></div>
-<div>다중 스킨<br><img src="doc/skins.png"></div>
-<div>플레이북<br><img src="doc/playbook.gif"></div>
-<div>병합 및 분할<br><img src="doc/merge.gif"></div>
-<div>클라우드 동기화<br><img src="doc/sync.gif"></div>
-<div>키워드 필터<br><img src="doc/filter.gif"></div>
-<div>파일 전송<br><img src="doc/sftp.gif"></div>
-<div>플로팅 탭<br><img src="doc/float.gif"></div>
-<div>창 분할<br><img src="doc/split.gif"></div>
-<div>터미널 테마<br><img src="doc/patten.gif"></div>
-<div>VNC 터미널<br><img src="doc/vnc.gif"/></div>
+<div>메인 UI<br><img src="main.gif"/></div>
+<div>SSH 키 관리<br><img src="keymgr2.gif"></div>
+<div>시리얼 포트<br><img src="serialport.gif"></div>
+<div>터널<br><img src="tunnel.png"></div>
+<div>다중 스킨<br><img src="skins.png"></div>
+<div>플레이북<br><img src="playbook.gif"></div>
+<div>병합 및 분할<br><img src="merge.gif"></div>
+<div>클라우드 동기화<br><img src="sync.gif"></div>
+<div>키워드 필터<br><img src="filter.gif"></div>
+<div>파일 전송<br><img src="sftp.gif"></div>
+<div>플로팅 탭<br><img src="float.gif"></div>
+<div>창 분할<br><img src="split.gif"></div>
+<div>터미널 테마<br><img src="patten.gif"></div>
+<div>VNC 터미널<br><img src="vnc.gif"/></div>

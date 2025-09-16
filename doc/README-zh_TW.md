@@ -4,7 +4,7 @@ kxver 模組主要用於版本控制，特別是與終極版本相關的功能�
 在資金來源未解決之前，沒有計畫開放該模組的源碼。*  
 ***
 <p align="center">
-  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
+  <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">跨平台 / 小內存 / 多協議 / 多功能 / 雲端同步</h2>
 <h3 style="text-align: center;">
   [<a href="../README.md">English</a>] | 
@@ -70,17 +70,17 @@ kxver 模組主要用於版本控制，特別是與終極版本相關的功能�
 <a href="http://woterm.com">http://woterm.com</a>  
 
 ## UI 預覽:
-<div>主介面<br><img src="doc/main.gif"/></div>
-<div>SSH 金鑰管理<br><img src="doc/keymgr2.gif"></div>
-<div>串列埠<br><img src="doc/serialport.gif"></div>
-<div>通道<br><img src="doc/tunnel.png"></div>
-<div>多套介面皮膚<br><img src="doc/skins.png"></div>
-<div>Playbook<br><img src="doc/playbook.gif"></div>
-<div>合併與拆分<br><img src="doc/merge.gif"></div>
-<div>雲端同步<br><img src="doc/sync.gif"></div>
-<div>關鍵字篩選<br><img src="doc/filter.gif"></div>
-<div>文件傳輸<br><img src="doc/sftp.gif"></div>
-<div>浮動分頁<br><img src="doc/float.gif"></div>
-<div>窗口分割<br><img src="doc/split.gif"></div>
-<div>終端主題<br><img src="doc/patten.gif"></div>
-<div>VNC 終端<br><img src="doc/vnc.gif"/></div>
+<div>主介面<br><img src="main.gif"/></div>
+<div>SSH 金鑰管理<br><img src="keymgr2.gif"></div>
+<div>串列埠<br><img src="serialport.gif"></div>
+<div>通道<br><img src="tunnel.png"></div>
+<div>多套介面皮膚<br><img src="skins.png"></div>
+<div>Playbook<br><img src="playbook.gif"></div>
+<div>合併與拆分<br><img src="merge.gif"></div>
+<div>雲端同步<br><img src="sync.gif"></div>
+<div>關鍵字篩選<br><img src="filter.gif"></div>
+<div>文件傳輸<br><img src="sftp.gif"></div>
+<div>浮動分頁<br><img src="float.gif"></div>
+<div>窗口分割<br><img src="split.gif"></div>
+<div>終端主題<br><img src="patten.gif"></div>
+<div>VNC 終端<br><img src="vnc.gif"/></div>

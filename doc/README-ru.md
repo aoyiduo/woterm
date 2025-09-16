@@ -4,7 +4,7 @@
 До разрешения источника финансирования нет планов открывать исходный код этого модуля.*  
 ***
 <p align="center">
-  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
+  <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Кроссплатформенный / малый объем памяти / многопротокольный / многофункциональный / синхронизация с облаком</h2>
 <h3 style="text-align: center;">
   [<a href="../README.md">English</a>] | 
@@ -69,17 +69,17 @@
 <a href="http://woterm.com">http://woterm.com</a>  
 
 ## Превью UI:
-<div>Главный интерфейс<br><img src="doc/main.gif"/></div>
-<div>Управление SSH ключами<br><img src="doc/keymgr2.gif"></div>
-<div>Серийный порт<br><img src="doc/serialport.gif"></div>
-<div>Туннель<br><img src="doc/tunnel.png"></div>
-<div>Несколько скинов<br><img src="doc/skins.png"></div>
-<div>Playbook<br><img src="doc/playbook.gif"></div>
-<div>Объединение и разделение<br><img src="doc/merge.gif"></div>
-<div>Облачная синхронизация<br><img src="doc/sync.gif"></div>
-<div>Фильтр по ключевым словам<br><img src="doc/filter.gif"></div>
-<div>Передача файлов<br><img src="doc/sftp.gif"></div>
-<div>Плавающие вкладки<br><img src="doc/float.gif"></div>
-<div>Разделение окон<br><img src="doc/split.gif"></div>
-<div>Тема терминала<br><img src="doc/patten.gif"/></div>
-<div>VNC терминал<br><img src="doc/vnc.gif"/></div>
+<div>Главный интерфейс<br><img src="main.gif"/></div>
+<div>Управление SSH ключами<br><img src="keymgr2.gif"></div>
+<div>Серийный порт<br><img src="serialport.gif"></div>
+<div>Туннель<br><img src="tunnel.png"></div>
+<div>Несколько скинов<br><img src="skins.png"></div>
+<div>Playbook<br><img src="playbook.gif"></div>
+<div>Объединение и разделение<br><img src="merge.gif"></div>
+<div>Облачная синхронизация<br><img src="sync.gif"></div>
+<div>Фильтр по ключевым словам<br><img src="filter.gif"></div>
+<div>Передача файлов<br><img src="sftp.gif"></div>
+<div>Плавающие вкладки<br><img src="float.gif"></div>
+<div>Разделение окон<br><img src="split.gif"></div>
+<div>Тема терминала<br><img src="patten.gif"/></div>
+<div>VNC терминал<br><img src="vnc.gif"/></div>

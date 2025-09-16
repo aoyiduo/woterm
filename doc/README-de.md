@@ -4,7 +4,7 @@ Es ist die einzige Finanzierungsquelle des Teams und eine wichtige Garantie für
 Solange die Finanzierungsquelle nicht geklärt ist, gibt es keine Pläne, den Quellcode dieses Moduls zu veröffentlichen.*  
 ***
 <p align="center">
-  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
+  <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Plattformübergreifend / geringer Speicherverbrauch / Multi-Protokoll / Multifunktion / Cloud-Synchronisierung</h2>
 <h3 style="text-align: center;">
   [<a href="../README.md">English</a>] | 
@@ -71,17 +71,17 @@ Der Client-Code ist vollständig Open Source (außer dem kxver-Versionskontrollm
 <a href="http://woterm.com">http://woterm.com</a>  
 
 ## UI-Vorschau:
-<div>Haupt-UI<br><img src="doc/main.gif"/></div>
-<div>SSH-Schlüsselverwaltung<br><img src="doc/keymgr2.gif"></div>
-<div>Serielle Schnittstelle<br><img src="doc/serialport.gif"></div>
-<div>Tunnel<br><img src="doc/tunnel.png"></div>
-<div>Mehrere Skins<br><img src="doc/skins.png"></div>
-<div>Playbook<br><img src="doc/playbook.gif"></div>
-<div>Zusammenführen und Trennen<br><img src="doc/merge.gif"></div>
-<div>Cloud-Synchronisierung<br><img src="doc/sync.gif"></div>
-<div>Schlüsselwortfilter<br><img src="doc/filter.gif"/></div>
-<div>Dateiübertragung<br><img src="doc/sftp.gif"/></div>
-<div>Tab schweben<br><img src="doc/float.gif"/></div>
-<div>Fensteraufteilung<br><img src="doc/split.gif"/></div>
-<div>Terminal-Theme<br><img src="doc/patten.gif"/></div>
-<div>VNC-Terminal<br><img src="doc/vnc.gif"/></div>
+<div>Haupt-UI<br><img src="main.gif"/></div>
+<div>SSH-Schlüsselverwaltung<br><img src="keymgr2.gif"></div>
+<div>Serielle Schnittstelle<br><img src="serialport.gif"></div>
+<div>Tunnel<br><img src="tunnel.png"></div>
+<div>Mehrere Skins<br><img src="skins.png"></div>
+<div>Playbook<br><img src="playbook.gif"></div>
+<div>Zusammenführen und Trennen<br><img src="merge.gif"></div>
+<div>Cloud-Synchronisierung<br><img src="sync.gif"></div>
+<div>Schlüsselwortfilter<br><img src="filter.gif"/></div>
+<div>Dateiübertragung<br><img src="sftp.gif"/></div>
+<div>Tab schweben<br><img src="float.gif"/></div>
+<div>Fensteraufteilung<br><img src="split.gif"/></div>
+<div>Terminal-Theme<br><img src="patten.gif"/></div>
+<div>VNC-Terminal<br><img src="vnc.gif"/></div>

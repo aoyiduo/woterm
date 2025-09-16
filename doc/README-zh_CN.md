@@ -1,7 +1,7 @@
 *本仓库没有包含任何第三方库和kxver模块的源码或库文件，kxver模块主要是用于版本控制，特别是与旗舰版的相关的功能如数据加密，它是团队的唯一资金来源，也是产品健康维护和升级的重要保证，在没有解决资金来源之前，并不计划开放该模块。*
 ***
 <p align="center">
-  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
+  <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">跨平台/小内存/多协议/多功能/云同步</h2>
  <h3 style="text-align: center;">
   [<a href="../README.md">English</a>] | 
@@ -66,17 +66,17 @@
 <a href="http://woterm.com">http://woterm.com</a>
 
 ## 界面预览
-<div>主界面<br><img src="doc/main.gif"/></div>
-<div>SSH密钥管理<br><img src="doc/keymgr.gif"></div>
-<div>串口服务<br><img src="doc/serialport.gif"></div>
-<div>隧道<br><img src="doc/tunnel.png"></div>
-<div>多皮肤<br><img src="doc/skins.png"></div>
-<div>剧本<br><img src="doc/playbook.gif"></div>
-<div>选项卡合并及分离<br><img src="doc/merge.gif"></div>
-<div>云同步<br><img src="doc/sync.gif"></div>
-<div>关键字搜索<br><img src="doc/filter.gif"/></div>
-<div>SFTP的上传下载<br><img src="doc/sftp.gif"/></div>
-<div>选项卡浮动<br><img src="doc/float.gif"/></div>
-<div>窗口分割<br><img src="doc/split.gif"/></div>
-<div>终端配色表<br><img src="doc/patten.gif"/></div>
-<div>VNC终端<br><img src="doc/vnc.gif"/></div>
+<div>主界面<br><img src="main.gif"/></div>
+<div>SSH密钥管理<br><img src="keymgr.gif"></div>
+<div>串口服务<br><img src="serialport.gif"></div>
+<div>隧道<br><img src="tunnel.png"></div>
+<div>多皮肤<br><img src="skins.png"></div>
+<div>剧本<br><img src="playbook.gif"></div>
+<div>选项卡合并及分离<br><img src="merge.gif"></div>
+<div>云同步<br><img src="sync.gif"></div>
+<div>关键字搜索<br><img src="filter.gif"/></div>
+<div>SFTP的上传下载<br><img src="sftp.gif"/></div>
+<div>选项卡浮动<br><img src="float.gif"/></div>
+<div>窗口分割<br><img src="split.gif"/></div>
+<div>终端配色表<br><img src="patten.gif"/></div>
+<div>VNC终端<br><img src="vnc.gif"/></div>

@@ -4,7 +4,7 @@ Es la única fuente de financiación del equipo y una garantía importante para 
 Hasta que se resuelva la fuente de financiación, no hay planes de abrir el código fuente de este módulo.*  
 ***
 <p align="center">
-  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
+  <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Multiplataforma / Bajo uso de memoria / Multi-protocolo / Multifunción / Sincronización en la nube</h2>
 <h3 style="text-align: center;">
   [<a href="../README.md">English</a>] | 
@@ -69,17 +69,17 @@ Se recomienda [WoVNCServer](http://wovnc.com) para funciones avanzadas.
 <a href="http://woterm.com">http://woterm.com</a>  
 
 ## Vista previa UI:
-<div>Interfaz principal<br><img src="doc/main.gif"/></div>
-<div>Gestión de claves SSH<br><img src="doc/keymgr2.gif"></div>
-<div>Puerto serie<br><img src="doc/serialport.gif"></div>
-<div>Túnel<br><img src="doc/tunnel.png"></div>
-<div>Varias pieles<br><img src="doc/skins.png"></div>
-<div>Playbook<br><img src="doc/playbook.gif"></div>
-<div>Combinar y separar<br><img src="doc/merge.gif"></div>
-<div>Sincronización en la nube<br><img src="doc/sync.gif"></div>
-<div>Filtro por palabras clave<br><img src="doc/filter.gif"></div>
-<div>Transferencia de archivos<br><img src="doc/sftp.gif"></div>
-<div>Pestañas flotantes<br><img src="doc/float.gif"></div>
-<div>División de ventanas<br><img src="doc/split.gif"></div>
-<div>Tema de terminal<br><img src="doc/patten.gif"></div>
-<div>Terminal VNC<br><img src="doc/vnc.gif"/></div>
+<div>Interfaz principal<br><img src="main.gif"/></div>
+<div>Gestión de claves SSH<br><img src="keymgr2.gif"></div>
+<div>Puerto serie<br><img src="serialport.gif"></div>
+<div>Túnel<br><img src="tunnel.png"></div>
+<div>Varias pieles<br><img src="skins.png"></div>
+<div>Playbook<br><img src="playbook.gif"></div>
+<div>Combinar y separar<br><img src="merge.gif"></div>
+<div>Sincronización en la nube<br><img src="sync.gif"></div>
+<div>Filtro por palabras clave<br><img src="filter.gif"></div>
+<div>Transferencia de archivos<br><img src="sftp.gif"></div>
+<div>Pestañas flotantes<br><img src="float.gif"></div>
+<div>División de ventanas<br><img src="split.gif"></div>
+<div>Tema de terminal<br><img src="patten.gif"></div>
+<div>Terminal VNC<br><img src="vnc.gif"/></div>

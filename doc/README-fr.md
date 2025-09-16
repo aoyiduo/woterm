@@ -4,7 +4,7 @@ C'est la seule source de financement de l'équipe et une garantie importante pou
 Tant que la source de financement n'est pas résolue, il n'y a pas de plan pour ouvrir le code source de ce module.*  
 ***
 <p align="center">
-  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
+  <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Multi-plateforme / faible mémoire / multi-protocoles / multi-fonctions / synchronisation cloud</h2>
 <h3 style="text-align: center;">
   [<a href="../README.md">English</a>] | 
@@ -69,17 +69,17 @@ Recommandé [WoVNCServer](http://wovnc.com) pour fonctionnalités avancées.
 <a href="http://woterm.com">http://woterm.com</a>  
 
 ## Aperçu UI:
-<div>Interface principale<br><img src="doc/main.gif"/></div>
-<div>Gestion des clés SSH<br><img src="doc/keymgr2.gif"></div>
-<div>Port série<br><img src="doc/serialport.gif"></div>
-<div>Tunnel<br><img src="doc/tunnel.png"></div>
-<div>Multiples thèmes<br><img src="doc/skins.png"></div>
-<div>Playbook<br><img src="doc/playbook.gif"></div>
-<div>Fusion et séparation<br><img src="doc/merge.gif"></div>
-<div>Synchronisation cloud<br><img src="doc/sync.gif"></div>
-<div>Filtre par mot-clé<br><img src="doc/filter.gif"></div>
-<div>Transfert de fichiers<br><img src="doc/sftp.gif"></div>
-<div>Onglets flottants<br><img src="doc/float.gif"></div>
-<div>Division de fenêtres<br><img src="doc/split.gif"></div>
-<div>Thème terminal<br><img src="doc/patten.gif"></div>
-<div>Terminal VNC<br><img src="doc/vnc.gif"/></div>
+<div>Interface principale<br><img src="main.gif"/></div>
+<div>Gestion des clés SSH<br><img src="keymgr2.gif"></div>
+<div>Port série<br><img src="serialport.gif"></div>
+<div>Tunnel<br><img src="tunnel.png"></div>
+<div>Multiples thèmes<br><img src="skins.png"></div>
+<div>Playbook<br><img src="playbook.gif"></div>
+<div>Fusion et séparation<br><img src="merge.gif"></div>
+<div>Synchronisation cloud<br><img src="sync.gif"></div>
+<div>Filtre par mot-clé<br><img src="filter.gif"></div>
+<div>Transfert de fichiers<br><img src="sftp.gif"></div>
+<div>Onglets flottants<br><img src="float.gif"></div>
+<div>Division de fenêtres<br><img src="split.gif"></div>
+<div>Thème terminal<br><img src="patten.gif"></div>
+<div>Terminal VNC<br><img src="vnc.gif"/></div>
