@@ -6,7 +6,19 @@ kxver 模組主要用於版本控制，特別是與終極版本相關的功能�
 <p align="center">
   <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">跨平台 / 小內存 / 多協議 / 多功能 / 雲端同步</h2>
-  <h3 style="text-align: center;">[<a href="README.md">English</a>] | [<a href="README-zh_CN.md">简体中文</a>][<a href="README-zh_TW.md">繁體中文</a>][<a href="README-de.md">Deutsch</a>][<a href="README-es.md">Español</a>][<a href="README-fr.md">Français</a>][<a href="README-hi.md">हिंदी</a>][<a href="README-id.md">Bahasa Indonesia</a>][<a href="README-ja.md">日本語</a>][<a href="README-ko.md">한국어</a>][<a href="README-ru.md">Русский</a>]</h3>
+<h3 style="text-align: center;">
+  [<a href="README.md">English</a>] | 
+  [<a href="doc/README-zh_CN.md">简体中文</a>]
+  [<a href="doc/README-zh_TW.md">繁體中文</a>]
+  [<a href="doc/README-de.md">Deutsch</a>]
+  [<a href="doc/README-es.md">Español</a>]
+  [<a href="doc/README-fr.md">Français</a>]
+  [<a href="doc/README-hi.md">हिंदी</a>]
+  [<a href="doc/README-id.md">Bahasa Indonesia</a>]
+  [<a href="doc/README-ja.md">日本語</a>]
+  [<a href="doc/README-ko.md">한국어</a>]
+  [<a href="doc/README-ru.md">Русский</a>]
+</h3>
   <h3 style="text-align: center;">[<a href="https://woterm.com">WoTerm 官方網站</a>]</a></h3>
 </p>
 
