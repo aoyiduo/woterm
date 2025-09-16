@@ -3,7 +3,7 @@
 <p align="center">
   <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Cross platform / small memory / multi-protocol / multi-function / cloud sync</h2>
-  <h3 style="text-align: center;">[<a href="README.md">English</a>] | [<a href="README-zh.md">中文</a>]</h3>
+  <h3 style="text-align: center;">[<a href="README.md">English</a>] | [<a href="README-zh_CN.md">简体中文</a>][<a href="README-zh_TW.md">繁體中文</a>][<a href="README-de.md">Deutsch</a>][<a href="README-es.md">Español</a>][<a href="README-fr.md">Français</a>][<a href="README-hi.md">हिंदी</a>][<a href="README-id.md">Bahasa Indonesia</a>][<a href="README-ja.md">日本語</a>][<a href="README-ko.md">한국어</a>][<a href="README-ru.md">Русский</a>]</h3>
   <h3 style="text-align: center;">[<a href="https://woterm.com">WoTerm offical Website</a>]</a></h3>
 </p>
 

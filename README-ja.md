@@ -1,0 +1,74 @@
+*このリポジトリには kxver モジュールのサードパーティライブラリやソースコードは含まれていません。  
+kxver モジュールは主にバージョン管理に使用され、特にアルティメットバージョンの機能（データ暗号化など）に関連しています。  
+チームの唯一の資金源であり、製品の健康維持とアップグレードの重要な保証です。  
+資金源が解決されるまでは、このモジュールのソースコードを公開する予定はありません。*  
+***
+<p align="center">
+  <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
+  <h2 style="text-align: center;">クロスプラットフォーム / 小メモリ / マルチプロトコル / マルチ機能 / クラウド同期</h2>
+  <h3 style="text-align: center;">[<a href="README.md">English</a>] | [<a href="README-zh_CN.md">简体中文</a>][<a href="README-zh_TW.md">繁體中文</a>][<a href="README-de.md">Deutsch</a>][<a href="README-es.md">Español</a>][<a href="README-fr.md">Français</a>][<a href="README-hi.md">हिंदी</a>][<a href="README-id.md">Bahasa Indonesia</a>][<a href="README-ja.md">日本語</a>][<a href="README-ko.md">한국어</a>][<a href="README-ru.md">Русский</a>]</h3>
+  <h3 style="text-align: center;">[<a href="https://woterm.com">WoTerm 公式サイト</a>]</a></h3>
+</p>
+
+# 概要
+主要なリモート通信プロトコルすべてに統合：SSH1/SSH2, FTP/FTPS, SFTP, TELNET, RLOGIN, RDP, VNC, SHELL, シリアルポート, TCP, UDP などに対応 — ツールの切り替え不要。  
+統合プラットフォームで多様なリモートアクセスシナリオを簡単に管理。
+
+## 機能説明
+- Windows / Linux / MacOSX / Android 対応。  
+- 主流通信プロトコル対応：SSH1 / SSH2 / SFTP / RLOGIN / TELNET / SERIALPORT / VNC / RDP など。  
+- 複数の組み込みスキン、拡張可能、上級ユーザーが自由にカスタマイズ可能。  
+- 管理者モード：セッションパスワード閲覧、盗難防止。  
+- SFTPベースのクラウド同期プロトコル、8つの高強度暗号アルゴリズム。  
+- SSHターミナルにSFTPアシスタント統合、独立タブもサポート。  
+- 浮動タブデザイン、多ウィンドウ共同作業に便利。  
+- 無制限ウィンドウ分割。  
+- セッショングループとキーワードフィルター。  
+- ターミナルカラー多数。
+
+- VNCリモートデスクトップ対応、高度な機能は [WoVNCServer](http://wovnc.com) 推奨。  
+  - RFB 3.3/3.7/3.8 標準プロトコル対応。  
+  - 標準エンコーディング対応：ZRLE / TRLE / Hextile / CopyRect / RRE / Raw。  
+  - 拡張エンコーディング対応：H264 / JPEG / ZRLE3 / TRLE3 / ZRLE2 / TRLE2。  
+  - ネットワーク切断時やリモート操作終了時の自動画面ロック。  
+  - リモートブラックスクリーンモード。  
+  - リモートデスクトップ音声再生。  
+  - 画質切替自由：ロスレス、HD、通常、16/15/8ビット。  
+  - マルチスクリーン、ストレッチ、共有、分割モード対応。
+
+- リモートターミナル対応。  
+  - Windows/Linux/MacOSX ターミナルアクセス。  
+  - プロキシジャンプ対応。  
+  - 証明書管理。  
+  - ショートカットキー設定。  
+  - ZModem ファイルアップロード/ダウンロード。  
+  - 組み込みSFTP協力操作。  
+  - 複数ターミナルカラー選択可能。
+
+## モジュール説明
+クライアントコードは完全にオープンソース（kxverモジュール除く）、サードパーティコードは GitHub, CodeProject または他のオープンコミュニティ由来。いくつかのモジュールは [WoVNC](http://wovnc.com) 由来。
+
+## WoVNCServer
+高度な機能のため [WoVNCServer](http://wovnc.com) 推奨。
+
+## 詳細情報:
+<a href="http://www.woterm.com">http://www.woterm.com</a>
+
+## バイナリダウンロード:
+<a href="http://woterm.com">http://woterm.com</a>
+
+## UIプレビュー:
+<div>メインUI<br><img src="doc/main.gif"/></div>
+<div>SSHキー管理<br><img src="doc/keymgr2.gif"></div>
+<div>シリアルポート<br><img src="doc/serialport.gif"></div>
+<div>トンネル<br><img src="doc/tunnel.png"></div>
+<div>複数スキン<br><img src="doc/skins.png"></div>
+<div>プレイブック<br><img src="doc/playbook.gif"></div>
+<div>結合と分割<br><img src="doc/merge.gif"></div>
+<div>クラウド同期<br><img src="doc/sync.gif"></div>
+<div>キーワードフィルター<br><img src="doc/filter.gif"></div>
+<div>ファイル転送<br><img src="doc/sftp.gif"></div>
+<div>浮動タブ<br><img src="doc/float.gif"></div>
+<div>ウィンドウ分割<br><img src="doc/split.gif"></div>
+<div>ターミナルテーマ<br><img src="doc/patten.gif"></div>
+<div>VNCターミナル<br><img src="doc/vnc.gif"/></div>
