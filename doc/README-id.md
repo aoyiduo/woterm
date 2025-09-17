@@ -69,6 +69,15 @@ Disarankan [WoVNCServer](http://wovnc.com) untuk fitur lanjutan.
 ## Unduh biner:
 <a href="http://woterm.com">http://woterm.com</a>  
 
+## Kinerja:
+<div>Mesin parsing terminal buatan sendiri, memproses dan menampilkan puluhan juta baris dalam hitungan detik dengan penggunaan memori yang sangat rendah.<a href="Performance-id.md">Lihat proses detail<a>
+<br><img src="timeseq1.png"/>
+<br><img src="urandom_test_speed.png"/>
+<br><img src="urandom_test_memory.png"/>
+</div>
+<div>Pencarian dan pelokalan super cepat di dalam jutaan baris teks<br><img src="search.gif"/></div>
+
+
 ## Pratinjau UI:
 <div>UI utama<br><img src="main.gif"/></div>
 <div>Manajemen kunci SSH<br><img src="keymgr2.gif"></div>
@@ -83,5 +92,6 @@ Disarankan [WoVNCServer](http://wovnc.com) untuk fitur lanjutan.
 <div>Tab mengambang<br><img src="float.gif"></div>
 <div>Pembagian jendela<br><img src="split.gif"></div>
 <div>Tema terminal<br><img src="patten.gif"></div>
+<div>Penyorotan sintaksis<br><img src="highlight.gif"/></div>
 <div>Terminal VNC<br><img src="vnc.gif"/></div>
 

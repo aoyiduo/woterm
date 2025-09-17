@@ -69,6 +69,14 @@ kxver 模組主要用於版本控制，特別是與終極版本相關的功能�
 ## 二進位下載:
 <a href="http://woterm.com">http://woterm.com</a>  
 
+## 性能表現:
+<div>自研終端解析引擎，數秒內解析並顯千萬行記錄，並保持極低內存。<a href="Performance-zh_TW.md">查看詳細過程<a>
+<br><img src="timeseq1.png"/>
+<br><img src="urandom_test_speed.png"/>
+<br><img src="urandom_test_memory.png"/>
+</div>
+<div>在百萬行文本中，極速搜索及定位<br><img src="search.gif"/></div>
+
 ## UI 預覽:
 <div>主介面<br><img src="main.gif"/></div>
 <div>SSH 金鑰管理<br><img src="keymgr2.gif"></div>
@@ -83,4 +91,5 @@ kxver 模組主要用於版本控制，特別是與終極版本相關的功能�
 <div>浮動分頁<br><img src="float.gif"></div>
 <div>窗口分割<br><img src="split.gif"></div>
 <div>終端主題<br><img src="patten.gif"></div>
+<div>語法高亮<br><img src="highlight.gif"/></div>
 <div>VNC 終端<br><img src="vnc.gif"/></div>

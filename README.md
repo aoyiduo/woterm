@@ -66,6 +66,14 @@ The client code has been completely open source(except for the kxver version con
 ## Binary download:
 <a href="http://woterm.com">http://woterm.com</a>
 
+## High performance:
+<div>Self-developed terminal parsing engine, capable of parsing and displaying millions of records within seconds, while maintaining extremely low memory usage.<a href="doc/Performance-en.md">View detailed process<a>
+<br><img src="doc/timeseq1.png"/>
+<br><img src="doc/urandom_test_speed.png"/>
+<br><img src="doc/urandom_test_memory.png"/>
+</div>
+<div>Perform rapid search and location in millions of lines of text.<br><img src="doc/search.gif"/></div>
+
 ## UI preview:
 <div>Main UI<br><img src="doc/main.gif"/></div>
 <div>SSH key manage<br><img src="doc/keymgr2.gif"></div>
@@ -78,6 +86,7 @@ The client code has been completely open source(except for the kxver version con
 <div>Keyword filter<br><img src="doc/filter.gif"/></div>
 <div>File transfer<br><img src="doc/sftp.gif"/></div>
 <div>Tab float<br><img src="doc/float.gif"/></div>
-<div>window split<br><img src="doc/split.gif"/></div>
-<div>terminal theme<br><img src="doc/patten.gif"/></div>
+<div>Window split<br><img src="doc/split.gif"/></div>
+<div>Terminal theme<br><img src="doc/patten.gif"/></div>
+<div>Syntax highlighting<br><img src="doc/highlight.gif"/></div>
 <div>VNC terminal<br><img src="doc/vnc.gif"/></div>

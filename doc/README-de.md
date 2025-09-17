@@ -70,6 +70,15 @@ Der Client-Code ist vollständig Open Source (außer dem kxver-Versionskontrollm
 ## Binär-Download:
 <a href="http://woterm.com">http://woterm.com</a>  
 
+## Leistung:
+<div>Selbst entwickelte Terminal-Parsing-Engine, die innerhalb von Sekunden zig Millionen Zeilen analysiert und anzeigt, bei extrem geringem Speicherverbrauch.<a href="Performance-de.md">Detaillierten Prozess anzeigen<a>
+<br><img src="timeseq1.png"/>
+<br><img src="urandom_test_speed.png"/>
+<br><img src="urandom_test_memory.png"/>
+</div>
+<div>Ultraschnelle Suche und Lokalisierung in Millionen von Textzeilen<br><img src="search.gif"/></div>
+
+
 ## UI-Vorschau:
 <div>Haupt-UI<br><img src="main.gif"/></div>
 <div>SSH-Schlüsselverwaltung<br><img src="keymgr2.gif"></div>
@@ -84,4 +93,5 @@ Der Client-Code ist vollständig Open Source (außer dem kxver-Versionskontrollm
 <div>Tab schweben<br><img src="float.gif"/></div>
 <div>Fensteraufteilung<br><img src="split.gif"/></div>
 <div>Terminal-Theme<br><img src="patten.gif"/></div>
+<div>Syntaxhervorhebung<br><img src="highlight.gif"/></div>
 <div>VNC-Terminal<br><img src="vnc.gif"/></div>

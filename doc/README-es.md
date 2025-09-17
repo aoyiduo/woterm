@@ -68,6 +68,15 @@ Se recomienda [WoVNCServer](http://wovnc.com) para funciones avanzadas.
 ## Descarga de binarios:
 <a href="http://woterm.com">http://woterm.com</a>  
 
+## Rendimiento:
+<div>Motor de análisis de terminal desarrollado internamente, analiza y muestra decenas de millones de registros en segundos manteniendo un uso de memoria extremadamente bajo.<a href="Performance-es.md">Ver proceso detallado<a>
+<br><img src="timeseq1.png"/>
+<br><img src="urandom_test_speed.png"/>
+<br><img src="urandom_test_memory.png"/>
+</div>
+<div>Búsqueda y localización ultrarrápida en millones de líneas de texto<br><img src="search.gif"/></div>
+
+
 ## Vista previa UI:
 <div>Interfaz principal<br><img src="main.gif"/></div>
 <div>Gestión de claves SSH<br><img src="keymgr2.gif"></div>
@@ -82,4 +91,5 @@ Se recomienda [WoVNCServer](http://wovnc.com) para funciones avanzadas.
 <div>Pestañas flotantes<br><img src="float.gif"></div>
 <div>División de ventanas<br><img src="split.gif"></div>
 <div>Tema de terminal<br><img src="patten.gif"></div>
+<div>Resaltado de sintaxis<br><img src="highlight.gif"/></div>
 <div>Terminal VNC<br><img src="vnc.gif"/></div>

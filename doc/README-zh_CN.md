@@ -65,6 +65,14 @@
 ## 程序下载:
 <a href="http://woterm.com">http://woterm.com</a>
 
+## 性能表现:
+<div>自研终端解析引擎，数秒内解析并显千万行记录，并保持极低内存。<a href="Performance-zh_CN.md">查看详细过程<a>
+<br><img src="timeseq1.png"/>
+<br><img src="urandom_test_speed.png"/>
+<br><img src="urandom_test_memory.png"/>
+</div>
+<div>在百万行文本中，极速搜索及定位<br><img src="search.gif"/></div>
+
 ## 界面预览
 <div>主界面<br><img src="main.gif"/></div>
 <div>SSH密钥管理<br><img src="keymgr.gif"></div>
@@ -79,4 +87,5 @@
 <div>选项卡浮动<br><img src="float.gif"/></div>
 <div>窗口分割<br><img src="split.gif"/></div>
 <div>终端配色表<br><img src="patten.gif"/></div>
+<div>语法高亮<br><img src="doc/highlight.gif"/></div>
 <div>VNC终端<br><img src="vnc.gif"/></div>

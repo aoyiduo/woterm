@@ -69,6 +69,15 @@ kxver モジュールは主にバージョン管理に使用され、特にア�
 ## バイナリダウンロード:
 <a href="http://woterm.com">http://woterm.com</a>
 
+## パフォーマンス:
+<div>自社開発のターミナル解析エンジンで、数秒以内に数千万行を解析・表示し、極めて低いメモリ使用を維持します。<a href="Performance-ja.md">詳細なプロセスを確認<a>
+<br><img src="timeseq1.png"/>
+<br><img src="urandom_test_speed.png"/>
+<br><img src="urandom_test_memory.png"/>
+</div>
+<div>数百万行のテキスト内での超高速検索と位置特定<br><img src="search.gif"/></div>
+
+
 ## UIプレビュー:
 <div>メインUI<br><img src="main.gif"/></div>
 <div>SSHキー管理<br><img src="keymgr2.gif"></div>
@@ -83,4 +92,5 @@ kxver モジュールは主にバージョン管理に使用され、特にア�
 <div>浮動タブ<br><img src="float.gif"></div>
 <div>ウィンドウ分割<br><img src="split.gif"></div>
 <div>ターミナルテーマ<br><img src="patten.gif"></div>
+<div>構文ハイライト<br><img src="highlight.gif"/></div>
 <div>VNCターミナル<br><img src="vnc.gif"/></div>

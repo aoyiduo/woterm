@@ -69,6 +69,15 @@ kxver 모듈은 주로 버전 관리에 사용되며, 특히 Ultimate 버전 관
 ## 바이너리 다운로드:
 <a href="http://woterm.com">http://woterm.com</a>
 
+## 성능:
+<div>자체 개발 터미널 파싱 엔진, 수 초 내에 수천만 줄을 파싱 및 표시하며 매우 낮은 메모리 사용을 유지합니다.<a href="Performance-ko.md">자세한 과정 보기<a>
+<br><img src="timeseq1.png"/>
+<br><img src="urandom_test_speed.png"/>
+<br><img src="urandom_test_memory.png"/>
+</div>
+<div>수백만 줄 텍스트에서 초고속 검색 및 위치 지정<br><img src="search.gif"/></div>
+
+
 ## UI 미리보기:
 <div>메인 UI<br><img src="main.gif"/></div>
 <div>SSH 키 관리<br><img src="keymgr2.gif"></div>
@@ -83,4 +92,5 @@ kxver 모듈은 주로 버전 관리에 사용되며, 특히 Ultimate 버전 관
 <div>플로팅 탭<br><img src="float.gif"></div>
 <div>창 분할<br><img src="split.gif"></div>
 <div>터미널 테마<br><img src="patten.gif"></div>
+<div>구문 강조 표시<br><img src="highlight.gif"/></div>
 <div>VNC 터미널<br><img src="vnc.gif"/></div>

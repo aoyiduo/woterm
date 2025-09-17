@@ -68,6 +68,16 @@
 ## Скачивание бинарников:
 <a href="http://woterm.com">http://woterm.com</a>  
 
+
+## Производительность:
+<div>Собственный движок разбора терминала: анализирует и отображает десятки миллионов строк за считанные секунды при крайне низком потреблении памяти.<a href="Performance-ru.md">Просмотреть подробный процесс<a>
+<br><img src="timeseq1.png"/>
+<br><img src="urandom_test_speed.png"/>
+<br><img src="urandom_test_memory.png"/>
+</div>
+<div>Молниеносный поиск и определение позиции в миллионах строк текста<br><img src="search.gif"/></div>
+
+
 ## Превью UI:
 <div>Главный интерфейс<br><img src="main.gif"/></div>
 <div>Управление SSH ключами<br><img src="keymgr2.gif"></div>
@@ -82,4 +92,5 @@
 <div>Плавающие вкладки<br><img src="float.gif"></div>
 <div>Разделение окон<br><img src="split.gif"></div>
 <div>Тема терминала<br><img src="patten.gif"/></div>
+<div>Подсветка синтаксиса<br><img src="highlight.gif"/></div>
 <div>VNC терминал<br><img src="vnc.gif"/></div>
