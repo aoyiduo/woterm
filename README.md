@@ -22,7 +22,7 @@
 # Overview
 Integrated with all major remote communication protocols to meet your needs: supports SSH1/SSH2, FTP/FTPS, SFTP, TELNET, RLOGIN, RDP, VNC, SHELL, Serial Port, TCP, UDP, and more — no more switching between tools. Easily handle diverse remote access and communication scenarios in one unified platform.
 
-## Functions description
+## Functions description[<a href="https://en.woterm.com/versions/"> &gt;&gt;&gt;click here to check more functions&lt;&lt;&lt;</a>]
 - Support Windows / Linux / MacOSX / Android.
 - Support mainstream communication protocols, including SSH1 / SSH2 / SFTP / RLOGIN / TELNET / SERIALlPORT / VNC / RDP etc.
 - Built in multiple sets of skins for you to choose from, while retaining scalability, allowing friends with strong hands-on abilities to do whatever they want.

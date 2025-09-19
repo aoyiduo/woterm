@@ -25,7 +25,7 @@ Tant que la source de financement n'est pas résolue, il n'y a pas de plan pour 
 # Aperçu
 Intégré avec tous les principaux protocoles de communication à distance : prend en charge SSH1/SSH2, FTP/FTPS, SFTP, TELNET, RLOGIN, RDP, VNC, SHELL, port série, TCP, UDP et plus — plus besoin de changer d’outil. Gérez facilement divers scénarios d’accès à distance sur une plateforme unifiée.
 
-## Description des fonctions
+## Description des fonctions[<a href="https://en.woterm.com/versions/">&gt;&gt;&gt;Cliquez ici pour voir plus de fonctions&lt;&lt;&lt;</a>]
 - Supporte Windows / Linux / MacOSX / Android.  
 - Supporte les protocoles de communication principaux : SSH1 / SSH2 / SFTP / RLOGIN / TELNET / SERIALPORT / VNC / RDP, etc.  
 - Plusieurs thèmes intégrés et extensibles pour personnalisation.  

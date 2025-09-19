@@ -26,7 +26,7 @@ kxver 모듈은 주로 버전 관리에 사용되며, 특히 Ultimate 버전 관
 주요 원격 통신 프로토콜 통합: SSH1/SSH2, FTP/FTPS, SFTP, TELNET, RLOGIN, RDP, VNC, SHELL, 시리얼 포트, TCP, UDP 등 지원 — 도구 전환 불필요.  
 통합 플랫폼에서 다양한 원격 액세스 시나리오를 쉽게 처리.
 
-## 기능 설명
+## 기능 설명[<a href="https://en.woterm.com/versions/">&gt;&gt;&gt;더 많은 기능을 보려면 여기를 클릭하세요&lt;&lt;&lt;</a>]
 - Windows / Linux / MacOSX / Android 지원.  
 - 주요 통신 프로토콜 지원: SSH1 / SSH2 / SFTP / RLOGIN / TELNET / SERIALPORT / VNC / RDP 등.  
 - 여러 내장 스킨, 확장 가능, 고급 사용자가 자유롭게 커스터마이징 가능.  

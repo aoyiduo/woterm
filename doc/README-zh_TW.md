@@ -25,7 +25,7 @@ kxver 模組主要用於版本控制，特別是與終極版本相關的功能�
 # 概述
 整合所有主要遠端通訊協議以滿足您的需求：支援 SSH1/SSH2、FTP/FTPS、SFTP、TELNET、RLOGIN、RDP、VNC、SHELL、串列埠、TCP、UDP 等 — 無需再切換工具。輕鬆應對各種遠端存取及通訊場景於同一平台。
 
-## 功能描述
+## 功能描述[<a href="https://cn.woterm.com/versions/">&gt;&gt;&gt;點擊此處查看更多功能&lt;&lt;&lt;</a>]
 - 支援 Windows / Linux / MacOSX / Android。  
 - 支援主流通訊協議，包括 SSH1 / SSH2 / SFTP / RLOGIN / TELNET / SERIALPORT / VNC / RDP 等。  
 - 內建多套介面皮膚，可自由選擇並保持可擴展性，讓高手自由自定義。  

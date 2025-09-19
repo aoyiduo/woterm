@@ -26,7 +26,7 @@ kxver モジュールは主にバージョン管理に使用され、特にア�
 主要なリモート通信プロトコルすべてに統合：SSH1/SSH2, FTP/FTPS, SFTP, TELNET, RLOGIN, RDP, VNC, SHELL, シリアルポート, TCP, UDP などに対応 — ツールの切り替え不要。  
 統合プラットフォームで多様なリモートアクセスシナリオを簡単に管理。
 
-## 機能説明
+## 機能説明[<a href="https://en.woterm.com/versions/">&gt;&gt;&gt;詳しい機能を見るにはこちらをクリックしてください&lt;&lt;&lt;</a>]
 - Windows / Linux / MacOSX / Android 対応。  
 - 主流通信プロトコル対応：SSH1 / SSH2 / SFTP / RLOGIN / TELNET / SERIALPORT / VNC / RDP など。  
 - 複数の組み込みスキン、拡張可能、上級ユーザーが自由にカスタマイズ可能。  

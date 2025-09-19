@@ -22,7 +22,7 @@
 # 概要
 集成主流远程通讯协议，全面满足您的需求：支持 SSH1/SSH2、FTP/FTPS、SFTP、TELNET、RLOGIN、RDP、VNC、SHELL、串口、TCP、UDP 等多种协议，让您无需切换工具，轻松应对各种远程操作和通讯场景。更多的信息请访问官网
 
-## 功能描述
+## 功能描述[<a href="https://cn.woterm.com/versions/">&gt;&gt;&gt;点击此处查看更多功能&lt;&lt;&lt;</a>]
 - 支持Windows / Linux / MacOSX / Android。
 - 支持主流的通迅协议，包括SSH1/SSH2/SFTP/RLOGIN/TELNET/SERIALlPORT/VNC/RDP等。
 - 内置多套皮肤，任君选择，并保留扩展性，让动手能力强的朋友随心所欲。

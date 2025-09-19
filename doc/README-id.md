@@ -26,7 +26,7 @@ Sampai sumber pendanaan diselesaikan, tidak ada rencana untuk membuka kode sumbe
 Terintegrasi dengan semua protokol komunikasi jarak jauh utama: mendukung SSH1/SSH2, FTP/FTPS, SFTP, TELNET, RLOGIN, RDP, VNC, SHELL, Port Serial, TCP, UDP, dan lainnya — tidak perlu lagi berganti alat.  
 Tangani berbagai skenario akses jarak jauh dalam satu platform terpadu.
 
-## Deskripsi fungsi
+## Deskripsi fungsi[<a href="https://en.woterm.com/versions/">&gt;&gt;&gt;Klik di sini untuk melihat lebih banyak fitur&lt;&lt;&lt;</a>]
 - Mendukung Windows / Linux / MacOSX / Android.  
 - Mendukung protokol utama: SSH1 / SSH2 / SFTP / RLOGIN / TELNET / SERIALPORT / VNC / RDP, dll.  
 - Banyak tema bawaan yang dapat diperluas, memungkinkan pengguna mahir menyesuaikan sesuka hati.  

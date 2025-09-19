@@ -26,7 +26,7 @@ Solange die Finanzierungsquelle nicht geklärt ist, gibt es keine Pläne, den Qu
 Integriert mit allen wichtigen Remote-Kommunikationsprotokollen, um Ihre Anforderungen zu erfüllen: unterstützt SSH1/SSH2, FTP/FTPS, SFTP, TELNET, RLOGIN, RDP, VNC, SHELL, serielle Schnittstelle, TCP, UDP und mehr – kein Wechseln zwischen Tools mehr.  
 Einfache Handhabung unterschiedlicher Remotezugriffs- und Kommunikationsszenarien auf einer einheitlichen Plattform.
 
-## Funktionsbeschreibung
+## Funktionsbeschreibung[<a href="https://en.woterm.com/versions/">&gt;&gt;&gt;Klicken Sie hier, um weitere Funktionen anzuzeigen&lt;&lt;&lt;</a>]
 - Unterstützung für Windows / Linux / MacOSX / Android.  
 - Unterstützung gängiger Kommunikationsprotokolle, einschließlich SSH1 / SSH2 / SFTP / RLOGIN / TELNET / SERIELLPORT / VNC / RDP usw.  
 - Eingebaute mehrere Skins zur Auswahl, gleichzeitig erweiterbar, sodass Nutzer mit hoher Eigeninitiative nach Belieben anpassen können.  
