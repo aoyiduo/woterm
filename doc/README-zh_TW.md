@@ -1,8 +1,3 @@
-*本存儲庫不包含任何第三方庫或 kxver 模組的源碼。  
-kxver 模組主要用於版本控制，特別是與終極版本相關的功能，例如資料加密。  
-它是團隊的唯一資金來源，也是產品健康維護和升級的重要保障。  
-在資金來源未解決之前，沒有計畫開放該模組的源碼。*  
-***
 <p align="center">
   <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">跨平台 / 小內存 / 多協議 / 多功能 / 雲端同步</h2>
@@ -69,27 +64,77 @@ kxver 模組主要用於版本控制，特別是與終極版本相關的功能�
 ## 二進位下載:
 <a href="http://woterm.com">http://woterm.com</a>  
 
-## 性能表現:
-<div>自研終端解析引擎，數秒內解析並顯千萬行記錄，並保持極低內存。<a href="Performance-zh_TW.md">查看詳細過程<a>
-<br><img src="timeseq1.png"/>
-<br><img src="urandom_test_speed.png"/>
-<br><img src="urandom_test_memory.png"/>
-</div>
-<div>在百萬行文本中，極速搜索及定位<br><img src="search.gif"/></div>
+## 性能表現
 
-## UI 預覽:
-<div>主介面<br><img src="main.gif"/></div>
-<div>SSH 金鑰管理<br><img src="keymgr2.gif"></div>
-<div>串列埠<br><img src="serialport.gif"></div>
-<div>通道<br><img src="tunnel.png"></div>
-<div>多套介面皮膚<br><img src="skins.png"></div>
-<div>Playbook<br><img src="playbook.gif"></div>
-<div>合併與拆分<br><img src="merge.gif"></div>
-<div>雲端同步<br><img src="sync.gif"></div>
-<div>關鍵字篩選<br><img src="filter.gif"></div>
-<div>文件傳輸<br><img src="sftp.gif"></div>
-<div>浮動分頁<br><img src="float.gif"></div>
-<div>窗口分割<br><img src="split.gif"></div>
-<div>終端主題<br><img src="patten.gif"></div>
-<div>語法高亮<br><img src="highlight.gif"/></div>
-<div>VNC 終端<br><img src="vnc.gif"/></div>
+自研終端解析引擎，數秒內解析並顯示千萬行記錄，並保持極低內存。  
+[查看詳細過程](Performance-zh_TW.md)  
+
+![](timeseq1.png)  
+![](urandom_test_speed.png)  
+![](urandom_test_memory.png)  
+
+在百萬行文本中，極速搜索及定位  
+![](search.gif)  
+
+
+## UI 預覽
+
+**主介面**  
+![](main.gif)  
+
+**SSH 金鑰管理**  
+![](keymgr2.gif)  
+
+**串列埠**  
+![](serialport.gif)  
+
+**通道**  
+![](tunnel.png)  
+
+**多套介面皮膚**  
+![](skins.png)  
+
+**Playbook**  
+![](playbook.gif)  
+
+**合併與拆分**  
+![](merge.gif)  
+
+**雲端同步**  
+![](sync.gif)  
+
+**關鍵字篩選**  
+![](filter.gif)  
+
+**文件傳輸**  
+![](sftp.gif)  
+
+**浮動分頁**  
+![](float.gif)  
+
+**窗口分割**  
+![](split.gif)  
+
+**終端主題**  
+![](patten.gif)  
+
+**語法高亮**  
+![](highlight.gif)  
+
+**VNC 終端**  
+![](vnc.gif)  
+
+
+# 開源聲明
+自 v10 起，我們對開源協議進行了調整。未來，無論是繼續保持部分開源，還是逐步邁向完全開源，我們都會保持開放與透明的態度。  
+
+需要說明的是：本倉庫不包含任何第三方庫及 **kxver 模組** 的原始碼或庫文件。  
+其中 **kxver 模組** 主要用於版本控制，尤其與專業版功能（如數據加密）相關。  
+它同時也是團隊唯一的資金來源，是產品健康維護與持續升級的重要保障。  
+在資金來源問題尚未解決之前，我們暫不計劃開放該模組。  
+
+整體而言，我們的目標有兩個：  
+1. **透過適度商業化獲取合理收益** —— 為持續開發與維護提供長期動力；  
+2. **保持程式碼可供使用者審計** —— 讓大家能確認軟體遵循「不作惡」的原則，安心使用。  
+
+我們希望在堅持初心的同時，也能兼顧可持續發展，讓軟體既能走得穩，也能走得遠。  

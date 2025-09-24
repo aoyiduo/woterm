@@ -1,8 +1,3 @@
-*Repositori ini tidak mengandung pustaka pihak ketiga atau kode sumber untuk modul kxver.  
-Modul kxver terutama digunakan untuk kontrol versi, khususnya fitur versi ultimate seperti enkripsi data.  
-Ini adalah satu-satunya sumber pendanaan tim dan jaminan penting untuk pemeliharaan dan peningkatan produk.  
-Sampai sumber pendanaan diselesaikan, tidak ada rencana untuk membuka kode sumber modul ini.*  
-***
 <p align="center">
   <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Lintas platform / memori kecil / multi-protokol / multi-fungsi / sinkronisasi cloud</h2>
@@ -69,29 +64,78 @@ Disarankan [WoVNCServer](http://wovnc.com) untuk fitur lanjutan.
 ## Unduh biner:
 <a href="http://woterm.com">http://woterm.com</a>  
 
-## Kinerja:
-<div>Mesin parsing terminal buatan sendiri, memproses dan menampilkan puluhan juta baris dalam hitungan detik dengan penggunaan memori yang sangat rendah.<a href="Performance-id.md">Lihat proses detail<a>
-<br><img src="timeseq1.png"/>
-<br><img src="urandom_test_speed.png"/>
-<br><img src="urandom_test_memory.png"/>
-</div>
-<div>Pencarian dan pelokalan super cepat di dalam jutaan baris teks<br><img src="search.gif"/></div>
+## Kinerja
+
+Mesin parsing terminal buatan sendiri, memproses dan menampilkan puluhan juta baris dalam hitungan detik dengan penggunaan memori yang sangat rendah. [Lihat proses detail](Performance-id.md)
+
+![](timeseq1.png)  
+![](urandom_test_speed.png)  
+![](urandom_test_memory.png)  
+
+Pencarian dan pelokalan super cepat di dalam jutaan baris teks  
+![](search.gif)
+
+---
+
+## Pratinjau UI
+
+**UI utama**  
+![](main.gif)  
+
+**Manajemen kunci SSH**  
+![](keymgr2.gif)  
+
+**Port serial**  
+![](serialport.gif)  
+
+**Terowongan**  
+![](tunnel.png)  
+
+**Beberapa tema**  
+![](skins.png)  
+
+**Playbook**  
+![](playbook.gif)  
+
+**Gabung dan pisah**  
+![](merge.gif)  
+
+**Sinkronisasi cloud**  
+![](sync.gif)  
+
+**Filter kata kunci**  
+![](filter.gif)  
+
+**Transfer file**  
+![](sftp.gif)  
+
+**Tab mengambang**  
+![](float.gif)  
+
+**Pembagian jendela**  
+![](split.gif)  
+
+**Tema terminal**  
+![](patten.gif)  
+
+**Penyorotan sintaksis**  
+![](highlight.gif)  
+
+**Terminal VNC**  
+![](vnc.gif)
 
 
-## Pratinjau UI:
-<div>UI utama<br><img src="main.gif"/></div>
-<div>Manajemen kunci SSH<br><img src="keymgr2.gif"></div>
-<div>Port serial<br><img src="serialport.gif"></div>
-<div>Terowongan<br><img src="tunnel.png"></div>
-<div>Beberapa tema<br><img src="skins.png"></div>
-<div>Playbook<br><img src="playbook.gif"></div>
-<div>Gabung dan pisah<br><img src="merge.gif"></div>
-<div>Sinkronisasi cloud<br><img src="sync.gif"></div>
-<div>Filter kata kunci<br><img src="filter.gif"></div>
-<div>Transfer file<br><img src="sftp.gif"></div>
-<div>Tab mengambang<br><img src="float.gif"></div>
-<div>Pembagian jendela<br><img src="split.gif"></div>
-<div>Tema terminal<br><img src="patten.gif"></div>
-<div>Penyorotan sintaksis<br><img src="highlight.gif"/></div>
-<div>Terminal VNC<br><img src="vnc.gif"/></div>
 
+# Pernyataan Sumber Terbuka
+Sejak versi v10, kami telah menyesuaikan lisensi open source kami. Ke depan, baik kami tetap mempertahankan open source sebagian maupun beralih secara bertahap ke open source penuh, kami akan selalu menjaga sikap terbuka dan transparan.  
+
+Perlu dicatat bahwa repositori ini tidak berisi pustaka pihak ketiga atau kode sumber/berkas pustaka dari **modul kxver**.  
+**Modul kxver** terutama digunakan untuk kontrol versi, khususnya terkait dengan fitur edisi profesional seperti enkripsi data.  
+Modul ini juga merupakan satu-satunya sumber pendanaan tim dan menjadi jaminan penting untuk pemeliharaan yang sehat serta peningkatan produk secara berkelanjutan.  
+Sampai masalah pendanaan terselesaikan, kami tidak berencana untuk membuka modul ini.  
+
+Secara keseluruhan, tujuan kami ada dua:  
+1. **Mencapai pendapatan yang wajar melalui komersialisasi yang tepat** — untuk memberikan dorongan jangka panjang bagi pengembangan dan pemeliharaan berkelanjutan;  
+2. **Menjaga kode tetap tersedia untuk audit pengguna** — sehingga semua orang dapat yakin bahwa perangkat lunak ini mematuhi prinsip “tidak berbuat jahat” dan dapat digunakan dengan tenang.  
+
+Kami berharap tetap setia pada niat awal kami, sekaligus memastikan pembangunan yang berkelanjutan, agar perangkat lunak ini dapat berjalan stabil dan bertahan lama.  

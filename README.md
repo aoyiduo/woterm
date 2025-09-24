@@ -1,5 +1,3 @@
-*This repository does not contain any third-party libraries or source code for the kxver module.  The kxver module is primarily used for version control, particularly for features related to the ultimate version such as data encryption.  It is the team's sole source of funding and an important guarantee for the health maintenance and upgrade of the product.Until the funding source is resolved, there are no plans to open the source code for this module.*
-***
 <p align="center">
   <img src="doc/woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Cross platform / small memory / multi-protocol / multi-function / cloud sync</h2>
@@ -66,27 +64,77 @@ The client code has been completely open source(except for the kxver version con
 ## Binary download:
 <a href="http://woterm.com">http://woterm.com</a>
 
-## High performance:
-<div>Self-developed terminal parsing engine, capable of parsing and displaying millions of records within seconds, while maintaining extremely low memory usage.<a href="doc/Performance-en.md">View detailed process<a>
-<br><img src="doc/timeseq1.png"/>
-<br><img src="doc/urandom_test_speed.png"/>
-<br><img src="doc/urandom_test_memory.png"/>
-</div>
-<div>Perform rapid search and location in millions of lines of text.<br><img src="doc/search.gif"/></div>
+## High performance
 
-## UI preview:
-<div>Main UI<br><img src="doc/main.gif"/></div>
-<div>SSH key manage<br><img src="doc/keymgr2.gif"></div>
-<div>Serial port<br><img src="doc/serialport.gif"></div>
-<div>Tunnel<br><img src="doc/tunnel.png"></div>
-<div>Multiple skins<br><img src="doc/skins.png"></div>
-<div>Playbook<br><img src="doc/playbook.gif"></div>
-<div>Merge and seperate<br><img src="doc/merge.gif"></div>
-<div>Cloud sync<br><img src="doc/sync.gif"></div>
-<div>Keyword filter<br><img src="doc/filter.gif"/></div>
-<div>File transfer<br><img src="doc/sftp.gif"/></div>
-<div>Tab float<br><img src="doc/float.gif"/></div>
-<div>Window split<br><img src="doc/split.gif"/></div>
-<div>Terminal theme<br><img src="doc/patten.gif"/></div>
-<div>Syntax highlighting<br><img src="doc/highlight.gif"/></div>
-<div>VNC terminal<br><img src="doc/vnc.gif"/></div>
+Self-developed terminal parsing engine, capable of parsing and displaying millions of records within seconds, while maintaining extremely low memory usage. [View detailed process](doc/Performance-en.md)
+
+![](doc/timeseq1.png)  
+![](doc/urandom_test_speed.png)  
+![](doc/urandom_test_memory.png)  
+
+Perform rapid search and location in millions of lines of text.  
+![](doc/search.gif)
+
+---
+
+## UI preview
+
+**Main UI**  
+![](doc/main.gif)  
+
+**SSH key manage**  
+![](doc/keymgr2.gif)  
+
+**Serial port**  
+![](doc/serialport.gif)  
+
+**Tunnel**  
+![](doc/tunnel.png)  
+
+**Multiple skins**  
+![](doc/skins.png)  
+
+**Playbook**  
+![](doc/playbook.gif)  
+
+**Merge and separate**  
+![](doc/merge.gif)  
+
+**Cloud sync**  
+![](doc/sync.gif)  
+
+**Keyword filter**  
+![](doc/filter.gif)  
+
+**File transfer**  
+![](doc/sftp.gif)  
+
+**Tab float**  
+![](doc/float.gif)  
+
+**Window split**  
+![](doc/split.gif)  
+
+**Terminal theme**  
+![](doc/patten.gif)  
+
+**Syntax highlighting**  
+![](doc/highlight.gif)  
+
+**VNC terminal**  
+![](doc/vnc.gif)
+
+
+# Open Source Statement
+Since v10, we have adjusted our open-source license. In the future, whether we continue partial open source or move towards full open source, we will maintain an open and transparent approach.  
+
+It should be noted that this repository does not contain any third-party libraries or the source code/library files of the **kxver module**.  
+The **kxver module** is mainly used for version control, especially related to professional edition features such as data encryption.  
+It is also the team’s only source of funding and an important guarantee for the healthy maintenance and continuous upgrading of the product.  
+Before the funding issue is resolved, we do not plan to open-source this module.  
+
+Overall, our goals are twofold:  
+1. **Achieve reasonable revenue through appropriate commercialization** — to provide long-term momentum for continuous development and maintenance;  
+2. **Ensure code remains available for user auditing** — so everyone can be confident that the software adheres to the principle of “do no evil” and can be used with peace of mind.  
+
+We hope to stay true to our original intention while also ensuring sustainable development, so that the software can go steadily and go far.  

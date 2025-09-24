@@ -1,8 +1,3 @@
-*このリポジトリには kxver モジュールのサードパーティライブラリやソースコードは含まれていません。  
-kxver モジュールは主にバージョン管理に使用され、特にアルティメットバージョンの機能（データ暗号化など）に関連しています。  
-チームの唯一の資金源であり、製品の健康維持とアップグレードの重要な保証です。  
-資金源が解決されるまでは、このモジュールのソースコードを公開する予定はありません。*  
-***
 <p align="center">
   <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">クロスプラットフォーム / 小メモリ / マルチプロトコル / マルチ機能 / クラウド同期</h2>
@@ -69,28 +64,77 @@ kxver モジュールは主にバージョン管理に使用され、特にア�
 ## バイナリダウンロード:
 <a href="http://woterm.com">http://woterm.com</a>
 
-## パフォーマンス:
-<div>自社開発のターミナル解析エンジンで、数秒以内に数千万行を解析・表示し、極めて低いメモリ使用を維持します。<a href="Performance-ja.md">詳細なプロセスを確認<a>
-<br><img src="timeseq1.png"/>
-<br><img src="urandom_test_speed.png"/>
-<br><img src="urandom_test_memory.png"/>
-</div>
-<div>数百万行のテキスト内での超高速検索と位置特定<br><img src="search.gif"/></div>
+## パフォーマンス
+
+自社開発のターミナル解析エンジンで、数秒以内に数千万行を解析・表示し、極めて低いメモリ使用を維持します。 [詳細なプロセスを確認](Performance-ja.md)
+
+![](timeseq1.png)  
+![](urandom_test_speed.png)  
+![](urandom_test_memory.png)  
+
+数百万行のテキスト内での超高速検索と位置特定  
+![](search.gif)
+
+---
+
+## UIプレビュー
+
+**メインUI**  
+![](main.gif)  
+
+**SSHキー管理**  
+![](keymgr2.gif)  
+
+**シリアルポート**  
+![](serialport.gif)  
+
+**トンネル**  
+![](tunnel.png)  
+
+**複数スキン**  
+![](skins.png)  
+
+**プレイブック**  
+![](playbook.gif)  
+
+**結合と分割**  
+![](merge.gif)  
+
+**クラウド同期**  
+![](sync.gif)  
+
+**キーワードフィルター**  
+![](filter.gif)  
+
+**ファイル転送**  
+![](sftp.gif)  
+
+**浮動タブ**  
+![](float.gif)  
+
+**ウィンドウ分割**  
+![](split.gif)  
+
+**ターミナルテーマ**  
+![](patten.gif)  
+
+**構文ハイライト**  
+![](highlight.gif)  
+
+**VNCターミナル**  
+![](vnc.gif)
 
 
-## UIプレビュー:
-<div>メインUI<br><img src="main.gif"/></div>
-<div>SSHキー管理<br><img src="keymgr2.gif"></div>
-<div>シリアルポート<br><img src="serialport.gif"></div>
-<div>トンネル<br><img src="tunnel.png"></div>
-<div>複数スキン<br><img src="skins.png"></div>
-<div>プレイブック<br><img src="playbook.gif"></div>
-<div>結合と分割<br><img src="merge.gif"></div>
-<div>クラウド同期<br><img src="sync.gif"></div>
-<div>キーワードフィルター<br><img src="filter.gif"></div>
-<div>ファイル転送<br><img src="sftp.gif"></div>
-<div>浮動タブ<br><img src="float.gif"></div>
-<div>ウィンドウ分割<br><img src="split.gif"></div>
-<div>ターミナルテーマ<br><img src="patten.gif"></div>
-<div>構文ハイライト<br><img src="highlight.gif"/></div>
-<div>VNCターミナル<br><img src="vnc.gif"/></div>
+# オープンソース声明
+v10以降、私たちはオープンソースライセンスを調整しました。将来的に、部分的なオープンソースを維持するにせよ、完全なオープンソースへ段階的に移行するにせよ、常に開かれた透明性のある姿勢を保ちます。  
+
+このリポジトリには、サードパーティのライブラリや **kxver モジュール** のソースコード/ライブラリファイルは含まれていません。  
+**kxver モジュール** は主にバージョン管理に使用され、特にデータ暗号化などのプロフェッショナル版の機能に関連しています。  
+また、チームの唯一の資金源であり、製品の健全なメンテナンスと継続的なアップグレードの重要な保証でもあります。  
+資金源の問題が解決されるまでは、このモジュールをオープンソース化する予定はありません。  
+
+全体として、私たちの目標は二つあります:  
+1. **適切な商業化を通じて妥当な収益を得ること** —— 継続的な開発とメンテナンスに長期的な原動力を提供するため;  
+2. **コードをユーザー監査に利用可能にすること** —— ソフトウェアが「悪をなさない」という原則に従っていると誰もが確認でき、安心して利用できるようにするため。  
+
+私たちは初心を守りつつ、持続可能な発展を保証し、ソフトウェアが安定して長く発展していけるようにしたいと考えています。  

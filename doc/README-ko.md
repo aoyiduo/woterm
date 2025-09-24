@@ -1,8 +1,3 @@
-*이 저장소에는 kxver 모듈에 대한 서드파티 라이브러리나 소스 코드는 포함되어 있지 않습니다.  
-kxver 모듈은 주로 버전 관리에 사용되며, 특히 Ultimate 버전 관련 기능(데이터 암호화 등)에 사용됩니다.  
-팀의 유일한 자금원이며, 제품 유지 보수 및 업그레이드를 위한 중요한 보장입니다.  
-자금원이 해결될 때까지 이 모듈의 소스 코드를 공개할 계획은 없습니다.*  
-***
 <p align="center">
   <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">크로스 플랫폼 / 저메모리 / 다중 프로토콜 / 다기능 / 클라우드 동기화</h2>
@@ -69,28 +64,77 @@ kxver 모듈은 주로 버전 관리에 사용되며, 특히 Ultimate 버전 관
 ## 바이너리 다운로드:
 <a href="http://woterm.com">http://woterm.com</a>
 
-## 성능:
-<div>자체 개발 터미널 파싱 엔진, 수 초 내에 수천만 줄을 파싱 및 표시하며 매우 낮은 메모리 사용을 유지합니다.<a href="Performance-ko.md">자세한 과정 보기<a>
-<br><img src="timeseq1.png"/>
-<br><img src="urandom_test_speed.png"/>
-<br><img src="urandom_test_memory.png"/>
-</div>
-<div>수백만 줄 텍스트에서 초고속 검색 및 위치 지정<br><img src="search.gif"/></div>
+## 성능
+
+자체 개발 터미널 파싱 엔진, 수 초 내에 수천만 줄을 파싱 및 표시하며 매우 낮은 메모리 사용을 유지합니다. [자세한 과정 보기](Performance-ko.md)
+
+![](timeseq1.png)  
+![](urandom_test_speed.png)  
+![](urandom_test_memory.png)  
+
+수백만 줄 텍스트에서 초고속 검색 및 위치 지정  
+![](search.gif)
+
+---
+
+## UI 미리보기
+
+**메인 UI**  
+![](main.gif)  
+
+**SSH 키 관리**  
+![](keymgr2.gif)  
+
+**시리얼 포트**  
+![](serialport.gif)  
+
+**터널**  
+![](tunnel.png)  
+
+**다중 스킨**  
+![](skins.png)  
+
+**플레이북**  
+![](playbook.gif)  
+
+**병합 및 분할**  
+![](merge.gif)  
+
+**클라우드 동기화**  
+![](sync.gif)  
+
+**키워드 필터**  
+![](filter.gif)  
+
+**파일 전송**  
+![](sftp.gif)  
+
+**플로팅 탭**  
+![](float.gif)  
+
+**창 분할**  
+![](split.gif)  
+
+**터미널 테마**  
+![](patten.gif)  
+
+**구문 강조 표시**  
+![](highlight.gif)  
+
+**VNC 터미널**  
+![](vnc.gif)
 
 
-## UI 미리보기:
-<div>메인 UI<br><img src="main.gif"/></div>
-<div>SSH 키 관리<br><img src="keymgr2.gif"></div>
-<div>시리얼 포트<br><img src="serialport.gif"></div>
-<div>터널<br><img src="tunnel.png"></div>
-<div>다중 스킨<br><img src="skins.png"></div>
-<div>플레이북<br><img src="playbook.gif"></div>
-<div>병합 및 분할<br><img src="merge.gif"></div>
-<div>클라우드 동기화<br><img src="sync.gif"></div>
-<div>키워드 필터<br><img src="filter.gif"></div>
-<div>파일 전송<br><img src="sftp.gif"></div>
-<div>플로팅 탭<br><img src="float.gif"></div>
-<div>창 분할<br><img src="split.gif"></div>
-<div>터미널 테마<br><img src="patten.gif"></div>
-<div>구문 강조 표시<br><img src="highlight.gif"/></div>
-<div>VNC 터미널<br><img src="vnc.gif"/></div>
+# 오픈 소스 성명
+v10부터 우리는 오픈 소스 라이선스를 조정했습니다. 앞으로 부분 오픈 소스를 유지하든, 점차 완전한 오픈 소스로 나아가든, 우리는 항상 개방적이고 투명한 태도를 유지할 것입니다.  
+
+이 저장소에는 타사 라이브러리나 **kxver 모듈**의 소스 코드/라이브러리 파일이 포함되어 있지 않습니다.  
+**kxver 모듈**은 주로 버전 제어에 사용되며, 특히 데이터 암호화와 같은 프로페셔널 버전 기능과 관련이 있습니다.  
+이 모듈은 또한 팀의 유일한 자금 출처이며, 제품의 건전한 유지 관리와 지속적인 업그레이드를 위한 중요한 보장입니다.  
+자금 문제를 해결하기 전까지는 이 모듈을 오픈 소스로 공개할 계획이 없습니다.  
+
+전체적으로 우리의 목표는 두 가지입니다:  
+1. **적절한 상업화를 통해 합리적인 수익 창출** — 지속적인 개발과 유지 관리를 위한 장기적인 동력을 제공하기 위해;  
+2. **사용자 감사가 가능하도록 코드 유지** — 모든 사람이 소프트웨어가 "악하지 않는다"는 원칙을 준수한다는 것을 확인하고 안심하고 사용할 수 있도록.  
+
+우리는 초심을 지키는 동시에 지속 가능한 발전을 보장하여 소프트웨어가 안정적으로, 그리고 오래도록 발전하기를 바랍니다.  

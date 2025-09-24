@@ -1,8 +1,3 @@
-*Dieses Repository enthält keine Drittanbieter-Bibliotheken oder Quellcodes für das kxver-Modul.  
-Das kxver-Modul wird hauptsächlich für die Versionskontrolle verwendet, insbesondere für Funktionen im Zusammenhang mit der ultimativen Version wie Datenverschlüsselung.  
-Es ist die einzige Finanzierungsquelle des Teams und eine wichtige Garantie für die Wartung und das Upgrade des Produkts.  
-Solange die Finanzierungsquelle nicht geklärt ist, gibt es keine Pläne, den Quellcode dieses Moduls zu veröffentlichen.*  
-***
 <p align="center">
   <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Plattformübergreifend / geringer Speicherverbrauch / Multi-Protokoll / Multifunktion / Cloud-Synchronisierung</h2>
@@ -70,28 +65,77 @@ Der Client-Code ist vollständig Open Source (außer dem kxver-Versionskontrollm
 ## Binär-Download:
 <a href="http://woterm.com">http://woterm.com</a>  
 
-## Leistung:
-<div>Selbst entwickelte Terminal-Parsing-Engine, die innerhalb von Sekunden zig Millionen Zeilen analysiert und anzeigt, bei extrem geringem Speicherverbrauch.<a href="Performance-de.md">Detaillierten Prozess anzeigen<a>
-<br><img src="timeseq1.png"/>
-<br><img src="urandom_test_speed.png"/>
-<br><img src="urandom_test_memory.png"/>
-</div>
-<div>Ultraschnelle Suche und Lokalisierung in Millionen von Textzeilen<br><img src="search.gif"/></div>
+## Leistung
+
+Selbst entwickelte Terminal-Parsing-Engine, die innerhalb von Sekunden zig Millionen Zeilen analysiert und anzeigt, bei extrem geringem Speicherverbrauch. [Detaillierten Prozess anzeigen](Performance-de.md)
+
+![](timeseq1.png)  
+![](urandom_test_speed.png)  
+![](urandom_test_memory.png)  
+
+Ultraschnelle Suche und Lokalisierung in Millionen von Textzeilen  
+![](search.gif)
+
+---
+
+## UI-Vorschau
+
+**Haupt-UI**  
+![](main.gif)  
+
+**SSH-Schlüsselverwaltung**  
+![](keymgr2.gif)  
+
+**Serielle Schnittstelle**  
+![](serialport.gif)  
+
+**Tunnel**  
+![](tunnel.png)  
+
+**Mehrere Skins**  
+![](skins.png)  
+
+**Playbook**  
+![](playbook.gif)  
+
+**Zusammenführen und Trennen**  
+![](merge.gif)  
+
+**Cloud-Synchronisierung**  
+![](sync.gif)  
+
+**Schlüsselwortfilter**  
+![](filter.gif)  
+
+**Dateiübertragung**  
+![](sftp.gif)  
+
+**Tab schweben**  
+![](float.gif)  
+
+**Fensteraufteilung**  
+![](split.gif)  
+
+**Terminal-Theme**  
+![](patten.gif)  
+
+**Syntaxhervorhebung**  
+![](highlight.gif)  
+
+**VNC-Terminal**  
+![](vnc.gif)
 
 
-## UI-Vorschau:
-<div>Haupt-UI<br><img src="main.gif"/></div>
-<div>SSH-Schlüsselverwaltung<br><img src="keymgr2.gif"></div>
-<div>Serielle Schnittstelle<br><img src="serialport.gif"></div>
-<div>Tunnel<br><img src="tunnel.png"></div>
-<div>Mehrere Skins<br><img src="skins.png"></div>
-<div>Playbook<br><img src="playbook.gif"></div>
-<div>Zusammenführen und Trennen<br><img src="merge.gif"></div>
-<div>Cloud-Synchronisierung<br><img src="sync.gif"></div>
-<div>Schlüsselwortfilter<br><img src="filter.gif"/></div>
-<div>Dateiübertragung<br><img src="sftp.gif"/></div>
-<div>Tab schweben<br><img src="float.gif"/></div>
-<div>Fensteraufteilung<br><img src="split.gif"/></div>
-<div>Terminal-Theme<br><img src="patten.gif"/></div>
-<div>Syntaxhervorhebung<br><img src="highlight.gif"/></div>
-<div>VNC-Terminal<br><img src="vnc.gif"/></div>
+# Open-Source-Erklärung
+Seit v10 haben wir unsere Open-Source-Lizenz angepasst. In Zukunft, egal ob wir teilweise Open Source beibehalten oder schrittweise zu vollständigem Open Source übergehen, werden wir stets eine offene und transparente Haltung wahren.  
+
+Es ist zu beachten, dass dieses Repository weder Drittanbieter-Bibliotheken noch den Quellcode/Bibliotheksdateien des **kxver-Moduls** enthält.  
+Das **kxver-Modul** wird hauptsächlich für die Versionskontrolle verwendet, insbesondere in Bezug auf Funktionen der Professional-Edition wie Datenverschlüsselung.  
+Es ist auch die einzige Finanzierungsquelle des Teams und eine wichtige Garantie für die gesunde Wartung und kontinuierliche Weiterentwicklung des Produkts.  
+Solange die Finanzierungsfrage nicht gelöst ist, planen wir nicht, dieses Modul als Open Source freizugeben.  
+
+Insgesamt haben wir zwei Ziele:  
+1. **Angemessene Einnahmen durch geeignete Kommerzialisierung erzielen** — um langfristige Motivation für kontinuierliche Entwicklung und Wartung zu schaffen;  
+2. **Den Code für Benutzerprüfungen verfügbar halten** — damit jeder sicher sein kann, dass die Software dem Prinzip „Do no evil“ folgt und vertrauensvoll genutzt werden kann.  
+
+Wir hoffen, unserem ursprünglichen Ziel treu zu bleiben und gleichzeitig eine nachhaltige Entwicklung sicherzustellen, damit die Software sowohl stabil als auch langfristig erfolgreich ist.  

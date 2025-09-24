@@ -1,8 +1,3 @@
-*Este repositorio no contiene bibliotecas de terceros ni código fuente del módulo kxver.  
-El módulo kxver se utiliza principalmente para el control de versiones, especialmente para funciones relacionadas con la versión ultimate, como el cifrado de datos.  
-Es la única fuente de financiación del equipo y una garantía importante para el mantenimiento y la actualización del producto.  
-Hasta que se resuelva la fuente de financiación, no hay planes de abrir el código fuente de este módulo.*  
-***
 <p align="center">
   <img src="woterm.png" width="64" alt="WoTerm - Another Remote Access Assistant">
   <h2 style="text-align: center;">Multiplataforma / Bajo uso de memoria / Multi-protocolo / Multifunción / Sincronización en la nube</h2>
@@ -68,28 +63,77 @@ Se recomienda [WoVNCServer](http://wovnc.com) para funciones avanzadas.
 ## Descarga de binarios:
 <a href="http://woterm.com">http://woterm.com</a>  
 
-## Rendimiento:
-<div>Motor de análisis de terminal desarrollado internamente, analiza y muestra decenas de millones de registros en segundos manteniendo un uso de memoria extremadamente bajo.<a href="Performance-es.md">Ver proceso detallado<a>
-<br><img src="timeseq1.png"/>
-<br><img src="urandom_test_speed.png"/>
-<br><img src="urandom_test_memory.png"/>
-</div>
-<div>Búsqueda y localización ultrarrápida en millones de líneas de texto<br><img src="search.gif"/></div>
+## Rendimiento
+
+Motor de análisis de terminal desarrollado internamente, analiza y muestra decenas de millones de registros en segundos manteniendo un uso de memoria extremadamente bajo. [Ver proceso detallado](Performance-es.md)
+
+![](timeseq1.png)  
+![](urandom_test_speed.png)  
+![](urandom_test_memory.png)  
+
+Búsqueda y localización ultrarrápida en millones de líneas de texto  
+![](search.gif)
+
+---
+
+## Vista previa UI
+
+**Interfaz principal**  
+![](main.gif)  
+
+**Gestión de claves SSH**  
+![](keymgr2.gif)  
+
+**Puerto serie**  
+![](serialport.gif)  
+
+**Túnel**  
+![](tunnel.png)  
+
+**Varias pieles**  
+![](skins.png)  
+
+**Playbook**  
+![](playbook.gif)  
+
+**Combinar y separar**  
+![](merge.gif)  
+
+**Sincronización en la nube**  
+![](sync.gif)  
+
+**Filtro por palabras clave**  
+![](filter.gif)  
+
+**Transferencia de archivos**  
+![](sftp.gif)  
+
+**Pestañas flotantes**  
+![](float.gif)  
+
+**División de ventanas**  
+![](split.gif)  
+
+**Tema de terminal**  
+![](patten.gif)  
+
+**Resaltado de sintaxis**  
+![](highlight.gif)  
+
+**Terminal VNC**  
+![](vnc.gif)
 
 
-## Vista previa UI:
-<div>Interfaz principal<br><img src="main.gif"/></div>
-<div>Gestión de claves SSH<br><img src="keymgr2.gif"></div>
-<div>Puerto serie<br><img src="serialport.gif"></div>
-<div>Túnel<br><img src="tunnel.png"></div>
-<div>Varias pieles<br><img src="skins.png"></div>
-<div>Playbook<br><img src="playbook.gif"></div>
-<div>Combinar y separar<br><img src="merge.gif"></div>
-<div>Sincronización en la nube<br><img src="sync.gif"></div>
-<div>Filtro por palabras clave<br><img src="filter.gif"></div>
-<div>Transferencia de archivos<br><img src="sftp.gif"></div>
-<div>Pestañas flotantes<br><img src="float.gif"></div>
-<div>División de ventanas<br><img src="split.gif"></div>
-<div>Tema de terminal<br><img src="patten.gif"></div>
-<div>Resaltado de sintaxis<br><img src="highlight.gif"/></div>
-<div>Terminal VNC<br><img src="vnc.gif"/></div>
+# Declaración de Código Abierto
+Desde la versión v10, hemos ajustado nuestra licencia de código abierto. En el futuro, ya sea que mantengamos el código abierto parcial o avancemos hacia un código completamente abierto, mantendremos siempre una actitud abierta y transparente.  
+
+Cabe señalar que este repositorio no contiene bibliotecas de terceros ni el código fuente/archivos de biblioteca del **módulo kxver**.  
+El **módulo kxver** se utiliza principalmente para el control de versiones, especialmente relacionado con las funciones de la edición profesional, como el cifrado de datos.  
+También es la única fuente de financiación del equipo y una garantía importante para el mantenimiento saludable y la actualización continua del producto.  
+Mientras el problema de financiación no se resuelva, no planeamos abrir este módulo.  
+
+En general, nuestros objetivos son dos:  
+1. **Lograr ingresos razonables a través de una comercialización adecuada** — para proporcionar un impulso a largo plazo para el desarrollo y mantenimiento continuos;  
+2. **Mantener el código disponible para la auditoría de los usuarios** — para que todos puedan confiar en que el software cumple con el principio de “no hacer el mal” y puedan usarlo con tranquilidad.  
+
+Esperamos mantenernos fieles a nuestra intención original y al mismo tiempo garantizar un desarrollo sostenible, de modo que el software pueda avanzar de manera estable y llegar lejos.  
