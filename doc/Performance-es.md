@@ -54,16 +54,25 @@ El flujo de datos es:
 *hilo SSH → hilo principal → hilo terminal → hilo principal muestra*
 
 Por eso se usó el cronómetro.  
-<div>Tiempo de procesamiento del comando<br><img src="timeseq1.png"/></div>
+
+### Tiempo de procesamiento del comando
+![](timeseq1.png)  
+
 
 ## Comparación de throughput urandom_test
 
 Se compara **registros por segundo (throughput)**.  
-<div>Throughput de ejecución<br><img src="urandom_test_speed.png"/></div>
+
+### Throughput de ejecución
+![](urandom_test_speed.png)  
+
 
 ## Uso de memoria tras urandom_test
 
 Se muestra el **incremento de memoria** tras el comando (se resta la memoria base tras el arranque).  
-<div>Uso de memoria<br><img src="urandom_test_memory.png"/></div>
+
+### Uso de memoria
+![](urandom_test_memory.png)  
+
 
 *Nota: los resultados se refieren a la configuración indicada; en otro hardware pueden variar.*

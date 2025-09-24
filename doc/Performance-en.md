@@ -48,16 +48,27 @@ Because the software’s data path is:
 
 *SSH-thread receive → main-thread dispatch → terminal-thread process → main-thread display*
 
-we therefore rely on the phone’s stopwatch instead.
-<div>Command processing time<br><img src="timeseq1.png"/></div>
+We therefore rely on the phone’s stopwatch instead.  
+
+### Command processing time
+![](timeseq1.png)  
+
 
 ## Execution of urandom_test Test Comparison
-In this comparison, we are looking at the throughput (in terms of records processed per second).
-<div>Execution throughput<br><img src="urandom_test_speed.png"/></div>
+
+In this comparison, we are looking at the throughput (**records processed per second**).  
+
+### Execution throughput
+![](urandom_test_speed.png)  
+
 
 ## Memory Usage After Executing the urandom_test Command
-This shows the additional memory usage after executing the urandom_test command, with the baseline memory usage (after startup) deducted.
-<div>Memory usage<br><img src="urandom_test_memory.png"/></div>
+
+This shows the **additional memory usage** after executing the urandom_test command, with the baseline memory usage (after startup) deducted.  
+
+### Memory usage
+![](urandom_test_memory.png)  
+
 
 
 *Note: The performance results are based on the configurations listed above and may vary on different hardware or environments.*

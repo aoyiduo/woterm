@@ -52,16 +52,25 @@ Datenpfad:
 *SSH-Thread → Haupt-Thread → Terminal-Thread → Haupt-Thread Anzeige*
 
 Deswegen Stoppuhr.  
-<div>Befehlsdauer<br><img src="timeseq1.png"/></div>
+
+### Befehlsdauer
+![](timeseq1.png)  
+
 
 ## urandom_test Durchsatz
 
 Vergleich der **Datensätze pro Sekunde (Durchsatz)**.  
-<div>Durchsatz<br><img src="urandom_test_speed.png"/></div>
+
+### Durchsatz
+![](urandom_test_speed.png)  
+
 
 ## Speicherverbrauch nach urandom_test
 
 Zusätzlicher Speicher **nach Abzug der Basislast** nach dem Start.  
-<div>Speicherverbrauch<br><img src="urandom_test_memory.png"/></div>
+
+### Speicherverbrauch
+![](urandom_test_memory.png)  
+
 
 *Hinweis: Ergebnisse beziehen sich auf obige Konfiguration, andere Hardware kann abweichen.*

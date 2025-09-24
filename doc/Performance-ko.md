@@ -53,16 +53,25 @@
 *SSH 스레드 수신 → 메인 스레드 분배 → 터미널 스레드 처리 → 메인 스레드 표시*
 
 따라서 스톱워치 사용.  
-<div>명령어 처리 시간<br><img src="timeseq1.png"/></div>
+
+### 명령어 처리 시간
+![](timeseq1.png)  
+
 
 ## urandom_test 처리량 비교
 
 **초당 레코드 수(처리량)** 비교.  
-<div>실행 처리량<br><img src="urandom_test_speed.png"/></div>
+
+### 실행 처리량
+![](urandom_test_speed.png)  
+
 
 ## urandom_test 실행 후 메모리 사용량
 
 기준 메모리(시작 후)를 제외한 **증가량** 표시.  
-<div>메모리 사용량<br><img src="urandom_test_memory.png"/></div>
+
+### 메모리 사용량
+![](urandom_test_memory.png)  
+
 
 *참고: 성능 결과는 위 환경 기준이며, 다른 하드웨어에서는 차이가 있을 수 있습니다.*

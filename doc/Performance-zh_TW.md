@@ -52,16 +52,25 @@
 *SSH 線程接收 → 主線程分派 → 終端線程處理 → 主線程展示*
 
 故以手機碼錶為準。  
-<div>命令處理時間<br><img src="timeseq1.png"/></div>
+
+**命令處理時間**  
+![](timeseq1.png)  
+
 
 ## urandom_test 吞吐量比較
 
 本項比較 **每秒處理紀錄數（吞吐量）**。  
-<div>執行吞吐量<br><img src="urandom_test_speed.png"/></div>
+
+**執行吞吐量**  
+![](urandom_test_speed.png)  
+
 
 ## urandom_test 執行後記憶體佔用
 
 下圖已減去啟動後的基線記憶體，僅顯示命令帶來的 **新增記憶體**。  
-<div>記憶體佔用<br><img src="urandom_test_memory.png"/></div>
+
+**記憶體佔用**  
+![](urandom_test_memory.png)  
+
 
 *注：以上成績基於上述配置，不同硬體/環境結果可能不同。*

@@ -53,16 +53,25 @@ Alur data:
 *thread SSH → thread utama → thread terminal → tampilan utama*
 
 Maka digunakan stopwatch.  
-<div>Waktu pemrosesan perintah<br><img src="timeseq1.png"/></div>
+
+### Waktu pemrosesan perintah
+![](timeseq1.png)  
+
 
 ## Throughput urandom_test
 
 Membandingkan **rekaman per detik (throughput)**.  
-<div>Throughput eksekusi<br><img src="urandom_test_speed.png"/></div>
+
+### Throughput eksekusi
+![](urandom_test_speed.png)  
+
 
 ## Penggunaan Memori Setelah urandom_test
 
 Menampilkan **penambahan memori** setelah perintah (dikurangi baseline awal).  
-<div>Penggunaan memori<br><img src="urandom_test_memory.png"/></div>
+
+### Penggunaan memori
+![](urandom_test_memory.png)  
+
 
 *Catatan: hasil berdasarkan konfigurasi di atas, perangkat keras lain bisa berbeda.*

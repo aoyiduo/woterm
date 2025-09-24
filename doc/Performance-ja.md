@@ -52,16 +52,25 @@
 *SSH スレッド受信 → メインスレッドディスパッチ → 端末スレッド処理 → メインスレッド表示*
 
 よってストップウォッチを使用。  
-<div>コマンド処理時間<br><img src="timeseq1.png"/></div>
+
+### コマンド処理時間
+![](timeseq1.png)  
+
 
 ## urandom_test スループット比較
 
-**每秒レコード数（スループット）** を比較。  
-<div>実行スループット<br><img src="urandom_test_speed.png"/></div>
+**毎秒レコード数（スループット）** を比較。  
+
+### 実行スループット
+![](urandom_test_speed.png)  
+
 
 ## urandom_test 実行後メモリ使用量
 
 起動後のベースラインを差し引いた **増加分** を表示。  
-<div>メモリ使用量<br><img src="urandom_test_memory.png"/></div>
+
+### メモリ使用量
+![](urandom_test_memory.png)  
+
 
 *注: 性能結果は上記環境に基づき、異なるハードウェアでは変わる可能性があります。*

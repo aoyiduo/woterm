@@ -50,16 +50,25 @@ Flux de données :
 *thread SSH → thread principal → thread terminal → affichage principal*
 
 D’où l’usage du chronomètre.  
-<div>Durée de traitement de la commande<br><img src="timeseq1.png"/></div>
+
+### Durée de traitement de la commande
+![](timeseq1.png)  
+
 
 ## Comparaison du débit urandom_test
 
 Comparaison du **nombre d’enregistrements par seconde (débit)**.  
-<div>Débit d’exécution<br><img src="urandom_test_speed.png"/></div>
+
+### Débit d’exécution
+![](urandom_test_speed.png)  
+
 
 ## Utilisation mémoire après urandom_test
 
 Montre **la mémoire supplémentaire** consommée après la commande (mémoire de base au démarrage soustraite).  
-<div>Utilisation mémoire<br><img src="urandom_test_memory.png"/></div>
+
+### Utilisation mémoire
+![](urandom_test_memory.png)  
+
 
 *Remarque : les résultats sont basés sur la configuration ci-dessus ; un environnement différent peut donner des chiffres dissemblables.*

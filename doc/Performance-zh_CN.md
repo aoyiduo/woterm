@@ -52,16 +52,25 @@
 *SSH 线程接收 → 主线程分发 → 终端线程处理 → 主线程展示*
 
 故以手机秒表为准。  
-<div>命令处理时间<br><img src="timeseq1.png"/></div>
+
+### 命令处理时间
+![](timeseq1.png)  
+
 
 ## urandom_test 吞吐量对比
 
 本项对比 **每秒处理记录数（吞吐量）**。  
-<div>执行吞吐量<br><img src="urandom_test_speed.png"/></div>
+
+### 执行吞吐量
+![](urandom_test_speed.png)  
+
 
 ## urandom_test 执行后内存占用
 
 下图已减去启动后的基线内存，仅显示命令带来的 **新增内存**。  
-<div>内存占用<br><img src="urandom_test_memory.png"/></div>
+
+### 内存占用
+![](urandom_test_memory.png)  
+
 
 *注：以上成绩基于上述配置，不同硬件/环境结果可能不同。*
