@@ -78,6 +78,8 @@ Perform rapid search and location in millions of lines of text.
 ---
 
 ## UI preview
+***SFTP transfer***  
+![](doc/mutitask.gif)
 
 **Main UI**  
 ![](doc/main.gif)  
